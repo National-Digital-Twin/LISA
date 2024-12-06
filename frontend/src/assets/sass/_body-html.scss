@@ -1,0 +1,10 @@
+// '_BODY/HTML.SCSS' - IMPORTED INTO APP.SCSS
+
+@import 'colors';
+
+body {
+  color: $black;
+  font-family: lato-reg, Arial, Helvetica, sans-serif;
+  background-color: $white;
+  text-rendering: optimizeLegibility;
+}

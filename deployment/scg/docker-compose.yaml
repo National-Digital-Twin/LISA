@@ -1,0 +1,17 @@
+services:
+  graph-smart-cache:
+    environment:
+      JAVA_OPTIONS: "-XX:MaxRAMPercentage=70.0"
+      JWKS_URL: "disabled"
+    command:
+      - --ping
+      - --config
+      - /fuseki/config/config.ttl
+    image: scg:0.80.0
+
+    volumes:
+      - ./config:/fuseki/config:ro
+      - ./data:/fuseki/data:rw
+
+    ports:
+      - 3030:3030

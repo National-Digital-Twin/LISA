@@ -1,0 +1,63 @@
+{
+  "name": "frontend",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "start": "npm run dev",
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "bundle": "npm run generate-pwa-assets && tsc --noEmit && vite build --outDir ../backend/dist/frontend --emptyOutDir",
+    "dev:backend": "vite build --mode development --outDir ../backend/dist/frontend --emptyOutDir --watch",
+    "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 3",
+    "lint:fix": "eslint --fix .",
+    "preview": "vite preview",
+    "generate-pwa-assets": "pwa-assets-generator --preset minimal public/pwa-source.svg"
+  },
+  "dependencies": {
+    "@lexical/react": "^0.14.2",
+    "@lexical/utils": "0.16.1",
+    "@tanstack/query-sync-storage-persister": "^5.45.0",
+    "@tanstack/react-query": "^5.45.1",
+    "@tanstack/react-query-devtools": "^5.45.1",
+    "@tanstack/react-query-persist-client": "^5.45.1",
+    "date-fns": "^3.4.0",
+    "html-react-parser": "^5.1.9",
+    "konva": "^9.3.14",
+    "lexical": "^0.14.2",
+    "maplibre-gl": "^4.5.0",
+    "react": "^18.2.0",
+    "react-audio-voice-recorder": "^2.2.0",
+    "react-dom": "^18.2.0",
+    "react-konva": "^18.2.10",
+    "react-map-gl": "^7.1.7",
+    "react-router-dom": "^6.13.0",
+    "react-select": "^5.8.0",
+    "vite-plugin-svgr": "^4.2.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.0.28",
+    "@types/react-dom": "^18.0.11",
+    "@types/react-slick": "^0.23.10",
+    "@types/workbox-window": "^4.3.4",
+    "@typescript-eslint/eslint-plugin": "^7.13.1",
+    "@typescript-eslint/parser": "^7.13.1",
+    "@vite-pwa/assets-generator": "^0.2.4",
+    "@vitejs/plugin-react": "^4.3.1",
+    "eslint": "^8.56.0",
+    "eslint-config-airbnb": "^19.0.4",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-html": "^8.1.1",
+    "eslint-plugin-react-hooks": "^4.6.2",
+    "eslint-plugin-react-refresh": "^0.4.7",
+    "prettier": "^3.3.2",
+    "sass": "^1.77.6",
+    "typescript": "^5.4.5",
+    "vite": "^5.3.1",
+    "vite-plugin-pwa": "^0.20.0",
+    "workbox-window": "^7.1.0"
+  },
+  "lint-staged": {
+    "./src/**/*.{js,ts}": "npm run lint"
+  }
+}

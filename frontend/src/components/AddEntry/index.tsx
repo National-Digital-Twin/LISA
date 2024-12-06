@@ -1,0 +1,208 @@
+// Global imports
+import { type Stage } from 'konva/lib/Stage';
+import { MouseEvent, useEffect, useMemo, useRef, useState } from 'react';
+import { useLocation } from 'react-router-dom';
+
+// Local imports
+import { type Incident } from 'common/Incident';
+import { type Location as LocationType } from 'common/Location';
+import { type LogEntry } from 'common/LogEntry';
+import { type LogEntryAttachment } from 'common/LogEntryAttachment';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { LogEntryTypes } from 'common/LogEntryTypes';
+import { type Mentionable } from 'common/Mentionable';
+import { useUsers } from '../../hooks';
+import { Document, Form as FormUtils, Format, Validate } from '../../utils';
+import { MODAL_KEY } from '../../utils/constants';
+import { type FieldValueType, type SketchLine, type ValidationError } from '../../utils/types';
+import { FormFooter } from '../Form';
+import Modal from '../Modal';
+import { TABS } from './constants';
+import Files from './Files';
+import Form from './Form';
+import Header from './Header';
+import Location from './Location';
+import Sketch from './Sketch';
+
+// Handlers
+import { type OnCreateEntry } from '../../utils/handlers';
+import { useAttachments } from '../../hooks/useAttachments';
+
+type AddEntryProps = {
+  incident?: Incident,
+  entries?: Array<LogEntry>,
+  onCreateEntry: OnCreateEntry,
+  onCancel: () => void
+};
+
+const AddEntry = ({
+  incident = undefined,
+  entries = undefined,
+  onCreateEntry,
+  onCancel
+}: AddEntryProps) => {
+  const { hash } = useLocation();
+  const { users } = useUsers();
+  const [entry, setEntry] = useState<Partial<LogEntry>>({
+    incidentId: incident?.id,
+    type: 'General',
+    content: {}
+  });
+  const [validationErrors, setValidationErrors] = useState<ValidationError[]>([]);
+  const [showValidationErrors, setShowValidationErrors] = useState<boolean>(false);
+  const [recordings, setRecordings] = useState<File[]>([]);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [startAt] = useState<string>(new Date().toISOString());
+  const [sketchLines, setSketchLines] = useState<SketchLine[]>([]);
+  const sketchCanvasRef = useRef<Stage>(null);
+  const [modal] = useState<boolean>(sessionStorage.getItem(MODAL_KEY) === 'yes');
+  const { attachments: incidentAttachments } = useAttachments(incident?.id);
+
+  useEffect(() => {
+    setValidationErrors(Validate.entry(entry, [...selectedFiles, ...recordings]));
+  }, [entry, selectedFiles, recordings]);
+
+  const otherAttachments: Array<Mentionable> = useMemo(() => {
+    if (!incidentAttachments) {
+      return [];
+    }
+    return incidentAttachments.map(Format.mentionable.attachment);
+  }, [incidentAttachments]);
+
+  const mentionables: Array<Mentionable> = useMemo(() => ([
+    ...(entries?.map((e) => Format.mentionable.entry(e)) ?? []),
+    ...(users?.map(Format.mentionable.user) ?? []),
+    ...(selectedFiles.map((file) => Format.mentionable.attachment({ name: file.name, type: 'File' }))),
+    ...(recordings.map((file) => Format.mentionable.attachment({ name: file.name, type: 'File' }))),
+    ...otherAttachments,
+  ]), [entries, users, selectedFiles, recordings, otherAttachments]);
+
+  if (!incident) {
+    return null;
+  }
+
+  const onAddRecording = (recording: File) => {
+    setRecordings((prev) => [...prev, recording]);
+  };
+
+  const onLogEntry = (evt?: MouseEvent<HTMLButtonElement>) => {
+    evt?.preventDefault();
+    const dateTime = entry.dateTime ?? startAt;
+    const fileAttachments: LogEntryAttachment[] = selectedFiles.map((file) => ({
+      type: 'File',
+      name: file.name
+    }));
+    const recordingAttachments: LogEntryAttachment[] = recordings.map((recording) => ({
+      type: 'Recording',
+      name: recording.name
+    }));
+    const sketchAttachments: LogEntryAttachment[] = [];
+    const sketches: File[] = [];
+    if (sketchLines.length > 0) {
+      const dataURL = sketchCanvasRef.current?.toDataURL();
+      if (dataURL) {
+        const file = Document.dataURLtoFile(dataURL, `Sketch ${Format.timestamp()}.png`);
+        sketchAttachments.push({ type: 'Sketch', name: file.name });
+        sketches.push(file);
+      }
+    }
+    const attachments = [...fileAttachments, ...recordingAttachments, ...sketchAttachments];
+    entry.attachments = attachments.length > 0 ? attachments : undefined;
+    onCreateEntry(
+      { ...entry, dateTime } as LogEntry,
+      [...selectedFiles, ...recordings, ...sketches]
+    );
+  };
+
+  const onFieldChange = (id: string, value: FieldValueType, nested = false) => {
+    setEntry((prev) => {
+      let updated = FormUtils.updateLogEntry(prev, id, value, nested);
+      if (nested) {
+        const changedField = updated.fields?.find((f) => f.id === id);
+        if (changedField?.type === 'SelectLogEntry') {
+          // We need to populate this log entry from the one that's been selected.
+          const selection = entries?.find((e) => e.id === changedField.value);
+          if (selection) {
+            updated = FormUtils.copyIntoLogEntry(updated, selection);
+          }
+        }
+      }
+      return updated;
+    });
+  };
+
+  const onFilesSelect = (files: File[]) => {
+    setSelectedFiles((prev) => ([
+      ...prev,
+      ...files.filter((file) => !prev.find((p) => p.name === file.name)),
+    ]));
+  };
+
+  const removeSelectedFile = (name: string) => {
+    setSelectedFiles((prev) => prev.filter((file) => file.name !== name));
+  };
+
+  const removeRecording = (name: string) => {
+    setRecordings((prev) => prev.filter((r) => r.name !== name));
+  };
+
+  const onLocationChange = (location: Partial<LocationType>) => {
+    setEntry((prev) => ({ ...prev, location } as LogEntry));
+  };
+
+  return (
+    <Modal modal={modal} onClose={onCancel}>
+      <div className="rollup-container">
+        <Header
+          hash={hash}
+          fileCount={selectedFiles.length + recordings.length}
+          validationErrors={validationErrors}
+          showValidationErrors={showValidationErrors}
+        />
+        <form id="rollup-log-book-entry">
+          <div className={`section log-form ${showValidationErrors ? 'validation-errors' : ''}`}>
+            <Form.Content
+              active={!hash || hash.includes(TABS.FORM)}
+              entry={entry}
+              entries={entries}
+              incident={incident}
+              mentionables={mentionables}
+              validationErrors={validationErrors}
+              onFieldChange={onFieldChange}
+              onAddRecording={onAddRecording}
+            />
+            <Location.Content
+              active={hash?.includes(TABS.LOCATION)}
+              required={entry.type && LogEntryTypes[entry.type].requireLocation}
+              location={entry.location}
+              validationErrors={validationErrors}
+              onLocationChange={onLocationChange}
+            />
+            <Files.Content
+              active={hash?.includes(TABS.FILES)}
+              selectedFiles={selectedFiles}
+              recordings={recordings}
+              onFilesSelected={onFilesSelect}
+              removeSelectedFile={removeSelectedFile}
+              removeRecording={removeRecording}
+            />
+            <Sketch.Content
+              active={hash?.includes(TABS.SKETCH)}
+              canvasRef={sketchCanvasRef}
+              lines={sketchLines}
+              onChangeLines={setSketchLines}
+            />
+            <FormFooter
+              validationErrors={validationErrors}
+              onCancel={onCancel}
+              onSubmit={onLogEntry}
+              onShowValidationErrors={setShowValidationErrors}
+            />
+          </div>
+        </form>
+      </div>
+    </Modal>
+  );
+};
+
+export default AddEntry;

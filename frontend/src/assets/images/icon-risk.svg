@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="0.35987in" height="0.314886in" version="1.1" style="shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd"
+viewBox="0 0 10.58 9.26" fill="currentColor">
+
+ <g id="Layer_x0020_1">
+
+  <path class="fil0" d="M6.61 5.29l0 0.41c0,0.07 -0.02,0.13 -0.07,0.18 -0.05,0.05 -0.11,0.07 -0.18,0.07l-2.15 0c-0.07,0 -0.13,-0.02 -0.18,-0.07 -0.05,-0.05 -0.07,-0.11 -0.07,-0.18l0 -0.41 -3.97 0 0 2.98c0,0.28 0.1,0.51 0.29,0.7 0.19,0.19 0.43,0.29 0.7,0.29l8.6 0c0.28,0 0.51,-0.1 0.7,-0.29 0.19,-0.19 0.29,-0.43 0.29,-0.7l0 -2.98 -3.97 0zm3.97 -2.31c0,-0.28 -0.1,-0.51 -0.29,-0.7 -0.19,-0.19 -0.43,-0.29 -0.7,-0.29l-1.65 0 0 -0.99c0,-0.28 -0.1,-0.51 -0.29,-0.7 -0.19,-0.19 -0.43,-0.29 -0.7,-0.29l-3.31 0c-0.28,0 -0.51,0.1 -0.7,0.29 -0.19,0.19 -0.29,0.43 -0.29,0.7l0 0.99 -1.65 0c-0.28,0 -0.51,0.1 -0.7,0.29 -0.19,0.19 -0.29,0.43 -0.29,0.7l0 1.65 10.58 0 0 -1.65zm-3.97 -1.65l0 0.66 -2.64 0 0 -0.66 2.64 0z"/>
+ </g>
+</svg>

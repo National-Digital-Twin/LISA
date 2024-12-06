@@ -1,0 +1,188 @@
+// Global imports
+import 'maplibre-gl/dist/maplibre-gl.css';
+import { FitBoundsOptions } from 'maplibre-gl';
+import { MouseEvent, useEffect, useMemo, useRef, useState } from 'react';
+import Map, { Marker, MapRef, NavigationControl, LngLatBoundsLike } from 'react-map-gl/maplibre';
+import { useNavigate } from 'react-router-dom';
+
+// Local imports
+import { type Coordinates } from 'common/Location';
+import { type LogEntry } from 'common/LogEntry';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { LogEntryTypes } from 'common/LogEntryTypes';
+import { type MentionableType } from 'common/Mentionable';
+import { bem, Icons, Map as MapUtil } from '../../utils';
+import { type FullLocationType, type SpanType } from '../../utils/types';
+import EntryItem from '../EntryList/EntryItem';
+import { INITIAL_VIEW_STATE, MAP_BOUNDS, MAP_STYLE } from './config';
+
+type LogEntryMarkerType = {
+  id: string;
+  colour: string | undefined;
+  coordinates: Coordinates;
+  highlighted: boolean;
+};
+
+interface Props {
+  marker: LogEntryMarkerType;
+  onClick: (marker: LogEntryMarkerType) => void;
+}
+function LogEntryMarker({ marker, onClick }: Props) {
+  const classes = bem('map-marker', marker.highlighted ? 'highlighted' : '', marker.colour);
+  return (
+    <Marker
+      key={marker.id}
+      latitude={marker.coordinates.latitude}
+      longitude={marker.coordinates.longitude}
+      className={classes()}
+      onClick={() => onClick(marker)}
+      anchor="bottom"
+    >
+      <Icons.MapPin />
+    </Marker>
+  );
+}
+
+interface MapProps {
+  logEntries: LogEntry[] | undefined;
+  highlightId?: string;
+}
+export default function IncidentMap({
+  logEntries,
+  highlightId = undefined
+}: MapProps) {
+  const [redrawing, setRedrawing] = useState<boolean>(false);
+  const mapRef = useRef<MapRef>(null);
+  const navigate = useNavigate();
+  const highlighted = logEntries?.find((entry) => entry.id === highlightId);
+  const markers: LogEntryMarkerType[] = useMemo(() => {
+    if (!logEntries) return [];
+    return logEntries.map((entry) => {
+      const { coordinates } = (entry.location || {}) as FullLocationType;
+      if (coordinates) {
+        return {
+          id: entry.id,
+          coordinates,
+          highlighted: entry.id === highlightId,
+          colour: LogEntryTypes[entry.type]?.colour
+        };
+      }
+      return null;
+    }).filter((m) => !!m) as LogEntryMarkerType[];
+  }, [logEntries, highlightId]);
+
+  const mapBounds: LngLatBoundsLike | undefined = useMemo(() => MapUtil.getBounds(
+    markers.map((m) => m.coordinates)
+  ), [markers]);
+
+  const zoomMap = (bounds: LngLatBoundsLike | undefined, focus?: LogEntry) => {
+    if (mapRef.current) {
+      const options: FitBoundsOptions = { padding: 60, duration: 250 };
+      const { coordinates } = (focus?.location || {}) as FullLocationType;
+      if (coordinates) {
+        options.center = [coordinates.longitude, coordinates.latitude];
+      }
+      if (bounds) {
+        mapRef.current.fitBounds(bounds, options);
+      } else {
+        mapRef.current.getMap().flyTo(options);
+      }
+    }
+  };
+
+  useEffect(() => {
+    setTimeout(() => {
+      if (mapBounds && mapRef.current) {
+        zoomMap(mapBounds, highlighted);
+        // mapRef.current.fitBounds(mapBounds, { padding: 60, duration: 250 });
+      }
+    }, 100);
+  }, [mapBounds, highlighted]);
+
+  // This is necessary to get the markers to redraw.
+  // Without this the highlight doesn't change.
+  const redraw = () => {
+    setRedrawing(true);
+    setTimeout(() => {
+      setRedrawing(false);
+    }, 0);
+  };
+
+  const onClickMarker = (marker: LogEntryMarkerType) => {
+    const { id } = marker;
+    if (highlightId === id) {
+      navigate('#');
+    } else {
+      navigate(`#${id}`);
+    }
+    if (mapRef.current) {
+      zoomMap(mapBounds, highlighted);
+    }
+    redraw();
+  };
+
+  const onCloseInfo = () => {
+    navigate('#');
+    redraw();
+  };
+
+  const onVisitLog = () => {
+    if (highlighted) {
+      navigate(`/logbook/${highlighted.incidentId}#${highlighted.id}`);
+    }
+  };
+
+  const onEntryContentClick = (evt: MouseEvent<HTMLElement>) => {
+    const target: SpanType = evt.target as unknown as SpanType;
+    if (target && target.getAttribute('data-lexical-mention')) {
+      const type = target.getAttribute('data-lexical-mention-type') as MentionableType;
+      if (type === 'LogEntry') {
+        const id = target.getAttribute('data-lexical-mention') as string;
+        navigate(`/logbook/${highlighted?.incidentId}#${id}`);
+      }
+    }
+  };
+
+  return (
+    <div className="map-container">
+      <Map
+        ref={mapRef}
+        initialViewState={INITIAL_VIEW_STATE}
+        mapStyle={MAP_STYLE}
+        attributionControl={false}
+        maxZoom={17}
+        minZoom={6}
+        cooperativeGestures
+        maxBounds={MAP_BOUNDS}
+      >
+        <NavigationControl position="bottom-right" showCompass={false} />
+        {!redrawing && markers.map((marker) => (
+          <LogEntryMarker
+            key={marker.id}
+            marker={marker}
+            onClick={onClickMarker}
+          />
+        ))}
+      </Map>
+      {logEntries && highlighted && (
+        <div className="log-entry-list">
+          <EntryItem
+            entries={logEntries}
+            entry={highlighted}
+            disableScrollTo
+            onContentClick={onEntryContentClick}
+            onMentionClick={() => {}}
+          />
+          {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
+          <button type="button" className="visit-log" onClick={onVisitLog} title="See in incident log">
+            <Icons.LogBook />
+          </button>
+          {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
+          <button type="button" className="close-info" onClick={onCloseInfo} title="Close information">
+            <Icons.Close />
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}

@@ -1,0 +1,610 @@
+// '_FORMS.SCSS' - IMPORTED INTO APP.SCSS
+
+@import 'colors';
+
+li.major-incident-no,
+li.major-incident-yes {
+  margin: 0 !important;
+  padding: 0 !important;
+  a {
+    display: block;
+    width: 80% !important;
+    background-color: $green !important;
+    text-align: center;
+    margin: 0 !important;
+  }
+}
+li.major-incident-no {
+  a {
+    background-color: $red-dark !important;
+  }
+}
+
+.log-form {
+  position: relative;
+  background-color: $grey-light;
+  padding: 20px;
+  text-align: left;
+  h3 {
+    padding: 10px 0;
+    margin: 0 10px;
+    border-bottom: 1px solid $grey-mid;
+    font-size: 1.25rem;
+  }
+  label, .field-label {
+    display: block;
+    font-weight: bold;
+    font-size: 1.15rem;
+    margin-bottom: 10px;
+
+    /*
+      This isn't going to cut it.
+      There are layout issues now with date and time entry
+    */
+    > input,
+    > select,
+    > textarea,
+    > .react-select {
+      margin-top: 5px;
+      font-weight: 400;
+      font-size: 1.15rem;
+    }
+    > .log-date-time {
+      margin-top: 5px;
+      font-weight: 400;
+      input {
+        font-size: 1.15rem;
+        &::-webkit-datetime-edit-day-field:focus,
+        &::-webkit-datetime-edit-month-field:focus,
+        &::-webkit-datetime-edit-year-field:focus,
+        &::-webkit-datetime-edit-hour-field:focus,
+        &::-webkit-datetime-edit-minute-field:focus {
+          background-color: $blue-dark;
+          color: $white;
+          outline: none;
+        }
+      }
+    }
+    > .editor-container {
+      margin-top: 5px;
+      font-weight: 400;
+      .editor-inner .editor-input {
+        font-size: 1.15rem;
+      }
+    }
+
+    .location-field {
+      display: flex;
+      flex-direction: row;
+      gap: 10px;
+      margin-top: 5px;
+      padding: 6px 6px 6px 10px;
+      height: 45px;
+      border: solid 1px $grey-mid;
+      background-color: $white;
+      font-weight: 400;
+      &__value {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      &__button {
+        margin: -3px;
+        margin-left: auto;
+        height: 39px;
+        width: 82px;
+        max-width: 82px;
+        padding: 6px 12px;
+        border: none;
+        border-left: dotted 2px $blue-dark;
+        font-size: 1.15rem;
+        background: transparent;
+        color: $blue-dark;
+        cursor: pointer;
+        &:hover, &:focus {
+          color: $blue;
+        }
+      }
+    }
+  }
+  input,
+  select,
+  textarea {
+    background-color: $white;
+    width: 100%;
+    padding: 10px;
+    color: $blue-dark;
+    border: 1px solid $grey-mid;
+    &.input-calendar {
+      background-image: url("/icon-calendar.svg");
+      background-repeat: no-repeat;
+      background-position: center right 15px;
+      background-size: 20px auto;
+    }
+    &.input-search {
+      background-image: url("/icon-search.svg");
+      background-repeat: no-repeat;
+      background-position: center right 5px;
+    }
+  }
+  ul li {
+    box-sizing: border-box;
+    padding: 10px;
+    display: inline-block;
+    position: relative;
+    vertical-align: top;
+    width: 50%;
+    margin-bottom: 5px;
+    margin-top: 0;
+    .optional-field {
+      margin-left: 1rem;
+      font-size: 1rem;
+      color: $grey-dark;
+      &::before {
+        content: "(";
+      }
+      &::after {
+        content: ")";
+      }
+    }
+    &.full-width {
+      width: 100%;
+      padding-top: 0;
+    }
+    &.horizontalYN {
+      margin-top: 5px;
+      label {
+        display: flex;
+        flex-direction: row;
+        gap: 10px;
+        align-items: center;
+        justify-content: space-between;
+        position: relative;
+        .h-sep {
+          flex: 1;
+          height: 1px;
+          border-bottom: dotted 4px $grey-mid;
+        }
+        .react-select {
+          margin-top: 0;
+          min-width: 150px;
+          width: 150px;
+          max-width: 150px;
+        }
+      }
+      .field-error {
+        text-align: right;
+        right: 10px;
+      }
+    }
+    &.indent {
+      margin-top: -30px;
+      padding: 15px 10px 10px 35px;
+      position: relative;
+      &::before {
+        content: "";
+        position: absolute;
+        left: 16px;
+        top: 0;
+        height: 28px; // middle of the label
+        width: 8px;
+        border: dotted 4px $grey-mid;
+        border-width: 0 0 4px 4px;
+      }
+      .field-error {
+        left: 35px;
+      }
+    }
+    &.form-group {
+      width: 100%;
+      padding: 0;
+      border: solid 1px $grey-mid;
+      margin: 10px 0;
+      ul {
+        margin: 0;
+
+        li:last-child {
+          margin-bottom: 0;
+        }
+      }
+
+      &__label {
+        width: 100%;
+        margin: 0;
+        font-weight: 700;
+        background-color: $grey-mid;
+        padding: 10px;
+
+        a {
+          display: inline-block;
+          width: 100%;
+          height: 100%;
+          border-bottom: none;
+          &:hover, &:focus {
+            text-decoration: none;
+            color: $blue-dark;
+            outline-offset: 10px;
+          }
+        }
+
+        svg {
+          width: 12px;
+          height: auto;
+          rotate: 180deg;
+          margin-bottom: 3px;
+          margin-right: 8px;
+        }
+
+        svg.alert-icon {
+          display: none;
+        }
+
+        &:hover, &:focus, &:focus-within {
+          background-color: $blue-light;
+          a {
+            color: $blue-dark;
+          }
+        }
+      }
+
+      &__description {
+        font-style: italic;
+      }
+
+      &:not(&--open) {
+        ul li:not(.form-group__label) {
+          display: none;
+        }
+        .form-group__label {
+          svg {
+            rotate: 90deg;
+          }
+        }
+      }
+    }
+    .field-error {
+      color: $red-dark;
+      position: absolute;
+      bottom: -0.45rem;
+      left: 10px;
+      font-size: 1rem;
+      display: none;
+    }
+    &.field-type--TextArea {
+      .field-error {
+        bottom: 0;
+      }
+    }
+    @media screen and (max-width: 800px) {
+      width: 100%;
+    }
+  }
+  &.login {
+    padding: 20px;
+    background-color: $grey-light;
+    width: 450px;
+    @media screen and (max-width: 800px) {
+      width: 100%;
+    }
+    input {
+      display: block;
+      margin-bottom: 20px;
+    }
+  }
+  &.validation-errors {
+    ul li {
+      .field-error {
+        display: block;
+      }
+
+      &.in-error {
+        input,
+        textarea,
+        .react-select__control,
+        .editor-container,
+        .location-field {
+          border-color: $red-dark;
+        }
+      }
+
+      &.form-group {
+        &:has(ul li.in-error) {
+          .form-group__label {
+            border-color: $red-dark;
+            a {
+              color: $red-dark;
+              &:hover, &:focus {
+                color: $white;
+                outline-color: $red-dark;
+              }
+            }
+
+            .alert-icon {
+              display: inline-block;
+            }
+
+            &:hover, &:focus, &:focus-within {
+              background-color: $red-dark;
+              a {
+                color: $white;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  .field-error {
+    label {
+      color: $red-dark;
+    }
+    input {
+      border: 2px solid $red-dark;
+    }
+  }
+
+  &.readonly {
+    background-color: $grey-light;
+    margin-bottom: 20px;
+    padding-bottom: 4px;
+
+    h2 {
+      padding-left: 10px;
+    }
+    ul li {
+      margin-bottom: 1.5rem;
+    }
+  }
+
+  .incident-stage {
+    min-width: unset;
+    position: absolute;
+    right: 20px;
+    top: 20px;
+  }
+}
+.log-date-time {
+  height: 45px; // TODO: Standardise these heights.
+  line-height: 45px;
+  display: flex;
+  gap: 10px;
+  img,
+  svg {
+    width: 20px;
+    height: auto;
+    margin-right: 10px;
+    &:last-of-type {
+      margin-left: 20px;
+      position: relative;
+      top: 2px;
+    }
+  }
+  .date-now {
+    white-space: nowrap;
+  }
+}
+.log-form-buttons {
+  display: flex;
+  flex-direction: row;
+  position: relative;
+  margin: 20px 10px 0 10px;
+  align-items: center;
+  justify-content: flex-end;
+  .button {
+    display: inline-block;
+    margin-left: 10px;
+    background-color: $blue;
+    padding: 10px;
+    border-radius: 6px;
+    border-style: solid;
+    border: solid 1px $white;
+    color: $white;
+    cursor: pointer;
+    transition: background-color .5s;
+    &:hover {
+      background-color: $blue-header;
+    }
+    &.cancel {
+      background-color: $grey-dark;
+      &:hover {
+        background-color: $black;
+      }
+    }
+    /* TODO: Look at appropriate styling for disabled buttons */
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      &:hover {
+        background-color: $blue;
+      }
+    }
+    img,
+    svg {
+      height: auto;
+      width: 20px;
+      margin-right: 10px;
+      position: relative;
+      top: 2px;
+      color: $white;
+    }
+  }
+  .validation-errors {
+    font-size: 1.15rem;
+    margin-right: 20px;
+    a {
+      color: $red-dark;
+      &:hover, &:focus {
+        color: $red;
+      }
+    }
+  }
+}
+
+.recorder-controls {
+  visibility: hidden;
+  position: absolute;
+}
+
+.login .log-form-buttons {
+  button.button {
+    font-size: 1.6rem;
+  }
+}
+
+.highlight-gold {
+  color: $gold !important;
+}
+
+.highlight-blue-dark {
+  color: $blue-dark !important;
+}
+
+.highlight-blue {
+  color: $blue !important;
+}
+
+.icon {
+  width: 20px;
+  height: auto;
+  margin-right: 10px;
+  position: relative;
+  top: 1px;
+}
+
+.sketch-stage {
+  position: relative;
+  border: 1px solid $grey-mid;
+  background-color: $white;
+  width: 100%;
+  height: 500px;
+  cursor: url("/images/icon-pencil.svg") 10 10, auto;
+
+  .pens {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    display: flex;
+    gap: 10px;
+    border: 0px;
+    .pen {
+      width: 30px;
+      height: 30px;
+      cursor: pointer;
+    }
+  }
+  .clear {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+
+    button {
+      font-size: 1rem;
+      line-height: 1.25rem;
+      background-color: $black;
+      color: $white;
+      padding: 3px 8px;
+      border-radius: 0;
+      cursor: pointer;
+      &:hover {
+        background-color: $red-dark;
+      }
+    }
+  }
+}
+
+.sig-outgoing {
+  background-image: url("/sig-1.svg");
+  background-repeat: no-repeat;
+  background-size: 50% auto;
+  background-position: center center;
+}
+.sig-incoming {
+  background-image: url("/sig-2.svg");
+  background-repeat: no-repeat;
+  background-size: 50% auto;
+  background-position: center center;
+}
+
+.add-entry-tab {
+  display: none;
+  &.active, &--active {
+    display: block;
+  }
+}
+
+div.label-field {
+  font-weight: 400;
+}
+
+ul.label-field {
+  margin: 0;
+  li {
+    padding: 5px 0;
+    font-weight: 400;
+    &::before {
+      content: "\2022";
+      margin-right: 0.5rem;
+    }
+  }
+}
+
+.field-help {
+  display: inline-block;
+  position: relative;
+  &__btn {
+    width: 24px;
+    height: 24px;
+    border: 1px solid $blue;
+    color: $blue;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 1rem;
+    margin: 0 8px;
+  }
+  &__popup {
+    position: fixed;
+    background-color: white;
+    z-index: 2;
+    font-size: .875rem;
+    font-weight: normal;
+    padding: 12px 16px;
+    border: 1px solid $blue;
+    width: 400px;
+    max-width: 400px;
+    line-height: 1rem;
+    left: calc(100vw / 2);
+    top: 150px;
+    margin-bottom: 8px;
+    margin-left: -200px;
+    box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.3);
+  }
+  &__title {
+    font-size: 1rem;
+    font-weight: 700;
+    padding-bottom: 10px;
+    border-bottom: 1px solid $grey-mid;
+  }
+  &__content {
+    overflow-x: auto;
+    max-height: 360px;
+    overscroll-behavior: contain;
+    padding: 8px 0;
+    ul {
+      font-size: inherit;
+      line-height: inherit;
+      list-style-type: disc;
+      display: block;
+      margin: 1rem 0;
+      padding-left: 1.5rem;
+      li {
+        font-size: inherit;
+        line-height: inherit;
+        list-style-type: disc;
+        display: list-item;
+        width: auto;
+        margin-bottom: 5px;
+        padding: 0;
+      }
+    }
+  }
+}

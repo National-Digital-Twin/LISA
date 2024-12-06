@@ -1,0 +1,18 @@
+# node_modules
+node_modules/*
+frontend/node_modules/*
+
+# build
+**/dist/*
+
+# IDE / OS
+.idea
+.vscode
+.DS_Store
+
+# env
+scg-0.80.0.tar.gz
+/backend/.env-iam
+
+# temp uploads
+**/__uploads

@@ -1,0 +1,542 @@
+@import 'colors';
+
+.container {
+  .log-book-quick-entry {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    .button {
+      background-color: $grey-dark;
+      padding: 0.75rem;
+      border-radius: 6px;
+      border-style: solid;
+      border: solid 1px $white;
+      color: $white;
+      white-space: nowrap;
+      cursor: pointer;
+      &.green {
+        background-color: $green;
+      }
+      &.red {
+        background-color: $red-dark;
+      }
+      &.blue {
+        background-color: $blue;
+      }
+      &.yellow {
+        background-color: $yellow;
+        color: $black;
+      }
+      &.turquoise {
+        background-color: $turquoise;
+        color: $black;
+      }
+      &.purple {
+        background-color: $purple;
+      }
+      &.light-grey {
+        background-color: $grey-mid;
+        color: $black;
+      }
+      img, svg {
+        height: auto;
+        width: 30px;
+        margin-right: 10px;
+        position: relative;
+        top: 5px;
+      }
+    }
+    h2 {
+      min-width: 100%;
+      margin-bottom: 0;
+    }
+  }
+
+  .page-title .button {
+    float: right;
+    background-color: $grey-dark;
+    font-size: 1.15rem;
+    margin-top: -5px; // TODO: Replace this temporary adjustment
+    padding: 0.75rem;
+    border-radius: 6px;
+    border-style: solid;
+    border: solid 1px $white;
+    color: $white;
+    white-space: nowrap;
+    cursor: pointer;
+    &.blue {
+      background-color: $blue;
+    }
+    img, svg {
+      height: auto;
+      width: 30px;
+      margin-right: 10px;
+      position: relative;
+      top: 5px;
+    }
+  }
+
+  .log-form-buttons {
+    .button {
+      font-size: 1.15rem;
+    }
+    .audio-recorder {
+      &:not(.recording) {
+        position: relative;
+        ::before {
+          content: "Record voice log entry";
+          position: absolute;
+          right: 30px;
+          top: 0;
+        }
+      }
+      &.recording {
+        width: 320px;
+      }
+    }
+  }
+
+  .log-entries-wrapper {
+      display: flex;
+      flex-direction: row;
+      @media screen and (max-width: 1110px) {
+        flex-direction: column;
+      }
+  }
+
+  .search-container {
+    box-sizing: border-box;
+    width: 310px;
+    height: 100%;
+    display: inline-block;
+    vertical-align: top;
+    background: unset;
+    margin: 0 10px 20px 0;
+    padding: 20px;
+    border: 1px solid $grey-mid;
+    font-size: 1.15rem;
+    font-weight: bold;
+    .search-heading {
+      margin-bottom: 20px;
+    }
+    .log-filter {
+      margin-left: auto;
+    }
+    .log-search {
+      background-color: unset;
+      padding: 0;
+      min-height: unset;
+      position: relative;
+      h4 {
+        margin-bottom: 4px;
+      }
+      input {
+        width: 100%;
+        font-size: 1.15rem;
+        padding-right: 35px;
+      }
+      .search-icon {
+        position: relative;
+        svg {
+          position: absolute;
+          right: 0;
+          top: calc(50% - 12px);
+          height: 24px;
+          width: auto;
+        }
+      }
+    }
+    hr {
+      margin: 20px 0;
+      border: none;
+      border-bottom: 1px solid #e8e8e8;
+    }
+    @media screen and (max-width: 1110px) {
+      width: 100%;
+      margin-right: 0;
+    }
+  }
+
+  .log-filter {
+    margin: 0;
+    padding: 0;
+    background-color: unset;
+    min-height: unset;
+    font-size: 1.1rem;
+    label {
+      flex: 1;
+    }
+  }
+}
+
+.log-entry-list {
+  box-sizing: border-box;
+  width: calc(100% - 320px);
+  display: inline-block;
+  vertical-align: top;
+  .log-entry-details,
+  .log-entry-meta {
+    padding-left: 10px;
+    display: inline-block;
+    div {
+      margin-right: 20px;
+      display: inline-block;
+      vertical-align: bottom;
+    }
+    img,
+    svg {
+      width: 15px;
+      height: auto;
+      position: relative;
+      top: 1px;
+      color: $white;
+    }
+    p:first-of-type {
+      margin-top: 0;
+    }
+    p:last-of-type {
+      margin-bottom: 0;
+    }
+    .incident-stage {
+      display: inline-flex;
+      min-width: unset;
+      padding: 0 5px;
+      svg {
+        width: 16px;
+      }
+    }
+  }
+  hr {
+    margin: 20px 0;
+    border: none;
+    border-bottom: 1px solid #e8e8e8;
+  }
+  @media screen and (max-width: 1110px) {
+    width: 100%;
+  }
+  .log-entry-meta {
+    margin: 0;
+    margin-left: 60px;
+    color: $white;
+    display: flex;
+    flex-direction: row;
+    gap: 2rem;
+    padding: 4px 8px;
+    div {
+      margin: 0;
+    }
+    svg {
+      color: $white;
+      margin-right: 8px;
+    }
+    @media screen and (max-width: 1000px) {
+      margin-left: 0;
+    }
+    @media screen and (max-width: 800px) {
+      margin-left: 0;
+    }
+  }
+  .log-entry-details {
+    padding-top: 4px;
+    padding-bottom: 10px;
+    font-size: 1rem;
+    width: 100%;
+    @media screen and (max-width: 1000px) {
+      padding-top: 0px;
+    }
+  }
+  div {
+    &.log-entry-fields,
+    &.log-entry-fields__group {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      width: 100%;
+      gap: 0;
+      &__label, &__value {
+        flex: 1 0 calc(50% - 20px);
+        padding: 6px;
+
+        @media screen and (max-width: 1000px) {
+          flex-basis: calc(100% - 20px);
+          padding: 6px 0;
+        }
+      }
+      &__label {
+        font-weight: 700;
+        padding-left: 0;
+        &:not(:first-child) {
+          @media screen and (max-width: 1000px) {
+            margin-top: 1.5rem;
+          }
+        }
+        &--indent {
+          @media screen and (min-width: 1001px) {
+            padding-left: 25px;
+            width: calc(50% - 10px);
+            position: relative;
+            &::before {
+              content: "";
+              position: absolute;
+              left: 6px;
+              top: 0;
+              height: 50%;
+              width: 8px;
+              border: dotted 4px $grey-mid;
+              border-width: 0 0 4px 4px;
+            }
+          }
+        }
+      }
+      &__value {
+        padding-right: 0;
+      }
+      &__group {
+        flex-basis: calc(100% - 20px);
+        &:not(:first-child) {
+          margin-top: 1rem;
+        }
+      }
+      &__group-label {
+        flex-basis: calc(100% + 30px);
+        font-weight: 700;
+        margin: 0 -20px 0 -10px;
+        padding: 0.5rem 10px;
+        background-color: $grey-mid;
+      }
+      &--nowrap {
+        flex-wrap: nowrap;
+      }
+    }
+  }
+
+  .log-entry-location {
+    display: block;
+    margin-top: 0.5rem;
+  }
+
+  .item {
+    padding: 0;
+    position: relative;
+    background-color: $grey-light;
+    margin-bottom: 1.5rem;
+
+    svg {
+      color: $white;
+    }
+
+    &--light-grey {
+      border-left-color: $grey-mid;
+      svg {
+        color: $grey-mid;
+      }
+    }
+    &--green {
+      border-left-color: $green;
+      svg {
+        color: $green;
+      }
+    }
+    &--red {
+      border-left-color: $red-dark;
+      svg {
+        color: $red-dark;
+      }
+    }
+    &--blue {
+      border-left-color: $blue;
+      svg {
+        color: $blue;
+      }
+    }
+    &--yellow {
+      border-left-color: $yellow;
+      svg {
+        color: $yellow;
+      }
+    }
+    &--turquoise {
+      border-left-color: $turquoise;
+      svg {
+        color: $turquoise;
+      }
+    }
+    &--purple {
+      border-left-color: $purple;
+      svg {
+        color: $purple;
+      }
+    }
+
+    &__header {
+      display: flex;
+      flex-direction: row;
+      gap: 1rem;
+      width: 100%;
+      background-color: $blue-dark;
+      padding: 0 4px;
+      margin-bottom: 1rem;
+      font-weight: 700;
+      div {
+        font-size: 1.15rem;
+      }
+      .log-entry-meta {
+        flex-grow: 1;
+        justify-content: space-between;
+        &__to-right {
+          margin-left: auto;
+        }
+      }
+    }
+
+    &--highlighted {
+      border: solid 0.25rem $black;
+      border-top: none;
+      margin: 0 -0.25rem 1.25rem -0.25rem;
+      .item__header {
+        background-color: $black;
+      }
+    }
+
+    &--offline {
+      .item__header {
+        background-color: $red-dark;
+      }
+    }
+  }
+
+  .item-index {
+    padding: 4px 8px;
+    color: $white;
+    max-width: 75px;
+    width: 75px;
+
+    a, a:link {
+      color: $white;
+    }
+
+    &--light-grey {
+      background-color: $grey-mid;
+    }
+    &--green {
+      background-color: $green;
+    }
+    &--red {
+      background-color: $red-dark;
+    }
+    &--blue {
+      background-color: $blue;
+    }
+    &--yellow {
+      background-color: $yellow;
+      color: $black;
+    }
+    &--turquoise {
+      background-color: $turquoise;
+      color: $black;
+    }
+    &--purple {
+      background-color: $purple;
+    }
+  }
+
+  .log-entry-details {
+    white-space: pre-wrap;
+    position: relative;
+    font-size: 1.1rem;
+    line-height: 1.5rem;
+    .recordings {
+      font-weight: 700;
+      div {
+        font-size: 1rem;
+      }
+    }
+
+    div, span, a, p {
+      font-size: 1.15rem;
+      line-height: 1.5rem;
+    }
+
+    @media screen and (max-width: 1000px) {
+      width: 100%;
+      display: block;
+      vertical-align: unset;
+      padding-right: 0;
+    }
+  }
+
+  .log-entry-actions {
+    display: flex;
+    position: absolute;
+    width: 150px;
+    right: 0;
+    top: 0;
+    padding-top: 4px;
+    gap: 0.5rem;
+    flex-direction: column;
+
+    @media screen and (max-width: 1000px) {
+      position: relative;
+      padding-top: 10px;
+      width: unset;
+      flex-direction: row;
+    }
+  }
+
+  .log-entry-mentions,
+  .log-entry-attachments,
+  .log-entry-location {
+    padding: 10px;
+    li {
+      font-size: 1rem;
+      display: inline-block;
+      margin-right: 0.5rem;
+      &:first-child {
+        font-weight: bold;
+      }
+    }
+  }
+
+  .log-entry-mentions {
+    li {
+      ::after {
+        content: "..., ";
+      }
+      &:last-child {
+        margin-right: 0;
+        ::after {
+          content: "...";
+        }
+      }
+
+      a, a:link {
+        color: $red-dark;
+        &:hover, &:focus {
+          border-bottom-color: $red-dark;
+        }
+      }
+    }
+  }
+
+  .log-entry-attachments {
+    li {
+      &::after {
+        content: ", ";
+      }
+      &:first-child::after {
+        content: "";
+      }
+      &:last-child::after {
+        content: "";
+      }
+    }
+  }
+
+  &--has-offline {
+    .item-index {
+      width: 85px;
+      max-width: 85px;
+    }
+  }
+}

@@ -1,0 +1,204 @@
+// '_NOTIFICATIONS.SCSS' - IMPORTED INTO APP.SCSS
+
+@import 'colors';
+
+.notification-container {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
+  z-index: 2;
+  background-color: $grey-light;
+  min-height: 40px;
+  color: $black;
+  font-size: 1rem;
+  padding: 0 10px;
+  .alert-title {
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    .incident-overview {
+      margin-left: 0.5rem;
+      padding-left: 0.5rem;
+      border-left: solid 1px $black;
+    }
+    .incident-stage {
+      margin-left: -4px;
+      min-width: unset;
+      svg {
+        width: 16px;
+      }
+    }
+  }
+  @media screen and (max-width: 1050px){
+    min-height: unset;
+    align-items: start;
+    .alert-title {
+      padding: 10px 0;
+    }
+  }
+}
+
+.alerts {
+  position: relative;
+  align-self: stretch;
+  &__btn {
+    position: relative;
+    width: 40px;
+    height: 40px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    svg,
+    img {
+      height: 28px;
+      width: auto;
+    }
+  }
+  &__badge {
+    position: absolute;
+    display: block;
+    background-color: $red;
+    color: white;
+    padding: 2px 6px;
+    border-radius: 0.75rem;
+    top: 3px;
+    right: 3px;
+    font-size: 0.75rem;;
+  }
+  &__menu {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background-color: white;
+    border: 1px solid $grey-mid;
+    margin-top: -1px;
+    width: 460px;
+    max-height: 600px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    &-title {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      height: 44px;
+      min-height: 44px;
+      padding: 0 8px 0 16px;
+      border-bottom: 1px solid $grey-mid;
+      span:first-of-type {
+        display: inline-block;
+        flex-grow: 1;
+      }
+    }
+    &-close {
+      display: flex;
+      cursor: pointer;
+      width: 24px;
+      height: 24px;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      border: none;
+      border-radius: 4px;
+      background-color: white;
+      transition: background-color .5s;
+      &:hover {
+        background-color: $blue-light;
+      }
+      svg {
+        height: auto;
+        width: 13px;
+        fill: $blue;
+      }
+    }
+    &-list {
+      flex-grow: 1;
+      overflow: hidden;
+      overflow-y: auto;
+      overscroll-behavior-y: contain;
+    }
+  }
+  &__empty {
+    display: block;
+    font-family: lato-reg, Arial, Helvetica, sans-serif;
+    text-align: center;
+    padding: 40px 0;
+    color: $section-light-text;
+  }
+  &__item {
+    background-color: $white;
+    display: block;
+    border: none;
+    border-bottom: 1px solid $grey-light;
+    cursor: pointer;
+    width: 100%;
+    text-align: left;
+    border-radius: 0;
+    padding: 20px 16px 16px 16px;
+    font-size: 1rem;
+    & * {
+      font-family: inherit;
+    }
+    &:hover {
+      background-color: $grey-light;
+    }
+    &--read {
+      font-family: lato-reg, Arial, Helvetica, sans-serif;
+      background-color: $grey-light;
+      border-bottom-color: $grey-mid;
+      &:hover {
+        opacity: 0.8;
+      }
+    }
+    &-title {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      padding-bottom: 4px;
+      padding-right: 6px;
+      font-size: 1rem;
+      span:first-of-type {
+        display: inline-block;
+        flex-grow: 1;
+      }
+    }
+    &-unread {
+      display: block;
+      width: 10px;
+      height: 10px;
+      border-radius: 5px;
+      background-color: $blue;
+    }
+    &-content {
+      display: block;
+      font-family: lato-reg, Arial, Helvetica, sans-serif;
+      padding: 10px 8px;
+    }
+  }
+  .user-mention-name {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .user-mention-info {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 1rem;
+    padding-top: 14px;
+    span {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    img,
+    svg {
+      color: $grey-dark;
+      height: 15px;
+      width: auto;
+    }
+  }
+}

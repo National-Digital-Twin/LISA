@@ -1,0 +1,48 @@
+.modal-dialog {
+  padding: 15px;
+  width: 100%;
+  max-width: 1070px;
+  min-height: 400px;
+  overscroll-behavior: contain;
+  border: none;
+  background: transparent;
+  &::backdrop {
+    background: $grey-dark;
+    opacity: 0.8;
+  }
+  .rollup-container {
+    border: solid 1px $grey-dark;
+    margin: 0;
+    .rollup-header {
+      margin: 10px 20px 0;
+    }
+    .log-form {
+      padding: 10px;
+      &.section {
+        margin: 0;
+      }
+    }
+  }
+  &__close {
+    border: solid 2px $black;
+    border-radius: 50%;
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    width: 30px;
+    height: 30px;
+    padding: 5px;
+    cursor: pointer;
+    svg {
+      height: 10px;
+      width: auto;
+    }
+  }
+
+  @media screen and (max-width: 1099px) {
+    padding: 0;
+    .modal-dialog__close {
+      display: none;
+    }
+  }
+}

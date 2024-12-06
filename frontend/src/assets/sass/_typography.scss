@@ -1,0 +1,78 @@
+// '_TYPOGRAPHY.SCSS' - IMPORTED INTO APP.SCSS
+
+@font-face {
+  font-family: merriweather;
+  src: url("./assets/typography/merriweather/Merriweather-Regular.ttf");
+  src: local("?"),
+    url("./assets/typography/merriweather/Merriweather-Regular.ttf")
+      format("truetype");
+}
+
+@font-face {
+  font-family: lato-reg;
+  font-style: normal;
+  font-weight: 400;
+  src: url("./assets/typography/lato/lato-regular.ttf");
+  src: local("?"),
+    url("./assets/typography/lato/lato-regular.ttf") format("truetype");
+}
+@font-face {
+  font-family: lato-bold;
+  font-style: normal;
+  font-weight: 400;
+  src: url("./assets/typography/lato/lato-bold.ttf");
+  src: local("?"),
+    url("./assets/typography/lato/lato-bold.ttf") format("truetype");
+}
+@font-face {
+  font-family: lato-black;
+  font-style: normal;
+  font-weight: 400;
+  src: url("./assets/typography/lato/lato-black.ttf");
+  src: local("?"),
+    url("./assets/typography/lato/lato-black.ttf") format("truetype");
+}
+@font-face {
+  font-family: lato-light;
+  font-style: normal;
+  font-weight: 400;
+  src: url("./assets/typography/lato/lato-light.ttf");
+  src: local("?"),
+    url("./assets/typography/lato/lato-light.ttf") format("truetype");
+}
+
+body,
+html,
+p,
+div,
+a,
+li,
+tr,
+td,
+button {
+  font-family: "lato-bold", Helvetica Neue, Helvetica, Roboto, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+.unselectable {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.sentence-case {
+  text-transform: lowercase;
+  &:first-letter {
+    text-transform: uppercase;
+  }
+}
+
+.note {
+  font-size: 0.75em;
+}
+

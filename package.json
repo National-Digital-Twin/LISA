@@ -1,0 +1,30 @@
+{
+  "name": "c477",
+  "version": "0.0.0",
+  "type": "module",
+  "description": "C477",
+  "scripts": {
+    "build": "(cd ./frontend && npm run bundle) && (cd ./backend && npm run build)",
+    "bundle": "(cd ./frontend && npm run bundle) && (cd ./backend && npm run bundle)",
+    "prestart": "npm run build",
+    "start": "cd ./backend && npm start",
+    "dev:frontend": "cd ./frontend && npm run dev:backend",
+    "dev:backend": "cd ./backend && npm run dev",
+    "dev": "./node_modules/.bin/run-p dev:frontend dev:backend",
+    "lint": "(cd ./common && npm run lint) && (cd ./backend && npm run lint) && (cd ./frontend && npm run lint)",
+    "clean": "rm -rf ./backend/dist",
+    "prepare": "husky"
+  },
+  "workspaces": [
+    "backend",
+    "frontend",
+    "common"
+  ],
+  "author": "",
+  "private": true,
+  "license": "ISC",
+  "devDependencies": {
+    "husky": "^9.0.11",
+    "lint-staged": "^15.2.2"
+  }
+}
