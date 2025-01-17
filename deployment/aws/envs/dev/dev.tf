@@ -101,7 +101,7 @@ data "aws_iam_policy_document" "dev_cognito_policy" {
     ]
     resources = [
       join("", ["arn:aws:s3:::", aws_s3_bucket.dev_upload_bucket.id, "/*"])
-    ]
+    ]//./
   }
   statement {
     actions = [

@@ -6,7 +6,7 @@ AWS_ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
 aws ecr get-login-password --region $AWS_REGION | sudo docker login --username AWS --password-stdin $AWS_ACCOUNT.dkr.ecr.$AWS_REGION.amazonaws.com
 TAG=$(date +%s)
 
-IMAGE=$AWS_ACCOUNT.dkr.ecr.$AWS_REGION.amazonaws.com/lisa_webapp:$TAG
+IMAGE=$AWS_ACCOUNT.dkr.ecr.$AWS_REGION.amazonaws.com/lisa/webapp:$TAG
 
 sudo docker tag c477:latest $IMAGE
 sudo docker push $IMAGE
