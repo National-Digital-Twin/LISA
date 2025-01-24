@@ -55,6 +55,8 @@ apiRouter.post('/incident', incident.create);
 apiRouter.get('/incident/:incidentId/logEntries', logEntry.get);
 apiRouter.post('/incident/:incidentId/logEntry', upload.any(), logEntry.create);
 
+apiRouter.post('/incident/:incidentId/logEntry/:entryId/updateSequence', logEntry.updateSequence);
+
 apiRouter.get('/incident/:incidentId/attachments', incident.getAttachments);
 
 apiRouter.post('/incident/:incidentId/stage', incident.changeStage);

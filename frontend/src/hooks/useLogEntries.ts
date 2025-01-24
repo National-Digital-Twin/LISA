@@ -15,10 +15,25 @@ export const useLogEntries = (incidentId?: string) => {
   return { logEntries: data, isLoading, isError, error };
 };
 
+const useLogEntryUpdateSequence = (incidentId? : string) => {
+  const queryClient = useQueryClient();
+  const logEntryUpdateSequence = useMutation<unknown, Error, { logEntry: LogEntry }>({
+    mutationFn: ({ logEntry }) => post(`/incident/${incidentId}/logEntry/${logEntry.id}/updateSequence`, {}),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [`incident/${incidentId}/logEntries`]
+      });
+    }
+  });
+
+  return logEntryUpdateSequence;
+};
+
 export const useCreateLogEntry = (incidentId?: string) => {
   const queryClient = useQueryClient();
+  const logEntryUpdateSequence = useLogEntryUpdateSequence(incidentId);
   const createLogEntry = useMutation<
-    LogEntry[],
+    LogEntry,
     Error,
     {
       newLogEntry: Omit<LogEntry, 'id' | 'author'>;
@@ -34,10 +49,8 @@ export const useCreateLogEntry = (incidentId?: string) => {
       }
       return post(`/incident/${incidentId}/logEntry`, data ?? newLogEntry);
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: [`incident/${incidentId}/logEntries`]
-      });
+    onSuccess: (logEntry) => {
+      logEntryUpdateSequence.mutate({ logEntry });
     },
     // optimistic update
     onMutate: async ({ newLogEntry }) => {

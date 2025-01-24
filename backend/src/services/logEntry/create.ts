@@ -1,7 +1,6 @@
 // Global imports
 import { randomUUID } from 'crypto';
 import { Request, Response } from 'express';
-import * as sparql from 'rdf-sparql-builder';
 
 // Local imports
 import { type Coordinates } from 'common/Location';
@@ -50,7 +49,6 @@ export async function create(req: Request, res: Response) {
       [entryIdNode, ns.lisa.contentText, literalString(content.text || '')],
       [entryIdNode, ns.lisa.contentJSON, literalString(content.json || '{}')],
       [entryIdNode, ns.ies.inPeriod, literalDate(new Date(entry.dateTime))],
-      [entryIdNode, ns.lisa.hasSequence, '?seq'],
 
       [authorNode, ns.rdf.type, ns.ies.Creator],
       [authorNode, ns.ies.hasName, literalString(res.locals.user.username)],
@@ -86,17 +84,7 @@ export async function create(req: Request, res: Response) {
     triples.push([entryIdNode, ns.ies.inLocation, locationIdNode]);
   }
 
-  await ia.insert({
-    triples,
-    where: [
-      `{SELECT (COALESCE(MAX(?number), 0) AS ?maxNumber) WHERE {${sparql.optional([
-        [incidentIdNode, ns.lisa.hasLogEntry, '?entry'],
-        ['?entry', ns.lisa.hasSequence, '?number']
-      ])}
-      }}`,
-      'BIND (?maxNumber + 1 AS ?seq)'
-    ]
-  });
+  await ia.insertData(triples);
 
   userMentions.forEach((mention) => {
     createNotification({
