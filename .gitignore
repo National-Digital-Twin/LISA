@@ -16,3 +16,5 @@ scg-0.80.0.tar.gz
 
 # temp uploads
 **/__uploads
+
+**/.env
