@@ -26,6 +26,7 @@ const upload = multer({
 });
 
 const router = Router();
+const incidentsRequestQueue: { [id:string]: Promise<void> } = {};
 
 router.use(extractToken(tokenVerifier, cookieManager));
 
@@ -55,7 +56,32 @@ apiRouter.post('/incident', incident.create);
 apiRouter.get('/incident/:incidentId/logEntries', logEntry.get);
 apiRouter.post('/incident/:incidentId/logEntry', upload.any(), logEntry.create);
 
-apiRouter.post('/incident/:incidentId/logEntry/:entryId/updateSequence', logEntry.updateSequence);
+apiRouter.post('/incident/:incidentId/logEntry/:entryId/updateSequence', async (req, res) => {
+  const { incidentId } = req.params;
+
+  if (!incidentId) {
+    res.status(400).end();
+    return;
+  }
+
+  // Is the request queue currently resolving a request for a particular incident?
+  if (incidentId in incidentsRequestQueue) {
+    // Attach the incoming request to until after the current one resolves. If the current one is rejected for whatever reason
+    // then move the current request to the top of the queue.
+    incidentsRequestQueue[incidentId].then(
+      () => logEntry.updateSequence,
+      () => {
+        incidentsRequestQueue[incidentId] = logEntry.updateSequence(req, res);
+      }
+    );
+  } else {
+    // If no request is queued add the first one to be processed.
+    incidentsRequestQueue[incidentId] = logEntry.updateSequence(req, res);
+  }
+
+  // When the promise has been resolved remove the incident from the queue.
+  incidentsRequestQueue[incidentId].finally(() => delete incidentsRequestQueue[incidentId]);
+});
 
 apiRouter.get('/incident/:incidentId/attachments', incident.getAttachments);
 
