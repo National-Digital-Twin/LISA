@@ -18,3 +18,6 @@ scg-0.80.0.tar.gz
 **/__uploads
 
 **/.env
+
+# Kubernetees deployment secrets
+**/secrets.env
