@@ -16,8 +16,13 @@ variable "repository_description" {
   default     = ""
 }
 
-variable "jira_project_id" {
-  description = "Atlassian JIRA project identifier to be used for autolinking commit messages. This ID should match those which prefix issue identifiers, for example DPAV."
+variable "requirement_tracking_url_base" {
+  description = "Requirement tracking system URL base to be used for autolinking commit messages."
+  type        = string
+}
+
+variable "requirement_tracking_id" {
+  description = "Requirement identifier to be used for autolinking commit messages. This ID should match those which prefix issue identifiers, for example DPAV."
   type        = string
   default     = "DPAV"
 }
