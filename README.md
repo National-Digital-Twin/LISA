@@ -29,3 +29,7 @@ npm run dev
 ```
 
 This will start watchers for both the frontend and the backend.
+
+## Running local code development tools
+
+See [RUNNING_CODE_DEV_TOOLS.md](./developer_docs/RUNNING_CODE_DEV_TOOLS.md) for more information.
