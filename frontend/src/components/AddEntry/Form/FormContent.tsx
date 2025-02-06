@@ -129,8 +129,6 @@ export default function FormContent({
               strokeColor="#000000"
               backgroundColor="#FF5733"
             />
-            <button onClick={() => setRecording(true)}>Start Recording</button>
-            <button onClick={() => setRecording(false)}>Stop Recording</button>
           </div>
         </li>
       )}
