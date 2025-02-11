@@ -1,6 +1,7 @@
 # node_modules
 node_modules/*
 frontend/node_modules/*
+frontend/qa/node_modules/*
 
 # build
 **/dist/*
@@ -21,3 +22,7 @@ scg-0.80.0.tar.gz
 
 # Kubernetees secrets
 **/secrets.env
+
+# QA artifacts
+frontend/qa/test-results/assets
+frontend/qa/@rerun.txt
