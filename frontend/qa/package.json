@@ -15,7 +15,7 @@
     "cucumber - TS",
     "playwright-cucumber"
   ],
-  "author": "Anantha Navaneethagopalan",
+  "author": "NDTP",
   "license": "ISC",
   "devDependencies": {
     "@cucumber/cucumber": "^9.0.1",
