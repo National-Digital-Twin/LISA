@@ -133,7 +133,7 @@ export default function IncidentMap({
 
   const onEntryContentClick = (evt: MouseEvent<HTMLElement>) => {
     const target: SpanType = evt.target as unknown as SpanType;
-    if (target && target.getAttribute('data-lexical-mention')) {
+    if (target?.getAttribute('data-lexical-mention')) {
       const type = target.getAttribute('data-lexical-mention-type') as MentionableType;
       if (type === 'LogEntry') {
         const id = target.getAttribute('data-lexical-mention') as string;
