@@ -80,7 +80,7 @@ const Logbook = () => {
 
   const onContentClick = (evt: MouseEvent<HTMLElement>) => {
     const target: SpanType = evt.target as unknown as SpanType;
-    if (target && target.getAttribute('data-lexical-mention')) {
+    if (target?.getAttribute('data-lexical-mention')) {
       onMentionClick({
         id: target.getAttribute('data-lexical-mention') as string,
         type: target.getAttribute('data-lexical-mention-type') as MentionableType,
