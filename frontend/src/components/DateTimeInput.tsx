@@ -44,8 +44,15 @@ const DateTimeInput = ({ id, value, onChange }: Props) => {
 
   return (
     <div className="log-date-time" id={id}>
-      <input className="date-input" type="date" value={date} onChange={onDateChange} />
       <input
+        data-testid="date-input"
+        className="date-input"
+        type="date"
+        value={date}
+        onChange={onDateChange}
+      />
+      <input
+        data-testid="time-input"
         className="time-input"
         type="time"
         min="00:00"
@@ -54,7 +61,9 @@ const DateTimeInput = ({ id, value, onChange }: Props) => {
         onChange={onTimeChange}
       />
       {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-      <Link className="date-now" to="" onClick={onSetNow}>&lt; Now</Link>
+      <Link className="date-now" to="" onClick={onSetNow}>
+        &lt; Now
+      </Link>
     </div>
   );
 };

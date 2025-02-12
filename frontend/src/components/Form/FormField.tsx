@@ -28,19 +28,14 @@ const YesNoOptions = [
   { value: 'No', label: 'No' }
 ];
 
-const ARE_SELECTS: Array<FieldType> = [
-  'Select',
-  'SelectMulti',
-  'SelectLogEntry',
-  'YesNo'
-];
+const ARE_SELECTS: Array<FieldType> = ['Select', 'SelectMulti', 'SelectLogEntry', 'YesNo'];
 
 const FormField = ({
   field,
   entries = undefined,
   error = undefined,
   onChange,
-  className = undefined,
+  className = undefined
 }: Props) => {
   const navigate = useNavigate();
   const onClickLocation = () => {
@@ -75,7 +70,9 @@ const FormField = ({
         {field.label}
         {field.optional && <span className="optional-field">optional</span>}
         <FormHelpButton field={field} />
-        {field.className?.includes('horizontalYN') && <span className="h-sep" />}
+        {field.className?.includes('horizontalYN') && (
+          <span data-testid="horizontal-span" className="h-sep" />
+        )}
         {field.type === 'Input' && (
           <input type="text" id={field.id} value={field.value} onChange={onTextChange} />
         )}
@@ -97,13 +94,9 @@ const FormField = ({
         {field.type === 'Location' && (
           <LocationField id={field.id} value={field.value as string} onClick={onClickLocation} />
         )}
-        {field.type === 'Label' && (
-          <LabelField id={field.id} hint={field.hint} />
-        )}
+        {field.type === 'Label' && <LabelField id={field.id} hint={field.hint} />}
       </label>
-      {error && (
-        <div className="field-error">{error.error}</div>
-      )}
+      {error && <div className="field-error">{error.error}</div>}
     </li>
   );
 };

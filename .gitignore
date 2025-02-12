@@ -26,3 +26,6 @@ scg-0.80.0.tar.gz
 # QA artifacts
 frontend/qa/test-results/assets
 frontend/qa/@rerun.txt
+
+#vitest
+frontend/coverage
