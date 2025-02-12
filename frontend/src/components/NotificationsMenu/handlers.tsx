@@ -12,9 +12,7 @@ type Handler = {
   clickHandler: (notification: Notification) => void;
 }
 
-interface HandlerFunction {
-  (notification: Notification, navigate: NavigateFunction): Handler | null;
-}
+type HandlerFunction = (notification: Notification, navigate: NavigateFunction) => Handler | null;
 
 function userMention(notification: Notification, navigate: NavigateFunction): Handler | null {
   if (!UserMentionNotification.guard(notification)) {
