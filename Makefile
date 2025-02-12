@@ -14,6 +14,6 @@ run-sonar-scan:
 		--network="host" \
 		-v ${PWD}:/usr/src \
 		-e SONAR_HOST_URL="http://localhost:9000" \
-		-e SONAR_SCANNER_OPTS="-Dsonar.projectKey=${SONAR_PROJECT_KEY} " \
+		-e SONAR_SCANNER_OPTS="-Dsonar.projectKey=${SONAR_PROJECT_KEY}" \
 		-e SONAR_TOKEN="${SONAR_TOKEN}" \
 		sonarsource/sonar-scanner-cli
