@@ -7,6 +7,7 @@ endif
 sonarqube-up:
 	docker run -d -p 9000:9000 -e SONAR_ES_BOOTSTRAP_CHECKS_DISABLE=true --name sonarqube sonarqube:25.1.0.102122-community
 
+
 run-sonar-scan:
 	docker run \
 		--rm \
