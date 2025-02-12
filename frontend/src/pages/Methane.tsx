@@ -47,35 +47,35 @@ const Methane = () => {
               <li>
                 <label htmlFor="inc-type">
                   {/* eslint-disable-next-line react/jsx-one-expression-per-line */}
-                  <span className="highlight-blue-dark">TYPE</span> of incident
+                  <span className="highlight-blue-dark">TYPE</span> of incident {/* */}
                   <textarea id="inc-type" name="inc-type" rows={4} />
                 </label>
               </li>
               <li>
                 <label htmlFor="inc-hazards">
                   {/* eslint-disable-next-line react/jsx-one-expression-per-line */}
-                  <span className="highlight-blue-dark">HAZARDS</span> present or suspected
+                  <span className="highlight-blue-dark">HAZARDS</span> present or suspected {/* */}
                   <textarea id="inc-hazards" name="inc-hazards" rows={4} />
                 </label>
               </li>
               <li>
                 <label htmlFor="inc-access">
                   {/* eslint-disable-next-line react/jsx-one-expression-per-line */}
-                  <span className="highlight-blue-dark">ACCESS</span> routes that are safe to use
+                  <span className="highlight-blue-dark">ACCESS</span> routes that are safe to use {/* */}
                   <textarea id="inc-access" name="inc-access" rows={4} />
                 </label>
               </li>
               <li>
                 <label htmlFor="inc-number">
                   {/* eslint-disable-next-line react/jsx-one-expression-per-line */}
-                  <span className="highlight-blue-dark">NUMBER</span>, type, severity or casualties
+                  <span className="highlight-blue-dark">NUMBER</span>, type, severity or casualties {/* */}
                   <textarea id="inc-number" name="inc-number" rows={4} />
                 </label>
               </li>
               <li>
                 <label htmlFor="inc-emgergeny">
                   {/* eslint-disable-next-line react/jsx-one-expression-per-line */}
-                  <span className="highlight-blue-dark">EMERGENCY</span> services present and those required
+                  <span className="highlight-blue-dark">EMERGENCY</span> services present and those required {/* */}
                   <textarea id="inc-emgergeny" name="inc-emgergeny" rows={4} />
                 </label>
               </li>
@@ -83,7 +83,7 @@ const Methane = () => {
           </div>
 
           <h2>
-            <img className="icon" src={SectionTick} alt="Section complete" />
+            <img className="icon" src={SectionTick} alt="Section complete" /> {/* */}
             REQUIREMENTS
           </h2>
 
@@ -91,7 +91,7 @@ const Methane = () => {
             <ul>
               <li>
                 <label htmlFor="inc-requirements">
-                  What is required from your organisation
+                  What is required from your organisation {/* */}
                   <textarea
                     id="inc-requirements"
                     name="inc-requirements"

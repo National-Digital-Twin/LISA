@@ -12,7 +12,7 @@ export default function ChangeStage({ entry }: Readonly<Props>) {
 
   return (
     <>
-      Stage changed to
+      Stage changed to {/* */}
       <span className={`incident-stage ${stage}`}>
         <Icons.Stage />
         {Format.incident.stage(stage)}
