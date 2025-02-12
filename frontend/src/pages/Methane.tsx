@@ -17,8 +17,8 @@ const Methane = () => {
           Create Incident Log
         </h1>
         <h2>
-          <img className="icon" src={SectionTick} alt="Section complete" /> {/* */}
-          M/ETHANE
+          <img className="icon" src={SectionTick} alt="Section complete" />
+          <span>METHANE</span>
         </h2>
         <form>
           <div className="section log-form">
@@ -83,15 +83,15 @@ const Methane = () => {
           </div>
 
           <h2>
-            <img className="icon" src={SectionTick} alt="Section complete" /> {/* */}
-            REQUIREMENTS
+            <img className="icon" src={SectionTick} alt="Section complete" />
+            <span>REQUIREMENTS</span>
           </h2>
 
           <div className="section log-form">
             <ul>
               <li>
                 <label htmlFor="inc-requirements">
-                  What is required from your organisation {/* */}
+                  <span>What is required from your organisation?</span>
                   <textarea
                     id="inc-requirements"
                     name="inc-requirements"

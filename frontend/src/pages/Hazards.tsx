@@ -9,15 +9,15 @@ const Hazards = () => {
         <h1 className="page-title">{title}</h1>
 
         <h2>
-          <img className="icon" src={SectionTick} alt="Section complete" /> {/* */}
-          HAZARD ENTRIES
+          <img className="icon" src={SectionTick} alt="Section complete" />
+          <span>HAZARD ENTRIES</span>
         </h2>
         <form>
           <div className="section log-form">
             <ul>
               <li>
                 <label htmlFor="inc-">
-                  TBD {/* */}
+                  <span>TBD</span>
                   <textarea className="inc-" id="inc-" name="inc-" rows={4} />
                 </label>
               </li>

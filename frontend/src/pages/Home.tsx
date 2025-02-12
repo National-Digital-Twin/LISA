@@ -44,8 +44,8 @@ const Home = () => {
               type="checkbox"
               checked={includeClosed}
               onChange={() => onIncludeClosedChange()}
-            /> {/* */}
-            Include closed incidents
+            />
+            <span>Include closed incidents</span>
           </label>
           <button type="button" className="button blue" onClick={onAddIncident}>
             + Add new incident

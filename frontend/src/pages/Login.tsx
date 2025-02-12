@@ -32,11 +32,11 @@ const Login = () => {
       <div className="container">
         <form className="section log-form login" onSubmit={onLogin}>
           <label htmlFor="username">
-            Username {/* */}
+            <span>Username</span>
             <input type="text" value={username as string} onChange={onUsernameChange} />
           </label>
           <label htmlFor="password">
-            Password {/* */}
+            <span>Password</span>
             <input type="password" value={password} onChange={onPasswordChange} />
           </label>
           <div className="log-form-buttons">
