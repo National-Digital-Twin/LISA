@@ -17,7 +17,7 @@ const Methane = () => {
           Create Incident Log
         </h1>
         <h2>
-          <img className="icon" src={SectionTick} alt="Section complete" />
+          <img className="icon" src={SectionTick} alt="Section complete" /> {/* */}
           M/ETHANE
         </h2>
         <form>
@@ -40,7 +40,7 @@ const Methane = () => {
               <li>
                 <label htmlFor="inc-location">
                   {/* eslint-disable-next-line react/jsx-one-expression-per-line */}
-                  <span className="highlight-blue-dark">EXACT</span> location
+                  <span className="highlight-blue-dark">EXACT</span> location {/* */}
                   <textarea id="inc-location" name="inc-location" rows={4} />
                 </label>
               </li>

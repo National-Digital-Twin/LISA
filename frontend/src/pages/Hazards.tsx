@@ -9,7 +9,7 @@ const Hazards = () => {
         <h1 className="page-title">{title}</h1>
 
         <h2>
-          <img className="icon" src={SectionTick} alt="Section complete" />
+          <img className="icon" src={SectionTick} alt="Section complete" /> {/* */}
           HAZARD ENTRIES
         </h2>
         <form>
@@ -17,7 +17,7 @@ const Hazards = () => {
             <ul>
               <li>
                 <label htmlFor="inc-">
-                  TBD
+                  TBD {/* */}
                   <textarea className="inc-" id="inc-" name="inc-" rows={4} />
                 </label>
               </li>

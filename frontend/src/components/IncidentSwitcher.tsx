@@ -16,7 +16,7 @@ const IncidentSwitcher = () => {
   return (
     <div className="incident-switcher">
       <button onClick={handleToggle} className="button" type="button">
-        INCIDENTS&nbsp;
+        INCIDENTS {' '}
         <span className="arrow-down">
           <img src={IconArrowDown} alt="Expand" />
         </span>
