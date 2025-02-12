@@ -28,7 +28,7 @@ function userMention(notification: Notification, navigate: NavigateFunction): Ha
       <>
         <span className="user-mention-name">
           <span>{`#${Format.entry.index(entry as LogEntry)} - `}</span>
-          <span>{(entry.content.text || '').substring(0, 100)}</span>
+          <span>{(entry.content.text ?? '').substring(0, 100)}</span>
         </span>
         <span className="user-mention-info">
           <span>

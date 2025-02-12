@@ -89,7 +89,7 @@ const Validate = {
 
       // Check any mentions are valid
       if (!noContent && hasValue(entry.content?.json)) {
-        errors.push(...Validate.mentions((entry.content?.json || '{}'), files));
+        errors.push(...Validate.mentions((entry.content?.json ?? '{}'), files));
       }
 
       // Check the fields if they're supposed to be there...

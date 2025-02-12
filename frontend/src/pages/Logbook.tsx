@@ -22,7 +22,7 @@ const Logbook = () => {
   const [appliedFilters, setAppliedFilters] = useState<FilterType>({ author: [], category: [] });
   const [searchText, setSearchText] = useState<string>('');
 
-  useLogEntriesUpdates(incidentId || '');
+  useLogEntriesUpdates(incidentId ?? '');
   const navigate = useNavigate();
 
   const incident = incidents?.find((inc) => inc.id === incidentId);

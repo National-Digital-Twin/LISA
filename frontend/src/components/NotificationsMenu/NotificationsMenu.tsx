@@ -36,7 +36,7 @@ export default function NotificationsMenu() {
     }
   };
 
-  const unreadCount = notifications?.filter((n) => !n.read).length || 0;
+  const unreadCount = notifications?.filter((n) => !n.read).length ?? 0;
   const classes = bem('alerts');
 
   return (
