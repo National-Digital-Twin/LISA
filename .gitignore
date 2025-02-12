@@ -24,5 +24,7 @@ scg-0.80.0.tar.gz
 **/secrets.env
 
 # QA artifacts
+frontend/qa/test-results/
 frontend/qa/test-results/assets
 frontend/qa/@rerun.txt
+frontend/qa/*.deb
