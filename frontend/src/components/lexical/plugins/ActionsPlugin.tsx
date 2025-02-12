@@ -22,7 +22,7 @@ type ActionsPluginProps = {
 export default function ActionsPlugin({
   speechToTextActive,
   onCommand
-}: ActionsPluginProps): JSX.Element | null {
+}: Readonly<ActionsPluginProps>): JSX.Element | null {
   const [editor] = useLexicalComposerContext();
   const [isEditable, setIsEditable] = useState(() => editor.isEditable());
   const [isSpeechToText, setIsSpeechToText] = useState(false);

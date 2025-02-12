@@ -9,7 +9,7 @@ const TYPES_BLACKLIST: string[] = [
   'application/x-apple-diskimage'
 ];
 
-export default function FilesSelector({ onSelect }: SelectorProps) {
+export default function FilesSelector({ onSelect }: Readonly<SelectorProps>) {
   const [canDrag, setCanDrag] = useState<boolean>(false);
   const [focused, setFocused] = useState<boolean>(false);
   const [isDragging, setIsDragging] = useState<boolean>(false);

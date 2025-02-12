@@ -10,7 +10,7 @@ interface Props {
   entry: LogEntry;
 }
 
-export default function EntryLocation({ entry }: Props) {
+export default function EntryLocation({ entry }: Readonly<Props>) {
   const link = useMemo(() => Format.entry.locationLink(entry), [entry]);
 
   if (!entry.location) {

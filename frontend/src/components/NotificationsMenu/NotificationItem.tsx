@@ -8,7 +8,7 @@ interface Props {
   notification: Notification;
   onClick: (notification: Notification) => void;
 }
-export default function NotificationItem({ notification, onClick }: Props) {
+export default function NotificationItem({ notification, onClick }: Readonly<Props>) {
   const navigate = useNavigate();
   const { read } = notification;
 

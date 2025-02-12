@@ -21,7 +21,7 @@ export default function FilesContent({
   onFilesSelected,
   removeSelectedFile,
   removeRecording
-}: Props) {
+}: Readonly<Props>) {
   const classes = bem('add-entry-tab', [active ? 'active' : ''], 'files');
   const totalLength = useMemo(
     () => recordings.length + selectedFiles.length,

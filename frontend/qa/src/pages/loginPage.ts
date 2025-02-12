@@ -3,13 +3,13 @@ import PlaywrightWrapper from "../helper/wrapper/PlaywrightWrappers";
 
 
 export default class LoginPage {
-    private base: PlaywrightWrapper
-    constructor(private page: Page) {
+    private readonly base: PlaywrightWrapper
+    constructor(private readonly page: Page) {
         this.base = new PlaywrightWrapper(page);
     }
 
     //Object Locators
-    private Elements = {
+    private readonly Elements = {
         userInput: "username",
         nextBtn: "",
         passwordInput: "Password",
@@ -32,7 +32,6 @@ export default class LoginPage {
     }
 
     async clickLoginButton() {
-        //await this.base.waitAndClick(this.Elements.loginBtn);
         await this.page.getByRole('button', { name: 'Continue' }).click();
 
     }

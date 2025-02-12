@@ -8,7 +8,7 @@ type Props = {
   value: string | undefined;
   onClick: () => void;
 };
-export default function LocationField({ id, value, onClick }: Props) {
+export default function LocationField({ id, value, onClick }: Readonly<Props>) {
   const classes = bem('location-field');
   return (
     <div data-testid="location-field" id={id} className={classes()}>

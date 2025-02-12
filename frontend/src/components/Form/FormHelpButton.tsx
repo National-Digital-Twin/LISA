@@ -7,7 +7,7 @@ import { bem } from '../../utils';
 interface Props {
   field: Field;
 }
-export default function FormHelpButton({ field }: Props) {
+export default function FormHelpButton({ field }: Readonly<Props>) {
   const [expanded, setExpanded] = useState<boolean>(false);
   const ref = useOutsideClick<HTMLDivElement>(() => setExpanded(false));
 

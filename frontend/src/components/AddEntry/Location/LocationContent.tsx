@@ -23,7 +23,7 @@ export default function LocationContent({
   location,
   validationErrors,
   onLocationChange
-}: Props) {
+}: Readonly<Props>) {
   const classes = bem('add-entry-tab', [active ? 'active' : ''], 'location');
   const coordinatesError: ValidationError | undefined = useMemo(
     () => Form.getError({ id: 'location.coordinates' }, validationErrors),

@@ -19,7 +19,7 @@ export default function SketchContent({
   lines,
   onChangeLines,
   canvasRef
-}: Props) {
+}: Readonly<Props>) {
   const classes = bem('add-entry-tab', [active ? 'active' : ''], 'sketch');
   return (
     <ul className={classes()}>

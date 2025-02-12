@@ -9,7 +9,7 @@ interface Props {
   toast: ToastEntry;
   onRemove: (id: string) => void;
 }
-export default function Toast({ toast, onRemove }: Props) {
+export default function Toast({ toast, onRemove }: Readonly<Props>) {
   const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   useEffect(() => {

@@ -11,7 +11,7 @@ interface Props {
   entry: LogEntry;
   onContentClick: (evt: MouseEvent<HTMLElement>) => void;
 }
-export default function Details({ entry, onContentClick }: Props) {
+export default function Details({ entry, onContentClick }: Readonly<Props>) {
   const { type } = entry;
   let detail = null;
   switch (type) {

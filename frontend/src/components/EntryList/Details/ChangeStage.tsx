@@ -4,7 +4,7 @@ import { Format, Icons } from '../../../utils';
 interface Props {
   entry: LogEntry;
 }
-export default function ChangeStage({ entry }: Props) {
+export default function ChangeStage({ entry }: Readonly<Props>) {
   const { stage } = entry;
   if (!stage) {
     return null;

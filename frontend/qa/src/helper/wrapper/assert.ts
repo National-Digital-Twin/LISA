@@ -2,7 +2,7 @@ import { expect, Page } from "@playwright/test";
 
 export default class Assert {
 
-    constructor(private page: Page) { }
+    constructor(private readonly page: Page) { }
 
     async assertTitle(title: string) {
         await expect(this.page).toHaveTitle(title);

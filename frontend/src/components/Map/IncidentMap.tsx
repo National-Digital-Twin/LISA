@@ -27,7 +27,7 @@ interface Props {
   marker: LogEntryMarkerType;
   onClick: (marker: LogEntryMarkerType) => void;
 }
-function LogEntryMarker({ marker, onClick }: Props) {
+function LogEntryMarker({ marker, onClick }: Readonly<Props>) {
   const classes = bem('map-marker', marker.highlighted ? 'highlighted' : '', marker.colour);
   return (
     <Marker
@@ -50,7 +50,7 @@ interface MapProps {
 export default function IncidentMap({
   logEntries,
   highlightId = undefined
-}: MapProps) {
+}: Readonly<MapProps>) {
   const [redrawing, setRedrawing] = useState<boolean>(false);
   const mapRef = useRef<MapRef>(null);
   const navigate = useNavigate();

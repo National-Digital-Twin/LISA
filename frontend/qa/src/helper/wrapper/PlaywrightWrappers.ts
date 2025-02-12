@@ -2,7 +2,7 @@ import { Page } from "@playwright/test";
 
 export default class PlaywrightWrapper {
 
-    constructor(private page: Page) { }
+    constructor(private readonly page: Page) { }
 
     async goto(url: string) {
         await this.page.goto(url, {

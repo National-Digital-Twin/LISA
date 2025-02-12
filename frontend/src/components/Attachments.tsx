@@ -11,7 +11,7 @@ interface Props {
   emptyMsg: string;
 }
 
-function Attachments({ incidentId, attachments, title, emptyMsg }: Props) {
+function Attachments({ incidentId, attachments, title, emptyMsg }: Readonly<Props>) {
   return (
     <div className="incident-attachments">
       <h2>{title}</h2>

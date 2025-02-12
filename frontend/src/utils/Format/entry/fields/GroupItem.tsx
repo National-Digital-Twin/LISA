@@ -12,7 +12,7 @@ interface Props {
   fields: Field[];
   entry: LogEntry;
 }
-export function GroupItem({ group, fields, entry }: Props) {
+export function GroupItem({ group, fields, entry }: Readonly<Props>) {
   const filteredFields = fields.filter((f) => group.fieldIds.includes(f.id));
   if (filteredFields.length === 0) {
     return null;

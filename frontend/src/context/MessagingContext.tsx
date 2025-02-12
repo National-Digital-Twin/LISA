@@ -7,7 +7,7 @@ import { MessagingContextType, MessagingSubscriber } from '../utils/types';
 
 export const MessagingContext = createContext({});
 
-export default function MessagingProvider({ children }: PropsWithChildren) {
+export default function MessagingProvider({ children }: Readonly<PropsWithChildren>) {
   const { user } = useAuth();
   const ws = useRef<WebSocketClient | null>(null);
   const subscribers = useRef<Record<string, MessagingSubscriber[]>>({});

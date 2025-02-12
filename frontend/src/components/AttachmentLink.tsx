@@ -7,7 +7,7 @@ interface Props {
   isOnServer?: boolean;
 }
 
-export default function AttachmentLink({ attachment, isOnServer = true }: Props) {
+export default function AttachmentLink({ attachment, isOnServer = true }: Readonly<Props>) {
   if (!isOnServer) {
     return <span>{attachment.name}</span>;
   }

@@ -14,7 +14,7 @@ export default function Header({
   fileCount,
   validationErrors,
   showValidationErrors
-}: Props) {
+}: Readonly<Props>) {
   const classes = bem('rollup-header', [], showValidationErrors ? 'validation-errors' : '');
   return (
     <h2 className={classes()}>
