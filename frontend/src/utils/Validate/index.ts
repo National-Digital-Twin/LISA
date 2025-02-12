@@ -14,7 +14,7 @@ type Details = {
 };
 
 function getErrorText(error: string): string {
-  if (error?.indexOf('Failed constraint check') === 0) {
+  if (error?.startsWith('Failed constraint check')) {
     return error.split(':').pop()?.trim() ?? '';
   }
   return 'Field required';
@@ -116,7 +116,7 @@ const Validate = {
     return hasValue(allFields?.find((f) => f.id === field.id)?.value);
   },
   location: (location: Location | undefined, noneAllowed = false): Array<ValidationError> => {
-    if (!location || !location.type) {
+    if (!location?.type) {
       if (noneAllowed) {
         return [];
       }
@@ -134,10 +134,7 @@ const Validate = {
       .filter((m) => m.type === 'File');
     const isMissing = mentionables.some((mention) => {
       const [owningEntry, fileName] = mention.id.split('::');
-      if (owningEntry === 'this' && !files.find((f) => f.name === fileName)) {
-        return true;
-      }
-      return false;
+      return owningEntry === 'this' && !files.find((f) => f.name === fileName);
     });
     if (isMissing) {
       return [{ fieldId: 'content', error: 'One or more mentioned files are missing' }];
