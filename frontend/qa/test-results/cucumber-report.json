@@ -1,0 +1,77 @@
+[
+  {
+    "description": "",
+    "elements": [
+      {
+        "description": "",
+        "id": "lisa-landing-page;verify-the-lisa-landing-page-contains-a-dedicated-navigation-menu",
+        "keyword": "Scenario",
+        "line": 3,
+        "name": "Verify the Lisa Landing Page contains a dedicated Navigation Menu",
+        "steps": [
+          {
+            "keyword": "Before",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 153069903
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Given ",
+            "line": 4,
+            "name": "User login to the ndtp app with the user credentials",
+            "match": {
+              "location": "src/test/steps/loginSteps.ts:46"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 1293569128
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "When ",
+            "line": 5,
+            "name": "I click the \"LISA\" menu",
+            "match": {
+              "location": "src/test/steps/loginSteps.ts:64"
+            },
+            "result": {
+              "status": "failed",
+              "duration": 30034783702,
+              "error_message": "locator.click: Timeout 30000ms exceeded.\n=========================== logs ===========================\nwaiting for locator('xpath=//div[.=\\'LISA\\']')\n============================================================\n    at LandingPage.<anonymous> (/home/vagrant/Documents/LISA/frontend/qa/src/pages/landingPage.ts:70:84)\n    at step (/home/vagrant/Documents/LISA/frontend/qa/src/pages/landingPage.ts:33:23)\n    at Object.next (/home/vagrant/Documents/LISA/frontend/qa/src/pages/landingPage.ts:14:53)\n    at /home/vagrant/Documents/LISA/frontend/qa/src/pages/landingPage.ts:8:71\n    at __awaiter (/home/vagrant/Documents/LISA/frontend/qa/src/pages/landingPage.ts:4:12)\n    at LandingPage.clickMenuByName (/home/vagrant/Documents/LISA/frontend/qa/src/pages/landingPage.ts:65:16)\n    at World.<anonymous> (/home/vagrant/Documents/LISA/frontend/qa/src/test/steps/loginSteps.ts:70:54)\n    at step (/home/vagrant/Documents/LISA/frontend/qa/src/test/steps/loginSteps.ts:33:23)\n    at Object.next (/home/vagrant/Documents/LISA/frontend/qa/src/test/steps/loginSteps.ts:14:53)\n    at /home/vagrant/Documents/LISA/frontend/qa/src/test/steps/loginSteps.ts:8:71\n    at __awaiter (/home/vagrant/Documents/LISA/frontend/qa/src/test/steps/loginSteps.ts:4:12)\n    at World.<anonymous> (/home/vagrant/Documents/LISA/frontend/qa/src/test/steps/loginSteps.ts:65:12)"
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Then ",
+            "line": 6,
+            "name": "I should be on the LISA dashboard page",
+            "result": {
+              "status": "undefined",
+              "duration": 0
+            }
+          },
+          {
+            "keyword": "After",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 1875714157
+            }
+          }
+        ],
+        "tags": [],
+        "type": "scenario"
+      }
+    ],
+    "id": "lisa-landing-page",
+    "line": 1,
+    "keyword": "Feature",
+    "name": "Lisa Landing Page",
+    "tags": [],
+    "uri": "src/test/features/lisaLanding.feature"
+  }
+]
