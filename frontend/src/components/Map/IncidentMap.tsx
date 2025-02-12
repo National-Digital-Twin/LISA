@@ -94,7 +94,6 @@ export default function IncidentMap({
     setTimeout(() => {
       if (mapBounds && mapRef.current) {
         zoomMap(mapBounds, highlighted);
-        // mapRef.current.fitBounds(mapBounds, { padding: 60, duration: 250 });
       }
     }, 100);
   }, [mapBounds, highlighted]);

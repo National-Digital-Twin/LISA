@@ -48,7 +48,6 @@ const EntryContent = ({
 
   const onCommand = (type: string | undefined, active: boolean) => {
     if (type === SPEECH_TO_TEXT_COMMAND.type) {
-      // setSpeechToTextActive(active);
       if (typeof onSpeechToText === 'function') {
         onSpeechToText(active);
       }

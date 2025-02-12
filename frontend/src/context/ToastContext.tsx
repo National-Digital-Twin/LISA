@@ -4,7 +4,7 @@ import { ToastContextType, ToastEntry } from '../utils/types';
 
 export const ToastContext = createContext({});
 
-export default function ToastProvider({ children }: PropsWithChildren) {
+export default function ToastProvider({ children }: Readonly<PropsWithChildren>) {
   const [toasts, setToasts] = useState<ToastEntry[]>([]);
 
   const postToast = useCallback((toast: ToastEntry) => {

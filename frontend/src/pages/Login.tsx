@@ -20,7 +20,6 @@ const Login = () => {
   };
   const onLogin = () => {
     if (username) {
-      // user.login(username);
       navigate('/');
     }
   };

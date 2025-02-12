@@ -71,7 +71,6 @@ export class CognitoTokenVerifier implements TokenVerifier {
       if (e instanceof JwtExpiredError) {
         doRefresh = true;
       } else {
-        // console.log("Token verification has failed: ", e);
         return [];
       }
     }
