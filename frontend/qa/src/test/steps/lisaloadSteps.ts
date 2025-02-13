@@ -4,10 +4,6 @@ import { runLighthouse } from "../../helper/wrapper/runLighthouse";
 
 let lighthouseReport: any;
 
-When("I run Lighthouse analysis for {string}", async function (url) {
-    lighthouseReport = await runLighthouse(url);
-});
-
 When("I run Lighthouse analysis for lisa {string} page", async function (pageName) {
     lighthouseReport = await runLighthouse(pageName);
 });
