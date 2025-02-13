@@ -50,7 +50,6 @@ export default function FilesContent({
               {` (${Format.fileSize(file.size)})`}
             </span>
           </span>
-          {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
           <button
             type="button"
             onClick={() => removeSelectedFile(file.name)}
@@ -69,7 +68,6 @@ export default function FilesContent({
               {` (${Format.fileSize(recording.size)})`}
             </span>
           </span>
-          {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
           <button
             type="button"
             onClick={() => removeRecording(recording.name)}

@@ -56,7 +56,6 @@ export default function Toast({ toast, onRemove }: Readonly<Props>) {
       </button>
       {isDismissable && (
         <div className={classes('close')}>
-          {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
           <button type="button" onClick={onClose}>
             <Icons.Close />
           </button>

@@ -41,7 +41,6 @@ const HelpGuidance = ({ helpId, onClose }: PropsHelp) => {
     <>
       <h3 className="help-title">
         <span>HELP / GUIDANCE</span>
-        {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
         <button
           type="button"
           onClick={onClose}

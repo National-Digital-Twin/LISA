@@ -53,7 +53,6 @@ export default function NotificationsMenu() {
         <div className={classes('menu')}>
           <div className={classes('menu-title')}>
             <span>Notifications</span>
-            {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
             <button
               type="button"
               className={classes('menu-close')}

@@ -172,11 +172,9 @@ export default function IncidentMap({
             onContentClick={onEntryContentClick}
             onMentionClick={() => {}}
           />
-          {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
           <button type="button" className="visit-log" onClick={onVisitLog} title="See in incident log">
             <Icons.LogBook />
           </button>
-          {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
           <button type="button" className="close-info" onClick={onCloseInfo} title="Close information">
             <Icons.Close />
           </button>
