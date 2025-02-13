@@ -11,7 +11,7 @@ import { type LogEntry } from 'common/LogEntry';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { LogEntryTypes } from 'common/LogEntryTypes';
 import { type MentionableType } from 'common/Mentionable';
-import { bem, Icons, Map as MapUtil } from '../../utils';
+import { bem, Icons, MapUtils } from '../../utils';
 import { type FullLocationType, type SpanType } from '../../utils/types';
 import EntryItem from '../EntryList/EntryItem';
 import { INITIAL_VIEW_STATE, MAP_BOUNDS, MAP_STYLE } from './config';
@@ -71,7 +71,7 @@ export default function IncidentMap({
     }).filter((m) => !!m) as LogEntryMarkerType[];
   }, [logEntries, highlightId]);
 
-  const mapBounds: LngLatBoundsLike | undefined = useMemo(() => MapUtil.getBounds(
+  const mapBounds: LngLatBoundsLike | undefined = useMemo(() => MapUtils.getBounds(
     markers.map((m) => m.coordinates)
   ), [markers]);
 

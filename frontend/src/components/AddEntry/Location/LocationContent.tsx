@@ -3,7 +3,7 @@ import { useMemo } from 'react';
 
 // Local imports
 import { type Coordinates, type Location, type LocationType } from 'common/Location';
-import { bem, Form, Map } from '../../../utils';
+import { bem, Form, MapUtils } from '../../../utils';
 import { type FieldValueType, type FullLocationType, type ValidationError } from '../../../utils/types';
 import { MapComponent } from '../../Map';
 import { FormField } from '../../Form';
@@ -32,7 +32,7 @@ export default function LocationContent({
 
   const onLocationTypeChange = (_: string, value: FieldValueType) => {
     onLocationChange(
-      Map.getNewLocation(value as LocationType, (location ?? {}) as FullLocationType)
+      MapUtils.getNewLocation(value as LocationType, (location ?? {}) as FullLocationType)
     );
   };
 
@@ -45,7 +45,7 @@ export default function LocationContent({
   };
 
   const typeField = useMemo(
-    () => ({ ...TYPE_FIELD, options: Map.getLocationTypes(required) }),
+    () => ({ ...TYPE_FIELD, options: MapUtils.getLocationTypes(required) }),
     [required]
   );
 

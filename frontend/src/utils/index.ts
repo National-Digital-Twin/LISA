@@ -7,7 +7,7 @@ import Form from './Form';
 import Format from './Format';
 import Icons from './Icons';
 import { Incident } from './Incident';
-import { Map } from './Map';
+import { MapUtils } from './Map';
 import { Search } from './Search';
 import Validate from './Validate';
 
@@ -27,7 +27,7 @@ export {
   Format,
   Icons,
   Incident,
-  Map,
+  MapUtils,
   Search,
   Utils,
   Validate
