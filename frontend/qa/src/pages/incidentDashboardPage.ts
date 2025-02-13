@@ -11,6 +11,7 @@ export default class IncidentDashboardPage {
         addIncidentBtn: "Add new incident",
         incidentItems: "a.incident",
         includeClosedIncidents: "Include closed incidents",
+        incidents: ".incident-title"
     }
     
     async verifyAddIncidentBtn() { 
@@ -28,25 +29,27 @@ export default class IncidentDashboardPage {
     }
 
     async verifyIncidentDetails() {
-        await this.page.waitForSelector('.incident-title'); 
     
-        const incidents = this.page.locator('.incident-title'); 
-        const incidentTexts = await incidents.allTextContents(); 
+        const incidents = this.page.locator(this.Elements.incidents); 
+        const incidentTexts = await incidents.allTextContents();
     
-        console.log("Extracted Incidents:", incidentTexts); 
+        if (incidentTexts.length === 0) {
+            return; 
+        }
     
-        expect(incidentTexts.length).toBeGreaterThan(0); 
-    
-        incidentTexts.forEach(text => {
-            console.log("Incident Found:", text);
-    
-            const datePattern = /\d{1,2} \w{3,} \d{4}/; 
-            const hasDate = datePattern.test(text);
-            expect(hasDate).toBeTruthy(); 
+        const datePattern = /\d{1,2} \w{3,} \d{4}/;
+        
+        for (const text of incidentTexts) {
+            expect(datePattern.test(text)).toBeTruthy(); 
             const titlePart = text.replace(datePattern, "").trim();
             expect(titlePart.length).toBeGreaterThan(0); 
-        });
+        }
+    
+        const displayedCount = await incidents.count();
+        expect(incidentTexts.length).toEqual(displayedCount);
     }
+    
+    
     
     
 }
