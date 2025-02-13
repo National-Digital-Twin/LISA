@@ -5,7 +5,6 @@ import { Link, useNavigate } from 'react-router-dom';
 // Local imports
 import { useAuth } from '../hooks';
 
-// TODO: Replace this with a Cognito Custom UI.
 const Login = () => {
   const { user } = useAuth();
   const navigate = useNavigate();

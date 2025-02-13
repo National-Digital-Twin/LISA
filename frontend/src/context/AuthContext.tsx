@@ -30,10 +30,6 @@ const AuthContextProvider = ({ children }: PropsWithChildren) => {
     const isOffline = error?.message === 'Failed to fetch';
     setOffline(isOffline);
 
-    // TODO: Figure out how we handle the authenticated flag
-    // when offline.
-    // Presently, we don't have a user object to use at this
-    // point, following a page reload.
     const isUnauthenticated = error?.status === 403;
     setAuthenticated(!isUnauthenticated);
     if (isUnauthenticated) {

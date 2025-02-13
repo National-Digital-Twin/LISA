@@ -51,10 +51,6 @@ const Validate = {
       errors.push(...extractErrors(details as Details));
     }
 
-    // TODO: See if there's a way to do this with just Referrer
-    // and, ideally, it'd all come from the incident, above.
-    // As it stands, I'm not entirely sure runtypes is doing the job
-    // it was introduced to do.
     let referrerValidation;
     if (incident.referrer?.supportRequested === 'Yes') {
       referrerValidation = ReferralWithSupport.validate(incident.referrer);

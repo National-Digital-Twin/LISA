@@ -65,7 +65,7 @@ export const useCreateLogEntry = (incidentId?: string) => {
             {
               ...newLogEntry,
               id: Math.random().toString(), // We should probably have UUIDs here,
-              sequence: `-${countOffline + 1}`, // TODO: Figure out what to use for referencing here,
+              sequence: `-${countOffline + 1}`,
               offline: true
             }
           ]
