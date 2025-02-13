@@ -2,10 +2,9 @@
 
 1. Install docker and nodejs (version 20+)
 
-2. Make sure you have the docker image imported (this only needs to be done once):
-
-```shell
-gzip -dc scg-0.80.0.tar.gz | docker load 
+2. Make sure you build the docker image for the smart cache graph. This can be done by navigating to the deployment/scg folder and running the following command:
+```bash
+docker build -t lisa/smart-cache-graph .
 ```
 
 3. Ask for the AWS API token. It is required to access the Cognito API.
