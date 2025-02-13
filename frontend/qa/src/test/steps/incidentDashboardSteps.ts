@@ -9,3 +9,15 @@ Then('the Add new incident button should be visible', async function () {
       incidentDashboardPage.verifyAddIncidentBtn();
 
 });
+
+Then('Incidents are displayed on the dashboard', async function () {
+    incidentDashboardPage = new IncidentDashboardPage(basePage.page);
+    incidentDashboardPage.verifyIncidentDetails();
+
+});
+
+When('I click on include closed incident', async function () {
+    incidentDashboardPage = new IncidentDashboardPage(basePage.page);
+    incidentDashboardPage.checkClosedIncidentCheckBox();
+
+});
