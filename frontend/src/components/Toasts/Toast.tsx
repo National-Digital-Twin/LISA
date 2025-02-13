@@ -2,9 +2,6 @@ import { useEffect, useRef } from 'react';
 import { Icons, bem } from '../../utils';
 import { ToastEntry } from '../../utils/types';
 
-/* eslint-disable jsx-a11y/click-events-have-key-events */
-/* eslint-disable jsx-a11y/no-static-element-interactions */
-
 interface Props {
   toast: ToastEntry;
   onRemove: (id: string) => void;
@@ -52,10 +49,11 @@ export default function Toast({ toast, onRemove }: Readonly<Props>) {
       className={classes()}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
+      role="alertdialog"
     >
-      <div className={classes('content')} onClick={onClose}>
+      <button className={classes('content')} onClick={onClose} type="button">
         {content}
-      </div>
+      </button>
       {isDismissable && (
         <div className={classes('close')}>
           {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
