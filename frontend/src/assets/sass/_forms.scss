@@ -6,7 +6,7 @@ li.major-incident-no,
 li.major-incident-yes {
   margin: 0 !important;
   padding: 0 !important;
-  a {
+  a, button {
     display: block;
     width: 80% !important;
     background-color: $green !important;
@@ -15,7 +15,7 @@ li.major-incident-yes {
   }
 }
 li.major-incident-no {
-  a {
+  a, button {
     background-color: $red-dark !important;
   }
 }
