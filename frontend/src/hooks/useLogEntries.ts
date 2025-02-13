@@ -1,4 +1,5 @@
 // Global imports
+import { v4 as uuidV4 } from 'uuid';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 // Local imports
@@ -64,7 +65,7 @@ export const useCreateLogEntry = (incidentId?: string) => {
             ...previousEntries,
             {
               ...newLogEntry,
-              id: Math.random().toString(), // We should probably have UUIDs here,
+              id: uuidV4(),
               sequence: `-${countOffline + 1}`,
               offline: true
             }

@@ -36,6 +36,7 @@
     "react-map-gl": "^7.1.7",
     "react-router-dom": "^6.13.0",
     "react-select": "^5.8.0",
+    "uuid": "^11.0.5",
     "vite-plugin-svgr": "^4.2.0"
   },
   "devDependencies": {
