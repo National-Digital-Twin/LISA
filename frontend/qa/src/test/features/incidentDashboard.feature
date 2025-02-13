@@ -6,7 +6,7 @@ Feature: Incident Dashboard Page
    Scenario: Verify the Add new incident button is visible on the Lisa Incident Dashboard page
       Then the Add new incident button should be visible
 
-  Scenario: verify closed incidents are visible on the dashboard when checking the closed incidents checkbox
+  Scenario: verify all incidents are visible on the dashboard when checking the closed incidents checkbox
        When I click on include closed incident
        Then Incidents are displayed on the dashboard  
     
