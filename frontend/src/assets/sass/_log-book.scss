@@ -177,6 +177,8 @@
   vertical-align: top;
   .log-entry-details,
   .log-entry-meta {
+    background: none;
+    border: none;
     padding-left: 10px;
     display: inline-block;
     div {
@@ -441,6 +443,8 @@
     font-size: 1.1rem;
     line-height: 1.5rem;
     width: 100%;
+    background: none;
+    border: none;
     .recordings {
       font-weight: 700;
       div {
