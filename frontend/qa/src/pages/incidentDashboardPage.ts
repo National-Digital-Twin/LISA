@@ -28,24 +28,23 @@ export default class IncidentDashboardPage {
     }
 
     async verifyIncidentDetails() {
-        await this.page.waitForSelector('.incident-title'); // Ensure elements are loaded
+        await this.page.waitForSelector('.incident-title'); 
     
-        const incidents = this.page.locator('.incident-title'); // Locate incidents
-        const incidentTexts = await incidents.allTextContents(); // Extract text
+        const incidents = this.page.locator('.incident-title'); 
+        const incidentTexts = await incidents.allTextContents(); 
     
-        console.log("Extracted Incidents:", incidentTexts); // Debugging
+        console.log("Extracted Incidents:", incidentTexts); 
     
-        expect(incidentTexts.length).toBeGreaterThan(0); // Ensure incidents exist
+        expect(incidentTexts.length).toBeGreaterThan(0); 
     
         incidentTexts.forEach(text => {
             console.log("Incident Found:", text);
     
-            const datePattern = /\d{1,2} \w{3,} \d{4}/; // Matches '11 Feb 2025'
+            const datePattern = /\d{1,2} \w{3,} \d{4}/; 
             const hasDate = datePattern.test(text);
-            expect(hasDate).toBeTruthy(); // Validate date
-    
+            expect(hasDate).toBeTruthy(); 
             const titlePart = text.replace(datePattern, "").trim();
-            expect(titlePart.length).toBeGreaterThan(0); // Validate title
+            expect(titlePart.length).toBeGreaterThan(0); 
         });
     }
     
