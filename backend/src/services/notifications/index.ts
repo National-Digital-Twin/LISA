@@ -6,10 +6,10 @@ import { Notification } from 'common/Notification';
 import * as ia from '../../ia';
 import PubSubManager from '../../pubSub/manager';
 import { literalDate, ns } from '../../rdfutil';
-import { NotificationInput } from './types';
+import { UserMentionInput } from './types';
 import { getCreateData, getFetchOptionals, getTypesList, parseNotification } from './utils';
 
-export async function create(input: NotificationInput) {
+export async function create(input: UserMentionInput) {
   const id = randomUUID();
   const idNode = ns.data(id);
   const additionalData = getCreateData(idNode, input);

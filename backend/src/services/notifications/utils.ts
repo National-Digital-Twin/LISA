@@ -1,7 +1,7 @@
 import * as sparql from 'rdf-sparql-builder';
 
 import { NotificationType, UserMentionNotification, type Notification } from 'common/Notification';
-import { type NotificationInput } from './types';
+import { type UserMentionInput } from './types';
 import { ResultRow } from '../../ia';
 import { nodeValue, ns } from '../../rdfutil';
 import { ApplicationError } from '../../errors';
@@ -10,7 +10,7 @@ export function getTypesList(): unknown {
   return [ns.lisa('UserMentionNotification')];
 }
 
-export function getCreateData(idNode: unknown, input: NotificationInput): unknown[] {
+export function getCreateData(idNode: unknown, input: UserMentionInput): unknown[] {
   switch (input.type) {
   case 'UserMentionNotification':
     return [
