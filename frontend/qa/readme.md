@@ -1,4 +1,4 @@
-# Playwright (TS binding) + Cucumber (BDD)
+# Playwright + Cucumber (BDD)
 
 Cucumber is a popular behavior-driven development (BDD) tool that allows developers and stakeholders to collaborate on defining and testing application requirements in a human-readable format. 
 TypeScript is a powerful superset of JavaScript that adds optional static typing, making it easier to catch errors before runtime. By combining these two tools, we can create more reliable and maintainable tests.
@@ -53,3 +53,15 @@ node js needs to be latest or minimum version 22
 9. `package.json` -> Contains all the dependencies
 10. `src\helper\auth` -> Storage state (Auth file)
 11. `src\helper\util` -> Read test data from json & logger
+
+
+# Performance testing
+npx lighthouse --version
+
+Check if Chrome is installed
+sudo apt update
+wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+sudo apt install -y ./google-chrome-stable_current_amd64.deb
+
+--Check chrome installation
+google-chrome --version
