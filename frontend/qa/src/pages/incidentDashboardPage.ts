@@ -36,8 +36,7 @@ export default class IncidentDashboardPage {
         const activeIncidenceNumber = Number(allIncidenceText.match(/\d+/)[0]);
         const closedIncidenceNumber = Number(closedIncidenceText.match(/\d+/)[0]); 
         await this.page.waitForSelector(this.Elements.incidents, { state: 'visible' });
-        await this.page.waitForSelector(this.Elements.closedIncidence, { state: 'visible' });
-  
+        await this.page.waitForSelector(this.Elements.closedIncidence, { state: 'visible' }); 
         const totalIncidents = activeIncidenceNumber + closedIncidenceNumber;
         const incidentCount = await incidents.count(); 
         // Validate total incidents
