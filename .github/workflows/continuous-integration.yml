@@ -20,7 +20,7 @@ jobs:
 
     - name: Build
       run: |
-        echo Building and testing the app - v2
+        echo Building and testing the app
         npm ci
         npm run lint
         npm run bundle
