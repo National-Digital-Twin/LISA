@@ -21,6 +21,6 @@ export default class LandingPage {
 
   async clickMenuByName() {
     await this.page.locator(this.Elements.menuLisa).click();
-  await this.page.waitForTimeout(3000);
-    }
+    await this.page.waitForTimeout(3000);
+  }
 }
