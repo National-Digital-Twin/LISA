@@ -1,16 +1,16 @@
 module.exports = {
-  env: { browser: true, es2020: true, '@vitest/env': true },
+  env: { browser: true, es2020: true, 'jest/globals': true },
   extends: [
     'eslint:recommended',
     'plugin:@typescript-eslint/recommended',
     'plugin:react-hooks/recommended',
-    'plugin:@vitest/legacy-recommended',
     'plugin:testing-library/react',
+    'plugin:jest/recommended',
     'airbnb'
   ],
   parser: '@typescript-eslint/parser',
   parserOptions: { ecmaVersion: 'latest', sourceType: 'module' },
-  plugins: ['react-refresh', 'html', '@vitest', 'testing-library'],
+  plugins: ['react-refresh', 'html', 'testing-library', 'jest'],
   settings: {
     'import/extensions': ['.js', '.jsx', '.ts', '.tsx'],
     'import/resolver': {

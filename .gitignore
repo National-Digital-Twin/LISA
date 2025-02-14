@@ -29,6 +29,6 @@ frontend/qa/test-results/assets
 frontend/qa/@rerun.txt
 frontend/qa/*.deb
 
-#vitest
+#jest
 frontend/coverage
 

@@ -5,13 +5,13 @@ import { useNavigate } from 'react-router-dom';
 import FormField from '../FormField';
 import { providersRender } from '../../../test-utils';
 
-const mockOnChange = vi.fn();
+const mockOnChange = jest.fn();
 
-vi.mock('react-router-dom', async () => {
-  const actual = await vi.importActual('react-router-dom');
+jest.mock('react-router-dom', () => {
+  const actual = jest.requireActual('react-router-dom');
   return {
     ...actual,
-    useNavigate: vi.fn()
+    useNavigate: jest.fn()
   };
 });
 
@@ -143,8 +143,8 @@ describe('FormField Tests', () => {
   });
 
   it('Displays the location field for field type Location and navigates to location', async () => {
-    const mockNavigate = vi.fn();
-    vi.mocked(useNavigate).mockReturnValue(mockNavigate);
+    const mockNavigate = jest.fn();
+    jest.mocked(useNavigate).mockReturnValue(mockNavigate);
     providersRender(
       <FormField
         field={{
