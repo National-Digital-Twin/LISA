@@ -27,6 +27,7 @@ function getStorageState(user: string):
     } {
   if (user.endsWith('admin')) return 'src/helper/auth/admin.json';
   if (user.endsWith('lead')) return 'src/helper/auth/lead.json';
+  return '';
 }
 
 BeforeAll(async () => {
@@ -72,7 +73,7 @@ Before({ tags: '@auth' }, async ({ pickle }) => {
   basePage.logger = createLogger(options(scenarioName));
 });
 
-After(async function ({ pickle, result }) {
+After(async function TestCaseHook({ pickle, result }) {
   let videoPath: string;
   let img: Buffer;
   const path = `./test-results/trace/${pickle.id}.zip`;

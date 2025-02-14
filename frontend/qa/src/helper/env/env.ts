@@ -6,7 +6,5 @@ export const getEnv = () => {
       override: true,
       path: `src/helper/env/.env.${process.env.ENV}`
     });
-  } else {
-    console.error('NO ENV PASSED!');
   }
 };

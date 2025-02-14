@@ -1,6 +1,7 @@
 import { Page } from '@playwright/test';
 
 export default class PlaywrightWrapper {
+  // eslint-disable-next-line no-useless-constructor,no-empty-function
   constructor(private readonly page: Page) { }
 
   async goto(url: string) {

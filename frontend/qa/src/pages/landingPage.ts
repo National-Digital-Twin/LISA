@@ -19,7 +19,7 @@ export default class LandingPage {
     await expect(this.page).toHaveTitle('.:Demo Landing Page:.');
   }
 
-  async clickMenuByName(menuName:string) {
+  async clickMenuByName() {
     await this.page.locator(this.Elements.menuLisa).click();
   await this.page.waitForTimeout(3000);
     }

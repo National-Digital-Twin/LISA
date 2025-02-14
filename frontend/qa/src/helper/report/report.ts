@@ -1,4 +1,4 @@
-const report = require('multiple-cucumber-html-reporter');
+import report = require('multiple-cucumber-html-reporter');
 
 report.generate({
   jsonDir: 'test-results',

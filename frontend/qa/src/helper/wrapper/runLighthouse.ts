@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import lighthouse from 'lighthouse';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -12,6 +13,7 @@ export async function runLighthouse(url: string, outputDir = 'test-results/light
   // Launch a headless Chromium browser with debugging enabled
   const chrome = await launch({ chromeFlags: ['--headless'] });
 
+  // eslint-disable-next-line no-use-before-define
   const cookieHeader = await getUserLogin();
 
   // Run Lighthouse on the given URL using the Chromium instance

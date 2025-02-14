@@ -1,4 +1,5 @@
-const fs = require('fs-extra');
+/* eslint-disable no-console */
+import fs from 'fs-extra';
 
 try {
   fs.ensureDir('test-results');
