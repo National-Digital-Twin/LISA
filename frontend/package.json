@@ -9,7 +9,7 @@
     "build": "tsc && vite build",
     "bundle": "npm run generate-pwa-assets && tsc --noEmit && vite build --outDir ../backend/dist/frontend --emptyOutDir",
     "dev:backend": "vite build --mode development --outDir ../backend/dist/frontend --emptyOutDir --watch",
-    "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 3",
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 3",
     "lint:fix": "eslint --fix .",
     "preview": "vite preview",
     "generate-pwa-assets": "pwa-assets-generator --preset minimal public/pwa-source.svg",

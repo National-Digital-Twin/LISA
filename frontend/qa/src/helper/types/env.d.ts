@@ -3,11 +3,11 @@ export { };
 declare global {
     namespace NodeJS {
         interface ProcessEnv {
-            BROWSER: "chrome" | "firefox" | "webkit",
-            ENV: "staging" | "prod" | "demo" | "test",
+            BROWSER: 'chrome' | 'firefox' | 'webkit',
+            ENV: 'staging' | 'prod' | 'demo' | 'test',
             BASEURL: string,
             LISAURL: string,
-            HEAD: "true" | "false"
+            HEAD: 'true' | 'false'
             USERNAME: string,
         }
     }

@@ -1,8 +1,8 @@
-import { Page } from "@playwright/test";
-import { Logger } from "winston";
+import { Page } from '@playwright/test';
+import { Logger } from 'winston';
 
 export const basePage = {
-    // @ts-ignore
-    page: undefined as Page,
-    logger: undefined as Logger
-}
+  // @ts-ignore
+  page: undefined as Page,
+  logger: undefined as Logger
+};
