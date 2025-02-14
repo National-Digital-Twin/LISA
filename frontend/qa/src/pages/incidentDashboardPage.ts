@@ -9,7 +9,6 @@ export default class IncidentDashboardPage {
 
     private Elements = {
         addIncidentBtn: "Add new incident",
-        incidentItems: "a.incident",
         includeClosedIncidents: "Include closed incidents",
         incidents: ".incident-title",
         incidenceH1: ".title",
