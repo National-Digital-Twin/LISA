@@ -28,3 +28,7 @@ frontend/qa/test-results/
 frontend/qa/test-results/assets
 frontend/qa/@rerun.txt
 frontend/qa/*.deb
+
+#jest
+frontend/coverage
+
