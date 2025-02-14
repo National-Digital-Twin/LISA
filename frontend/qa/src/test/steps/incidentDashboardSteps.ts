@@ -10,7 +10,7 @@ Then('I should see Add new incident button displayed', async function () {
 
 });
 
-Then('I should see all incidence displayed with the correct title format', async function () {
+Then('I should see all incidents displayed with the correct title format', async function () {
     incidentDashboardPage = new IncidentDashboardPage(basePage.page);
     incidentDashboardPage.verifyAllIncidenceDetailsAndCount();
 
@@ -21,7 +21,7 @@ When('I click on include closed incident', async function () {
     incidentDashboardPage.checkClosedIncidentCheckBox();
 });
 
-Then('I should see the number of active and closed incidence', async function () {
+Then('I should see the number of active and closed incidents', async function () {
     incidentDashboardPage = new IncidentDashboardPage(basePage.page);
     incidentDashboardPage.verifyActiveAndClosedTitleAreDisplayed();
 
