@@ -17,7 +17,7 @@ export const tokenVerifier = new CognitoTokenVerifier(
 );
 
 export function getAuthCallbackURL() {
-  return `${env.SERVER_URL}/api/auth/callback`;
+  return `${env.SERVER_URL}/api/auth/callback/`;
 }
 
 export function tryParseJSONArray(str: string) {
