@@ -2,18 +2,18 @@ import { expect, Page } from '@playwright/test';
 import PlaywrightWrapper from '../helper/wrapper/PlaywrightWrappers';
 
 export default class IncidentDashboardPage {
-  private base: PlaywrightWrapper;
+  private readonly base: PlaywrightWrapper;
 
-  constructor(private page: Page) {
+  constructor(private readonly page: Page) {
     this.base = new PlaywrightWrapper(page);
   }
 
-  private Elements = {
+  private readonly Elements = {
     addIncidentBtn: 'Add new incident',
     includeClosedIncidents: 'Include closed incidents',
     incidents: '.incident-title',
     incidentH1: '.title',
-    closedIncident: '.subtitle',
+    closedIncident: '.subtitle'
   };
 
   async verifyAddIncidentBtn() {
@@ -33,8 +33,8 @@ export default class IncidentDashboardPage {
     const incidentTexts = await incidents.allTextContents();
     const allIncidentText = await this.page.locator(this.Elements.incidentH1).textContent();
     const closedIncidentText = await this.page.locator(this.Elements.closedIncident).innerText();
-    const activeIncidentNumber = Number(allIncidentText.match(/\d+/)[0]);
-    const closedIncidentNumber = Number(closedIncidentText.match(/\d+/)[0]);
+    const activeIncidentNumber = Number(/\d+/.exec(allIncidentText)[0]);
+    const closedIncidentNumber = Number(/\d+/.exec(closedIncidentText)[0]);
     await this.page.waitForSelector(this.Elements.incidents, { state: 'visible' });
     await this.page.waitForSelector(this.Elements.closedIncident, { state: 'visible' });
     const totalIncidents = activeIncidentNumber + closedIncidentNumber;
@@ -59,9 +59,11 @@ export default class IncidentDashboardPage {
   async verifyActiveAndClosedTitleAreDisplayed() {
     const allIncidentText = await this.page.locator(this.Elements.incidentH1).textContent();
     const closedIncidentText = await this.page.locator(this.Elements.closedIncident).innerText();
-    const activeIncidentNumber = allIncidentText.match(/\d+/)[0];
-    const closedIncidentNumber = closedIncidentText.match(/\d+/)[0];
-    const uiH1IncidentLocator = this.page.getByText(`${activeIncidentNumber} active incidents( +${closedIncidentNumber} closed )`);
+    const activeIncidentNumber = /\d+/.exec(allIncidentText)[0];
+    const closedIncidentNumber = /\d+/.exec(closedIncidentText)[0];
+    const uiH1IncidentLocator = this.page.getByText(
+      `${activeIncidentNumber} active incidents( +${closedIncidentNumber} closed )`
+    );
     const uiH1IncidentText = await uiH1IncidentLocator.textContent();
     expect(allIncidentText).toBe(uiH1IncidentText);
   }
