@@ -11,7 +11,7 @@ let landingPage : LandingPage;
 setDefaultTimeout(60 * 1000 * 2)
 
 
-Given('User login to the ndtp app with the user credentials', async function () {
+Given('I login to the ndtp app with the user credentials', async function () {
       loginPage = new LoginPage(basePage.page);
     await loginPage.navigateToLoginPage(process.env.BASEURL);
     basePage.logger.info("Navigated to the application");

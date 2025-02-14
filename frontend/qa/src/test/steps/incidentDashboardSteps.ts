@@ -4,20 +4,25 @@ import IncidentDashboardPage from "../../pages/incidentDashboardPage";
 
 let incidentDashboardPage: IncidentDashboardPage;
 
-Then('the Add new incident button should be visible', async function () {
+Then('I should see Add new incident button displayed', async function () {
       incidentDashboardPage = new IncidentDashboardPage(basePage.page);
       incidentDashboardPage.verifyAddIncidentBtn();
 
 });
 
-Then('Incidents are displayed on the dashboard', async function () {
+Then('I should see all incidence displayed with the correct title format', async function () {
     incidentDashboardPage = new IncidentDashboardPage(basePage.page);
-    incidentDashboardPage.verifyIncidentDetails();
+    incidentDashboardPage.verifyAllIncidenceDetailsAndCount();
 
 });
 
 When('I click on include closed incident', async function () {
     incidentDashboardPage = new IncidentDashboardPage(basePage.page);
     incidentDashboardPage.checkClosedIncidentCheckBox();
+});
+
+Then('I should see the number of active and closed incidence', async function () {
+    incidentDashboardPage = new IncidentDashboardPage(basePage.page);
+    incidentDashboardPage.verifyActiveAndClosedTitleAreDisplayed();
 
 });
