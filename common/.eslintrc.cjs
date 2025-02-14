@@ -11,22 +11,22 @@ module.exports = {
   settings: {
     'import/extensions': ['.js', '.jsx', '.ts', '.tsx'],
     'import/resolver': {
-      'node': {
-        'extensions': ['.js', '.jsx', '.ts', '.tsx']
+      node: {
+        extensions: ['.js', '.jsx', '.ts', '.tsx']
       }
     }
   },
   rules: {
     indent: ['error', 2],
     'comma-dangle': ['error', 'only-multiline'],
-    'object-curly-newline':  ['error', {
-        ObjectExpression: { consistent: true },
-        ObjectPattern: { multiline: true },
-        ImportDeclaration: { multiline: true },
-        ExportDeclaration: { multiline: true }
+    'object-curly-newline': ['error', {
+      ObjectExpression: { consistent: true },
+      ObjectPattern: { multiline: true },
+      ImportDeclaration: { multiline: true },
+      ExportDeclaration: { multiline: true }
     }],
-    'import/extensions': ['error', 'ignorePackages', { '': 'never', 'ts': 'never' }],
+    'import/extensions': ['error', 'ignorePackages', { '': 'never', ts: 'never' }],
     'import/prefer-default-export': 'off',
     'no-unused-vars': 'off',
   }
-}
+};
