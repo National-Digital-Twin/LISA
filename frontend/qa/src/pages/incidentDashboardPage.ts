@@ -11,8 +11,8 @@ export default class IncidentDashboardPage {
         addIncidentBtn: "Add new incident",
         includeClosedIncidents: "Include closed incidents",
         incidents: ".incident-title",
-        incidenceH1: ".title",
-        closedIncidence: ".subtitle",
+        incidentH1: ".title",
+        closedIncident: ".subtitle",
     }
     
     async verifyAddIncidentBtn() { 
@@ -31,13 +31,13 @@ export default class IncidentDashboardPage {
     async verifyAllIncidenceDetailsAndCount() {
         const incidents = this.page.locator(this.Elements.incidents); 
         const incidentTexts = await incidents.allTextContents();     
-        const allIncidenceText = await this.page.locator(this.Elements.incidenceH1).textContent();
-        const closedIncidenceText = await this.page.locator(this.Elements.closedIncidence).innerText();    
-        const activeIncidenceNumber = Number(allIncidenceText.match(/\d+/)[0]);
-        const closedIncidenceNumber = Number(closedIncidenceText.match(/\d+/)[0]); 
+        const allIncidentText = await this.page.locator(this.Elements.incidentH1).textContent();
+        const closedIncidentText = await this.page.locator(this.Elements.closedIncident).innerText();    
+        const activeIncidentNumber = Number(allIncidentText.match(/\d+/)[0]);
+        const closedIncidentNumber = Number(closedIncidentText.match(/\d+/)[0]); 
         await this.page.waitForSelector(this.Elements.incidents, { state: 'visible' });
-        await this.page.waitForSelector(this.Elements.closedIncidence, { state: 'visible' }); 
-        const totalIncidents = activeIncidenceNumber + closedIncidenceNumber;
+        await this.page.waitForSelector(this.Elements.closedIncident, { state: 'visible' }); 
+        const totalIncidents = activeIncidentNumber + closedIncidentNumber;
         const incidentCount = await incidents.count(); 
         // Validate total incidents
         expect(incidentCount).toEqual(totalIncidents);   
@@ -56,12 +56,12 @@ export default class IncidentDashboardPage {
     }
     
     async verifyActiveAndClosedTitleAreDisplayed() {
-        const allIncidenceText = await this.page.locator(this.Elements.incidenceH1).textContent();
-        const closedIncidenceText = await this.page.locator(this.Elements.closedIncidence).innerText();   
-        const activeIncidenceNumber = allIncidenceText.match(/\d+/)[0];
-        const closedIncidenceNumber = closedIncidenceText.match(/\d+/)[0];
-        const uiH1IncidenceLocator  = await this.page.getByText(`${activeIncidenceNumber} active incidents( +${closedIncidenceNumber} closed )`)
-        const uiH1IncidenceText = await uiH1IncidenceLocator.textContent();
-        expect(allIncidenceText).toBe(uiH1IncidenceText);
+        const allIncidentText = await this.page.locator(this.Elements.incidentH1).textContent();
+        const closedIncidentText = await this.page.locator(this.Elements.closedIncident).innerText();   
+        const activeIncidentNumber = allIncidentText.match(/\d+/)[0];
+        const closedIncidentNumber = closedIncidentText.match(/\d+/)[0];
+        const uiH1IncidentLocator  = await this.page.getByText(`${activeIncidentNumber} active incidents( +${closedIncidentNumber} closed )`)
+        const uiH1IncidentText = await uiH1IncidentLocator.textContent();
+        expect(allIncidentText).toBe(uiH1IncidentText);
         }   
 }
