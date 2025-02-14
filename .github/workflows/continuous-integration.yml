@@ -22,6 +22,8 @@ jobs:
       run: |
         echo Building and testing the app
         npm ci
+        # Clear ESLint cache if it exists
+        rm -f .eslintcache
         npm run lint
         npm run bundle
         echo App built and tested
