@@ -11,12 +11,12 @@ import { useRegisterSW } from 'virtual:pwa-register/react';
 import { post } from './api';
 import AppWrapper from './components/AppWrapper';
 import Toasts from './components/Toasts';
-import AuthContextProvider from './context/AuthContext';
-import MessagingProvider from './context/MessagingContext';
-import ToastProvider from './context/ToastContext';
 
 // Styles
 import './App.scss';
+import MessagingProvider from './providers/MessagingProvider';
+import ToastProvider from './providers/ToastProvider';
+import AuthContextProvider from './providers/AuthContextProvider';
 
 const persister = createSyncStoragePersister({
   storage: window.localStorage
@@ -25,7 +25,7 @@ const persister = createSyncStoragePersister({
 const queryClient = new QueryClient();
 
 queryClient.setMutationDefaults(['createIncident'], {
-  mutationFn: async (incident) => {
+  mutationFn: async (incident: object | FormData) => {
     await queryClient.cancelQueries({ queryKey: ['incidents'] });
     return post('/incident', incident);
   }
