@@ -1,7 +1,7 @@
 {
   "name": "backend",
   "version": "0.0.0",
-  "description": "C477 middleware",
+  "description": "L!SA middleware",
   "type": "module",
   "scripts": {
     "build": "tsc --noEmit",

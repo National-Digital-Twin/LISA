@@ -7,8 +7,8 @@ export const ns = {
   rdfs: namespace('http://www.w3.org/2000/01/rdf-schema#'),
   owl: namespace('http://www.w3.org/2002/07/owl#'),
   ies: namespace('http://ies.data.gov.uk/ontology/ies4#'),
-  lisa: namespace('http://radicalit.co.uk/ontology/lisa#'),
-  data: namespace('http://radicalit.co.uk/lisa#'),
+  lisa: namespace('http://ndtp.co.uk/ontology/lisa#'),
+  data: namespace('http://ndtp.co.uk/lisa#'),
 };
 
 export function literalDate(date: Date) {
