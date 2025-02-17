@@ -19,9 +19,9 @@ const Home = () => {
 
   const show = (incident: Incident): boolean => includeClosed || open(incident);
 
-  const openCount = incidents?.filter(open)?.length || 0;
+  const openCount = incidents?.filter(open)?.length ?? 0;
   const openCountName = openCount === 0 ? 'No' : openCount.toString();
-  const closedCount = (incidents?.length || 0) - openCount;
+  const closedCount = (incidents?.length ?? 0) - openCount;
   const closedCountName = closedCount === 0 ? 'None' : `+${closedCount.toString()}`;
   const title = `${openCountName} active incident${openCount === 1 ? '' : 's'}`;
   const subtitle = `( ${closedCountName} closed )`;
@@ -45,7 +45,7 @@ const Home = () => {
               checked={includeClosed}
               onChange={() => onIncludeClosedChange()}
             />
-            Include closed incidents
+            <span>Include closed incidents</span>
           </label>
           <button type="button" className="button blue" onClick={onAddIncident}>
             + Add new incident

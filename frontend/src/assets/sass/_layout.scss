@@ -92,7 +92,7 @@ img, svg {
   div,
   ul,
   li,
-  o,
+  ol,
   span,
   input,
   select,
@@ -217,12 +217,12 @@ img, svg {
     margin-bottom: 10px;
     margin-top: 10px;
   }
-  p, ul, li {    
+  p, ul, li {
     font-size: 1.15rem;
     line-height: 30px;
   }
 }
-.col1 { 
+.col1 {
   width: 650px;
   margin-right: auto;
   margin-left: auto;

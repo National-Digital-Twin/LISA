@@ -14,7 +14,7 @@ type Details = {
 };
 
 function getErrorText(error: string): string {
-  if (error?.indexOf('Failed constraint check') === 0) {
+  if (error?.startsWith('Failed constraint check')) {
     return error.split(':').pop()?.trim() ?? '';
   }
   return 'Field required';
@@ -51,10 +51,6 @@ const Validate = {
       errors.push(...extractErrors(details as Details));
     }
 
-    // TODO: See if there's a way to do this with just Referrer
-    // and, ideally, it'd all come from the incident, above.
-    // As it stands, I'm not entirely sure runtypes is doing the job
-    // it was introduced to do.
     let referrerValidation;
     if (incident.referrer?.supportRequested === 'Yes') {
       referrerValidation = ReferralWithSupport.validate(incident.referrer);
@@ -89,7 +85,7 @@ const Validate = {
 
       // Check any mentions are valid
       if (!noContent && hasValue(entry.content?.json)) {
-        errors.push(...Validate.mentions((entry.content?.json || '{}'), files));
+        errors.push(...Validate.mentions((entry.content?.json ?? '{}'), files));
       }
 
       // Check the fields if they're supposed to be there...
@@ -116,7 +112,7 @@ const Validate = {
     return hasValue(allFields?.find((f) => f.id === field.id)?.value);
   },
   location: (location: Location | undefined, noneAllowed = false): Array<ValidationError> => {
-    if (!location || !location.type) {
+    if (!location?.type) {
       if (noneAllowed) {
         return [];
       }
@@ -134,10 +130,7 @@ const Validate = {
       .filter((m) => m.type === 'File');
     const isMissing = mentionables.some((mention) => {
       const [owningEntry, fileName] = mention.id.split('::');
-      if (owningEntry === 'this' && !files.find((f) => f.name === fileName)) {
-        return true;
-      }
-      return false;
+      return owningEntry === 'this' && !files.find((f) => f.name === fileName);
     });
     if (isMissing) {
       return [{ fieldId: 'content', error: 'One or more mentioned files are missing' }];

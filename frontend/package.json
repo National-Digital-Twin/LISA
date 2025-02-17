@@ -9,7 +9,7 @@
     "build": "tsc && vite build",
     "bundle": "npm run generate-pwa-assets && tsc --noEmit && vite build --outDir ../backend/dist/frontend --emptyOutDir",
     "dev:backend": "vite build --mode development --outDir ../backend/dist/frontend --emptyOutDir --watch",
-    "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 3",
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 3",
     "lint:fix": "eslint --fix .",
     "preview": "vite preview",
     "generate-pwa-assets": "pwa-assets-generator --preset minimal public/pwa-source.svg",
@@ -36,9 +36,11 @@
     "react-map-gl": "^7.1.7",
     "react-router-dom": "^6.13.0",
     "react-select": "^5.8.0",
+    "uuid": "^11.0.5",
     "vite-plugin-svgr": "^4.2.0"
   },
   "devDependencies": {
+    "@testing-library/dom": "^8.11.1",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.2.0",
     "@testing-library/user-event": "^14.6.1",
@@ -55,6 +57,7 @@
     "eslint-config-airbnb": "^19.0.4",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-html": "^8.1.1",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
     "eslint-plugin-jest": "^28.11.0",
     "eslint-plugin-jest-dom": "^5.5.0",
     "eslint-plugin-react-hooks": "^4.6.2",

@@ -28,5 +28,8 @@
     "playwright-lighthouse": "^4.0.0",
     "ts-node": "^10.9.1",
     "winston": "^3.8.2"
+  },
+  "dependencies": {
+    "chrome-launcher": "^1.1.2"
   }
 }

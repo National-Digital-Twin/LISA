@@ -19,7 +19,7 @@ export default function FormFooter({
   onSubmit,
   submitLabel = 'Save',
   onShowValidationErrors
-}: Props) {
+}: Readonly<Props>) {
   const [showingErrors, setShowingErrors] = useState<boolean>(false);
 
   const onCancelClick = (evt: MouseEvent<HTMLAnchorElement>) => {

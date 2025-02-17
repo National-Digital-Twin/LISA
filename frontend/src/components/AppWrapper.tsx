@@ -5,15 +5,10 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import CreateLog from '../pages/CreateLog';
 import Error404 from '../pages/Error404';
 import Files from '../pages/Files';
-// import Handover from '../pages/Handover';
-// import Hazards from '../pages/Hazards';
 import Home from '../pages/Home';
 import Location from '../pages/Location';
 import Logbook from '../pages/Logbook';
-// import Login from '../pages/Login';
-// import Methane from '../pages/Methane';
 import Overview from '../pages/Overview';
-// import RiskAssessment from '../pages/RiskAssessment';
 import Layout from './Layout';
 
 const AppWrapper = () => {

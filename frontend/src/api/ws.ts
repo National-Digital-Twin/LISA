@@ -1,15 +1,15 @@
 export class WebSocketClient {
   private ws: WebSocket | undefined;
 
-  private pendingMessages: string[] = [];
+  private readonly pendingMessages: string[] = [];
 
   private attemptCount = 0;
 
   private timer: ReturnType<typeof setTimeout> | undefined;
 
-  private messageCallback: (msg: string) => void | undefined;
+  private readonly messageCallback: (msg: string) => void | undefined;
 
-  private connectionCallback: () => void | undefined;
+  private readonly connectionCallback: () => void | undefined;
 
   constructor(connectionCallback: () => void, messageCallback: (msg: string) => void) {
     this.connectionCallback = connectionCallback;

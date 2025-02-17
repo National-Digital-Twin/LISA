@@ -19,8 +19,19 @@ wss.on('connection', (ws: WebSocket, request: IncomingMessage, user: User) => {
   const id = randomUUID();
   broker.addClient(id, ws, user);
 
-  ws.on('message', (message) => {
-    PubSubManager.getInstance().processMessage(id, user, ws, message.toString());
+  ws.on('message', (data) => {
+    let message: string;
+
+    if (typeof data === 'string') {
+      message = data;
+    } else if (Buffer.isBuffer(data)) {
+      message = data.toString('utf8');
+    } else {
+      // For any other type (or object), use JSON.stringify to get a readable string
+      message = JSON.stringify(data);
+    }
+
+    PubSubManager.getInstance().processMessage(id, user, ws, message);
   });
 
   ws.on('pong', () => {

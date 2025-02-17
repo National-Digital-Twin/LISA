@@ -8,8 +8,6 @@ async function sendInsertQuery(insertQuery) {
   const url = new URL(env.SCG_URL);
   url.pathname = 'knowledge/update';
 
-  // console.log(insertQuery.toString());
-
   const insertResp = await fetch(url, {
     method: 'POST',
     headers: {

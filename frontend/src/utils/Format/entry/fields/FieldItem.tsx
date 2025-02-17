@@ -10,7 +10,7 @@ interface Props {
   field: Field;
   entry: LogEntry;
 }
-export function FieldItem({ field, entry }: Props) {
+export function FieldItem({ field, entry }: Readonly<Props>) {
   if (field.type === 'Label') {
     return null;
   }

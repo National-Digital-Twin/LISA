@@ -1,4 +1,5 @@
 // Global imports
+import { v4 as uuidV4 } from 'uuid';
 import { useCallback } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
@@ -45,7 +46,7 @@ export const useCreateIncident = () => {
             ...previousIncidents,
             {
               ...newIncident,
-              id: Math.random().toString(), // We should probably have UUIDs here
+              id: uuidV4(),
               offline: true
             }
           ]

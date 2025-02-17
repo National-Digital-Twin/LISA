@@ -37,7 +37,6 @@
     min-height: 150px;
     resize: none;
     font-size: 1.4rem;
-    caret-color: rgb(5, 5, 5);
     position: relative;
     tab-size: 1;
     outline: 0;
@@ -101,7 +100,6 @@
     margin-top: 8px;
     margin-bottom: 8px;
     tab-size: 2;
-    /* white-space: pre; */
     overflow-x: auto;
     position: relative;
   }
@@ -314,7 +312,6 @@
 
     .format {
       background-size: contain;
-      display: inline-block;
       height: 18px;
       width: 18px;
       margin-top: 2px;
@@ -326,7 +323,6 @@
     .text {
       display: flex;
       line-height: 20px;
-      width: 200px;
       vertical-align: middle;
       font-size: 14px;
       color: #777;

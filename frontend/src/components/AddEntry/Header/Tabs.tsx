@@ -12,7 +12,7 @@ interface Props {
   fileCount: number;
   validationErrors: Array<ValidationError>;
 }
-export default function Tabs({ hash, fileCount, validationErrors }: Props) {
+export default function Tabs({ hash, fileCount, validationErrors }: Readonly<Props>) {
   const hasLocationError: boolean = useMemo(
     () => !!validationErrors.find((e) => e.fieldId.startsWith('location')),
     [validationErrors]

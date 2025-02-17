@@ -10,7 +10,7 @@ type Client = {
 export default class Broker {
   private clients: Record<string, Client> = {};
 
-  private interval: ReturnType<typeof setInterval>;
+  private readonly interval: ReturnType<typeof setInterval>;
 
   constructor() {
     this.interval = setInterval(() => {

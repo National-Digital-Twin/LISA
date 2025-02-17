@@ -8,7 +8,7 @@ interface Props {
   entry: LogEntry;
   value: string | string[] | undefined;
 }
-export function SelectionValue({ entry, value }: Props) {
+export function SelectionValue({ entry, value }: Readonly<Props>) {
   if (!value) {
     return null;
   }

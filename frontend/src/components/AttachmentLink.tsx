@@ -7,15 +7,15 @@ interface Props {
   isOnServer?: boolean;
 }
 
-export default function AttachmentLink({ attachment, isOnServer = true }: Props) {
+export default function AttachmentLink({ attachment, isOnServer = true }: Readonly<Props>) {
   if (!isOnServer) {
     return <span>{attachment.name}</span>;
   }
-  const url = `/api/files/${attachment.key}/${attachment.name}?mimeType=${encodeURIComponent(attachment.mimeType || '')}`;
+  const url = `/api/files/${attachment.key}/${attachment.name}?mimeType=${encodeURIComponent(attachment.mimeType ?? '')}`;
   return (
     <a href={url} target={attachment.key}>
       {attachment.name}
-      <span>{` (${Format.fileSize(attachment.size || 0)})`}</span>
+      <span>{` (${Format.fileSize(attachment.size ?? 0)})`}</span>
     </a>
   );
 }

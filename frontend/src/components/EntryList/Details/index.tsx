@@ -5,13 +5,11 @@ import ChangeStage from './ChangeStage';
 import Default from './Default';
 import SetInformation from './SetInformation';
 
-/* eslint-disable jsx-a11y/click-events-have-key-events */
-/* eslint-disable jsx-a11y/no-static-element-interactions */
 interface Props {
   entry: LogEntry;
   onContentClick: (evt: MouseEvent<HTMLElement>) => void;
 }
-export default function Details({ entry, onContentClick }: Props) {
+export default function Details({ entry, onContentClick }: Readonly<Props>) {
   const { type } = entry;
   let detail = null;
   switch (type) {
@@ -26,8 +24,8 @@ export default function Details({ entry, onContentClick }: Props) {
     break;
   }
   return (
-    <div className="log-entry-details" onClick={onContentClick}>
+    <button className="log-entry-details" onClick={onContentClick} type="button">
       {detail}
-    </div>
+    </button>
   );
 }

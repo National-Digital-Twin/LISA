@@ -4,7 +4,6 @@ import { Link } from 'react-router-dom';
 // Local imports
 import SectionTick from '../assets/images/icon-tick.svg';
 
-// TODO: Address disabled lint issues when doing this page properly.
 const Methane = () => {
   const handleLink = () => {
     document.documentElement.scrollTo(0, 0);
@@ -18,64 +17,61 @@ const Methane = () => {
         </h1>
         <h2>
           <img className="icon" src={SectionTick} alt="Section complete" />
-          M/ETHANE
+          <span>METHANE</span>
         </h2>
         <form>
           <div className="section log-form">
             <ul>
               <li>
-                {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
-                <label>Has a MAJOR INCIDENT been declared?</label>
+                <span className="field-label">Has a MAJOR INCIDENT been declared?</span>
                 <div className="log-form-buttons">
                   <li className="major-incident-yes">
-                    {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-                    <Link onClick={handleLink} className="button submit" to="" role="button">YES</Link>
+                    <button onClick={handleLink} className="button submit" type="button">YES</button>
                   </li>
                   <li className="major-incident-no">
-                    {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-                    <Link onClick={handleLink} className="button submit" to="" role="button">NO</Link>
+                    <button onClick={handleLink} className="button submit" type="button">NO</button>
                   </li>
                 </div>
               </li>
               <li>
                 <label htmlFor="inc-location">
-                  {/* eslint-disable-next-line react/jsx-one-expression-per-line */}
-                  <span className="highlight-blue-dark">EXACT</span> location
+                  <span className="highlight-blue-dark">EXACT</span>
+                  <span> location</span>
                   <textarea id="inc-location" name="inc-location" rows={4} />
                 </label>
               </li>
               <li>
                 <label htmlFor="inc-type">
-                  {/* eslint-disable-next-line react/jsx-one-expression-per-line */}
-                  <span className="highlight-blue-dark">TYPE</span> of incident
+                  <span className="highlight-blue-dark">TYPE</span>
+                  <span> of incident</span>
                   <textarea id="inc-type" name="inc-type" rows={4} />
                 </label>
               </li>
               <li>
                 <label htmlFor="inc-hazards">
-                  {/* eslint-disable-next-line react/jsx-one-expression-per-line */}
-                  <span className="highlight-blue-dark">HAZARDS</span> present or suspected
+                  <span className="highlight-blue-dark">HAZARDS</span>
+                  <span> present or suspected</span>
                   <textarea id="inc-hazards" name="inc-hazards" rows={4} />
                 </label>
               </li>
               <li>
                 <label htmlFor="inc-access">
-                  {/* eslint-disable-next-line react/jsx-one-expression-per-line */}
-                  <span className="highlight-blue-dark">ACCESS</span> routes that are safe to use
+                  <span className="highlight-blue-dark">ACCESS</span>
+                  <span> routes that are safe to use</span>
                   <textarea id="inc-access" name="inc-access" rows={4} />
                 </label>
               </li>
               <li>
                 <label htmlFor="inc-number">
-                  {/* eslint-disable-next-line react/jsx-one-expression-per-line */}
-                  <span className="highlight-blue-dark">NUMBER</span>, type, severity or casualties
+                  <span className="highlight-blue-dark">NUMBER</span>
+                  <span>, type, severity or casualties</span>
                   <textarea id="inc-number" name="inc-number" rows={4} />
                 </label>
               </li>
               <li>
                 <label htmlFor="inc-emgergeny">
-                  {/* eslint-disable-next-line react/jsx-one-expression-per-line */}
-                  <span className="highlight-blue-dark">EMERGENCY</span> services present and those required
+                  <span className="highlight-blue-dark">EMERGENCY</span>
+                  <span> services present and those required</span>
                   <textarea id="inc-emgergeny" name="inc-emgergeny" rows={4} />
                 </label>
               </li>
@@ -84,14 +80,14 @@ const Methane = () => {
 
           <h2>
             <img className="icon" src={SectionTick} alt="Section complete" />
-            REQUIREMENTS
+            <span>REQUIREMENTS</span>
           </h2>
 
           <div className="section log-form">
             <ul>
               <li>
                 <label htmlFor="inc-requirements">
-                  What is required from your organisation
+                  <span>What is required from your organisation?</span>
                   <textarea
                     id="inc-requirements"
                     name="inc-requirements"

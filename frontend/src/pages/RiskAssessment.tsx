@@ -9,31 +9,31 @@ const RiskAssessment = () => {
             <ul>
               <li>
                 <label htmlFor="risk-officer-emergency">
-                  Name of emergency
+                  <span>Name of emergency</span>
                   <input type="text" id="risk-officer-emergency" name="risk-officer-emergency" />
                 </label>
               </li>
               <li>
                 <label htmlFor="risk-location">
-                  Location
+                  <span>Location</span>
                   <input type="text" id="risk-location" name="risk-location" />
                 </label>
               </li>
               <li>
                 <label htmlFor="risk-date">
-                  Date
+                  <span>Date</span>
                   <input className="input-calendar" type="text" id="risk-date" name="risk-date" />
                 </label>
               </li>
               <li>
                 <label htmlFor="risk-time">
-                  Time
+                  <span>Time</span>
                   <input type="text" id="risk-time" name="risk-time" />
                 </label>
               </li>
               <li>
                 <label htmlFor="risk-completed-by">
-                  Assessment completed by
+                  <span>Assessment completed by</span>
                   <input type="text" id="risk-completed-by" name="risk-completed-by" />
                 </label>
               </li>
@@ -43,19 +43,19 @@ const RiskAssessment = () => {
             <ul>
               <li>
                 <label htmlFor="risk-reviewed">
-                  Reviewed by
+                  <span>Reviewed by</span>
                   <input type="text" id="risk-reviewed" name="risk-reviewed" />
                 </label>
               </li>
               <li>
                 <label htmlFor="risk-reviewed-date">
-                  Reviewed date
+                  <span>Reviewed date</span>
                   <input className="input-calendar" type="text" id="risk-reviewed-date" name="risk-reviewed-date" />
                 </label>
               </li>
               <li>
                 <label htmlFor="risk-reviewed-date">
-                  Time Review completed
+                  <span>Time Review completed</span>
                   <input type="text" id="risk-reviewed-time-completed" name="risk-reviewed-time-completed" />
                 </label>
               </li>

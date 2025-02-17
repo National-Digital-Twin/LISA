@@ -38,7 +38,7 @@ export default function FormContent({
   validationErrors,
   onFieldChange,
   onAddRecording
-}: Props) {
+}: Readonly<Props>) {
   const recorderControls = useAudioRecorder();
   const [noContent, setNoContent] = useState<boolean>(false);
   const [description, setDescription] = useState<string | undefined>();

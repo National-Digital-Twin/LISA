@@ -6,7 +6,7 @@ li.major-incident-no,
 li.major-incident-yes {
   margin: 0 !important;
   padding: 0 !important;
-  a {
+  a, button {
     display: block;
     width: 80% !important;
     background-color: $green !important;
@@ -15,7 +15,7 @@ li.major-incident-yes {
   }
 }
 li.major-incident-no {
-  a {
+  a, button {
     background-color: $red-dark !important;
   }
 }
@@ -364,7 +364,7 @@ li.major-incident-no {
   }
 }
 .log-date-time {
-  height: 45px; // TODO: Standardise these heights.
+  height: 45px;
   line-height: 45px;
   display: flex;
   gap: 10px;
@@ -410,7 +410,6 @@ li.major-incident-no {
         background-color: $black;
       }
     }
-    /* TODO: Look at appropriate styling for disabled buttons */
     &:disabled {
       opacity: 0.5;
       cursor: not-allowed;

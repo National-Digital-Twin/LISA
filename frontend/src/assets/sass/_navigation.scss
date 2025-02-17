@@ -27,6 +27,14 @@ nav {
     display: block;
     cursor: pointer;
   }
+  button {
+    background-color: transparent;
+    border: none;
+    img {
+      width: 20px;
+      height: auto;
+    }
+  }
 }
 
 .nav-menu-links {

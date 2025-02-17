@@ -1,28 +1,26 @@
-import { expect, Page } from "@playwright/test";
-import PlaywrightWrapper from "../helper/wrapper/PlaywrightWrappers";
+import { expect, Page } from '@playwright/test';
+import PlaywrightWrapper from '../helper/wrapper/PlaywrightWrappers';
 
 export default class LandingPage {
-    private base: PlaywrightWrapper
-    constructor(private page: Page) {
-        this.base = new PlaywrightWrapper(page);
-    }
+  private readonly base: PlaywrightWrapper;
 
-    //Object Locators
-    private Elements = {
-        menuLisa: "//div[.='LISA']",
-        menuIris: "",
-        menuParalog: "",
-    }
+  constructor(private readonly page: Page) {
+    this.base = new PlaywrightWrapper(page);
+  }
 
-    async verifyDemoLandingPage() {
-        await expect(this.page).toHaveTitle(".:Demo Landing Page:.");
-    }
-    
-    async clickMenuByName(menuName:string) {
-        //await this.base.waitAndClick(this.Elements.loginBtn);
-        await this.page.locator(this.Elements.menuLisa).click();
-        await this.page.waitForTimeout(3000);
-    }
+  // Object Locators
+  private readonly Elements = {
+    menuLisa: "//div[.='LISA']",
+    menuIris: '',
+    menuParalog: '',
+  };
 
+  async verifyDemoLandingPage() {
+    await expect(this.page).toHaveTitle('.:Demo Landing Page:.');
+  }
 
+  async clickMenuByName() {
+    await this.page.locator(this.Elements.menuLisa).click();
+    await this.page.waitForTimeout(3000);
+  }
 }

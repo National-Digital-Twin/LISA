@@ -27,7 +27,7 @@ export default function FormGroup({
   entries = undefined,
   validationErrors,
   onFieldChange
-}: Props) {
+}: Readonly<Props>) {
   const [open, setOpen] = useState<boolean>(group.defaultOpen ?? false);
 
   if (!Form.groupHasFields(group, fields)) {

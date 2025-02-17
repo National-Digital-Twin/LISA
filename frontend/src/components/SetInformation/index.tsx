@@ -17,7 +17,7 @@ interface Props {
   onSetInformation: (setInformationEntry: Partial<LogEntry>) => void;
   onCancel: () => void;
 }
-export default function SetInformation({ incident, onSetInformation, onCancel }: Props) {
+export default function SetInformation({ incident, onSetInformation, onCancel }: Readonly<Props>) {
   const [modal] = useState<boolean>(sessionStorage.getItem(MODAL_KEY) === 'yes');
   const [validationErrors, setValidationErrors] = useState<Array<ValidationError>>([]);
   const [showValidationErrors, setShowValidationErrors] = useState<boolean>(false);

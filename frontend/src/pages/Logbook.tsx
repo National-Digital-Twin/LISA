@@ -22,7 +22,7 @@ const Logbook = () => {
   const [appliedFilters, setAppliedFilters] = useState<FilterType>({ author: [], category: [] });
   const [searchText, setSearchText] = useState<string>('');
 
-  useLogEntriesUpdates(incidentId || '');
+  useLogEntriesUpdates(incidentId ?? '');
   const navigate = useNavigate();
 
   const incident = incidents?.find((inc) => inc.id === incidentId);
@@ -80,7 +80,7 @@ const Logbook = () => {
 
   const onContentClick = (evt: MouseEvent<HTMLElement>) => {
     const target: SpanType = evt.target as unknown as SpanType;
-    if (target && target.getAttribute('data-lexical-mention')) {
+    if (target?.getAttribute('data-lexical-mention')) {
       onMentionClick({
         id: target.getAttribute('data-lexical-mention') as string,
         type: target.getAttribute('data-lexical-mention-type') as MentionableType,

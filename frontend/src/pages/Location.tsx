@@ -12,7 +12,7 @@ const Location = () => {
   const { incidentId } = useParams();
   const { incidents } = useIncidents();
   const { logEntries } = useLogEntries(incidentId);
-  useLogEntriesUpdates(incidentId || '');
+  useLogEntriesUpdates(incidentId ?? '');
 
   useEffect(() => {
     document.documentElement.scrollTo(0, 0);
