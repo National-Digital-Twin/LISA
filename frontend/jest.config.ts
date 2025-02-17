@@ -7,7 +7,7 @@ export default {
   },
   moduleNameMapper: {
     '^common/(.*)$': '<rootDir>/../common/$1',
-    '^.+\\.svg\\?react$': 'jest-transformer-svg'
+    '^(.*).svg\\?react$': '$1.svg'
   },
   setupFilesAfterEnv: ['<rootDir>/src/setupTests.ts']
 };
