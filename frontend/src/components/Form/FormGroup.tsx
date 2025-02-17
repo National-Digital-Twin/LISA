@@ -52,39 +52,41 @@ export default function FormGroup({
             </Link>
           </li>
           {group.description && (
-            <li className={classes('description', [], 'full-width')}>
-              {group.description}
-            </li>
+            <li className={classes('description', [], 'full-width')}>{group.description}</li>
           )}
-          {fields.filter((f) => group.fieldIds.includes(f.id)).map((field) => (
-            <FormField
-              key={field.id}
-              field={{
-                ...field,
-                value: Form.getFieldValue(field, entry)
-              }}
-              entries={entries}
-              error={Form.getError(field, validationErrors)}
-              onChange={onFieldChange}
-              className={field.className}
-            />
-          ))}
+          {fields
+            .filter((f) => group.fieldIds.includes(f.id))
+            .map((field) => (
+              <FormField
+                key={field.id}
+                field={{
+                  ...field,
+                  value: Form.getFieldValue(field, entry)
+                }}
+                entries={entries}
+                error={Form.getError(field, validationErrors)}
+                onChange={onFieldChange}
+                className={field.className}
+              />
+            ))}
         </ul>
       </li>
     );
   }
 
-  return fields.filter((f) => group.fieldIds.includes(f.id)).map((field) => (
-    <FormField
-      key={field.id}
-      field={{
-        ...field,
-        value: Form.getFieldValue(field, entry)
-      }}
-      entries={entries}
-      error={Form.getError(field, validationErrors)}
-      onChange={onFieldChange}
-      className={field.className}
-    />
-  ));
+  return fields
+    .filter((f) => group.fieldIds.includes(f.id))
+    .map((field) => (
+      <FormField
+        key={field.id}
+        field={{
+          ...field,
+          value: Form.getFieldValue(field, entry)
+        }}
+        entries={entries}
+        error={Form.getError(field, validationErrors)}
+        onChange={onFieldChange}
+        className={field.className}
+      />
+    ));
 }
