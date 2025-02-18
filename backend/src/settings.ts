@@ -13,6 +13,7 @@ export const env = cleanEnv(process.env, {
   COGNITO_USER_POOL_ID: str(),
   COGNITO_CLIENT_ID: str(),
   COGNITO_CLIENT_SECRET: str({ default: undefined }),
+  COGNITO_CALLBACK_URL: str({ default: 'http://localhost:3000/api/auth/callback/' }),
   S3_BUCKET_ID: str(),
   MAX_UPLOAD_SIZE: num({ default: 104857600 }),
   NODE_ENV: str({ choices: ['development', 'test', 'production', 'staging'], default: 'development' }),
