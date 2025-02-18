@@ -4,7 +4,7 @@ import { CookieOptions, Request, Response } from 'express';
 import { User } from 'common/User';
 
 import { env } from '../settings';
-import { cookieManager, getAuthCallbackURL } from '../util';
+import { cookieManager } from '../util';
 import { getUsers, TokensCookie } from '../auth/cognito';
 
 type AuthState = {
@@ -38,7 +38,7 @@ export async function login(req: Request<object, object, object, {redirect?: str
       response_type: 'code',
       client_id: env.COGNITO_CLIENT_ID,
       scope: 'openid email profile',
-      redirect_uri: getAuthCallbackURL(),
+      redirect_uri: env.COGNITO_CALLBACK_URL,
       state: createAuthState(req.query.redirect, res),
     });
     res.redirect(`https://${env.COGNITO_DOMAIN}/oauth2/authorize?${params}`);
@@ -54,7 +54,7 @@ export async function logout(req: Request, res: Response) {
     response_type: 'code',
     client_id: env.COGNITO_CLIENT_ID,
     scope: 'openid email profile',
-    redirect_uri: getAuthCallbackURL(),
+    redirect_uri: env.COGNITO_CALLBACK_URL,
     state: createAuthState(undefined, res),
   })}`);
 }
@@ -81,7 +81,7 @@ export async function callback(req: Request, res: Response) {
     grant_type: 'authorization_code',
     code,
     client_id: env.COGNITO_CLIENT_ID,
-    redirect_uri: getAuthCallbackURL(),
+    redirect_uri: env.COGNITO_CALLBACK_URL,
   });
   if (env.COGNITO_CLIENT_SECRET) {
     params.set('client_secret', env.COGNITO_CLIENT_SECRET);
