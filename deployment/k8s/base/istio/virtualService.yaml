@@ -8,6 +8,24 @@ spec:
   gateways:
     - lisa/lisa-ingress-gateway
   http:
+    # Rule for root ("/") and "/index.html" to prevent caching
+    - match:
+        - uri:
+            exact: /
+        - uri:
+            exact: /index.html
+      headers:
+        response:
+          add:
+            Cache-Control: "no-cache, no-store, must-revalidate"
+            Pragma: "no-cache"
+            Expires: "0"
+      route:
+        - destination:
+            host: lisa
+            port:
+              number: 80
+
     - match:
         - uri:
             prefix: /
@@ -15,6 +33,7 @@ spec:
         uriRegexRewrite:
           match: ^/(/|$)(.*)
           rewrite: /\2
+
       route:
         - destination:
             host: lisa
