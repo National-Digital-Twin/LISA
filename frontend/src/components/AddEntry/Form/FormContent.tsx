@@ -1,7 +1,7 @@
 // Global imports
 import parse from 'html-react-parser';
-import { useEffect, useMemo, useState } from 'react';
-import { ReactMic } from 'react-mic';
+import { useEffect, useMemo, useState, useCallback } from 'react';
+import { useReactMediaRecorder } from 'react-media-recorder';
 
 // Local imports
 import { type Field } from 'common/Field';
@@ -79,14 +79,45 @@ export default function FormContent({
     setRecording(isActive);
   };
 
-  const addAudioElement = async (blob: Blob) => {
-    const blobHash = await Document.getBlobHash(blob);
-    if (!processedRecordings.includes(blobHash)) {
-      const name = `Recording ${Format.timestamp()}.webm`;
-      onAddRecording(new File([blob], name, { type: 'audio/webm' }));
-      setProcessedRecordings((prev) => [...prev, blobHash]);
+  const addAudioElement = useCallback(
+    async (blob: Blob) => {
+      const blobHash = await Document.getBlobHash(blob);
+      if (!processedRecordings.includes(blobHash)) {
+        const name = `Recording ${Format.timestamp()}.webm`;
+        onAddRecording(new File([blob], name, { type: 'audio/webm' }));
+        setProcessedRecordings((prev) => [...prev, blobHash]);
+      }
+    },
+    [processedRecordings, onAddRecording]
+  );
+
+  // Helper to fetch the Blob from the blob URL provided by react-media-recorder
+  const addAudioElementFromUrl = useCallback(
+    async (blobUrl: string) => {
+      const response = await fetch(blobUrl);
+      const blob = await response.blob();
+      addAudioElement(blob);
+    },
+    [addAudioElement]
+  );
+
+  // Set up react-media-recorder hook
+  const { startRecording, stopRecording, mediaBlobUrl } = useReactMediaRecorder({
+    audio: true,
+    // When recording stops, fetch the blob and pass it along
+    onStop: (blobUrl) => {
+      addAudioElementFromUrl(blobUrl);
     }
-  };
+  });
+
+  // Start or stop recording based on the `recording` state
+  useEffect(() => {
+    if (recording) {
+      startRecording();
+    } else {
+      stopRecording();
+    }
+  }, [recording, startRecording, stopRecording]);
 
   const classes = bem('add-entry-tab', [active ? 'active' : ''], 'form');
 
@@ -120,15 +151,29 @@ export default function FormContent({
           {contentError && <div className="field-error">{contentError.error}</div>}
 
           <div className="recorder-controls">
-            <ReactMic
-              record={recording}
-              className="sound-wave"
-              onStop={(recordedBlob) => addAudioElement(recordedBlob.blob)}
-              onData={(chunk) => console.log('Recording chunk:', chunk)}
-              mimeType="audio/webm"
-              strokeColor="#000000"
-              backgroundColor="#FF5733"
-            />
+            {/* Display a simple indicator and controls for recording */}
+            {recording ? (
+              <>
+                <div className="recording-indicator">Recording in progress...</div>
+                <button type="button" onClick={() => setRecording(false)}>
+                  Stop Recording
+                </button>
+              </>
+            ) : (
+              <>
+                <button type="button" onClick={() => setRecording(true)}>
+                  Start Recording
+                </button>
+                {/* Optionally, if a recording exists, display an audio preview */}
+                {mediaBlobUrl && (
+                  <div className="audio-preview">
+                    <audio src={mediaBlobUrl} controls aria-label="Audio preview recording">
+                      <track kind="captions" />
+                    </audio>
+                  </div>
+                )}
+              </>
+            )}
           </div>
         </li>
       )}
