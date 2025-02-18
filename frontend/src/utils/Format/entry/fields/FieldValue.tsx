@@ -24,7 +24,7 @@ interface Props {
   entry: LogEntry;
   value: string | string[] | undefined;
 }
-export function FieldValue({ field, entry, value }: Props) {
+export function FieldValue({ field, entry, value }: Readonly<Props>) {
   if (field.type === 'Location') {
     return <LocationValue entry={entry} />;
   }

@@ -31,7 +31,6 @@ const CreateLog = () => {
 
   const onFieldChange = (id: string, value: FieldValueType) => {
     setIncident((prev) => Form.updateIncident(prev, id, value));
-    // setIncident((prev) => ({ ...prev, [id]: value }));
   };
 
   useEffect(() => {

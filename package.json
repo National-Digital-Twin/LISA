@@ -1,8 +1,8 @@
 {
-  "name": "c477",
+  "name": "lisa",
   "version": "0.0.0",
   "type": "module",
-  "description": "C477",
+  "description": "L!SA is a system in the incident response and resilience domain. It allows the communication, actions and decisions taken in response to an incident to be recorded and also allows files to be uploaded in connection with an incident.",
   "scripts": {
     "build": "(cd ./frontend && npm run bundle) && (cd ./backend && npm run build)",
     "bundle": "(cd ./frontend && npm run bundle) && (cd ./backend && npm run bundle)",
@@ -18,12 +18,15 @@
   "workspaces": [
     "backend",
     "frontend",
+    "frontend/qa",
     "common"
   ],
   "author": "",
   "private": true,
   "license": "ISC",
   "devDependencies": {
+    "eslint-plugin-import": "^2.31.0",
+    "eslint-plugin-react": "^7.37.4",
     "husky": "^9.0.11",
     "lint-staged": "^15.2.2"
   },

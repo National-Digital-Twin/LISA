@@ -5,7 +5,7 @@ interface Props {
   to: string;
   active: boolean;
 }
-export default function SketchTab({ to, active }: Props) {
+export default function SketchTab({ to, active }: Readonly<Props>) {
   return (
     <Link to={to} className={active ? 'active' : ''}>
       Sketch

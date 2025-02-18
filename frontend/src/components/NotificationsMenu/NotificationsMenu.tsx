@@ -36,7 +36,7 @@ export default function NotificationsMenu() {
     }
   };
 
-  const unreadCount = notifications?.filter((n) => !n.read).length || 0;
+  const unreadCount = notifications?.filter((n) => !n.read).length ?? 0;
   const classes = bem('alerts');
 
   return (
@@ -53,7 +53,6 @@ export default function NotificationsMenu() {
         <div className={classes('menu')}>
           <div className={classes('menu-title')}>
             <span>Notifications</span>
-            {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
             <button
               type="button"
               className={classes('menu-close')}

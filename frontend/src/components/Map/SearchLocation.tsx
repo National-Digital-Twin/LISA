@@ -2,7 +2,7 @@
 import AsyncSelect from 'react-select/async';
 
 // Local imports
-import { Icons, Map } from '../../utils';
+import { Icons, MapUtils } from '../../utils';
 import { type LocationResult } from '../../utils/types';
 
 function DropdownIndicator() {
@@ -18,7 +18,7 @@ const SearchLocation = ({ location, onSelectLocation }: Props) => (
   <AsyncSelect<LocationResult>
     cacheOptions
     defaultOptions
-    loadOptions={(inputValue, callback) => Map.loadLocations(inputValue, callback)}
+    loadOptions={(inputValue, callback) => MapUtils.loadLocations(inputValue, callback)}
     unstyled
     onChange={(option) => {
       if (option) {

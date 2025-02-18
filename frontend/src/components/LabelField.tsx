@@ -2,7 +2,7 @@ interface Props {
   id: string;
   hint: string | undefined;
 }
-export default function LabelField({ id, hint }: Props) {
+export default function LabelField({ id, hint }: Readonly<Props>) {
   if (!hint) {
     return null;
   }

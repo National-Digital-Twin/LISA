@@ -29,9 +29,9 @@ export class CognitoTokenVerifier implements TokenVerifier {
 
   private readonly clientSecret?: string;
 
-  private idVerifier;
+  private readonly idVerifier;
 
-  private accessVerifier;
+  private readonly accessVerifier;
 
   constructor(cognitoDomain: string, userPoolId: string, clientId: string, clientSecret?: string) {
     this.domain = cognitoDomain;
@@ -71,7 +71,6 @@ export class CognitoTokenVerifier implements TokenVerifier {
       if (e instanceof JwtExpiredError) {
         doRefresh = true;
       } else {
-        // console.log("Token verification has failed: ", e);
         return [];
       }
     }

@@ -16,12 +16,8 @@ export const tokenVerifier = new CognitoTokenVerifier(
   env.COGNITO_CLIENT_SECRET,
 );
 
-export function getAuthCallbackURL() {
-  return `${env.SERVER_URL}/api/auth/callback`;
-}
-
 export function tryParseJSONArray(str: string) {
-  if (str?.indexOf('[') === 0) {
+  if (str?.startsWith('[')) {
     try {
       return JSON.parse(str) as string[];
     } catch (e) {

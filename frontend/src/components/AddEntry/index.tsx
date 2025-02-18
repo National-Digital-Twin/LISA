@@ -131,11 +131,11 @@ const AddEntry = ({
     });
   };
 
-  const onFilesSelect = (files: File[]) => {
-    setSelectedFiles((prev) => ([
-      ...prev,
-      ...files.filter((file) => !prev.find((p) => p.name === file.name)),
-    ]));
+  // eslint-disable-next-line max-len
+  const getUniqueFiles = (newFiles: File[], existingFiles: File[]): File[] => newFiles.filter((file) => !existingFiles.some((existingFile) => existingFile.name === file.name));
+
+  const onFilesSelect = (files: File[]): void => {
+    setSelectedFiles((prevFiles) => [...prevFiles, ...getUniqueFiles(files, prevFiles)]);
   };
 
   const removeSelectedFile = (name: string) => {

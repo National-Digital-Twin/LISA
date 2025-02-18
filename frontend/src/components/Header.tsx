@@ -25,7 +25,6 @@ const HOME_ITEM = {
   </div>
 };
 
-// TODO: Make this a menu
 const ALL_INCIDENTS_ITEM = { to: '/', content: 'INCIDENTS' };
 
 const ACTIVE_INCIDENT_ITEMS: Array<MenuItemType> = [
@@ -90,8 +89,9 @@ const Header = ({ helpVisible = false }: Props) => {
     <header>
       <div className="top-header">
         <span className="nav-menu-butt">
-          {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */}
-          <img onMouseDown={handleNavbutt} src={NavButt} alt="Menu" />
+          <button onMouseDown={handleNavbutt} type="button">
+            <img src={NavButt} alt="Menu" />
+          </button>
         </span>
 
         <nav className={`nav-menu-links${navHidden ? ' nav-hidden-small' : ''}`}>
@@ -107,7 +107,6 @@ const Header = ({ helpVisible = false }: Props) => {
           {incident && (
             <ul className="right non-incident">
               <li>
-                {/* TODO: Make this a menu */}
                 <Link onClick={handleLink} to={ALL_INCIDENTS_ITEM.to}>
                   {ALL_INCIDENTS_ITEM.content}
                 </Link>
@@ -126,16 +125,9 @@ const Header = ({ helpVisible = false }: Props) => {
           </div>
           <Icons.Person />
         </div>
-        {/*
-          eslint-disable-next-line
-          jsx-a11y/no-static-element-interactions,
-          jsx-a11y/click-events-have-key-events
-        */}
-        <div className="icon-help" onClick={handleHelpToggle}>
+        <button type="button" className="icon-help" onClick={handleHelpToggle}>
           <img src={IconHelp} alt="Help and Guidance" />
-          {/* // TODO: Use Icons.Help instead. */}
-          {/* <Icons.Help /> */}
-        </div>
+        </button>
         {isHelpVisible && (
           <div ref={helpContainerRef} className="help-guidance-container">
             <HelpGuidance helpId="Log Book" onClose={() => setIsHelpVisible(false)} />

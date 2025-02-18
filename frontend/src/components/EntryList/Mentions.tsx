@@ -11,13 +11,15 @@ function getIds(items?: Array<Partial<Mentionable>>): Array<string> {
   return items?.map((i) => i.id ?? '')?.filter((i) => !!i) ?? [];
 }
 function enhance(ids: Array<string>, entries: Array<LogEntry>): Array<Mentionable> {
-  return ids.map((id) => {
-    const mentionedEntry = entries.find((e) => e.id === id);
-    if (mentionedEntry) {
-      return Format.mentionable.entry(mentionedEntry);
-    }
-    return undefined;
-  }).filter((m) => !!m) as Array<Mentionable>;
+  return ids
+    .map((id) => {
+      const mentionedEntry = entries.find((e) => e.id === id);
+      if (mentionedEntry) {
+        return Format.mentionable.entry(mentionedEntry);
+      }
+      return undefined;
+    })
+    .filter((m) => !!m);
 }
 
 interface Props {

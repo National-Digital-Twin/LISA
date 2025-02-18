@@ -8,9 +8,9 @@ export class User {
 
   private readonly usernameInternal?: string;
 
-  private cachedCognitoUser?: UserType;
+  private readonly cachedCognitoUser?: UserType;
 
-  private groups?: GroupType[];
+  private readonly groups?: GroupType[];
 
   private constructor(accessToken?: CognitoAccessTokenPayload, idToken?: CognitoIdTokenPayload, username?: string) {
     this.accessToken = accessToken;

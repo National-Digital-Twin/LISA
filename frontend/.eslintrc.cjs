@@ -1,14 +1,16 @@
 module.exports = {
-  env: { browser: true, es2020: true },
+  env: { browser: true, es2020: true, 'jest/globals': true },
   extends: [
     'eslint:recommended',
     'plugin:@typescript-eslint/recommended',
     'plugin:react-hooks/recommended',
+    'plugin:testing-library/react',
+    'plugin:jest/recommended',
     'airbnb'
   ],
   parser: '@typescript-eslint/parser',
   parserOptions: { ecmaVersion: 'latest', sourceType: 'module' },
-  plugins: ['react-refresh', 'html'],
+  plugins: ['react-refresh', 'html', 'testing-library', 'jest'],
   settings: {
     'import/extensions': ['.js', '.jsx', '.ts', '.tsx'],
     'import/resolver': {
@@ -22,11 +24,7 @@ module.exports = {
     'jsx-a11y/label-has-associated-control': [
       'error',
       {
-        controlComponents: [
-          'DateTimeInput',
-          'EntryContent',
-          'SelectField'
-        ],
+        controlComponents: ['DateTimeInput', 'EntryContent', 'SelectField'],
         assert: 'both'
       }
     ],

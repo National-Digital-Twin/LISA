@@ -16,7 +16,7 @@ interface Props {
   onChangeStage: (stage: IncidentStage) => void;
   onCancel: () => void;
 }
-export default function ChangeStage({ incident, onChangeStage, onCancel }: Props) {
+export default function ChangeStage({ incident, onChangeStage, onCancel }: Readonly<Props>) {
   const [modal] = useState<boolean>(sessionStorage.getItem(MODAL_KEY) === 'yes');
   const [stage, setStage] = useState<IncidentStage>(incident.stage);
   const [validationErrors, setValidationErrors] = useState<Array<ValidationError>>([]);

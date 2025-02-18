@@ -11,7 +11,7 @@ export default function Files() {
   const { incidentId } = useParams();
   const { incidents } = useIncidents();
   const { attachments } = useAttachments(incidentId);
-  useLogEntriesUpdates(incidentId || '');
+  useLogEntriesUpdates(incidentId ?? '');
 
   const incident = incidents?.find((inc) => inc.id === incidentId);
   const subtitle = useMemo(() => Format.incident.name(incident), [incident]);

@@ -4,7 +4,7 @@ import AttachmentLink from '../AttachmentLink';
 interface Props {
   entry: LogEntry;
 }
-export default function Attachments({ entry }: Props) {
+export default function Attachments({ entry }: Readonly<Props>) {
   const { attachments } = entry;
 
   if (!attachments) {

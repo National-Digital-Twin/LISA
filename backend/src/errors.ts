@@ -26,12 +26,10 @@ export function errorsMiddleware(err: ExpressError, req: Request, res: Response,
     res.status(err.statusCode);
     res.json({ error: err.message });
   } else if (err instanceof MulterError) {
-    switch (err.code) {
-    case 'LIMIT_FILE_SIZE':
+    if (err.code === 'LIMIT_FILE_SIZE') {
       res.status(413);
       res.json({ error: `One or more files exceed the ${Math.round(env.MAX_UPLOAD_SIZE / 1048576)}Mb size limit` });
-      break;
-    default:
+    } else {
       next(err);
     }
   } else {

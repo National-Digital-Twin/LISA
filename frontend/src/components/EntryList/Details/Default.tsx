@@ -6,7 +6,7 @@ import { Format } from '../../../utils';
 interface Props {
   entry: LogEntry;
 }
-export default function Default({ entry }: Props) {
+export default function Default({ entry }: Readonly<Props>) {
   let content: ReactNode = null;
   let fields: ReactNode = null;
   if (entry.content.json) {

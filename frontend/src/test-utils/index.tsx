@@ -1,0 +1,7 @@
+import { ReactNode } from 'react';
+import { render, RenderOptions } from '@testing-library/react';
+import ProvidersWrapper from './ProvidersWrapper';
+
+export const providersRender = (ui: ReactNode, options?: Omit<RenderOptions, 'wrapper'>) =>
+  // eslint-disable-next-line implicit-arrow-linebreak
+  render(ui, { wrapper: ProvidersWrapper, ...options });

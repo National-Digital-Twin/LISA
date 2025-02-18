@@ -7,12 +7,12 @@ import { MODAL_KEY, PRINTABLE_KEY } from '../utils/constants';
 import helpGuidanceData from './helpGuidanceData.json';
 import { Icons } from '../utils';
 
-interface propsHelp {
+interface PropsHelp {
   helpId: string;
   onClose: () => void;
 }
 
-const HelpGuidance = ({ helpId, onClose }: propsHelp) => {
+const HelpGuidance = ({ helpId, onClose }: PropsHelp) => {
   const [modal, setModal] = useState<boolean>(sessionStorage.getItem(MODAL_KEY) === 'yes');
   const [printable, setPrintable] = useState<boolean>(sessionStorage.getItem(PRINTABLE_KEY) === 'yes');
   const filteredHelp = helpGuidanceData.filter((items) => items.id === helpId);
@@ -41,7 +41,6 @@ const HelpGuidance = ({ helpId, onClose }: propsHelp) => {
     <>
       <h3 className="help-title">
         <span>HELP / GUIDANCE</span>
-        {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
         <button
           type="button"
           onClick={onClose}

@@ -190,13 +190,13 @@ function MentionsTypeaheadMenuItem({
   onClick,
   onMouseEnter,
   option,
-}: {
+}: Readonly<{
   index: number;
   isSelected: boolean;
   onClick: () => void;
   onMouseEnter: () => void;
   option: MentionTypeaheadOption;
-}) {
+}>) {
   const className = `item${isSelected ? ' selected' : ''}`;
   const onKeyDown = (evt: KeyboardEvent) => {
     if (evt.key === 'Enter') {
@@ -226,7 +226,8 @@ type MentionsPluginProps = {
   mentionables: Array<Mentionable>;
 };
 
-export default function MentionsPlugin({ mentionables }: MentionsPluginProps): JSX.Element | null {
+export default function MentionsPlugin({ mentionables }: Readonly<MentionsPluginProps>):
+  JSX.Element | null {
   const [editor] = useLexicalComposerContext();
 
   const [queryString, setQueryString] = useState<string | null>(null);

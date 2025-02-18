@@ -7,5 +7,3 @@ export type UserMentionInput = BaseInput & {
   incidentId: string;
   entryId: string;
 }
-
-export type NotificationInput = UserMentionInput;

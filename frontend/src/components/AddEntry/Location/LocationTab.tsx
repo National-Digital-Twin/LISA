@@ -7,7 +7,7 @@ interface Props {
   active: boolean;
   inError: boolean;
 }
-export default function LocationTab({ to, active, inError }: Props) {
+export default function LocationTab({ to, active, inError }: Readonly<Props>) {
   const classes: string = useMemo(() => {
     const arr: Array<string> = [];
     if (active) arr.push('active');
