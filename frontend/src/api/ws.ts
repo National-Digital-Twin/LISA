@@ -30,7 +30,7 @@ export class WebSocketClient {
   }
 
   private connect(isRestoration: boolean = false) {
-    const protocol = window.location.protocol === 'https' ? 'wss' : 'ws';
+    const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
     const ws = new WebSocket(`${protocol}://${window.location.host}/api/ws`);
     ws.onopen = () => {
       this.handleOpen(isRestoration);
