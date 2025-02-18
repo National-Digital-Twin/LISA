@@ -23,4 +23,4 @@ spec:
           headers:
             response:
               set:
-                Content-Security-Policy: "connect-src 'self' data: wss://lisa.demo.ndtp.co.uk ws://lisa.demo.ndtp.co.uk https://api.os.uk https://nominatim.openstreetmap.org"
+                Content-Security-Policy: "connect-src 'self' data: wss://lisa.demo.ndtp.co.uk ws://lisa.demo.ndtp.co.uk https://lisa.demo.ndtp.co.uk https://api.os.uk https://nominatim.openstreetmap.org"
