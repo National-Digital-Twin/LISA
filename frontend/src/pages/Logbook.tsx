@@ -27,7 +27,7 @@ const Logbook = () => {
       const lastEntry = logEntries?.at(-1);
       const hasOffline = lastEntry?.offline === true;
 
-      if (hasOffline) {
+      if (hasOffline || adding) {
         ev.preventDefault();
       }
     };
@@ -37,7 +37,7 @@ const Logbook = () => {
     return () => {
       window.removeEventListener('beforeunload', preventRefresh);
     };
-  }, [logEntries]);
+  }, [adding, logEntries]);
 
   useLogEntriesUpdates(incidentId ?? '');
   const navigate = useNavigate();
