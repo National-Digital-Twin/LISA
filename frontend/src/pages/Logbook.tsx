@@ -1,5 +1,5 @@
 // Global imports
-import { MouseEvent, useMemo, useState } from 'react';
+import { MouseEvent, useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 
 // Local imports
@@ -21,6 +21,23 @@ const Logbook = () => {
   const [sortAsc, setSortAsc] = useState<boolean>(false);
   const [appliedFilters, setAppliedFilters] = useState<FilterType>({ author: [], category: [] });
   const [searchText, setSearchText] = useState<string>('');
+
+  useEffect(() => {
+    const preventRefresh = (ev: BeforeUnloadEvent) => {
+      const lastEntry = logEntries?.at(-1);
+      const hasOffline = lastEntry?.offline === true;
+
+      if (hasOffline) {
+        ev.preventDefault();
+      }
+    };
+
+    window.addEventListener('beforeunload', preventRefresh);
+
+    return () => {
+      window.removeEventListener('beforeunload', preventRefresh);
+    };
+  }, [logEntries]);
 
   useLogEntriesUpdates(incidentId ?? '');
   const navigate = useNavigate();
