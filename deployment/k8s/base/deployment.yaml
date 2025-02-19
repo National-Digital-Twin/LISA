@@ -35,9 +35,9 @@ spec:
 
           image: lisa-image
           livenessProbe:
-            exec:
-              command:
-                - curl -X GET "http://localhost:3000/" || exit 1
+            httpGet:
+              path: /
+              port: 3000
             failureThreshold: 5
             periodSeconds: 30
             timeoutSeconds: 10
