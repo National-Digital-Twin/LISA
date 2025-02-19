@@ -25,6 +25,6 @@ labels:
 images:
   - name: lisa-image
     newName: 503561419905.dkr.ecr.eu-west-2.amazonaws.com/lisa/webapp
-    newTag: '1734525542'
+    newTag: '1739884751'
 
 
