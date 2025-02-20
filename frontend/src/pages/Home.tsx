@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 
 // Local imports
 import { type Incident } from 'common/Incident';
-import { useIncidents } from '../hooks/useIncidents';
+import { useIncidents } from '../hooks';
 import { Format, Icons } from '../utils';
 import { PageTitle } from '../components';
 
