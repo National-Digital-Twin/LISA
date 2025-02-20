@@ -1,11 +1,9 @@
 resources:
-  - namespace.yaml
   - service-account.yaml
   - deployment.yaml
   - service.yaml
-  - istio/preauthentication.yaml
-  - istio/gateway.yaml
   - istio/virtualService.yaml
+  - istio/allow-ingress-authorization-policy.yaml
 
 
 labels:
