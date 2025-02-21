@@ -22,17 +22,6 @@ spec:
                - secretRef:
                    name: lisa-secrets
 
-
-#        - env:
-#            - name: COGNITO_DOMAIN
-#              value: eu-west-224focjndv.auth.eu-west-2.amazoncognito.com
-#            - name: COGNITO_USER_POOL_ID
-#              value: eu-west-2_24fOCjndV
-#            - name: COGNITO_CLIENT_ID
-#              value: 3dss5tt42f0s7v6tdch6bqg63j
-#            - name: COGNITO_CLIENT_SECRET
-#              value: 17orb2f19hu0ih6328bhn50jaqrmkg41btpeokbhet9pins6nhln
-
           image: lisa-image
           livenessProbe:
             httpGet:
@@ -40,7 +29,14 @@ spec:
               port: 3000
             failureThreshold: 5
             periodSeconds: 30
-            timeoutSeconds: 10
+            timeoutSeconds: 20
+          readinessProbe:
+              httpGet:
+                path: /
+                port: 3000
+              failureThreshold: 5
+              periodSeconds: 30
+              timeoutSeconds: 20
           name: lisa
           ports:
             - containerPort: 3000
