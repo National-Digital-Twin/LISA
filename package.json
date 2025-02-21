@@ -12,7 +12,7 @@
     "dev:backend": "cd ./backend && npm run dev",
     "dev": "./node_modules/.bin/run-p dev:frontend dev:backend",
     "lint": "(cd ./common && npm run lint) && (cd ./backend && npm run lint) && (cd ./frontend && npm run lint)",
-    "clean": "rm -rf ./backend/dist",
+    "clean": "rm -rf ./**/*dist && rm -rf node_modules && rm -rf ./**/node_modules",
     "prepare": "husky"
   },
   "workspaces": [
@@ -25,8 +25,6 @@
   "private": true,
   "license": "ISC",
   "devDependencies": {
-    "eslint-plugin-import": "^2.31.0",
-    "eslint-plugin-react": "^7.37.4",
     "husky": "^9.0.11",
     "lint-staged": "^15.2.2"
   },
