@@ -60,23 +60,29 @@ apiRouter.post('/incident/:incidentId/logEntry/:entryId/updateSequence', async (
     return;
   }
 
-  // Is the request queue currently resolving a request for a particular incident?
-  if (incidentId in incidentsRequestQueue) {
-    // Attach the incoming request to until after the current one resolves. If the current one is rejected for whatever reason
-    // then move the current request to the top of the queue.
-    incidentsRequestQueue[incidentId].then(
-      () => logEntry.updateSequence,
-      () => {
-        incidentsRequestQueue[incidentId] = logEntry.updateSequence(req, res);
-      }
-    );
-  } else {
-    // If no request is queued add the first one to be processed.
-    incidentsRequestQueue[incidentId] = logEntry.updateSequence(req, res);
-  }
+  // Chain the update request to the previous one, if any.
+  const previousPromise = incidentsRequestQueue[incidentId] || await (async () => {})();
 
-  // When the promise has been resolved remove the incident from the queue.
-  incidentsRequestQueue[incidentId].finally(() => delete incidentsRequestQueue[incidentId]);
+  // Create a new promise that runs after the previous one has completed.
+  // It's important to catch errors so that the chain doesn't break.
+  const newPromise = (async () => {
+    // Wait for the previous promise to complete.
+    await previousPromise;
+    try {
+      // Await the asynchronous call.
+      await logEntry.updateSequence(req, res);
+    } catch (error) {
+      console.error(`Update sequence error for incident ${incidentId}:`, error);
+    } finally {
+      // Clean up the queue when done.
+      if (incidentsRequestQueue[incidentId] === newPromise) {
+        delete incidentsRequestQueue[incidentId];
+      }
+    }
+  })();
+
+  // Save the new promise in the queue.
+  incidentsRequestQueue[incidentId] = newPromise;
 });
 
 apiRouter.get('/incident/:incidentId/attachments', incident.getAttachments);
