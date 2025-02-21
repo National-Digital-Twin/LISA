@@ -11,7 +11,7 @@ interface Props {
   active: boolean;
   lines: Array<SketchLine>;
   onChangeLines: (lines: Array<SketchLine>) => void;
-  canvasRef: RefObject<Stage>;
+  canvasRef: RefObject<Stage | null>;
 }
 
 export default function SketchContent({
@@ -21,11 +21,12 @@ export default function SketchContent({
   canvasRef
 }: Readonly<Props>) {
   const classes = bem('add-entry-tab', [active ? 'active' : ''], 'sketch');
+  if (canvasRef.current === null) return null;
   return (
     <ul className={classes()}>
       <li className="full-width">
         <Sketch
-          canvasRef={canvasRef}
+          canvasRef={canvasRef as RefObject<Stage>}
           lines={lines}
           setLines={onChangeLines}
           active={active}
