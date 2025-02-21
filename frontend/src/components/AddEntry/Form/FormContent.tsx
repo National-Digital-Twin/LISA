@@ -19,14 +19,14 @@ import { FormField, FormFields } from '../../Form';
 import EntryContent from '../../lexical/EntryContent';
 
 interface Props {
-  active: boolean;
-  entry: Partial<LogEntry>;
-  entries: Array<Partial<LogEntry>> | undefined;
-  incident: Incident;
-  mentionables: Array<Mentionable>;
-  validationErrors: Array<ValidationError>;
-  onFieldChange: OnFieldChange;
-  onAddRecording: (recording: File) => void;
+  readonly active: boolean;
+  readonly entry: Partial<LogEntry>;
+  readonly entries: Array<Partial<LogEntry>> | undefined;
+  readonly incident: Incident;
+  readonly mentionables: Array<Mentionable>;
+  readonly validationErrors: Array<ValidationError>;
+  readonly onFieldChange: OnFieldChange;
+  readonly onAddRecording: (recording: File) => void;
 }
 
 export default function FormContent({
