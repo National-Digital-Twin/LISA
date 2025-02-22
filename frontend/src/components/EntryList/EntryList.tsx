@@ -22,20 +22,34 @@ const EntryList = ({
   onMentionClick
 }: Props) => {
   const sortEntries = (a: LogEntry, b: LogEntry): number => {
-    const aDateTime = a.dateTime ?? '';
-    const bDateTime = b.dateTime ?? '';
+    // If one entry is offline and the other is not, the offline one comes first.
+    if (a.offline && !b.offline) {
+      return -1;
+    }
+    if (!a.offline && b.offline) {
+      return 1;
+    }
+    // If both entries are offline, sort by sequence.
+    if (a.offline && b.offline) {
+      const seqA = Number(a.sequence);
+      const seqB = Number(b.sequence);
+      return seqA - seqB;
+    }
+
+    const aCreatedAt = a.createdAt ?? '';
+    const bCreatedAt = b.createdAt ?? '';
     const aId = a.id ?? '';
     const bId = b.id ?? '';
-    if (aDateTime === bDateTime) {
+    if (aCreatedAt === bCreatedAt) {
       if (sortAsc) {
         return aId.localeCompare(bId);
       }
       return bId.localeCompare(aId);
     }
     if (sortAsc) {
-      return aDateTime.localeCompare(bDateTime);
+      return aCreatedAt.localeCompare(bCreatedAt);
     }
-    return bDateTime.localeCompare(aDateTime);
+    return bCreatedAt.localeCompare(aCreatedAt);
   };
 
   const hasOffline = entries?.some((e) => e.offline === true);
