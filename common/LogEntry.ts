@@ -1,5 +1,5 @@
 // Global imports
-import { Array, Boolean, Optional, Record, Static, String } from 'runtypes';
+import { Array, Boolean, Optional, Record, Static, String, Number } from 'runtypes';
 
 // Local imports
 import { nonFuture } from './constraints';
@@ -34,7 +34,8 @@ export const LogEntry = Record({
 
   // This allows for determining if the Incident has been synced to the server during
   // offline operation.
-  offline: Optional(Boolean)
+  offline: Optional(Boolean),
+  displaySequence: Optional(Number)
 });
 
 // eslint-disable-next-line no-redeclare
