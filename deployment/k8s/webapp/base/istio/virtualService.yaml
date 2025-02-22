@@ -4,9 +4,9 @@ metadata:
   name: lisa
 spec:
   hosts:
-    - lisa.demo.ndtp.co.uk
+    - placeholder
   gateways:
-    - lisa/lisa-ingress-gateway
+    - placeholder
   http:
     # Rule for root ("/") and "/index.html" to prevent caching
     - match:

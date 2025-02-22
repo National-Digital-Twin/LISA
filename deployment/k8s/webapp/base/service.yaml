@@ -4,7 +4,7 @@ metadata:
   annotations: {}
 
   labels:
-    io.kompose.service: lisa-webapp
+    io.kompose.service: lisa
   name: lisa
 spec:
   type: NodePort
