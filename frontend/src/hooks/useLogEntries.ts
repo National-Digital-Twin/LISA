@@ -21,9 +21,7 @@ const useLogEntryUpdateSequence = (incidentId? : string) => {
   const logEntryUpdateSequence = useMutation<unknown, Error, { logEntry: LogEntry }>({
     mutationFn: ({ logEntry }) => post(`/incident/${incidentId}/logEntry/${logEntry.id}/updateSequence`, {}),
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: [`incident/${incidentId}/logEntries`]
-      });
+      queryClient.invalidateQueries({ queryKey: [`incident/${incidentId}/logEntries`] });
     }
   });
 
@@ -41,17 +39,17 @@ export const useCreateLogEntry = (incidentId?: string) => {
       selectedFiles?: File[]
     }
   >({
-    mutationFn: ({ newLogEntry, selectedFiles }) => {
-      let data: undefined | FormData;
+    mutationFn: async ({ newLogEntry, selectedFiles }) => {
+      let data: FormData | Omit<LogEntry, 'id' | 'author'> = newLogEntry;
       if (selectedFiles?.length) {
         data = new FormData();
-        selectedFiles.forEach((file) => data?.append(file.name, file));
+        selectedFiles.forEach((file) => (data as FormData).append(file.name, file));
         data.append('logEntry', JSON.stringify(newLogEntry));
       }
-      return post(`/incident/${incidentId}/logEntry`, data ?? newLogEntry);
+      return post(`/incident/${incidentId}/logEntry`, data);
     },
-    onSuccess: (logEntry) => {
-      logEntryUpdateSequence.mutate({ logEntry });
+    onSuccess: async (logEntry) => {
+      await logEntryUpdateSequence.mutateAsync({ logEntry });
     },
     // optimistic update
     onMutate: async ({ newLogEntry }) => {
