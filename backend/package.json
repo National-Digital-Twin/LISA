@@ -28,6 +28,7 @@
     "express-promise-router": "^4.1.1",
     "helmet": "^7.1.0",
     "multer": "^1.4.5-lts.1",
+    "p-queue": "^8.1.0",
     "rdf-sparql-builder": "^0.2.2",
     "rdflib": "^2.2.35",
     "runtypes": "^6.7.0",

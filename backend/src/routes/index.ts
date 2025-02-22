@@ -2,6 +2,8 @@
 import express from 'express';
 import Router from 'express-promise-router';
 import multer from 'multer';
+// eslint-disable-next-line import/no-unresolved
+import PQueue from 'p-queue';
 
 // Local imports
 import assets from '../services/assets';
@@ -25,7 +27,14 @@ const upload = multer({
 });
 
 const router = Router();
-const incidentsRequestQueue: { [id: string]: Promise<void> } = {};
+const incidentQueues: { [id: string]: PQueue } = {};
+
+function getIncidentQueue(incidentId: string): PQueue {
+  if (!incidentQueues[incidentId]) {
+    incidentQueues[incidentId] = new PQueue({ concurrency: 1 });
+  }
+  return incidentQueues[incidentId];
+}
 
 router.use('/assets', assets);
 // include PWA service worker
@@ -60,29 +69,15 @@ apiRouter.post('/incident/:incidentId/logEntry/:entryId/updateSequence', async (
     return;
   }
 
-  // Chain the update request to the previous one, if any.
-  const previousPromise = incidentsRequestQueue[incidentId] || await (async () => {})();
+  const queue = getIncidentQueue(incidentId);
 
-  // Create a new promise that runs after the previous one has completed.
-  // It's important to catch errors so that the chain doesn't break.
-  const newPromise = (async () => {
-    // Wait for the previous promise to complete.
-    await previousPromise;
-    try {
-      // Await the asynchronous call.
-      await logEntry.updateSequence(req, res);
-    } catch (error) {
-      console.error(`Update sequence error for incident ${incidentId}:`, error);
-    } finally {
-      // Clean up the queue when done.
-      if (incidentsRequestQueue[incidentId] === newPromise) {
-        delete incidentsRequestQueue[incidentId];
-      }
-    }
-  })();
+  await queue.add(async () => {
+    await logEntry.updateSequence(req, res);
+  });
 
-  // Save the new promise in the queue.
-  incidentsRequestQueue[incidentId] = newPromise;
+  if (queue.size === 0 && queue.pending === 0) {
+    delete incidentQueues[incidentId];
+  }
 });
 
 apiRouter.get('/incident/:incidentId/attachments', incident.getAttachments);
