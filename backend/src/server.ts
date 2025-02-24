@@ -8,23 +8,39 @@ import { handleUpgrade } from './pubSub/server';
 
 const server = createServer(app);
 server.on('upgrade', async (request, socket, head) => {
-  const url = new URL(request.url || '', settings.SERVER_URL);
-  if (url.pathname !== '/api/ws') {
-    socket.destroy();
-    return;
-  }
-
-  const userParam = url.searchParams.get('user');
   let user;
-  try {
-    user = JSON.parse(decodeURIComponent(userParam));
-  } catch (error) {
-    console.error('Error parsing user parameter:', error);
+  if (request.url !== '/api/ws') {
     socket.destroy();
     return;
   }
+  try {
+    const response = await fetch(`${settings.IDENTITY_API_URL}/api/v1/user-details`, {
+      method: 'GET',
+      headers: {
+        Cookie: request.headers.cookie
+      },
+      credentials: 'include'
+    });
 
-  await handleUpgrade(request, socket, head, user);
+    if (!response.ok) {
+      socket.destroy();
+    }
+
+    if (response.redirected) {
+      socket.destroy();
+    }
+
+    const userDetails = await response.json();
+
+    user = userDetails.content;
+  } catch (error) {
+    console.log('Error fetching user details', error);
+    socket.destroy();
+  }
+
+  if (user && user.email && user.username) {
+    await handleUpgrade(request, socket, head, user);
+  }
 });
 
 server.listen(settings.PORT, settings.HOST, () => {
