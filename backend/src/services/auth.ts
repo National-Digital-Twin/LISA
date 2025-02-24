@@ -11,21 +11,35 @@ export async function login(
 ) {
   const userDetails = await res.locals.user;
   if (!userDetails) {
-    return res.redirect(env.API_URL);
+    return res.redirect(`${env.ACCESS_API_URL}/oauth2/start`);
   }
   res.send(userDetails);
   return res.redirect('/');
 }
 
 export async function logout(req: Request, res: Response) {
-  res.redirect(
-    `https://${env.COGNITO_DOMAIN}/logout?${new URLSearchParams({
-      response_type: 'code',
-      client_id: env.COGNITO_CLIENT_ID,
-      scope: 'openid email profile',
-      redirect_uri: env.COGNITO_CALLBACK_URL
-    })}`
-  );
+  try {
+    const response = await fetch(`${env.ACCESS_API_URL}/api/v1/links/sign-out`, {
+      method: 'GET',
+      headers: {
+        Cookie: req.headers.cookie
+      },
+      credentials: 'include'
+    });
+
+    if (!response.ok) {
+      return res.status(403).end();
+    }
+    if (response.redirected) {
+      return res.redirect(response.url);
+    }
+
+    const signoutURL = await response.json();
+    return res.redirect(signoutURL.href);
+  } catch (error) {
+    console.log('Error fetching sign-out url', error);
+    return res.status(500).end();
+  }
 }
 
 export async function callback(req: Request, res: Response) {

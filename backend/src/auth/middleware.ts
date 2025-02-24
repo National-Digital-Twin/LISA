@@ -28,7 +28,7 @@ export function authenticate({ failureRedirect }: { failureRedirect?: string }) 
       next();
     } else {
       try {
-        const response = await fetch(`${env.API_URL}/api/v1/user-details`, {
+        const response = await fetch(`${env.ACCESS_API_URL}/api/v1/user-details`, {
           method: 'GET',
           headers: {
             Cookie: req.headers.cookie
@@ -39,7 +39,9 @@ export function authenticate({ failureRedirect }: { failureRedirect?: string }) 
         if (!response.ok) {
           return res.status(403).end();
         }
-        if (response.redirected) return res.status(403).end();
+        if (response.redirected) {
+          return res.status(403).end();
+        }
 
         const userDetails = await response.json();
         res.locals.user = userDetails.content;

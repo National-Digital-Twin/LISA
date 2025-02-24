@@ -20,7 +20,7 @@ export const env = cleanEnv(process.env, {
     choices: ['development', 'test', 'production', 'staging'],
     default: 'development'
   }),
-  API_URL: str({ default: 'http://localhost:3000' })
+  ACCESS_API_URL: str({ default: 'http://localhost:3000' })
 });
 
 const filename = fileURLToPath(import.meta.url); // get the resolved path to the file
