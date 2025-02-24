@@ -3,12 +3,12 @@ import { createServer } from 'http';
 
 // Local imports
 import app from './app';
-import { env } from './settings';
+import { settings } from './settings';
 import { handleUpgrade } from './pubSub/server';
 
 const server = createServer(app);
 server.on('upgrade', async (request, socket, head) => {
-  const url = new URL(request.url || '', 'htttp://dummy');
+  const url = new URL(request.url || '');
   if (url.pathname !== '/api/ws') {
     socket.destroy();
     return;
@@ -27,6 +27,6 @@ server.on('upgrade', async (request, socket, head) => {
   await handleUpgrade(request, socket, head, user);
 });
 
-server.listen(env.PORT, env.HOST, () => {
-  console.log(`Server is running on http://${env.HOST}:${env.PORT}`);
+server.listen(settings.PORT, settings.HOST, () => {
+  console.log(`Server is running on http://${settings.HOST}:${settings.PORT}`);
 });

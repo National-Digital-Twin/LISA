@@ -4,7 +4,7 @@ import { cleanEnv, num, str, url } from 'envalid';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-export const env = cleanEnv(process.env, {
+export const settings = cleanEnv(process.env, {
   PORT: num({ default: 3000 }),
   HOST: str({ default: 'localhost' }),
   SERVER_URL: url({ default: 'http://localhost:3000' }),
@@ -20,7 +20,7 @@ export const env = cleanEnv(process.env, {
     choices: ['development', 'test', 'production', 'staging'],
     default: 'development'
   }),
-  ACCESS_API_URL: str({ default: 'http://localhost:3000' })
+  AUTH_API_URL: str({ default: 'http://localhost:3000' })
 });
 
 const filename = fileURLToPath(import.meta.url); // get the resolved path to the file

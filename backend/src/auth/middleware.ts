@@ -2,7 +2,7 @@
 
 import { Request, Response, NextFunction } from 'express';
 import { CognitoAccessTokenPayload, CognitoIdTokenPayload } from 'aws-jwt-verify/jwt-model';
-import { env } from '../settings';
+import { settings } from '../settings';
 import { User } from './user';
 
 declare global {
@@ -28,7 +28,7 @@ export function authenticate({ failureRedirect }: { failureRedirect?: string }) 
       next();
     } else {
       try {
-        const response = await fetch(`${env.ACCESS_API_URL}/api/v1/user-details`, {
+        const response = await fetch(`${settings.AUTH_API_URL}/api/v1/user-details`, {
           method: 'GET',
           headers: {
             Cookie: req.headers.cookie

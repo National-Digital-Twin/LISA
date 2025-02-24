@@ -6,7 +6,7 @@ import {
 } from '@aws-sdk/client-cognito-identity-provider';
 
 import { UserList, UserListItem } from 'common/User';
-import { env } from '../settings';
+import { settings } from '../settings';
 
 export interface TokensCookie {
   accessToken: string;
@@ -46,7 +46,7 @@ export async function getUsers(): Promise<UserList> {
   const client = getCognitoClient();
 
   const command = new ListUsersCommand({
-    UserPoolId: env.COGNITO_USER_POOL_ID
+    UserPoolId: settings.COGNITO_USER_POOL_ID
   });
 
   const resp = await client.send(command);

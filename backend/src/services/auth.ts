@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 
 import { User } from 'common/User';
 
-import { env } from '../settings';
+import { settings } from '../settings';
 import { getUsers } from '../auth/cognito';
 
 export async function login(
@@ -11,7 +11,7 @@ export async function login(
 ) {
   const userDetails = await res.locals.user;
   if (!userDetails) {
-    return res.redirect(`${env.ACCESS_API_URL}/oauth2/start`);
+    return res.redirect(`${settings.AUTH_API_URL}/oauth2/start`);
   }
   res.send(userDetails);
   return res.redirect('/');
@@ -19,7 +19,7 @@ export async function login(
 
 export async function logout(req: Request, res: Response) {
   try {
-    const response = await fetch(`${env.ACCESS_API_URL}/api/v1/links/sign-out`, {
+    const response = await fetch(`${settings.AUTH_API_URL}/api/v1/links/sign-out`, {
       method: 'GET',
       headers: {
         Cookie: req.headers.cookie
@@ -40,10 +40,6 @@ export async function logout(req: Request, res: Response) {
     console.log('Error fetching sign-out url', error);
     return res.status(500).end();
   }
-}
-
-export async function callback(req: Request, res: Response) {
-  res.redirect('/');
 }
 
 export async function user(req: Request, res: Response) {

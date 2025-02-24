@@ -1,10 +1,10 @@
 import { URL } from 'url';
 
 import { CookieManager } from './auth/cookies';
-import { env } from './settings';
+import { settings } from './settings';
 
 export const cookieManager = new CookieManager({
-  domain: new URL(env.SERVER_URL).hostname,
+  domain: new URL(settings.SERVER_URL).hostname,
   path: '/api'
 });
 
