@@ -1,16 +1,10 @@
-import cookie from 'cookie';
 import { randomUUID } from 'crypto';
 import { IncomingMessage } from 'http';
 import { Duplex } from 'stream';
 import { WebSocket, WebSocketServer } from 'ws';
-
-import { createAuthenticator } from '../auth/middleware';
 import { User } from '../auth/user';
-import { cookieManager, tokenVerifier } from '../util';
 import Broker from './broker';
 import PubSubManager from './manager';
-
-const authenticator = createAuthenticator(tokenVerifier, cookieManager);
 
 const wss = new WebSocketServer({ noServer: true });
 const broker = new Broker();
@@ -53,16 +47,12 @@ wss.on('close', () => {
   broker.clear();
 });
 
-export async function handleUpgrade(request: IncomingMessage, socket: Duplex, head: Buffer) {
-  const cookies = cookie.parse(request.headers.cookie);
-
-  const user = await authenticator(cookies);
-  if (!user) {
-    socket.write('HTTP/1.1 403 Unauthorized\r\n\r\n');
-    socket.destroy();
-    return;
-  }
-
+export async function handleUpgrade(
+  request: IncomingMessage,
+  socket: Duplex,
+  head: Buffer,
+  user: User
+) {
   wss.handleUpgrade(request, socket, head, (ws) => {
     wss.emit('connection', ws, request, user);
   });

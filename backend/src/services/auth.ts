@@ -1,122 +1,44 @@
-import { randomUUID } from 'crypto';
-import { CookieOptions, Request, Response } from 'express';
+import { Request, Response } from 'express';
 
 import { User } from 'common/User';
 
-import { env } from '../settings';
-import { cookieManager } from '../util';
-import { getUsers, TokensCookie } from '../auth/cognito';
+import { settings } from '../settings';
+import { getUsers } from '../auth/cognito';
 
-type AuthState = {
-  id: string;
-  redirectURI?: string;
-}
-
-const AUTH_STATE_COOKIE = 'authState';
-
-const authStateCookieConfig: CookieOptions = {
-  path: '/api',
-  sameSite: 'lax', // So that the browser sends it when redirecting from Cognito. It does not contain any sensitive data.
-  httpOnly: true,
-};
-
-function createAuthState(redirect: string, res: Response): string {
-  const stateId = randomUUID();
-  const state: AuthState = { id: stateId };
-  if (redirect) {
-    state.redirectURI = redirect;
+export async function login(
+  req: Request<object, object, object, { redirect?: string }>,
+  res: Response
+) {
+  const userDetails = await res.locals.user;
+  if (!userDetails) {
+    return res.redirect(`${settings.IDENTITY_API_URL}/oauth2/start`);
   }
-
-  res.cookie(AUTH_STATE_COOKIE, state, authStateCookieConfig);
-  return stateId;
-}
-
-export async function login(req: Request<object, object, object, {redirect?: string}>, res: Response) {
-  const token = await res.locals.getAccessToken();
-  if (!token) {
-    const params = new URLSearchParams({
-      response_type: 'code',
-      client_id: env.COGNITO_CLIENT_ID,
-      scope: 'openid email profile',
-      redirect_uri: env.COGNITO_CALLBACK_URL,
-      state: createAuthState(req.query.redirect, res),
-    });
-    res.redirect(`https://${env.COGNITO_DOMAIN}/oauth2/authorize?${params}`);
-    return;
-  }
-  res.redirect('/');
+  res.send(userDetails);
+  return res.redirect('/');
 }
 
 export async function logout(req: Request, res: Response) {
-  cookieManager.clearCookies(req, res);
+  try {
+    const response = await fetch(`${settings.IDENTITY_API_URL}/api/v1/links/sign-out`, {
+      method: 'GET',
+      headers: {
+        Cookie: req.headers.cookie
+      },
+      credentials: 'include'
+    });
 
-  res.redirect(`https://${env.COGNITO_DOMAIN}/logout?${new URLSearchParams({
-    response_type: 'code',
-    client_id: env.COGNITO_CLIENT_ID,
-    scope: 'openid email profile',
-    redirect_uri: env.COGNITO_CALLBACK_URL,
-    state: createAuthState(undefined, res),
-  })}`);
-}
+    if (!response.ok) {
+      return res.status(403).end();
+    }
+    if (response.redirected) {
+      return res.redirect(response.url);
+    }
 
-export async function callback(req: Request, res: Response) {
-  const authState = req.cookies[AUTH_STATE_COOKIE] as AuthState;
-  res.clearCookie(AUTH_STATE_COOKIE, authStateCookieConfig);
-
-  const code = req.query.code as string;
-
-  if (!code) {
-    console.log('Missing code');
-    await logout(req, res);
-    return;
-  }
-
-  if (!authState || authState.id !== req.query.state) {
-    console.log('authState id did not match', req.query.state, authState);
-    await logout(req, res);
-    return;
-  }
-
-  const params = new URLSearchParams({
-    grant_type: 'authorization_code',
-    code,
-    client_id: env.COGNITO_CLIENT_ID,
-    redirect_uri: env.COGNITO_CALLBACK_URL,
-  });
-  if (env.COGNITO_CLIENT_SECRET) {
-    params.set('client_secret', env.COGNITO_CLIENT_SECRET);
-  }
-
-  const rsp = await fetch(`https://${env.COGNITO_DOMAIN}/oauth2/token`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-    },
-    body: params.toString(),
-  });
-
-  if (rsp.status === 200) {
-    const responseData = JSON.parse(await rsp.text());
-    cookieManager.setTokensCookie(JSON.stringify({
-      accessToken: responseData.access_token,
-      idToken: responseData.id_token,
-    } as TokensCookie), req, res);
-
-    cookieManager.setRefreshCookie(responseData.refresh_token, req, res);
-
-    // Cannot do a simple redirect here because of cookie SameSite=Strict setting.
-    res.setHeader('Content-Type', 'text/html;charset=utf8');
-    res.send(`
-    <html lang="en">
-    <head>
-        <meta http-equiv="refresh" content="0;URL='${authState.redirectURI ?? '/'}'"/><title>Redirecting...</title>
-    </head>
-    <body></body>
-    </html>
-    `);
-  } else {
-    res.sendStatus(403);
-    console.log(`Could not retrieve token. Status: ${rsp.status}, data: ${JSON.stringify(await rsp.text())}`);
+    const signoutURL = await response.json();
+    return res.redirect(signoutURL.href);
+  } catch (error) {
+    console.log('Error fetching sign-out url', error);
+    return res.status(500).end();
   }
 }
 
@@ -128,7 +50,7 @@ export async function user(req: Request, res: Response) {
   }
   res.json({
     username: user.username,
-    displayName: user.displayName,
+    displayName: user.displayName
   } satisfies User);
 }
 

@@ -4,20 +4,19 @@ import { Request, Response } from 'express';
 import * as sparql from 'rdf-sparql-builder';
 
 // Local imports
-import { env } from '../settings';
+import { settings } from '../settings';
 
 export async function query(req: Request, res: Response) {
   const s = rdf.variable('s');
   const p = rdf.variable('p');
   const o = rdf.variable('o');
 
-  const select = sparql.select([s, p, o])
-    .where([
-      [s, p, o]
-    ])
+  const select = sparql
+    .select([s, p, o])
+    .where([[s, p, o]])
     .limit(100);
 
-  const url = new URL(env.SCG_URL);
+  const url = new URL(settings.SCG_URL);
   url.pathname = '/knowledge/sparql';
 
   try {

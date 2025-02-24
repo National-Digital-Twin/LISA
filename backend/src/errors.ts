@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { MulterError } from 'multer';
-import { env } from './settings';
+import { settings } from './settings';
 
 interface ExpressError extends Error {
   statusCode?: number;
@@ -20,7 +20,12 @@ export class InvalidValueError extends ApplicationError {
   }
 }
 
-export function errorsMiddleware(err: ExpressError, req: Request, res: Response, next: NextFunction) {
+export function errorsMiddleware(
+  err: ExpressError,
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   console.log('error: ', err);
   if (err instanceof ApplicationError) {
     res.status(err.statusCode);
@@ -28,7 +33,9 @@ export function errorsMiddleware(err: ExpressError, req: Request, res: Response,
   } else if (err instanceof MulterError) {
     if (err.code === 'LIMIT_FILE_SIZE') {
       res.status(413);
-      res.json({ error: `One or more files exceed the ${Math.round(env.MAX_UPLOAD_SIZE / 1048576)}Mb size limit` });
+      res.json({
+        error: `One or more files exceed the ${Math.round(settings.MAX_UPLOAD_SIZE / 1048576)}Mb size limit`
+      });
     } else {
       next(err);
     }

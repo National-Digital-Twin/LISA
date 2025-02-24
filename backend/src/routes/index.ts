@@ -13,22 +13,19 @@ import * as storage from '../services/fileStorage';
 import * as osMaps from '../services/osMaps';
 import root from '../services/root';
 import * as scg from '../services/scg_demo';
-import { baseDir, env } from '../settings';
-import { authenticate, extractToken } from '../auth/middleware';
-import { cookieManager, tokenVerifier } from '../util';
+import { baseDir, settings } from '../settings';
+import { authenticate } from '../auth/middleware';
 import { errorsMiddleware } from '../errors';
 
 const upload = multer({
   dest: '__uploads/',
   limits: {
-    fileSize: env.MAX_UPLOAD_SIZE,
+    fileSize: settings.MAX_UPLOAD_SIZE
   }
 });
 
 const router = Router();
-const incidentsRequestQueue: { [id:string]: Promise<void> } = {};
-
-router.use(extractToken(tokenVerifier, cookieManager));
+const incidentsRequestQueue: { [id: string]: Promise<void> } = {};
 
 router.use('/assets', assets);
 // include PWA service worker
@@ -38,7 +35,6 @@ const apiRouter = Router();
 router.use('/api', apiRouter);
 
 apiRouter.get('/auth/login', auth.login);
-apiRouter.get('/auth/callback', auth.callback);
 apiRouter.get('/auth/logout', auth.logout);
 
 apiRouter.use(authenticate({}));
@@ -46,7 +42,7 @@ apiRouter.use(authenticate({}));
 apiRouter.get('/auth/user', auth.user);
 apiRouter.get('/auth/users', auth.users);
 
-if (env.NODE_ENV === 'development') {
+if (settings.NODE_ENV === 'development') {
   apiRouter.get('/query', scg.query);
 }
 
