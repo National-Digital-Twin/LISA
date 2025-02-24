@@ -2,8 +2,6 @@
 import express from 'express';
 import Router from 'express-promise-router';
 import multer from 'multer';
-// eslint-disable-next-line import/no-unresolved
-import PQueue from 'p-queue';
 
 // Local imports
 import assets from '../services/assets';
@@ -27,14 +25,6 @@ const upload = multer({
 });
 
 const router = Router();
-const incidentQueues: { [id: string]: PQueue } = {};
-
-function getIncidentQueue(incidentId: string): PQueue {
-  if (!incidentQueues[incidentId]) {
-    incidentQueues[incidentId] = new PQueue({ concurrency: 1 });
-  }
-  return incidentQueues[incidentId];
-}
 
 router.use('/assets', assets);
 // include PWA service worker
@@ -60,25 +50,6 @@ apiRouter.post('/incident', incident.create);
 
 apiRouter.get('/incident/:incidentId/logEntries', logEntry.get);
 apiRouter.post('/incident/:incidentId/logEntry', upload.any(), logEntry.create);
-
-apiRouter.post('/incident/:incidentId/logEntry/:entryId/updateSequence', async (req, res) => {
-  const { incidentId } = req.params;
-
-  if (!incidentId) {
-    res.status(400).end();
-    return;
-  }
-
-  const queue = getIncidentQueue(incidentId);
-
-  await queue.add(async () => {
-    await logEntry.updateSequence(req, res);
-  });
-
-  if (queue.size === 0 && queue.pending === 0) {
-    delete incidentQueues[incidentId];
-  }
-});
 
 apiRouter.get('/incident/:incidentId/attachments', incident.getAttachments);
 
