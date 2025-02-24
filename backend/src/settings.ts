@@ -9,18 +9,14 @@ export const settings = cleanEnv(process.env, {
   HOST: str({ default: 'localhost' }),
   SERVER_URL: url({ default: 'http://localhost:3000' }),
   SCG_URL: url({ default: 'http://localhost:3030' }),
-  COGNITO_DOMAIN: str(),
   COGNITO_USER_POOL_ID: str(),
-  COGNITO_CLIENT_ID: str(),
-  COGNITO_CLIENT_SECRET: str({ default: undefined }),
-  COGNITO_CALLBACK_URL: str({ default: 'http://localhost:3000/api/auth/callback/' }),
   S3_BUCKET_ID: str(),
   MAX_UPLOAD_SIZE: num({ default: 104857600 }),
   NODE_ENV: str({
     choices: ['development', 'test', 'production', 'staging'],
     default: 'development'
   }),
-  IDENTITY_API_URL: str({ default: 'http://localhost:3000' })
+  IDENTITY_API_URL: str({ default: 'http://localhost:3001' })
 });
 
 const filename = fileURLToPath(import.meta.url); // get the resolved path to the file

@@ -2,7 +2,7 @@ version: '3'
 
 services:
   smart-cache-graph:
-    container_name: smart-cache-graph
+    container_name: lisa-scg
     environment:
       JAVA_OPTIONS: "-XX:MaxRAMPercentage=40.0"
       JWKS_URL: "disabled"
@@ -12,3 +12,4 @@ services:
     image: lisa/smart-cache-graph
     ports:
       - 3030:3030
+

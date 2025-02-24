@@ -8,7 +8,7 @@ import { handleUpgrade } from './pubSub/server';
 
 const server = createServer(app);
 server.on('upgrade', async (request, socket, head) => {
-  const url = new URL(request.url || '', 'http://localhost');
+  const url = new URL(request.url || '', settings.SERVER_URL);
   if (url.pathname !== '/api/ws') {
     socket.destroy();
     return;
