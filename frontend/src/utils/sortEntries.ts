@@ -45,7 +45,7 @@ export const getSortedEntriesWithDisplaySequence = (
     const newDisplaySequence = sortAsc ? index + 1 : arr.length - index;
     return {
       ...entry,
-      displaySequence: newDisplaySequence,
+      displaySequence: newDisplaySequence.toString(),
     };
   });
 
@@ -61,7 +61,7 @@ export const getSortedEntriesWithDisplaySequence = (
     const newDisplaySequence = sortAsc ? index + 1 : arr.length - index;
     return {
       ...entry,
-      displaySequence: newDisplaySequence,
+      displaySequence: newDisplaySequence.toString(),
     };
   });
 
