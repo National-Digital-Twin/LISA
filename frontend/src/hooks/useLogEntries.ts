@@ -53,7 +53,7 @@ export const useCreateLogEntry = (incidentId?: string) => {
             {
               ...newLogEntry,
               id: uuidV4(),
-              displaySequence: `-${countOffline + 1}`,
+              displaySequence: countOffline + 1,
               offline: true
             }
           ]
