@@ -10,33 +10,20 @@ import { FetchError, get, post } from '../api';
 export const useLogEntries = (incidentId?: string) => {
   const { data, isLoading, isError, error } = useQuery<LogEntry[], FetchError>({
     queryKey: [`incident/${incidentId}/logEntries`],
-    queryFn: () => get(`/incident/${incidentId}/logEntries`),
+    queryFn: () => get(`/incident/${incidentId}/logEntries`)
   });
 
   return { logEntries: data, isLoading, isError, error };
 };
 
-const useLogEntryUpdateSequence = (incidentId? : string) => {
-  const queryClient = useQueryClient();
-  const logEntryUpdateSequence = useMutation<unknown, Error, { logEntry: LogEntry }>({
-    mutationFn: ({ logEntry }) => post(`/incident/${incidentId}/logEntry/${logEntry.id}/updateSequence`, {}),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [`incident/${incidentId}/logEntries`] });
-    }
-  });
-
-  return logEntryUpdateSequence;
-};
-
 export const useCreateLogEntry = (incidentId?: string) => {
   const queryClient = useQueryClient();
-  const logEntryUpdateSequence = useLogEntryUpdateSequence(incidentId);
-  const createLogEntry = useMutation<
+  return useMutation<
     LogEntry,
     Error,
     {
       newLogEntry: Omit<LogEntry, 'id' | 'author'>;
-      selectedFiles?: File[]
+      selectedFiles?: File[];
     }
   >({
     mutationFn: async ({ newLogEntry, selectedFiles }) => {
@@ -48,13 +35,15 @@ export const useCreateLogEntry = (incidentId?: string) => {
       }
       return post(`/incident/${incidentId}/logEntry`, data);
     },
-    onSuccess: async (logEntry) => {
-      await logEntryUpdateSequence.mutateAsync({ logEntry });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: [`incident/${incidentId}/logEntries`] });
     },
     // optimistic update
     onMutate: async ({ newLogEntry }) => {
       await queryClient.cancelQueries({ queryKey: [`incident/${incidentId}/logEntries`] });
-      const previousEntries = queryClient.getQueryData<LogEntry[]>([`incident/${incidentId}/logEntries`]);
+      const previousEntries = queryClient.getQueryData<LogEntry[]>([
+        `incident/${incidentId}/logEntries`
+      ]);
       const countOffline = previousEntries?.filter((pe) => pe.offline).length ?? 0;
       if (previousEntries) {
         queryClient.setQueryData<LogEntry[]>(
@@ -64,15 +53,13 @@ export const useCreateLogEntry = (incidentId?: string) => {
             {
               ...newLogEntry,
               id: uuidV4(),
-              sequence: `-${countOffline + 1}`,
+              displaySequence: `-${countOffline + 1}`,
               offline: true
             }
           ]
         );
       }
       return { previousEntries };
-    },
+    }
   });
-
-  return createLogEntry;
 };

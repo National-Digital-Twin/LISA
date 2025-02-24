@@ -13,7 +13,7 @@ export const BaseNotification = Record({
 });
 
 export const UserMentionNotification = BaseNotification.extend({
-  entry: LogEntry.pick('id', 'incidentId', 'author', 'dateTime', 'sequence', 'content'),
+  entry: LogEntry.pick('id', 'incidentId', 'author', 'dateTime', 'content'),
 });
 
 export const Notification = Union(UserMentionNotification);

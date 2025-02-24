@@ -1,5 +1,5 @@
 // Global imports
-import { Array, Boolean, Optional, Record, Static, String, Number } from 'runtypes';
+import { Array, Boolean, Optional, Record, Static, String } from 'runtypes';
 
 // Local imports
 import { nonFuture } from './constraints';
@@ -28,14 +28,13 @@ export const LogEntry = Record({
   mentionsLogEntries: Optional(Array(Mentionable)),
   mentionedByLogEntries: Optional(Array(Mentionable)),
   // recordings?: Array<string>; // Needs to be linked as multimedia,
-  sequence: Optional(String), // System-generated
+  displaySequence: Optional(String), // System-generated
   stage: Optional(IncidentStage), // Only applicable to type = ChangeStage
   attachments: Optional(Array(LogEntryAttachment)),
 
   // This allows for determining if the Incident has been synced to the server during
   // offline operation.
   offline: Optional(Boolean),
-  displaySequence: Optional(Number)
 });
 
 // eslint-disable-next-line no-redeclare
