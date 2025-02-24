@@ -11,14 +11,10 @@ export class WebSocketClient {
 
   private readonly connectionCallback: () => void | undefined;
 
-  constructor(
-    connectionCallback: () => void,
-    messageCallback: (msg: string) => void,
-    user: { username: string; displayName?: string }
-  ) {
+  constructor(connectionCallback: () => void, messageCallback: (msg: string) => void) {
     this.connectionCallback = connectionCallback;
     this.messageCallback = messageCallback;
-    this.connect(user);
+    this.connect();
   }
 
   send(message: string) {
@@ -33,13 +29,9 @@ export class WebSocketClient {
     this.ws?.close();
   }
 
-  private connect(
-    user: { username: string; displayName?: string },
-    isRestoration: boolean = false
-  ) {
-    const userQueryParam = encodeURIComponent(JSON.stringify(user));
+  private connect(isRestoration: boolean = false) {
     const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
-    const ws = new WebSocket(`${protocol}://${window.location.host}/api/ws?user=${userQueryParam}`);
+    const ws = new WebSocket(`${protocol}://${window.location.host}/api/ws`);
     ws.onopen = () => {
       this.handleOpen(isRestoration);
     };
@@ -47,7 +39,7 @@ export class WebSocketClient {
       this.handleMessage(msg);
     };
     ws.onclose = () => {
-      this.handleClose(user);
+      this.handleClose();
     };
     this.ws = ws;
   }
@@ -67,13 +59,13 @@ export class WebSocketClient {
     }
   }
 
-  private handleClose(user: { username: string; displayName?: string }) {
+  private handleClose() {
     const delay = Math.min(500 * 2 ** this.attemptCount, 32000);
     // eslint-disable-next-line no-console
     console.warn('ws connection was closed, retrying in', delay / 1000, 's');
     clearTimeout(this.timer);
     this.timer = setTimeout(() => {
-      this.connect(user, true);
+      this.connect(true);
     }, delay);
     this.attemptCount += 1;
   }
