@@ -5,7 +5,7 @@ import type { LogEntry } from 'common/LogEntry';
  * Returns a new array of log entries with offline entries displayed above online entries.
  *
  * Offline entries:
- *  - Are sorted based on their numeric 'sequence' property.
+ *  - Are sorted based on their numeric 'displaySequence' property.
  *  - Their displaySequence is re-assigned to reflect visual order:
  *      • If sortAsc is true, the top offline entry gets 1, then 2, 3, etc.
  *      • If sortAsc is false (default), the offline entries are sorted descending and the top entry
@@ -33,10 +33,10 @@ export const getSortedEntriesWithDisplaySequence = (
   const offlineEntries = entries.filter((entry) => entry.offline);
   const onlineEntries = entries.filter((entry) => !entry.offline);
 
-  // Sort offline entries using their numeric 'sequence' property.
+  // Sort offline entries using their numeric 'displaySequence' property.
   const sortedOffline = offlineEntries.toSorted((a, b) => {
-    const seqA = Number(a.sequence);
-    const seqB = Number(b.sequence);
+    const seqA = Number(a.displaySequence);
+    const seqB = Number(b.displaySequence);
     return sortAsc ? seqB - seqA : seqA - seqB;
   });
 

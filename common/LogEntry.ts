@@ -1,5 +1,5 @@
 // Global imports
-import { Array, Boolean, Optional, Record, Static, String } from 'runtypes';
+import { Array, Boolean, Optional, Record, Static, String, Number } from 'runtypes';
 
 // Local imports
 import { nonFuture } from './constraints';
@@ -28,7 +28,7 @@ export const LogEntry = Record({
   mentionsLogEntries: Optional(Array(Mentionable)),
   mentionedByLogEntries: Optional(Array(Mentionable)),
   // recordings?: Array<string>; // Needs to be linked as multimedia,
-  displaySequence: Optional(String), // System-generated
+  displaySequence: Optional(Number), // System-generated
   stage: Optional(IncidentStage), // Only applicable to type = ChangeStage
   attachments: Optional(Array(LogEntryAttachment)),
 
