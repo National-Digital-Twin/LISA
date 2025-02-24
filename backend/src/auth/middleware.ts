@@ -28,7 +28,7 @@ export function authenticate({ failureRedirect }: { failureRedirect?: string }) 
       next();
     } else {
       try {
-        const response = await fetch(`${settings.AUTH_API_URL}/api/v1/user-details`, {
+        const response = await fetch(`${settings.IDENTITY_API_URL}/api/v1/user-details`, {
           method: 'GET',
           headers: {
             Cookie: req.headers.cookie

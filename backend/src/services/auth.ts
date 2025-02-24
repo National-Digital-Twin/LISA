@@ -11,7 +11,7 @@ export async function login(
 ) {
   const userDetails = await res.locals.user;
   if (!userDetails) {
-    return res.redirect(`${settings.AUTH_API_URL}/oauth2/start`);
+    return res.redirect(`${settings.IDENTITY_API_URL}/oauth2/start`);
   }
   res.send(userDetails);
   return res.redirect('/');
@@ -19,7 +19,7 @@ export async function login(
 
 export async function logout(req: Request, res: Response) {
   try {
-    const response = await fetch(`${settings.AUTH_API_URL}/api/v1/links/sign-out`, {
+    const response = await fetch(`${settings.IDENTITY_API_URL}/api/v1/links/sign-out`, {
       method: 'GET',
       headers: {
         Cookie: req.headers.cookie
