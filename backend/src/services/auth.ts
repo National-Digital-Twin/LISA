@@ -4,14 +4,14 @@ import internal from 'stream';
 
 import { getUsers } from '../auth/cognito';
 import { User } from '../auth/user';
-import { ApplicationError, AuthCookieMissingOrExpiredError } from '../errors';
+import { ApplicationError, AccessTokenMissingOrExpiredError } from '../errors';
 import { settings } from '../settings';
 
-async function fetchUserDetails(oidcCookie: string) {
+async function fetchUserDetails(accessToken: string) {
   return fetch(new URL(`${settings.IDENTITY_API_URL}/api/v1/user-details`), {
     method: 'GET',
     headers: {
-      'X-Auth-Request-Access-Token': oidcCookie
+      'X-Auth-Request-Access-Token': accessToken
     },
     credentials: 'include'
   });
@@ -22,14 +22,14 @@ export async function getUserDetailsForWs(req: IncomingMessage, socket: internal
     return new User('local.user', 'local.user@example.com');
   }
 
-  const oidcCookie = req.headers.cookie['oidc-cookie'];
+  const accessToken = req.headers['X-Auth-Request-Access-Token'][0];
 
-  if (!oidcCookie) {
+  if (!accessToken) {
     socket.destroy();
     throw new ApplicationError('Error: invalid response recieved when getting user details.');
   }
 
-  const response = await fetchUserDetails(oidcCookie);
+  const response = await fetchUserDetails(accessToken);
 
   if (!response.ok) {
     socket.destroy();
@@ -46,13 +46,13 @@ export async function getUserDetails(req: Request) {
     return new User('local.user', 'local.user@example.com');
   }
 
-  const oidcCookie = req.cookies['oidc-cookie'];
+  const accessToken = req.header('X-Auth-Request-Access-Token');
 
-  if (!oidcCookie) {
-    throw new AuthCookieMissingOrExpiredError();
+  if (!accessToken) {
+    throw new AccessTokenMissingOrExpiredError();
   }
 
-  const response = await fetchUserDetails(oidcCookie);
+  const response = await fetchUserDetails(accessToken);
 
   if (!response.ok) {
     throw new ApplicationError('Error: invalid response recieved when getting user details.');

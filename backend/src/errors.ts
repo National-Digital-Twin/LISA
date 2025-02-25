@@ -6,9 +6,9 @@ interface ExpressError extends Error {
   statusCode?: number;
 }
 
-export class AuthCookieMissingOrExpiredError extends Error {
+export class AccessTokenMissingOrExpiredError extends Error {
   constructor() {
-    super('Error: The OIDC cookie is either not set or has expired.');
+    super('Error: The X-Auth-Request-Access-Token header is either not set or has expired.');
   }
 }
 
