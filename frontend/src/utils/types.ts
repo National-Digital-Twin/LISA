@@ -21,9 +21,7 @@ export type SpanType = {
 export type AuthContextType = {
   user: {
     current?: User;
-    authenticated: boolean;
     offline: boolean;
-    login: () => void;
     logout: () => void;
   };
 };

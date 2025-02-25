@@ -1,13 +1,3 @@
-import { URL } from 'url';
-
-import { CookieManager } from './auth/cookies';
-import { settings } from './settings';
-
-export const cookieManager = new CookieManager({
-  domain: new URL(settings.SERVER_URL).hostname,
-  path: '/api'
-});
-
 export function tryParseJSONArray(str: string) {
   if (str?.startsWith('[')) {
     try {

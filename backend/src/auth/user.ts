@@ -1,35 +1,23 @@
-import { GroupType, UserType } from '@aws-sdk/client-cognito-identity-provider';
-import { CognitoAccessTokenPayload, CognitoIdTokenPayload } from 'aws-jwt-verify/jwt-model';
-
 export class User {
-  accessToken?: CognitoAccessTokenPayload;
+  private readonly usernameInternal: string;
 
-  idToken?: CognitoIdTokenPayload;
+  private readonly emailInternal: string;
 
-  private readonly usernameInternal?: string;
-
-  private readonly cachedCognitoUser?: UserType;
-
-  private readonly groups?: GroupType[];
-
-  private constructor(accessToken?: CognitoAccessTokenPayload, idToken?: CognitoIdTokenPayload, username?: string) {
-    this.accessToken = accessToken;
-    this.idToken = idToken;
+  constructor(username: string, email: string) {
     this.usernameInternal = username;
+    this.emailInternal = email;
   }
 
   get username(): string {
-    return this.accessToken?.username ?? this.usernameInternal;
+    return this.usernameInternal;
+  }
+
+  get email(): string {
+    return this.emailInternal;
   }
 
   get displayName(): string {
-    if (this.idToken) {
-      return this.idToken.name as string;
-    }
-    return this.username;
-  }
-
-  static fromTokens(accessToken: CognitoAccessTokenPayload, idToken: CognitoIdTokenPayload): User {
-    return new User(accessToken, idToken);
+    const titalizedNames = this.usernameInternal.split('.').map((name) => `${name.charAt(0).toUpperCase()}${name.substring(1)}`);
+    return titalizedNames.join(' ');
   }
 }

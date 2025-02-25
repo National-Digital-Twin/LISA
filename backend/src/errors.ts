@@ -6,6 +6,12 @@ interface ExpressError extends Error {
   statusCode?: number;
 }
 
+export class AuthCookieMissingOrExpiredError extends Error {
+  constructor() {
+    super('Error: The OIDC cookie is either not set or has expired.');
+  }
+}
+
 export class ApplicationError extends Error implements ExpressError {
   // eslint-disable-next-line class-methods-use-this
   get statusCode() {

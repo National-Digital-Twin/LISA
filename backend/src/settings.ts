@@ -16,7 +16,8 @@ export const settings = cleanEnv(process.env, {
     choices: ['development', 'test', 'production', 'staging'],
     default: 'development'
   }),
-  IDENTITY_API_URL: str({ default: 'http://localhost:3001' })
+  IDENTITY_API_URL: str({ default: 'http://localhost:3001' }),
+  LANDING_PAGE_URL: str({ default: 'http://localhost:3002' })
 });
 
 const filename = fileURLToPath(import.meta.url); // get the resolved path to the file

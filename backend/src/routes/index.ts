@@ -34,10 +34,9 @@ router.use(express.static(`${baseDir}/frontend`));
 const apiRouter = Router();
 router.use('/api', apiRouter);
 
-apiRouter.get('/auth/login', auth.login);
 apiRouter.get('/auth/logout', auth.logout);
 
-apiRouter.use(authenticate({}));
+apiRouter.use(authenticate());
 
 apiRouter.get('/auth/user', auth.user);
 apiRouter.get('/auth/users', auth.users);
