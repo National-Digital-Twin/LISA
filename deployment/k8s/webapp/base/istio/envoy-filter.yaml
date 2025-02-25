@@ -8,17 +8,12 @@ spec:
     labels:
       istio: ingressgateway
   configPatches:
-    - applyTo: HTTP_RESPONSE_HEADERS
+    - applyTo: VIRTUAL_HOST
       match:
         context: GATEWAY
       patch:
-        operation: REMOVE
+        operation: MERGE
         value:
-          key: server
-    - applyTo: HTTP_RESPONSE_HEADERS
-      match:
-        context: GATEWAY
-      patch:
-        operation: REMOVE
-        value:
-          key: x-envoy-upstream-service-time
+          response_headers_to_remove:
+            - server
+            - x-envoy-upstream-service-time
