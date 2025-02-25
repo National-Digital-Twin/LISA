@@ -1,7 +1,7 @@
 /* eslint-disable consistent-return */
 
 import { Request, Response, NextFunction } from 'express';
-import { AuthCookieMissingOrExpiredError } from '../errors';
+import { AccessTokenMissingOrExpiredError } from '../errors';
 import { settings } from '../settings';
 import { getUserDetails } from '../services/auth';
 import { User } from './user';
@@ -21,7 +21,7 @@ export function authenticate() {
       res.locals.user = await getUserDetails(req);
       next();
     } catch (error) {
-      if (error instanceof AuthCookieMissingOrExpiredError) {
+      if (error instanceof AccessTokenMissingOrExpiredError) {
         return res.status(302).json({ redirectUrl: `${settings.LANDING_PAGE_URL}/oauth2/start` });
       }
       console.log('Error authenticating user: ', error);
