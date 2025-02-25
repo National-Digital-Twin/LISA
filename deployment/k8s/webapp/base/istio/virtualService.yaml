@@ -8,9 +8,12 @@ spec:
   gateways:
     - placeholder
   http:
+    # Rule for root ("/") and "/index.html" to prevent caching
     - match:
         - uri:
             exact: /
+        - uri:
+            exact: /index.html
       headers:
         response:
           add:
@@ -36,3 +39,8 @@ spec:
             host: lisa
             port:
               number: 80
+          headers:
+            response:
+              set:
+                Content-Security-Policy: placeholder
+                Access-Control-Allow-Origin: placeholder
