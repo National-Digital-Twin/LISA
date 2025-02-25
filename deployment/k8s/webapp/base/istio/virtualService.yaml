@@ -8,12 +8,10 @@ spec:
   gateways:
     - placeholder
   http:
-    # Rule for root ("/") and "/index.html" to prevent caching
+    # Rule for root ("/") to prevent caching
     - match:
         - uri:
             exact: /
-        - uri:
-            exact: /index.html
       headers:
         response:
           add:
