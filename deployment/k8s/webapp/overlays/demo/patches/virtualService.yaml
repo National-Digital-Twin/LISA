@@ -6,3 +6,11 @@
 - op: replace
   path: /spec/gateways/0
   value: lisa/lisa-ingress-gateway
+
+- op: add
+  path: /spec/http/1/headers/response/set/Content-Security-Policy
+  value: "connect-src 'self' data: wss://lisa.demo.ndtp.co.uk ws://lisa.demo.ndtp.co.uk https://lisa.demo.ndtp.co.uk https://api.os.uk https://nominatim.openstreetmap.org; worker-src 'self' blob:; child-src 'self' blob:; img-src 'self' data: blob:"
+
+- op: add
+  path: /spec/http/1/headers/response/set/Access-Control-Allow-Origin
+  value: "*"
