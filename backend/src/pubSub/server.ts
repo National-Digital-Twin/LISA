@@ -5,7 +5,6 @@ import { WebSocket, WebSocketServer } from 'ws';
 import { User } from '../auth/user';
 import Broker from './broker';
 import PubSubManager from './manager';
-import { getUserDetailsForWs } from '../services/auth';
 
 const wss = new WebSocketServer({ noServer: true });
 const broker = new Broker();
@@ -14,10 +13,11 @@ wss.on('connection', async (ws: WebSocket, request: IncomingMessage) => {
   let user: User;
 
   try {
-    user = await getUserDetailsForWs(request);
+    const username = request.headers['sec-websocket-protocol'].split(',')[1].trim();
+    user = new User(username, '');
   } catch (error) {
-    console.log(`Error upon connecting websocket: ${error}`);
     ws.close();
+    console.log(error);
     return;
   }
 

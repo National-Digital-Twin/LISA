@@ -14,11 +14,17 @@ const AuthContextProvider = ({ children }: PropsWithChildren) => {
   });
 
   const logout = async () => {
-    await fetch('/api/auth/logout').then(async (response) => {
-      const signOutUrl = await response.json();
-
-      document.location = signOutUrl;
-    });
+    await fetch('/api/auth/logout').then(
+      async (response) => {
+        if (response.ok) {
+          const signOutUrl = await response.json();
+          document.location = signOutUrl;
+        } else {
+          document.location = '/';
+        }
+      },
+      () => { document.location = '/'; }
+    );
   };
 
   useEffect(() => {

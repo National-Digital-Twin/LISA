@@ -1,3 +1,6 @@
+// eslint-disable-next-line import/no-relative-packages
+import { User } from '../../../common/User';
+
 export class WebSocketClient {
   private ws: WebSocket | undefined;
 
@@ -11,9 +14,12 @@ export class WebSocketClient {
 
   private readonly connectionCallback: () => void | undefined;
 
-  constructor(connectionCallback: () => void, messageCallback: (msg: string) => void) {
+  private readonly user: User;
+
+  constructor(connectionCallback: () => void, messageCallback: (msg: string) => void, user: User) {
     this.connectionCallback = connectionCallback;
     this.messageCallback = messageCallback;
+    this.user = user;
     this.connect();
   }
 
@@ -31,7 +37,7 @@ export class WebSocketClient {
 
   private connect(isRestoration: boolean = false) {
     const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
-    const ws = new WebSocket(`${protocol}://${window.location.host}/api/ws`);
+    const ws = new WebSocket(`${protocol}://${window.location.host}/api/ws`, [protocol, this.user.username]);
     ws.onopen = () => {
       this.handleOpen(isRestoration);
     };
