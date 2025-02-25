@@ -5,11 +5,22 @@ import { WebSocket, WebSocketServer } from 'ws';
 import { User } from '../auth/user';
 import Broker from './broker';
 import PubSubManager from './manager';
+import { getUserDetailsForWs } from '../services/auth';
 
 const wss = new WebSocketServer({ noServer: true });
 const broker = new Broker();
 
-wss.on('connection', (ws: WebSocket, request: IncomingMessage, user: User) => {
+wss.on('connection', async (ws: WebSocket, request: IncomingMessage) => {
+  let user: User;
+
+  try {
+    user = await getUserDetailsForWs(request);
+  } catch (error) {
+    console.log(`Error upon connecting websocket: ${error}`);
+    ws.close();
+    return;
+  }
+
   const id = randomUUID();
   broker.addClient(id, ws, user);
 
@@ -51,9 +62,8 @@ export async function handleUpgrade(
   request: IncomingMessage,
   socket: Duplex,
   head: Buffer,
-  user: User
 ) {
   wss.handleUpgrade(request, socket, head, (ws) => {
-    wss.emit('connection', ws, request, user);
+    wss.emit('connection', ws, request);
   });
 }
