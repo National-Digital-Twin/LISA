@@ -15,6 +15,19 @@ const getHeaders = async (isFormData: boolean = false) => {
   return headers;
 };
 
+const handleResponse = async (res: Response) => {
+  if (res.status === 302) {
+    const value = await res.json();
+    throw new FetchError(res.statusText, res.status, value.redirectUrl);
+  }
+
+  if (!res.ok) {
+    throw new FetchError(res.statusText, res.status);
+  }
+
+  return res.json();
+};
+
 export const get = async <T>(endpoint: string): Promise<T> => {
   const headers = await getHeaders();
   const res = await fetch(`${baseUrl}${endpoint}`, {
@@ -22,11 +35,7 @@ export const get = async <T>(endpoint: string): Promise<T> => {
     headers
   });
 
-  if (!res.ok) {
-    throw new FetchError(res.statusText, res.status);
-  }
-
-  return res.json();
+  return handleResponse(res);
 };
 
 export const post = async <T>(endpoint: string, data: object | FormData): Promise<T> => {
@@ -36,11 +45,8 @@ export const post = async <T>(endpoint: string, data: object | FormData): Promis
     body: data instanceof FormData ? data : JSON.stringify(data),
     headers
   });
-  if (!res.ok) {
-    throw new FetchError(res.statusText, res.status);
-  }
 
-  return res.json();
+  return handleResponse(res);
 };
 
 export const put = async <T>(endpoint: string, data: object | FormData): Promise<T> => {
@@ -50,11 +56,8 @@ export const put = async <T>(endpoint: string, data: object | FormData): Promise
     body: data instanceof FormData ? data : JSON.stringify(data),
     headers
   });
-  if (!res.ok) {
-    throw new FetchError(res.statusText, res.status);
-  }
 
-  return res.json();
+  return handleResponse(res);
 };
 
 export { FetchError };

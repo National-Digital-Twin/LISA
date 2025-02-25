@@ -3,8 +3,9 @@ import { createServer } from 'http';
 
 // Local imports
 import app from './app';
-import { settings } from './settings';
 import { handleUpgrade } from './pubSub/server';
+import { getUserDetailsForWs } from './services/auth';
+import { settings } from './settings';
 
 const server = createServer(app);
 server.on('upgrade', async (request, socket, head) => {
@@ -14,31 +15,13 @@ server.on('upgrade', async (request, socket, head) => {
     return;
   }
   try {
-    const response = await fetch(`${settings.IDENTITY_API_URL}/api/v1/user-details`, {
-      method: 'GET',
-      headers: {
-        Cookie: request.headers.cookie
-      },
-      credentials: 'include'
-    });
-
-    if (!response.ok) {
-      socket.destroy();
-    }
-
-    if (response.redirected) {
-      socket.destroy();
-    }
-
-    const userDetails = await response.json();
-
-    user = userDetails.content;
+    user = await getUserDetailsForWs(request, socket);
   } catch (error) {
     console.log('Error fetching user details', error);
     socket.destroy();
   }
 
-  if (user && user.email && user.username) {
+  if (user?.email && user?.username) {
     await handleUpgrade(request, socket, head, user);
   }
 });
