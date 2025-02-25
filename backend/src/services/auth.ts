@@ -46,7 +46,7 @@ export async function getUserDetails(req: Request) {
     return new User('local.user', 'local.user@example.com');
   }
 
-  const oidcCookie = req.headers.cookie['oidc-cookie'];
+  const oidcCookie = req.cookies['oidc-cookie'];
 
   if (!oidcCookie) {
     throw new AuthCookieMissingOrExpiredError();
