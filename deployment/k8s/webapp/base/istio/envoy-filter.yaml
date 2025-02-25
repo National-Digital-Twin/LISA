@@ -1,0 +1,24 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: EnvoyFilter
+metadata:
+  name: remove-server-header
+  namespace: istio-system
+spec:
+  workloadSelector:
+    labels:
+      istio: ingressgateway
+  configPatches:
+    - applyTo: HTTP_RESPONSE_HEADERS
+      match:
+        context: GATEWAY
+      patch:
+        operation: REMOVE
+        value:
+          key: server
+    - applyTo: HTTP_RESPONSE_HEADERS
+      match:
+        context: GATEWAY
+      patch:
+        operation: REMOVE
+        value:
+          key: x-envoy-upstream-service-time
