@@ -13,7 +13,14 @@ export default class IncidentDashboardPage {
     includeClosedIncidents: 'Include closed incidents',
     incidents: '.incident-title',
     incidentH1: '.title',
-    closedIncident: '.subtitle'
+    closedIncident: '.subtitle',
+    selectIncidentByNameStatus:
+      "//a[contains(@class, 'incident')][.//span[normalize-space(.) = '$INCIDENTNAME$'] and .//span[contains(@class, 'incident-stage') and contains(text(), '$INCIDENTSTATUS$')]]",
+
+    editIncidentReferredBy: '//input[@id="referrer.name"]',
+    editIncidentOrganisation: '//input[@id="referrer.organisation"]',
+    editIncidentTelephoneNo: '//input[@id="referrer.telephone"]',
+    editIncidentEmail: '//input[@id="referrer.email"]'
   };
 
   async verifyAddIncidentBtn() {
@@ -66,5 +73,32 @@ export default class IncidentDashboardPage {
     );
     const uiH1IncidentText = await uiH1IncidentLocator.textContent();
     expect(allIncidentText).toBe(uiH1IncidentText);
+  }
+
+  async selectIncidentByNameStatus(incidentName: string, incidentStatus: string) {
+    await this.page.getByRole('link', { name: incidentName + ' ' + incidentStatus }).click();
+  }
+
+  async editIncidentByField(fieldName, inputText: string) {
+    switch (fieldName) {
+      case 'ReferredBy':
+        await this.page.locator(this.Elements.editIncidentReferredBy).clear();
+        await this.page.locator(this.Elements.editIncidentReferredBy).fill(inputText);
+        break;
+      case 'Organisation':
+        await this.page.locator(this.Elements.editIncidentOrganisation).clear();
+        await this.page.locator(this.Elements.editIncidentOrganisation).fill(inputText);
+        break;
+      case 'TelephoneNo':
+        await this.page.locator(this.Elements.editIncidentTelephoneNo).clear();
+        await this.page.locator(this.Elements.editIncidentTelephoneNo).fill(inputText);
+        break;
+      case 'Email':
+        await this.page.locator(this.Elements.editIncidentEmail).clear();
+        await this.page.locator(this.Elements.editIncidentEmail).fill(inputText);
+        break;
+      default:
+        break;
+    }
   }
 }

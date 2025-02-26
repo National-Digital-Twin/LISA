@@ -23,8 +23,8 @@ export async function runLighthouse(url: string, outputDir = 'test-results/light
     logLevel: 'info',
     onlyCategories: ['performance', 'accessibility', 'best-practices', 'seo'],
     extraHeaders: {
-      Cookie: cookieHeader, // Pass cookies for authentication
-    },
+      Cookie: cookieHeader // Pass cookies for authentication
+    }
   });
 
   // Save the report

@@ -7,17 +7,11 @@ module.exports = {
     paths: [
       'src/test/features',
       'src/test/performance',
-
     ],
     publishQuiet: true,
     dryRun: false,
-    require: [
-      'src/test/steps/*.ts',
-      'src/hooks/hooks.ts'
-    ],
-    requireModule: [
-      'ts-node/register'
-    ],
+    require: ['src/test/steps/*.ts', 'src/hooks/hooks.ts'],
+    requireModule: ['ts-node/register'],
     format: [
       'progress-bar',
       'html:test-results/cucumber-report.html',
@@ -32,13 +26,8 @@ module.exports = {
     },
     publishQuiet: true,
     dryRun: false,
-    require: [
-      'src/test/steps/*.ts',
-      'src/hooks/hooks.ts'
-    ],
-    requireModule: [
-      'ts-node/register'
-    ],
+    require: ['src/test/steps/*.ts', 'src/hooks/hooks.ts'],
+    requireModule: ['ts-node/register'],
     format: [
       'progress-bar',
       'html:test-results/cucumber-report.html',
