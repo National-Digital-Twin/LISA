@@ -51,10 +51,7 @@ export async function logout(_req: Request, res: Response) {
   }
 
   try {
-    const response = await fetch(`${settings.LANDING_PAGE_URL}/oauth2/sign_out`, {
-      method: 'GET',
-      redirect: 'manual'
-    }).then(() => fetch(`${settings.IDENTITY_API_URL}/api/v1/links/sign-out`, { method: 'GET' }));
+    const response = await fetch(`${settings.IDENTITY_API_URL}/api/v1/links/sign-out`, { method: 'GET' });
 
     if (!response.ok) {
       throw new ApplicationError(

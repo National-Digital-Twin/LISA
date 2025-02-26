@@ -14,16 +14,24 @@ const AuthContextProvider = ({ children }: PropsWithChildren) => {
   });
 
   const logout = async () => {
-    await fetch('/api/auth/logout').then(
-      async (response) => {
-        if (response.ok) {
-          const signOutUrl = await response.json();
-          document.location = signOutUrl;
-        } else {
-          document.location = '/';
-        }
-      },
-      () => { document.location = '/'; }
+    await fetch(`${import.meta.env.VITE_LANDING_PAGE_URL}/oauth2/sign-out`).then(
+      () =>
+        fetch('/api/auth/logout').then(
+          async (response) => {
+            if (response.ok) {
+              const signOutUrl = await response.json();
+              document.location = signOutUrl;
+            } else {
+              document.location = '/';
+            }
+          },
+          () => {
+            document.location = '/';
+          }
+        ),
+      () => {
+        document.location = '/';
+      }
     );
   };
 
