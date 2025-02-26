@@ -3,6 +3,7 @@ resources:
   - deployment.yaml
   - service.yaml
   - istio/virtualService.yaml
+  - istio/envoy-filter.yaml
   - istio/allow-ingress-authorization-policy.yaml
 
 

@@ -9,7 +9,18 @@ import PubSubManager from './manager';
 const wss = new WebSocketServer({ noServer: true });
 const broker = new Broker();
 
-wss.on('connection', (ws: WebSocket, request: IncomingMessage, user: User) => {
+wss.on('connection', async (ws: WebSocket, request: IncomingMessage) => {
+  let user: User;
+
+  try {
+    const username = request.headers['sec-websocket-protocol'].split(',')[1].trim();
+    user = new User(username, '');
+  } catch (error) {
+    ws.close();
+    console.log(error);
+    return;
+  }
+
   const id = randomUUID();
   broker.addClient(id, ws, user);
 
@@ -51,9 +62,8 @@ export async function handleUpgrade(
   request: IncomingMessage,
   socket: Duplex,
   head: Buffer,
-  user: User
 ) {
   wss.handleUpgrade(request, socket, head, (ws) => {
-    wss.emit('connection', ws, request, user);
+    wss.emit('connection', ws, request);
   });
 }

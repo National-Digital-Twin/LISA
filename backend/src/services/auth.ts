@@ -1,6 +1,4 @@
 import { Request, Response } from 'express';
-import { IncomingMessage } from 'http';
-import internal from 'stream';
 
 import { getUsers } from '../auth/cognito';
 import { User } from '../auth/user';
@@ -17,31 +15,7 @@ async function fetchUserDetails(accessToken: string) {
   });
 }
 
-export async function getUserDetailsForWs(req: IncomingMessage, socket: internal.Duplex) {
-  if (settings.NODE_ENV === 'development') {
-    return new User('local.user', 'local.user@example.com');
-  }
-
-  const accessToken = req.headers['X-Auth-Request-Access-Token'][0];
-
-  if (!accessToken) {
-    socket.destroy();
-    throw new ApplicationError('Error: invalid response recieved when getting user details.');
-  }
-
-  const response = await fetchUserDetails(accessToken);
-
-  if (!response.ok) {
-    socket.destroy();
-    throw new ApplicationError(
-      `Error: ${response.status}(${response.statusText}) recieved when fetching sign out links.`
-    );
-  }
-
-  return response.json();
-}
-
-export async function getUserDetails(req: Request) {
+export async function getUserDetails(req: Request): Promise<User> {
   if (settings.NODE_ENV === 'development') {
     return new User('local.user', 'local.user@example.com');
   }
@@ -58,7 +32,7 @@ export async function getUserDetails(req: Request) {
     throw new ApplicationError('Error: invalid response recieved when getting user details.');
   }
 
-  return response.json();
+  return response.json().then((value) => new User(value.content.username, value.content.email));
 }
 
 export async function user(_req: Request, res: Response) {
@@ -77,9 +51,10 @@ export async function logout(_req: Request, res: Response) {
   }
 
   try {
-    const response = await fetch(`${settings.IDENTITY_API_URL}/api/v1/links/sign-out`, {
-      method: 'GET'
-    });
+    const response = await fetch(`${settings.LANDING_PAGE_URL}/oauth2/sign_out`, {
+      method: 'GET',
+      redirect: 'manual'
+    }).then(() => fetch(`${settings.IDENTITY_API_URL}/api/v1/links/sign-out`, { method: 'GET' }));
 
     if (!response.ok) {
       throw new ApplicationError(
