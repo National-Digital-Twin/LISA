@@ -37,7 +37,14 @@ export const getSortedEntriesWithDisplaySequence = (
   const sortedOffline = offlineEntries.toSorted((a, b) => {
     const seqA = Number(a.displaySequence);
     const seqB = Number(b.displaySequence);
-    return sortAsc ? seqB - seqA : seqA - seqB;
+    if (seqA === seqB) {
+      return 0;
+    }
+
+    if (sortAsc) {
+      return seqA < seqB ? -1 : 1;
+    }
+    return seqA > seqB ? -1 : 1;
   });
 
   // Assign displaySequence for offline entries based on visual order.
