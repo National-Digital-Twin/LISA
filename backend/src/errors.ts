@@ -6,6 +6,12 @@ interface ExpressError extends Error {
   statusCode?: number;
 }
 
+export class AccessTokenMissingOrExpiredError extends Error {
+  constructor() {
+    super('Error: The X-Auth-Request-Access-Token header is either not set or has expired.');
+  }
+}
+
 export class ApplicationError extends Error implements ExpressError {
   // eslint-disable-next-line class-methods-use-this
   get statusCode() {

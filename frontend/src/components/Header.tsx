@@ -1,14 +1,15 @@
 // Global imports
 import { MouseEvent, ReactNode, useState } from 'react';
 import { Link, useLocation, useParams } from 'react-router-dom';
+import { Box, AppBar, Toolbar, IconButton } from '@mui/material';
+import SettingsIcon from '@mui/icons-material/Settings';
 
 // Local imports
-import { type User } from 'common/User';
-import { AppBar, Box, IconButton, Toolbar } from '@mui/material';
-import SettingsIcon from '@mui/icons-material/Settings';
 import NavButt from '../assets/images/button-nav.svg';
 import LogoHeader from '../assets/images/logo.svg';
-import LogoCorp from '../assets/images/NDTP_Gemini_Logo.svg';
+import LogoCorp from '../assets/images/logo-corporate.svg';
+// eslint-disable-next-line import/no-relative-packages
+import { User } from '../../../common/User';
 import { useAuth, useIncidents, useOutsideClick } from '../hooks';
 import { Format, Icons } from '../utils';
 import HelpGuidance from './HelpGuidance';
@@ -65,7 +66,7 @@ const Header = ({ helpVisible = false }: Props) => {
 
   const incident = incidents?.find((inc) => inc.id === incidentId);
   let items: Array<MenuItemType> = [HOME_ITEM];
-  if (user.authenticated && incident) {
+  if (incident) {
     items = [
       HOME_ITEM,
       ...ACTIVE_INCIDENT_ITEMS.map((i) => ({ ...i, to: `${i.to}/${incidentId}` }))
@@ -79,11 +80,6 @@ const Header = ({ helpVisible = false }: Props) => {
   const handleLink = () => {
     setNavHidden(true);
     document.documentElement.scrollTo(0, 0);
-  };
-
-  const signIn = (evt: MouseEvent<HTMLAnchorElement>) => {
-    evt.preventDefault();
-    user.login();
   };
 
   const signOut = (evt: MouseEvent<HTMLAnchorElement>) => {
@@ -133,16 +129,10 @@ const Header = ({ helpVisible = false }: Props) => {
           </Box>
           <div className="header-user">
             <div className="header-user-name">
-              {user.authenticated ? Format.user(user.current as User) : ''}
-              {user.authenticated ? (
-                <Link className="sign-out" onClick={signOut} to="logout">
-                  Sign out
-                </Link>
-              ) : (
-                <Link className="sign-in" onClick={signIn} to="login">
-                  Sign in
-                </Link>
-              )}
+              {Format.user(user.current as User)}
+              <Link className="sign-out" onClick={signOut} to="logout">
+                Sign out
+              </Link>
             </div>
             <Icons.Person />
           </div>

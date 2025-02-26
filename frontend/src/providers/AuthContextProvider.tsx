@@ -6,7 +6,6 @@ import { AuthContextType } from '../utils/types';
 import { AuthContext } from '../context/AuthContext';
 
 const AuthContextProvider = ({ children }: PropsWithChildren) => {
-  const [authenticated, setAuthenticated] = useState<boolean>(false);
   const [offline, setOffline] = useState<boolean>(true);
   const { data, error } = useQuery<User, FetchError>({
     queryKey: ['user'],
@@ -14,23 +13,24 @@ const AuthContextProvider = ({ children }: PropsWithChildren) => {
     retry: false
   });
 
-  const login = () => {
-    document.location = `/api/auth/login?redirect=${window.location.pathname}`;
-  };
-
-  const logout = () => {
-    document.location = '/api/auth/logout';
+  const logout = async () => {
+    await fetch('/api/auth/logout').then(
+      async (response) => {
+        if (response.ok) {
+          const signOutUrl = await response.json();
+          document.location = signOutUrl;
+        } else {
+          document.location = '/';
+        }
+      },
+      () => { document.location = '/'; }
+    );
   };
 
   useEffect(() => {
     const isOffline = error?.message === 'Failed to fetch';
     setOffline(isOffline);
 
-    const isUnauthenticated = error?.status === 403;
-    setAuthenticated(!isUnauthenticated);
-    if (isUnauthenticated) {
-      login();
-    }
     return () => undefined;
   }, [error?.message, error?.status]);
 
@@ -38,13 +38,11 @@ const AuthContextProvider = ({ children }: PropsWithChildren) => {
     () => ({
       user: {
         current: data,
-        authenticated,
         offline,
-        login,
         logout
       }
     }),
-    [data, authenticated, offline]
+    [data, offline]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

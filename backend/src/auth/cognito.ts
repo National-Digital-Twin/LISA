@@ -8,11 +8,6 @@ import {
 import { UserList, UserListItem } from 'common/User';
 import { settings } from '../settings';
 
-export interface TokensCookie {
-  accessToken: string;
-  idToken: string;
-}
-
 let cognitoClient: CognitoIdentityProviderClient;
 
 export function getCognitoClient() {

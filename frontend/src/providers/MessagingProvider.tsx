@@ -22,7 +22,7 @@ export default function MessagingProvider({ children }: Readonly<PropsWithChildr
   }, []);
 
   useEffect(() => {
-    if (!user.authenticated || !user.current) {
+    if (!user.current) {
       return undefined;
     }
     ws.current = new WebSocketClient(handleConnection, handleIncoming, user.current);
