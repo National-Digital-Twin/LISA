@@ -75,5 +75,5 @@ When('I edit the Incident with below details', async function (dataTable) {
 
 Then('I should be able to save the application successfully', async function () {
   basePage.navigateMenuByButton('Save');
-  await basePage.customSleep(10000);
+  await basePage.customSleep(500);
 });
