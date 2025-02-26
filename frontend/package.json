@@ -18,8 +18,13 @@
     "test:coverage": "jest --coverage"
   },
   "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
     "@lexical/react": "^0.14.2",
     "@lexical/utils": "0.16.1",
+    "@mui/icons-material": "^6.4.4",
+    "@mui/material": "^6.4.4",
+    "@national-digital-twin/ndtp-styling-assets": "file:../../ndtp-styling-assets/national-digital-twin-ndtp-styling-assets-1.1.1.tgz",
     "@tanstack/query-sync-storage-persister": "^5.45.0",
     "@tanstack/react-query": "^5.45.1",
     "@tanstack/react-query-devtools": "^5.45.1",

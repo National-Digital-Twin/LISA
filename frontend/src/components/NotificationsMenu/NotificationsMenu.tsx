@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 
 import { type Notification } from 'common/Notification';
+import { Badge, IconButton } from '@mui/material';
+import NotificationsIcon from '@mui/icons-material/Notifications';
 import NotificationItem from './NotificationItem';
 import { Icons, bem } from '../../utils';
 import { useAuth, useNotifications, useOutsideClick, useReadNotification } from '../../hooks';
@@ -42,12 +44,11 @@ export default function NotificationsMenu() {
   return (
     <div ref={containerRef} className={classes()}>
       {!expanded && (
-        <button type="button" className={classes('btn')} onClick={onMenuBtnClick}>
-          {unreadCount > 0 && (
-            <span className={classes('badge')}>{unreadCount > 99 ? '99+' : unreadCount}</span>
-          )}
-          <Icons.Notification />
-        </button>
+        <IconButton type="button" onClick={onMenuBtnClick} disableFocusRipple disableRipple>
+          <Badge badgeContent={unreadCount} color="error" overlap="circular" max={99}>
+            <NotificationsIcon sx={{ color: 'text.primary' }} />
+          </Badge>
+        </IconButton>
       )}
       {expanded && (
         <div className={classes('menu')}>
