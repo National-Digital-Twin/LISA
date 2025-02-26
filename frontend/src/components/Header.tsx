@@ -7,7 +7,7 @@ import SettingsIcon from '@mui/icons-material/Settings';
 // Local imports
 import NavButt from '../assets/images/button-nav.svg';
 import LogoHeader from '../assets/images/logo.svg';
-import LogoCorp from '../assets/images/logo-corporate.svg';
+import LogoCorp from '../assets/images/NDTP_Gemini_Logo.svg';
 // eslint-disable-next-line import/no-relative-packages
 import { User } from '../../../common/User';
 import { useAuth, useIncidents, useOutsideClick } from '../hooks';
