@@ -16,7 +16,7 @@ Given('I login to the ndtp app with the user credentials', async () => {
   await loginPage.loginUser(process.env.USERNAME, process.env.PASSWORD);
 });
 
-When('I click the {string} menu', async (menuName) => {
+When('I click the {string} menu', async () => {
   landingPage = new LandingPage(basePage.page);
   await landingPage.clickMenuByName();
 });

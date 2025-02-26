@@ -7,7 +7,7 @@ export const basePage = {
 
   // Custom sleep function
   async customSleep(ms: number): Promise<void> {
-    return new Promise((resolve) => setTimeout(resolve, ms));
+    return new Promise((resolve) => { setTimeout(resolve, ms); });
   },
 
   async navigateMenuByLink(menuName: string) {

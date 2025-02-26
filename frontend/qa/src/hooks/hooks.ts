@@ -10,26 +10,6 @@ import { options } from '../helper/util/logger';
 let browser: Browser;
 let context: BrowserContext;
 
-function getStorageState(user: string):
-  | string
-  | {
-      cookies: {
-        name: string;
-        value: string;
-        domain: string;
-        path: string;
-        expires: number;
-        httpOnly: boolean;
-        secure: boolean;
-        sameSite: 'Strict' | 'Lax' | 'None';
-      }[];
-      origins: { origin: string; localStorage: { name: string; value: string }[] }[];
-    } {
-  if (user.endsWith('admin')) return 'src/helper/auth/admin.json';
-  if (user.endsWith('lead')) return 'src/helper/auth/lead.json';
-  return '';
-}
-
 BeforeAll(async () => {
   getEnv();
   browser = await invokeBrowser();
@@ -38,7 +18,6 @@ BeforeAll(async () => {
 Before(async ({ pickle }) => {
   const scenarioName = pickle.name + pickle.id;
   context = await browser.newContext({
-    // storageState: getStorageState(pickle.name),
     recordVideo: {
       dir: 'test-results/videos'
     }
