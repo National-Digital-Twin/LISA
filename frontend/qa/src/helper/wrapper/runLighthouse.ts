@@ -40,7 +40,9 @@ export async function runLighthouse(url: string, outputDir = 'test-results/light
   fs.writeFileSync(jsonReportPath, JSON.stringify(result.lhr, null, 2));
   fs.writeFileSync(htmlReportPath, result.report[1]); // HTML report
 
+  // eslint-disable-next-line no-console
   console.log(`Lighthouse JSON report saved: ${jsonReportPath}`);
+  // eslint-disable-next-line no-console
   console.log(`Lighthouse HTML report saved: ${htmlReportPath}`);
 
   chrome.kill(); // Close Chromium after the test
@@ -57,10 +59,12 @@ async function getUserLogin() {
 
   // Get cookies after login
   const cookies = await basePage.page.context().cookies();
+  // eslint-disable-next-line no-console
   console.log('Cookies:', cookies);
 
   // Extract the cookies in a formatted string (useful for Lighthouse or API requests)
   const cookieHeader = cookies.map((cookie) => `${cookie.name}=${cookie.value}`).join('; ');
+// eslint-disable-next-line no-console
   console.log('Formatted Cookies:', cookieHeader);
 
   return cookieHeader;

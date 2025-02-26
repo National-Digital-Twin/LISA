@@ -73,12 +73,13 @@ After(async function TestCaseHook({ pickle, result }) {
 
     // Attach the trace file
     if (fs.existsSync(path)) {
-      console.log('File exists.');
+      // console.log('File exists.');
       const traceFileLink = `<a href="https://trace.playwright.dev/">Open ${path}</a>`;
       this.attach(`Trace file: ${traceFileLink}`, 'text/html');
     } else {
+      // eslint-disable-next-line no-console
       console.log('File does not exist.');
-      console.warn('Trace file not found.');
+      // console.warn('Trace file not found.');
     }
   }
 });
