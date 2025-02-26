@@ -25,7 +25,7 @@ export default function MessagingProvider({ children }: Readonly<PropsWithChildr
     if (!user.current) {
       return undefined;
     }
-    ws.current = new WebSocketClient(handleConnection, handleIncoming);
+    ws.current = new WebSocketClient(handleConnection, handleIncoming, user.current);
     return () => {
       ws.current?.close();
       ws.current = null;
