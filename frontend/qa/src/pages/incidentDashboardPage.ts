@@ -76,29 +76,29 @@ export default class IncidentDashboardPage {
   }
 
   async selectIncidentByNameStatus(incidentName: string, incidentStatus: string) {
-    await this.page.getByRole('link', { name: incidentName + ' ' + incidentStatus }).click();
+    await this.page.getByRole('link', { name: `${incidentName} ${incidentStatus}` }).click();
   }
 
   async editIncidentByField(fieldName, inputText: string) {
     switch (fieldName) {
-      case 'ReferredBy':
-        await this.page.locator(this.Elements.editIncidentReferredBy).clear();
-        await this.page.locator(this.Elements.editIncidentReferredBy).fill(inputText);
-        break;
-      case 'Organisation':
-        await this.page.locator(this.Elements.editIncidentOrganisation).clear();
-        await this.page.locator(this.Elements.editIncidentOrganisation).fill(inputText);
-        break;
-      case 'TelephoneNo':
-        await this.page.locator(this.Elements.editIncidentTelephoneNo).clear();
-        await this.page.locator(this.Elements.editIncidentTelephoneNo).fill(inputText);
-        break;
-      case 'Email':
-        await this.page.locator(this.Elements.editIncidentEmail).clear();
-        await this.page.locator(this.Elements.editIncidentEmail).fill(inputText);
-        break;
-      default:
-        break;
+    case 'ReferredBy':
+      await this.page.locator(this.Elements.editIncidentReferredBy).clear();
+      await this.page.locator(this.Elements.editIncidentReferredBy).fill(inputText);
+      break;
+    case 'Organisation':
+      await this.page.locator(this.Elements.editIncidentOrganisation).clear();
+      await this.page.locator(this.Elements.editIncidentOrganisation).fill(inputText);
+      break;
+    case 'TelephoneNo':
+      await this.page.locator(this.Elements.editIncidentTelephoneNo).clear();
+      await this.page.locator(this.Elements.editIncidentTelephoneNo).fill(inputText);
+      break;
+    case 'Email':
+      await this.page.locator(this.Elements.editIncidentEmail).clear();
+      await this.page.locator(this.Elements.editIncidentEmail).fill(inputText);
+      break;
+    default:
+      break;
     }
   }
 }

@@ -35,11 +35,10 @@ BeforeAll(async () => {
   browser = await invokeBrowser();
 });
 
-
 Before(async ({ pickle }) => {
   const scenarioName = pickle.name + pickle.id;
   context = await browser.newContext({
-    //storageState: getStorageState(pickle.name),
+    // storageState: getStorageState(pickle.name),
     recordVideo: {
       dir: 'test-results/videos'
     }
@@ -98,13 +97,10 @@ After(async function TestCaseHook({ pickle, result }) {
       console.log('File exists.');
       const traceFileLink = `<a href="https://trace.playwright.dev/">Open ${path}</a>`;
       this.attach(`Trace file: ${traceFileLink}`, 'text/html');
-   
     } else {
       console.log('File does not exist.');
       console.warn('Trace file not found.');
-
     }
-    
   }
 });
 

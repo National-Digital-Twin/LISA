@@ -3,7 +3,6 @@ import { Given, When, Then, setDefaultTimeout } from '@cucumber/cucumber';
 import { basePage } from '../../hooks/basePage';
 import IncidentDashboardPage from '../../pages/incidentDashboardPage';
 import { RandomDataGenerator } from '../../helper/util/RandomDataGenerator';
-import { base } from '@faker-js/faker/.';
 
 let dashboardPage: IncidentDashboardPage;
 
@@ -19,7 +18,7 @@ Given(
   }
 );
 
-Given('I click the {string} menu in the {string} menu', async function (menuName, navMenu) {
+Given('I click the {string} menu in the {string} menu', async (menuName, navMenu) => {
   dashboardPage = new IncidentDashboardPage(basePage.page);
   basePage.navigateMenuByLink(navMenu);
   await basePage.customSleep(500);
@@ -28,44 +27,44 @@ Given('I click the {string} menu in the {string} menu', async function (menuName
   await basePage.customSleep(500);
 });
 
-When('I edit the Incident with below details', async function (dataTable) {
+When('I edit the Incident with below details', async (dataTable) => {
   // Convert the DataTable into an object with column names as keys
   const data = dataTable.rowsHash();
 
   // Edit the incident by checking the conditions for each field and using the RandomDataGenerator
-  if (data['ReferredBy'] === 'Yes') {
+  if (data.ReferredBy === 'Yes') {
     await dashboardPage.editIncidentByField(
       'ReferredBy',
       RandomDataGenerator.generateRandomFullName()
     );
   }
 
-  if (data['Organisation'] === 'Yes') {
+  if (data.Organisation === 'Yes') {
     await dashboardPage.editIncidentByField(
       'Organisation',
-      RandomDataGenerator.generateRandomText(2) + ' Ltd'
+      `${RandomDataGenerator.generateRandomText(2)} Ltd`
     );
   }
 
-  if (data['TelephoneNo'] === 'Yes') {
+  if (data.TelephoneNo === 'Yes') {
     await dashboardPage.editIncidentByField(
       'TelephoneNo',
       RandomDataGenerator.generateRandomTelephoneNumber()
     );
   }
 
-  if (data['Email'] === 'Yes') {
+  if (data.Email === 'Yes') {
     await dashboardPage.editIncidentByField('Email', RandomDataGenerator.generateRandomEmail());
   }
 
-  if (data['SupportedReq'] === 'Yes') {
+  if (data.SupportedReq === 'Yes') {
     await dashboardPage.editIncidentByField(
       'SupportedReq',
       RandomDataGenerator.generateRandomText()
     ); // Or any appropriate action
   }
 
-  if (data['ReqDescription'] === 'Random text') {
+  if (data.ReqDescription === 'Random text') {
     await dashboardPage.editIncidentByField(
       'ReqDescription',
       RandomDataGenerator.generateRandomText()
@@ -73,7 +72,7 @@ When('I edit the Incident with below details', async function (dataTable) {
   }
 });
 
-Then('I should be able to save the application successfully', async function () {
+Then('I should be able to save the application successfully', async () => {
   basePage.navigateMenuByButton('Save');
   await basePage.customSleep(500);
 });

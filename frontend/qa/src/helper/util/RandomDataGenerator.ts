@@ -5,17 +5,17 @@ import { uniqueNamesGenerator, adjectives, colors, animals } from 'unique-names-
 export class RandomDataGenerator {
   // Generate a random first name like "John"
   static generateRandomFirstName(): string {
-    return faker.name.firstName();
+    return faker.person.firstName();
   }
 
   // Generate a random last name like "Doe"
   static generateRandomLastName(): string {
-    return faker.name.lastName(); 
+    return faker.person.lastName();
   }
 
   // Generate a random full name (first + last) "John Doe"
   static generateRandomFullName(): string {
-    return faker.name.fullName(); 
+    return faker.person.fullName();
   }
 
   // Generate a random username (using unique-names-generator)
@@ -29,7 +29,7 @@ export class RandomDataGenerator {
 
   // Generate random email address using faker Example: 'john.doe@example.com'
   static generateRandomEmail(): string {
-    return faker.internet.email(); 
+    return faker.internet.email();
   }
 
   // Generate random telephone number using faker
@@ -52,6 +52,6 @@ export class RandomDataGenerator {
 
   // Generate random text with a specified length
   static generateRandomText(length: number = 10): string {
-    return faker.lorem.words(length); 
+    return faker.lorem.words(length);
   }
 }
