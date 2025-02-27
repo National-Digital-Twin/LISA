@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import lighthouse from 'lighthouse';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -23,8 +22,8 @@ export async function runLighthouse(url: string, outputDir = 'test-results/light
     logLevel: 'info',
     onlyCategories: ['performance', 'accessibility', 'best-practices', 'seo'],
     extraHeaders: {
-      Cookie: cookieHeader, // Pass cookies for authentication
-    },
+      Cookie: cookieHeader // Pass cookies for authentication
+    }
   });
 
   // Save the report
@@ -40,9 +39,6 @@ export async function runLighthouse(url: string, outputDir = 'test-results/light
   fs.writeFileSync(jsonReportPath, JSON.stringify(result.lhr, null, 2));
   fs.writeFileSync(htmlReportPath, result.report[1]); // HTML report
 
-  console.log(`Lighthouse JSON report saved: ${jsonReportPath}`);
-  console.log(`Lighthouse HTML report saved: ${htmlReportPath}`);
-
   chrome.kill(); // Close Chromium after the test
   return result.lhr;
 }
@@ -57,11 +53,9 @@ async function getUserLogin() {
 
   // Get cookies after login
   const cookies = await basePage.page.context().cookies();
-  console.log('Cookies:', cookies);
 
   // Extract the cookies in a formatted string (useful for Lighthouse or API requests)
   const cookieHeader = cookies.map((cookie) => `${cookie.name}=${cookie.value}`).join('; ');
-  console.log('Formatted Cookies:', cookieHeader);
 
   return cookieHeader;
 }

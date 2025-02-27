@@ -9,13 +9,13 @@ report.generate({
   metadata: {
     browser: {
       name: 'chrome',
-      version: '112',
+      version: '112'
     },
     device: 'VM Default',
     platform: {
       name: 'Ubuntu 64 bit',
-      version: '1',
-    },
+      version: '1'
+    }
   },
   customData: {
     title: 'Test Exit Report',
@@ -23,6 +23,6 @@ report.generate({
       { label: 'Project', value: 'LISA Application' },
       { label: 'Release', value: '1.2.x' },
       { label: 'Cycle', value: 'Smoke-1' }
-    ],
-  },
+    ]
+  }
 });

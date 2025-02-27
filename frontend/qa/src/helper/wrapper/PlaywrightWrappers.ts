@@ -2,7 +2,7 @@ import { Page } from '@playwright/test';
 
 export default class PlaywrightWrapper {
   // eslint-disable-next-line no-useless-constructor,no-empty-function
-  constructor(private readonly page: Page) { }
+  constructor(private readonly page: Page) {}
 
   async goto(url: string) {
     await this.page.goto(url, {
@@ -19,9 +19,6 @@ export default class PlaywrightWrapper {
   }
 
   async navigateTo(link: string) {
-    await Promise.all([
-      this.page.waitForLoadState('domcontentloaded'),
-      this.page.click(link)
-    ]);
+    await Promise.all([this.page.waitForLoadState('domcontentloaded'), this.page.click(link)]);
   }
 }

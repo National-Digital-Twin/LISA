@@ -11,7 +11,7 @@ export function options(scenarioName: string) {
           format.align(),
           format.printf((info) => `${info.level}: ${[info.timestamp]}: ${info.message}`)
         )
-      }),
+      })
     ]
   };
 }
