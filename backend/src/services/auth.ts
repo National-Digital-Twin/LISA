@@ -51,6 +51,29 @@ export async function logout(_req: Request, res: Response) {
   }
 
   try {
+    const response = await fetch(`${settings.LANDING_PAGE_URL}/oauth2/sign-out`, {
+      method: 'GET',
+      redirect: 'manual'
+    });
+
+    if (!response.ok) {
+      throw new ApplicationError(
+        `Error: ${response.status}(${response.statusText}) recieved when fetching sign out links.`
+      );
+    }
+
+    return response;
+  } catch (error) {
+    throw new ApplicationError(error);
+  }
+}
+
+export async function logoutLinks(_req: Request, res: Response) {
+  if (settings.NODE_ENV === 'development') {
+    return res.json('/');
+  }
+
+  try {
     const response = await fetch(`${settings.IDENTITY_API_URL}/api/v1/links/sign-out`, { method: 'GET' });
 
     if (!response.ok) {

@@ -35,6 +35,7 @@ const apiRouter = Router();
 router.use('/api', apiRouter);
 
 apiRouter.get('/auth/logout', auth.logout);
+apiRouter.get('/auth/logout-links', auth.logoutLinks);
 
 apiRouter.use(authenticate());
 
