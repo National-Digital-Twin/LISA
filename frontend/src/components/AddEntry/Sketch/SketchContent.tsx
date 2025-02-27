@@ -21,7 +21,6 @@ export default function SketchContent({
   canvasRef
 }: Readonly<Props>) {
   const classes = bem('add-entry-tab', [active ? 'active' : ''], 'sketch');
-  if (canvasRef.current === null) return null;
   return (
     <ul className={classes()}>
       <li className="full-width">
