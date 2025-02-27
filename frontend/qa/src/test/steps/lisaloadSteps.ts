@@ -11,7 +11,5 @@ When('I run Lighthouse analysis for lisa {string} page', async (pageName) => {
 
 Then('the performance score should be at least {int}', (threshold: number) => {
   const performanceScore = lighthouseReport.categories.performance.score * 100;
-  // eslint-disable-next-line no-console
-  // console.log(`Performance Score: ${performanceScore}`);
   expect(performanceScore).toBeGreaterThanOrEqual(threshold);
 });

@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import lighthouse from 'lighthouse';
 import * as fs from 'fs';
 import * as path from 'path';
