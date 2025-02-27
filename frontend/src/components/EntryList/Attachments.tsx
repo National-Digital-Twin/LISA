@@ -15,7 +15,7 @@ export default function Attachments({ entry }: Readonly<Props>) {
     <ul className="log-entry-attachments">
       <li>Attachments:</li>
       {attachments.map((attachment) => (
-        <li key={attachment.key}>
+        <li key={attachment.name}>
           <AttachmentLink attachment={attachment} isOnServer={!entry.offline} />
         </li>
       ))}
