@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "start": "npm run dev",
-    "dev": "vite",
+    "dev": "vite --host",
+    "dev:ssl": "SSL_ENABLED=true vite --host",
     "build": "tsc && vite build",
     "bundle": "npm run generate-pwa-assets && tsc --noEmit && vite build --outDir ../backend/dist/frontend --emptyOutDir",
     "dev:backend": "vite build --mode development --outDir ../backend/dist/frontend --emptyOutDir --watch",
@@ -59,6 +60,7 @@
     "@typescript-eslint/eslint-plugin": "^7.13.1",
     "@typescript-eslint/parser": "^7.13.1",
     "@vite-pwa/assets-generator": "^0.2.4",
+    "@vitejs/plugin-basic-ssl": "^1.2.0",
     "@vitejs/plugin-react": "^4.3.1",
     "eslint": "^8.56.0",
     "eslint-config-airbnb": "^19.0.4",
