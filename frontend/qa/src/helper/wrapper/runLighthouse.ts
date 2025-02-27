@@ -64,7 +64,7 @@ async function getUserLogin() {
 
   // Extract the cookies in a formatted string (useful for Lighthouse or API requests)
   const cookieHeader = cookies.map((cookie) => `${cookie.name}=${cookie.value}`).join('; ');
-// eslint-disable-next-line no-console
+  // eslint-disable-next-line no-console
   console.log('Formatted Cookies:', cookieHeader);
 
   return cookieHeader;
