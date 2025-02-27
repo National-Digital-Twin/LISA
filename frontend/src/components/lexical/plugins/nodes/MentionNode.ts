@@ -30,10 +30,10 @@ export type SerializedMentionNode = Spread<
   SerializedTextNode
 >;
 /* eslint-disable no-use-before-define */
-function convertMentionElement(domNode: HTMLElement): DOMConversionOutput | null {
-  const { textContent } = domNode;
-  const type: MentionableType = domNode.getAttribute('data-lexical-mention-type') as MentionableType;
-  const id: string = domNode.getAttribute('data-lexical-mention') as string;
+function $convertMentionElement({ getAttribute, textContent }: HTMLElement): DOMConversionOutput |
+  null {
+  const type: MentionableType = getAttribute('data-lexical-mention-type') as MentionableType;
+  const id: string = getAttribute('data-lexical-mention') as string;
 
   if (textContent !== null) {
     const node = $createMentionNode(textContent, type, id);
@@ -112,7 +112,7 @@ export class MentionNode extends TextNode {
           return null;
         }
         return {
-          conversion: convertMentionElement,
+          conversion: $convertMentionElement,
           priority: 1,
         };
       },
