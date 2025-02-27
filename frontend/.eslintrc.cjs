@@ -6,6 +6,7 @@ module.exports = {
     'plugin:react-hooks/recommended',
     'plugin:testing-library/react',
     'plugin:jest/recommended',
+    'plugin:@lexical/recommended',
     'airbnb'
   ],
   parser: '@typescript-eslint/parser',

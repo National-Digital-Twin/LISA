@@ -46,6 +46,7 @@
     "vite-plugin-svgr": "^4.2.0"
   },
   "devDependencies": {
+    "@lexical/eslint-plugin": "^0.25.0",
     "@tanstack/react-query-devtools": "^5.66.9",
     "@testing-library/dom": "^8.11.1",
     "@testing-library/jest-dom": "^6.6.3",
