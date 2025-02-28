@@ -16,5 +16,10 @@ export const basePage = {
 
   async navigateMenuByButton(menuName: string) {
     await this.page.getByRole('button', { name: menuName }).click();
+  },
+
+  async getRandomUsername() {
+    const randomIndex = Math.floor(Math.random() * this.data.usernames.length);
+    return this.data.usernames[randomIndex];
   }
 };
