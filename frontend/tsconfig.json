@@ -5,7 +5,10 @@
     "module": "ESNext",
     "skipLibCheck": true,
     "paths": {
-      "common/*": ["../common/*"]
+      "common/*": ["../common/*"],
+      "@shared-assets/*": [
+        "../../node_modules/@national-digital-twin/ndtp-styling-assets/dist/assets"
+      ]
     },
 
     /* Bundler mode */

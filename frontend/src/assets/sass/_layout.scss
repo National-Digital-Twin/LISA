@@ -29,12 +29,15 @@ label {
   list-style: none;
 }
 
-input, textarea, select {
+input,
+textarea,
+select {
   box-sizing: border-box;
   padding: 0.25rem;
 }
 
-img, svg {
+img,
+svg {
   width: 100%;
   height: auto;
   &.photo-simon {
@@ -54,7 +57,7 @@ img, svg {
   }
   .page-title {
     font-size: 2rem;
-    font-family: lato-bold, Arial, Helvetica, sans-serif;
+    font-family: ndtp.$font-family;
     margin-bottom: 30px;
     color: $black;
     position: relative;
@@ -97,7 +100,7 @@ img, svg {
   input,
   select,
   textarea {
-    font-family: lato-reg, Arial, Helvetica, sans-serif;
+    font-family: ndtp.$font-family;
   }
 
   p {
@@ -144,7 +147,7 @@ img, svg {
           &.in-error {
             position: relative;
             &::after {
-              content: "*";
+              content: '*';
               position: absolute;
               right: 4px;
               top: 4px;
@@ -213,11 +216,16 @@ img, svg {
     color: $grey-mid;
     margin: 20px 0;
   }
-  h2, p, ul, li  {
+  h2,
+  p,
+  ul,
+  li {
     margin-bottom: 10px;
     margin-top: 10px;
   }
-  p, ul, li {
+  p,
+  ul,
+  li {
     font-size: 1.15rem;
     line-height: 30px;
   }
@@ -226,7 +234,7 @@ img, svg {
   width: 650px;
   margin-right: auto;
   margin-left: auto;
-  @media screen and (max-width:800px) {
+  @media screen and (max-width: 800px) {
     width: 100%;
     display: block;
   }
@@ -236,7 +244,7 @@ img, svg {
   width: 45%;
   display: inline-block;
   vertical-align: top;
-  @media screen and (max-width:800px) {
+  @media screen and (max-width: 800px) {
     width: 100%;
     display: block;
   }
@@ -247,7 +255,7 @@ img, svg {
   width: 30%;
   display: inline-block;
   vertical-align: top;
-  @media screen and (max-width:800px) {
+  @media screen and (max-width: 800px) {
     width: 100%;
     display: block;
   }
