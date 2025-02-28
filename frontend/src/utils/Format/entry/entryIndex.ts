@@ -10,10 +10,10 @@ function padIndex(index: string, entryCount: number) {
 
 export function entryIndex(entry: LogEntry): string {
   if (entry?.offline) {
-    return entry.sequence ?? '-0';
+    return entry.displaySequence?.toString() ?? '-0';
   }
-  if (entry?.sequence) {
-    return padIndex(entry.sequence, 4);
+  if (entry?.displaySequence) {
+    return padIndex(entry.displaySequence.toString(), 4);
   }
   return '0000';
 }

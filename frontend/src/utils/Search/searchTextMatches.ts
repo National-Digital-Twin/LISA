@@ -4,7 +4,6 @@ import { type LogEntry } from 'common/LogEntry';
 const SEARCHABLE_PROPS: Array<string> = [
   'content.text',
   'location.description',
-  'sequence',
   'stage'
 ];
 

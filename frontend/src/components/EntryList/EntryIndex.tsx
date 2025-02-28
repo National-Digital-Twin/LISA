@@ -12,7 +12,7 @@ interface Props {
 }
 
 const EntryIndex = ({ entry }: Props) => {
-  const prefix = entry.offline ? 'OFF' : '#';
+  const prefix = entry.offline ? 'OFF-' : '#';
   const className = 'item-index';
   return (
     <div className={className} title={entry.offline ? OFFLINE_MESSAGE : ''}>
