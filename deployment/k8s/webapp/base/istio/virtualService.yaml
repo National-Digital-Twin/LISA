@@ -39,6 +39,19 @@ spec:
               number: 80
           headers:
             response:
+              remove:
+              - server
               set:
                 Content-Security-Policy: placeholder
                 Access-Control-Allow-Origin: placeholder
+                Cross-Origin-Embedder-Policy: "unsafe-none"
+                Cross-Origin-Opener-Policy: "same-origin"
+                Cross-Origin-Resource-Policy: "cross-origin"
+                Permissions-Policy: "geolocation=(), midi=(), sync-xhr=(), microphone=(), camera=(), magnetometer=(), gyroscope=(), fullscreen=(), payment=()"
+                Referrer-Policy: "no-referrer"
+                X-Content-Type-Options: "nosniff"
+                X-Frame-Options: "DENY"
+                X-Permitted-Cross-Domain-Policies: "none"
+                X-Xss-Protection: "1; mode=block"
+                X-UA-Compatible: "IE=Edge"
+                X-Permitted-Cross-Domain-Policies: "none"
