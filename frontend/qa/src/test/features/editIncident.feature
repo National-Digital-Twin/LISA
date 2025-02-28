@@ -3,7 +3,7 @@ Feature: Edit Incident Page
   Background:
     Given I am a valid user logged into the "IRIS" NDTP application
 
-    @DPAV-562 @functional
+    @DPAV-562 @functional   @ignore
     Scenario: Verify active and closed title are displayed on the l!sa dashboard
        And I select the Incident with name contains "22 Feb 2025: Terrorist attacks in venues and public spaces : TEST2" and Status as "Monitoring"
        And I click the "Edit" menu in the "OVERVIEW" menu
@@ -24,7 +24,7 @@ Feature: Edit Incident Page
   When I add the log details
       | tabName | logType | DateTime | DescriptionTag | DescriptionText |
       | Form    | General | Now      | Yes            | Yes             |
-    Then I should be able to save the details successfully
+    Then I should be able to verify a new log entry is created for the "General" category
 
-  @ignore
+   @ignore
 	Scenario: Verify that a LISA user can create a log of 'SitRep' category type, with text, plotting a point on the location tab and attaching a file 

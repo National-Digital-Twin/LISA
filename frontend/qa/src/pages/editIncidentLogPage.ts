@@ -8,6 +8,7 @@ import { basePage } from '../hooks/basePage';
 const Elements = {
   txtPageName: "//h1[@class='page-title']/div[@class='title']",
   btnAddLogEntry: "//button[contains(text(),'Add log entry')]",
+  isLogTabActive: "//a[contains(@class,'active') and contains(text(),'$LINKNAME$')]",
   linkLogEntryTab: "//h2[@class='rollup-header']//a[text()='$LINKNAME$']",
   ddCategory: "//div[@id='type']//div[@data-value]",
   ddSelectCategory: "//div[starts-with(@id,'react-select-')]//span[.='$DropdownOption$' and @class='option-label__label']",
@@ -38,9 +39,9 @@ export default class EditIncidentLogPage {
   }
 
   async verifyLogStatusByCount(initalCount: number) {
-    await basePage.customSleep(12500);
+    await basePage.customSleep(10000);
     await this.page.reload();
-    await basePage.customSleep(2500);
+    await basePage.customSleep(5000);
     expect(await this.page.locator(Elements.getLogEntryList).count())
       .toEqual(initalCount + 1);
   }
@@ -50,8 +51,12 @@ export default class EditIncidentLogPage {
   }
 
   async updateLogByTab(tabName: string) {
-    // await this.page.getByRole('link', { name: 'Form *' }).click();
-    await this.page.locator(Elements.linkLogEntryTab.replace('$LINKNAME$', tabName)).click();
+    if (!(await this.page.locator(Elements.isLogTabActive.replace('$LINKNAME$', tabName)).count() > 0)) {
+      await this.page.locator(Elements.linkLogEntryTab.replace('$LINKNAME$', tabName)).click();
+    } else {
+      // eslint-disable-next-line no-console
+      console.warn(`Tab "${tabName}" is already active.`);
+    }
   }
 
   async updateLogTabFormType(logType: string) {
