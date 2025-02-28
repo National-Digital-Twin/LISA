@@ -51,7 +51,7 @@ export async function logoutLinks(_req: Request, res: Response) {
   }
 
   try {
-    const oAuthLogoutUrl = `${settings.LANDING_PAGE_URL}/oauth2/sign-out`;
+    const oAuthLogoutUrl = `${settings.LANDING_PAGE_URL}/oauth2/sign_out`;
     const response = await fetch(`${settings.IDENTITY_API_URL}/api/v1/links/sign-out`, { method: 'GET' });
 
     if (!response.ok) {
