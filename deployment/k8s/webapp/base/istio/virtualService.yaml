@@ -14,7 +14,7 @@ spec:
             exact: /
       headers:
         response:
-          set:
+          add:
             Cache-Control: "no-cache, no-store, must-revalidate"
             Pragma: "no-cache"
             Expires: "0"
@@ -40,5 +40,5 @@ spec:
               number: 80
           headers:
             response:
-              set:
+              add:
                 Content-Security-Policy: "placeholder"
