@@ -45,16 +45,14 @@ export async function user(_req: Request, res: Response) {
   res.json({ username: user.username, displayName: user.displayName });
 }
 
-export async function logout(_req: Request, res: Response) {
+export async function logoutLinks(_req: Request, res: Response) {
   if (settings.NODE_ENV === 'development') {
-    return res.json('/');
+    return res.json({ oAuthLogoutUrl: '/', redirect: '/' });
   }
 
   try {
-    const response = await fetch(`${settings.LANDING_PAGE_URL}/oauth2/sign_out`, {
-      method: 'GET',
-      redirect: 'manual'
-    }).then(() => fetch(`${settings.IDENTITY_API_URL}/api/v1/links/sign-out`, { method: 'GET' }));
+    const oAuthLogoutUrl = `${settings.LANDING_PAGE_URL}/oauth2/sign-out`;
+    const response = await fetch(`${settings.IDENTITY_API_URL}/api/v1/links/sign-out`, { method: 'GET' });
 
     if (!response.ok) {
       throw new ApplicationError(
@@ -62,8 +60,8 @@ export async function logout(_req: Request, res: Response) {
       );
     }
 
-    const signoutURL = await response.json();
-    return res.json(signoutURL.href);
+    const logoutRedirect = await response.json();
+    return res.json({ oAuthLogoutUrl, redirect: logoutRedirect.href });
   } catch (error) {
     throw new ApplicationError(error);
   }

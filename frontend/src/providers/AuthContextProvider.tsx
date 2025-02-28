@@ -14,16 +14,19 @@ const AuthContextProvider = ({ children }: PropsWithChildren) => {
   });
 
   const logout = async () => {
-    await fetch('/api/auth/logout').then(
+    await fetch('/api/auth/logout-links').then(
       async (response) => {
         if (response.ok) {
-          const signOutUrl = await response.json();
-          document.location = signOutUrl;
+          const logoutLinks = await response.json();
+          await fetch(logoutLinks.oAuthLogoutUrl, { method: 'GET', redirect: 'manual' });
+          document.location = logoutLinks.redirect;
         } else {
           document.location = '/';
         }
       },
-      () => { document.location = '/'; }
+      () => {
+        document.location = '/';
+      }
     );
   };
 

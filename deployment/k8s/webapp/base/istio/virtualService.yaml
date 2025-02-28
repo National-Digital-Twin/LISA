@@ -8,7 +8,7 @@ spec:
   gateways:
     - placeholder
   http:
-    # Rule for root ("/") to prevent caching
+    # Rule for root ("/") to prevent caching and add CSP header
     - match:
         - uri:
             exact: /
@@ -18,12 +18,14 @@ spec:
             Cache-Control: "no-cache, no-store, must-revalidate"
             Pragma: "no-cache"
             Expires: "0"
+            Content-Security-Policy: "placeholder"
       route:
         - destination:
             host: lisa
             port:
               number: 80
 
+    # Rule for all other paths with the CSP header
     - match:
         - uri:
             prefix: /
@@ -31,7 +33,6 @@ spec:
         uriRegexRewrite:
           match: ^/(/|$)(.*)
           rewrite: /\2
-
       route:
         - destination:
             host: lisa
@@ -39,6 +40,5 @@ spec:
               number: 80
           headers:
             response:
-              set:
-                Content-Security-Policy: placeholder
-                Access-Control-Allow-Origin: placeholder
+              add:
+                Content-Security-Policy: "placeholder"

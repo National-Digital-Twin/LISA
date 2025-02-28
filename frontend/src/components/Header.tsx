@@ -5,9 +5,9 @@ import { Box, AppBar, Toolbar, IconButton } from '@mui/material';
 import SettingsIcon from '@mui/icons-material/Settings';
 
 // Local imports
+// eslint-disable-next-line import/no-unresolved
+import logo from '@shared-assets/lisa-ndtp-logo.svg';
 import NavButt from '../assets/images/button-nav.svg';
-import LogoHeader from '../assets/images/logo.svg';
-import LogoCorp from '../assets/images/NDTP_Gemini_Logo.svg';
 // eslint-disable-next-line import/no-relative-packages
 import { User } from '../../../common/User';
 import { useAuth, useIncidents, useOutsideClick } from '../hooks';
@@ -20,16 +20,7 @@ type MenuItemType = { to: string; className?: string; content: ReactNode };
 const HOME_ITEM = {
   to: '/',
   className: 'logo-link',
-  content: (
-    <div>
-      <img style={{ width: 50 }} className="logo-header corp" src={LogoCorp} alt="Main Logo" />
-      <img
-        className="logo-header lisa"
-        src={LogoHeader}
-        alt="Local Incident Services Application"
-      />
-    </div>
-  )
+  content: <img className="logo-header lisa" src={logo} alt="Local Incident Services Application" />
 };
 
 const ALL_INCIDENTS_ITEM = { to: '/', content: 'INCIDENTS' };
