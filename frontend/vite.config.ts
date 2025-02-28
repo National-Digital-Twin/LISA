@@ -59,6 +59,14 @@ export default defineConfig({
   },
   resolve: {
     alias: {
+      '@shared-assets': path.resolve(
+        process.cwd(),
+        '../node_modules/@national-digital-twin/ndtp-styling-assets/dist/assets'
+      ),
+      '@shared-styles': path.resolve(
+        process.cwd(),
+        '../node_modules/@national-digital-twin/ndtp-styling-assets/dist/scss'
+      ),
       common: path.resolve(__dirname, '../common')
     }
   }

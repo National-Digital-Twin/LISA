@@ -32,7 +32,7 @@
       }
     }
   }
-  @media screen and (max-width: 1050px){
+  @media screen and (max-width: 1050px) {
     min-height: unset;
     align-items: start;
     .alert-title {
@@ -103,7 +103,7 @@
       border: none;
       border-radius: 4px;
       background-color: white;
-      transition: background-color .5s;
+      transition: background-color 0.5s;
       &:hover {
         background-color: $blue-light;
       }
@@ -122,7 +122,7 @@
   }
   &__empty {
     display: block;
-    font-family: lato-reg, Arial, Helvetica, sans-serif;
+    font-family: ndtp.$font-family;
     text-align: center;
     padding: 40px 0;
     color: $section-light-text;
@@ -145,7 +145,7 @@
       background-color: $grey-light;
     }
     &--read {
-      font-family: lato-reg, Arial, Helvetica, sans-serif;
+      font-family: ndtp.$font-family;
       background-color: $grey-light;
       border-bottom-color: $grey-mid;
       &:hover {
@@ -173,7 +173,7 @@
     }
     &-content {
       display: block;
-      font-family: lato-reg, Arial, Helvetica, sans-serif;
+      font-family: ndtp.$font-family;
       padding: 10px 8px;
     }
   }

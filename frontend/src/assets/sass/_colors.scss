@@ -7,7 +7,7 @@ $brand: #e55d3d;
 $white: #fff;
 
 // BLACKS
-$black: #111;
+$black: ndtp.$deep-navy;
 
 // REDS
 $red: #bd0000;
@@ -18,30 +18,30 @@ $red-incident-stage: #e80202;
 // GREYS
 $grey-dark: #333;
 $grey-mid: #ccc;
-$grey-light: #f1f1f1; 
+$grey-light: ndtp.$off-white;
 $grey-footer: #979797;
 $grey-incident-stage: #fff;
 
 // ORANGES
-$orange-incident-stage: #ffcc00;
+$orange-incident-stage: ndtp.$accent-yellow;
 
 // PURPLES
 $purple-incident-stage: #cc3399;
 
 // BLUES
-$blue: #004d95;
-$blue-dark: #003366;
+$blue: ndtp.$primary-color;
+$blue-dark: ndtp.$secondary-color;
 $blue-light: #bcd4ea;
-$blue-header: #072142; // #00162b; // 7, 33, 66
+$blue-header: ndtp.$secondary-color; // #00162b; // 7, 33, 66
 $purple: #2c026a;
 $turquoise: #73ede4;
 
 // GREENS
-$green :#58822e;
+$green: #58822e;
 
 // YELLOWS
-$gold: #f0B600;
-$yellow: #ffcc00;
+$gold: #f0b600;
+$yellow: ndtp.$accent-yellow;
 
 // TYPOGRAPHY
 $section-light-text: #444;

@@ -53,6 +53,9 @@ nav {
     margin-left: 5px;
     top: -2px;
   }
+  img {
+    width: 150px;
+  }
   ul {
     list-style-type: none;
     font-size: 1rem;
@@ -127,7 +130,7 @@ nav {
 }
 
 .nav-menu-links.nav-hidden-small {
-	@media screen and (max-width: 1050px) {
+  @media screen and (max-width: 1050px) {
     display: none;
-	}
+  }
 }
