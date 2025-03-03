@@ -71,7 +71,6 @@ const AddEntry = ({
   }, [incidentAttachments]);
 
   const mentionables: Array<Mentionable> = useMemo(() => ([
-    // eslint-disable-next-line max-len
     ...(getSortedEntriesWithDisplaySequence(false, entries)?.map((e) => Format.mentionable.entry(e)) ?? []),
     ...(users?.map(Format.mentionable.user) ?? []),
     ...(selectedFiles.map((file) => Format.mentionable.attachment({ name: file.name, type: 'File' }))),
@@ -133,7 +132,6 @@ const AddEntry = ({
     });
   };
 
-  // eslint-disable-next-line max-len
   const getUniqueFiles = (newFiles: File[], existingFiles: File[]): File[] => newFiles.filter((file) => !existingFiles.some((existingFile) => existingFile.name === file.name));
 
   const onFilesSelect = (files: File[]): void => {
