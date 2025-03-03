@@ -27,17 +27,18 @@ import Sketch from './Sketch';
 // Handlers
 import { type OnCreateEntry } from '../../utils/handlers';
 import { useAttachments } from '../../hooks/useAttachments';
+import { getSortedEntriesWithDisplaySequence } from '../../utils/sortEntries';
 
 type AddEntryProps = {
   incident?: Incident,
-  entries?: Array<LogEntry>,
+  entries: Array<LogEntry>,
   onCreateEntry: OnCreateEntry,
   onCancel: () => void
 };
 
 const AddEntry = ({
   incident = undefined,
-  entries = undefined,
+  entries,
   onCreateEntry,
   onCancel
 }: AddEntryProps) => {
@@ -70,7 +71,8 @@ const AddEntry = ({
   }, [incidentAttachments]);
 
   const mentionables: Array<Mentionable> = useMemo(() => ([
-    ...(entries?.map((e) => Format.mentionable.entry(e)) ?? []),
+    // eslint-disable-next-line max-len
+    ...(getSortedEntriesWithDisplaySequence(false, entries)?.map((e) => Format.mentionable.entry(e)) ?? []),
     ...(users?.map(Format.mentionable.user) ?? []),
     ...(selectedFiles.map((file) => Format.mentionable.attachment({ name: file.name, type: 'File' }))),
     ...(recordings.map((file) => Format.mentionable.attachment({ name: file.name, type: 'File' }))),

@@ -132,7 +132,7 @@ const Logbook = () => {
         {adding && (
           <AddEntry
             incident={incident}
-            entries={logEntries}
+            entries={logEntries ?? []}
             onCreateEntry={onAddEntry}
             onCancel={onCancel}
           />
@@ -162,7 +162,7 @@ const Logbook = () => {
                 />
               </form>
               <EntryList
-                entries={logEntries?.filter(filterEntries)}
+                entries={(logEntries ?? []).filter(filterEntries)}
                 sortAsc={sortAsc}
                 onContentClick={onContentClick}
                 onMentionClick={onMentionClick}
