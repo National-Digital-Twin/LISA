@@ -21,7 +21,7 @@ module.exports = {
     "prefer-destructuring": "off",
     "@typescript-eslint/no-unused-vars": ["error"],
     indent: ['error', 2],
-    'max-len': ['error', 150],
+    'max-len': ['error', 180],
     'comma-dangle': ['error', 'only-multiline'],
     'object-curly-newline':  ['error', {
         ObjectExpression: { consistent: true },
