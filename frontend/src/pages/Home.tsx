@@ -133,22 +133,6 @@ const Home = () => {
             </TableBody>
           </Table>
         </TableContainer>
-
-        <div style={{ display: 'none' }} className="incident-list">
-          {incidents?.filter(show)?.map((inc) => (
-            <Link key={inc.id} className="incident" to={`/logbook/${inc.id}`}>
-              <span className="incident-title">
-                {/* eslint-disable-next-line react/jsx-one-expression-per-line */}
-                {Format.date(inc.startedAt)}: {Format.incident.name(inc)}
-                {Format.incident.status(inc)}
-              </span>
-              <span className={`incident-stage ${inc.stage}`}>
-                <Icons.Stage />
-                {Format.incident.stage(inc.stage)}
-              </span>
-            </Link>
-          ))}
-        </div>
       </div>
     </div>
   );
