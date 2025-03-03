@@ -16,27 +16,6 @@ nav {
   }
 }
 
-.nav-menu-butt {
-  display: none;
-  position: absolute;
-  left: 10px;
-  top: 21px;
-  width: 20px;
-  height: auto;
-  @media screen and (max-width: 1050px) {
-    display: block;
-    cursor: pointer;
-  }
-  button {
-    background-color: transparent;
-    border: none;
-    img {
-      width: 20px;
-      height: auto;
-    }
-  }
-}
-
 .nav-menu-links {
   display: flex;
   flex-direction: row;
