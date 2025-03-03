@@ -5,6 +5,21 @@ import { FetchError, get } from '../api';
 import { AuthContextType } from '../utils/types';
 import { AuthContext } from '../context/AuthContext';
 
+async function clearServiceWorkerCaches() {
+  // Clear service worker cache
+  if ('caches' in window) {
+    await caches.keys().then((cacheNames) => {
+      Promise.all(cacheNames.map((cacheName) => caches.delete(cacheName)));
+    });
+  }
+}
+
+function clearLocalAndSessionStorage() {
+  // Handle client-side storage
+  localStorage.clear();
+  sessionStorage.clear();
+}
+
 const AuthContextProvider = ({ children }: PropsWithChildren) => {
   const [offline, setOffline] = useState<boolean>(true);
   const { data, error } = useQuery<User, FetchError>({
@@ -18,6 +33,8 @@ const AuthContextProvider = ({ children }: PropsWithChildren) => {
       async (response) => {
         if (response.ok) {
           const logoutLinks = await response.json();
+          await clearServiceWorkerCaches();
+          clearLocalAndSessionStorage();
           await fetch(logoutLinks.oAuthLogoutUrl, { method: 'GET', redirect: 'manual' });
           document.location = logoutLinks.redirect;
         } else {
