@@ -128,7 +128,7 @@ const Header = ({ helpVisible = false }: Props) => {
             <Icons.Person />
           </div>
           <IconButton type="button" onClick={handleHelpToggle} disableFocusRipple disableRipple>
-            <SettingsIcon fontSize="large" sx={{ color: 'text.secondary' }} />
+            <SettingsIcon fontSize="large" sx={{ color: 'accent.main' }} />
           </IconButton>
           {isHelpVisible && (
             <div ref={helpContainerRef} className="help-guidance-container">
