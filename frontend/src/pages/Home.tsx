@@ -21,7 +21,7 @@ import {
 
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import { useIncidents } from '../hooks';
-import { Format, Icons } from '../utils';
+import { Format } from '../utils';
 import { PageTitle } from '../components';
 
 function open(incident: Incident) {
