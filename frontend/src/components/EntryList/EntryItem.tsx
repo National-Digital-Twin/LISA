@@ -54,7 +54,6 @@ const EntryItem = ({
       </div>
       <Details entry={entry} onContentClick={onContentClick} />
       <EntryLocation entry={entry} />
-      {/* <Actions entry={entry} onAction={onAction} /> */}
       <Mentions entry={entry} entries={entries} onMentionClick={onMentionClick} />
       <Attachments entry={entry} />
     </div>

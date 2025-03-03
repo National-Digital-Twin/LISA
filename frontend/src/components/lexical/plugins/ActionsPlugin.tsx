@@ -9,7 +9,7 @@
 // Global imports
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
 import { mergeRegister } from '@lexical/utils';
-import { JSX, MouseEvent, useEffect, useState } from 'react';
+import { JSX, useCallback, useEffect, useState } from 'react';
 
 // Local imports
 import { Icons } from '../../../utils';
@@ -24,8 +24,19 @@ export default function ActionsPlugin({
   onCommand
 }: Readonly<ActionsPluginProps>): JSX.Element | null {
   const [editor] = useLexicalComposerContext();
-  const [isEditable, setIsEditable] = useState(() => editor.isEditable());
+  const [isEditable, setIsEditable] = useState(editor.isEditable());
   const [isSpeechToText, setIsSpeechToText] = useState(false);
+
+  // Centralised toggle function
+  const toggleSpeechRecognition = useCallback(
+    (active: boolean) => {
+      console.log('ACTIONS PLUGIN - toggleSpeechRecognition', active);
+      editor.dispatchCommand(SPEECH_TO_TEXT_COMMAND, active);
+      setIsSpeechToText(active);
+      onCommand(SPEECH_TO_TEXT_COMMAND.type, active);
+    },
+    [editor, onCommand]
+  );
 
   useEffect(() => mergeRegister(
     editor.registerEditableListener((editable) => {
@@ -35,23 +46,17 @@ export default function ActionsPlugin({
 
   useEffect(() => {
     if (speechToTextActive !== isSpeechToText) {
-      editor.dispatchCommand(SPEECH_TO_TEXT_COMMAND, speechToTextActive);
-      setIsSpeechToText(speechToTextActive);
-      onCommand(SPEECH_TO_TEXT_COMMAND.type, speechToTextActive);
+      toggleSpeechRecognition(speechToTextActive);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [editor, speechToTextActive, isSpeechToText, setIsSpeechToText]);
+  }, [toggleSpeechRecognition, speechToTextActive, isSpeechToText, setIsSpeechToText]);
 
   if (!isEditable) {
     return null;
   }
 
-  const onToggleSpeechRecognition = (evt: MouseEvent<HTMLButtonElement>) => {
-    evt.preventDefault();
-    const active = !isSpeechToText;
-    editor.dispatchCommand(SPEECH_TO_TEXT_COMMAND, active);
-    setIsSpeechToText(active);
-    onCommand(SPEECH_TO_TEXT_COMMAND.type, active);
+  const onToggleSpeechRecognition = () => {
+    console.log('ACTIONS PLUGIN - onToggleSpeechRecognition', !isSpeechToText);
+    toggleSpeechRecognition(!isSpeechToText);
   };
 
   return (

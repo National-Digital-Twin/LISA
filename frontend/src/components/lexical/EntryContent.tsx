@@ -33,8 +33,10 @@ type EntryContentProps = {
   mentionables?: Array<Mentionable>,
   speechToTextActive: boolean,
   onChange?: (id: string, json: string, text: string) => void,
-  onSpeechToText?: (active: boolean) => void
+  onSpeechToText?: (active: boolean) => void,
+  toggleRecording?: () => void
 };
+
 const EntryContent = ({
   id,
   json: _json = undefined,
@@ -42,14 +44,19 @@ const EntryContent = ({
   mentionables = [],
   speechToTextActive,
   onChange = undefined,
-  onSpeechToText = undefined
+  onSpeechToText = undefined,
+  toggleRecording = undefined
 }: EntryContentProps) => {
   const [json, setJSON] = useState<string | undefined>(_json);
 
   const onCommand = (type: string | undefined, active: boolean) => {
+    console.log('calling onCommand', type, active);
     if (type === SPEECH_TO_TEXT_COMMAND.type) {
       if (typeof onSpeechToText === 'function') {
         onSpeechToText(active);
+        if (toggleRecording) {
+          toggleRecording();
+        }
       }
     }
   };

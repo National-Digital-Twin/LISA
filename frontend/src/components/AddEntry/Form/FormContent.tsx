@@ -2,6 +2,7 @@
 import parse from 'html-react-parser';
 import { useEffect, useMemo, useState, useCallback } from 'react';
 import { useReactMediaRecorder } from 'react-media-recorder';
+import { v4 as uuidV4 } from 'uuid';
 
 // Local imports
 import { type Field } from 'common/Field';
@@ -74,16 +75,14 @@ export default function FormContent({
     onFieldChange(id, { json, text });
   };
 
-  const onSpeechToTextChange = (isActive: boolean) => {
-    setSpeechToTextActive(isActive);
-    setRecording(isActive);
-  };
+  // When speech-to-text is toggled we update both speechToTextActive and recording
 
   const addAudioElement = useCallback(
     async (blob: Blob) => {
       const blobHash = await Document.getBlobHash(blob);
       if (!processedRecordings.includes(blobHash)) {
-        const name = `Recording ${Format.timestamp()}.webm`;
+        const uuid = uuidV4();
+        const name = `Recording ${uuid}-${Format.timestamp()}.webm`;
         onAddRecording(new File([blob], name, { type: 'audio/webm' }));
         setProcessedRecordings((prev) => [...prev, blobHash]);
       }
@@ -93,31 +92,58 @@ export default function FormContent({
 
   // Helper to fetch the Blob from the blob URL provided by react-media-recorder
   const addAudioElementFromUrl = useCallback(
-    async (blobUrl: string) => {
-      const response = await fetch(blobUrl);
+    async (mediaBlobUrl: string) => {
+      const response = await fetch(mediaBlobUrl);
       const blob = await response.blob();
-      addAudioElement(blob);
+      await addAudioElement(blob);
     },
     [addAudioElement]
   );
 
   // Set up react-media-recorder hook
-  const { startRecording, stopRecording, mediaBlobUrl } = useReactMediaRecorder({
+  const { status, startRecording, stopRecording, mediaBlobUrl } = useReactMediaRecorder({
     audio: true,
     // When recording stops, fetch the blob and pass it along
-    onStop: (blobUrl) => {
-      addAudioElementFromUrl(blobUrl);
+    onStart: () => { console.log('RECORDING STARTED'); },
+    onStop: async (blobUrl) => {
+      console.log('Media recording stopped, fetching blob...');
+      await addAudioElementFromUrl(blobUrl);
     }
   });
 
+  // Memoized toggle handler for recording
+  const toggleRecording = useCallback(() => {
+    setRecording((prev) => {
+      const newValue = prev;
+      console.log('toggleRecording', 'prev value:', prev, ' new value:', newValue);
+      if (newValue) {
+        startRecording();
+      } else {
+        stopRecording();
+      }
+      return newValue;
+    });
+  }, [startRecording, stopRecording]);
+
+  const onSpeechToTextChange = useCallback((isActive: boolean) => {
+    console.log('onSpeechToTextChange', isActive);
+    setSpeechToTextActive(isActive);
+    // Instead of calling setRecording directly from multiple points,
+    // use our memoized toggle if needed or simply set the state.
+    // toggleRecording();
+    setRecording(isActive);
+  }, []);
+
   // Start or stop recording based on the `recording` state
-  useEffect(() => {
-    if (recording) {
-      startRecording();
-    } else {
-      stopRecording();
-    }
-  }, [recording, startRecording, stopRecording]);
+  // useEffect(() => {
+  //   if (recording) {
+  //     console.log('START RECORDING');
+  //     startRecording();
+  //   } else {
+  //     console.log('STOP RECORDING');
+  //     stopRecording();
+  //   }
+  // }, [recording, startRecording, stopRecording]);
 
   const classes = bem('add-entry-tab', [active ? 'active' : ''], 'form');
 
@@ -138,6 +164,10 @@ export default function FormContent({
         <li className={`full-width field-type--Lexical ${contentError ? 'in-error' : ''}`}>
           <label htmlFor="content">
             {descriptionLabel}
+            <p>
+              Status:
+              {status}
+            </p>
             <EntryContent
               id="content"
               json={typeof entry.content === 'object' ? entry.content.json : undefined}
@@ -146,6 +176,7 @@ export default function FormContent({
               speechToTextActive={speechToTextActive}
               onChange={onContentChange}
               onSpeechToText={onSpeechToTextChange}
+              toggleRecording={toggleRecording}
             />
           </label>
           {contentError && <div className="field-error">{contentError.error}</div>}
@@ -155,13 +186,13 @@ export default function FormContent({
             {recording ? (
               <>
                 <div className="recording-indicator">Recording in progress...</div>
-                <button type="button" onClick={() => setRecording(false)}>
+                <button type="button" onClick={() => toggleRecording()}>
                   Stop Recording
                 </button>
               </>
             ) : (
               <>
-                <button type="button" onClick={() => setRecording(true)}>
+                <button type="button" onClick={() => toggleRecording()}>
                   Start Recording
                 </button>
                 {/* Optionally, if a recording exists, display an audio preview */}

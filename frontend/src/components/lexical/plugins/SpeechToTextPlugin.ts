@@ -103,6 +103,7 @@ function SpeechToTextPlugin(): null {
     }
 
     if (recognition.current) {
+      console.log('SPEECH TO TEXT PLUGIN - recognition.current', recognition.current);
       if (isEnabled) {
         recognition.current.start();
       } else {
