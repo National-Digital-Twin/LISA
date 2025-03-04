@@ -78,13 +78,6 @@ svg {
       height: auto;
       margin-right: 10px;
     }
-    .title-children {
-      display: flex;
-      flex-direction: row;
-      gap: 1rem;
-      align-items: center;
-      user-select: none;
-    }
   }
   p,
   div,
@@ -98,9 +91,6 @@ svg {
     font-family: ndtp.$font-family;
   }
 
-  p {
-    margin: 10px 0;
-  }
   hr {
     margin: 20px 0;
   }

@@ -15,6 +15,7 @@ const PageTitle = ({ title, subtitle, children }: Props) => (
     alignItems="center"
     justifyContent="space-between"
     gap="1rem"
+    width="100%"
   >
     <Box>
       <Typography fontSize="2rem" variant="h1">
@@ -24,7 +25,11 @@ const PageTitle = ({ title, subtitle, children }: Props) => (
         {subtitle}
       </Typography>
     </Box>
-    {children && <div className="title-children">{children}</div>}
+    {children && (
+      <Box sx={{ width: { xs: '100%', sm: 'auto' } }} displayPrint="none">
+        {children}
+      </Box>
+    )}
   </Box>
 );
 
