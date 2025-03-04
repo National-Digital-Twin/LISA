@@ -14,7 +14,7 @@ spec:
             principals : ["PLACE_HOLDER"]
       to:
         - operation:
-            methods: ["GET","POST","PUT"]
+            methods: [PUT"]
       when:
        - key: request.auth.claims[groups]
          values:
