@@ -21,6 +21,7 @@ patches:
   - path: patches/allow-ingress.yaml
     target:
       kind: AuthorizationPolicy
+      name: allow-ingress-to-lisa-webapp
 
 labels:
   - pairs:
