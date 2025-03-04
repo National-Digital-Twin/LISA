@@ -11,10 +11,10 @@ spec:
   rules:
     - from:
         - source:
-            principals : ["PLACE_HOLDER"]
+            principals : ["cluster.local/ns/istio-ingress/sa/istio-ingress"]
       to:
         - operation:
-            methods: [PUT"]
+            methods: ["GET","POST","PUT"]
       when:
        - key: request.auth.claims[groups]
          values:

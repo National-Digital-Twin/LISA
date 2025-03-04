@@ -18,10 +18,7 @@ patches:
     target:
       kind: ServiceAccount
       name: lisa-sa
-  - path: patches/allow-ingress.yaml
-    target:
-      kind: AuthorizationPolicy
-      name: allow-ingress-to-lisa-webapp
+
 
 labels:
   - pairs:
