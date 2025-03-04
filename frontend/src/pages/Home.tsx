@@ -126,28 +126,29 @@ const Home = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {incidents?.filter(show)?.map((inc) => {
-                const stage = inc.stage.toLowerCase();
+              {incidents?.filter(show)?.map((incident) => {
+                const { id, name, reportedBy, startedAt } = incident;
+                const stage = incident.stage.toLowerCase();
                 return isMobile ? (
-                  <TableRow>
-                    <TableCell>{inc.id}</TableCell>
+                  <TableRow key={id}>
+                    <TableCell>{id}</TableCell>
                     <TableCell width="70%">
                       <Box display="flex" flexDirection="column" gap="0.3rem">
                         <Typography
                           component={Link}
-                          to={`/logbook/${inc.id}`}
+                          to={`/logbook/${id}`}
                           variant="body1"
                           color="primary"
                         >
-                          {inc.name}
+                          {name}
                         </Typography>
 
-                        <Typography variant="body2">{inc.reportedBy?.username}</Typography>
-                        <Typography variant="body2">{Format.date(inc.startedAt)}</Typography>
+                        <Typography variant="body2">{reportedBy?.username}</Typography>
+                        <Typography variant="body2">{Format.date(startedAt)}</Typography>
 
                         <Box>
                           <Chip
-                            label={Format.incident.stage(inc.stage).toUpperCase()}
+                            label={Format.incident.stage(incident.stage).toUpperCase()}
                             sx={{
                               minWidth: 120,
                               border: 1,
@@ -161,23 +162,23 @@ const Home = () => {
                     </TableCell>
                   </TableRow>
                 ) : (
-                  <TableRow key={inc.id}>
-                    <TableCell>{inc.id}</TableCell>
+                  <TableRow key={id}>
+                    <TableCell>{id}</TableCell>
                     <TableCell>
                       <Typography
                         component={Link}
-                        to={`/logbook/${inc.id}`}
+                        to={`/logbook/${id}`}
                         variant="body1"
                         color="primary"
                       >
-                        {inc.name}
+                        {name}
                       </Typography>
                     </TableCell>
-                    <TableCell>{inc.reportedBy?.username}</TableCell>
-                    <TableCell>{Format.date(inc.startedAt)}</TableCell>
+                    <TableCell>{reportedBy?.username}</TableCell>
+                    <TableCell>{Format.date(startedAt)}</TableCell>
                     <TableCell>
                       <Chip
-                        label={Format.incident.stage(inc.stage).toUpperCase()}
+                        label={Format.incident.stage(incident.stage).toUpperCase()}
                         sx={{
                           minWidth: 120,
                           border: 1,
