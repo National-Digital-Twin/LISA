@@ -93,7 +93,6 @@ export default function FormContent({
   // Helper to fetch the Blob from the blob URL provided by react-media-recorder
   const addAudioElementFromUrl = useCallback(
     async (mediaBlobUrl: string) => {
-      console.log('addAudioElementFromUrl', mediaBlobUrl);
       const response = await fetch(mediaBlobUrl);
       const blob = await response.blob();
       await addAudioElement(blob);
