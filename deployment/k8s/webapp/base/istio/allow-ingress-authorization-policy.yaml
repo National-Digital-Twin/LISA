@@ -18,4 +18,4 @@ spec:
       when:
        - key: request.auth.claims[groups]
          values:
-             - ia_readx
+             - lisa_access
