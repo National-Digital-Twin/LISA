@@ -1,7 +1,7 @@
 import { LngLatBoundsLike, StyleSpecification } from 'maplibre-gl';
 import { ViewState } from 'react-map-gl/dist/esm/types';
 
-const apiKey = '<insert os api key here>';
+const apiKey = 'oqGfcyoG9URHm2958fldgznaaUiN3AfK';
 export const MAP_STYLE: StyleSpecification = {
   version: 8,
   sources: {
