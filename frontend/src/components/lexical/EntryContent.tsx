@@ -34,7 +34,8 @@ type EntryContentProps = {
   speechToTextActive: boolean,
   onChange?: (id: string, json: string, text: string) => void,
   onSpeechToText?: (active: boolean) => void,
-  toggleRecording?: () => void
+  startRecording: () => void
+  stopRecording: () => void
 };
 
 const EntryContent = ({
@@ -45,7 +46,8 @@ const EntryContent = ({
   speechToTextActive,
   onChange = undefined,
   onSpeechToText = undefined,
-  toggleRecording = undefined
+  startRecording,
+  stopRecording
 }: EntryContentProps) => {
   const [json, setJSON] = useState<string | undefined>(_json);
 
@@ -54,8 +56,10 @@ const EntryContent = ({
     if (type === SPEECH_TO_TEXT_COMMAND.type) {
       if (typeof onSpeechToText === 'function') {
         onSpeechToText(active);
-        if (toggleRecording) {
-          toggleRecording();
+        if (active) {
+          startRecording();
+        } else {
+          stopRecording();
         }
       }
     }
@@ -90,7 +94,12 @@ const EntryContent = ({
           <AutoFocusPlugin />
           <MentionsPlugin mentionables={mentionables ?? []} />
           <SpeechToTextPlugin />
-          <ActionsPlugin onCommand={onCommand} speechToTextActive={speechToTextActive} />
+          <ActionsPlugin
+            onCommand={onCommand}
+            speechToTextActive={speechToTextActive}
+            startRecording={startRecording}
+            stopRecording={stopRecording}
+          />
           <OnChangePlugin onChange={onEditorChange} />
         </div>
       </div>

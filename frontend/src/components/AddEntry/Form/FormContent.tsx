@@ -93,6 +93,7 @@ export default function FormContent({
   // Helper to fetch the Blob from the blob URL provided by react-media-recorder
   const addAudioElementFromUrl = useCallback(
     async (mediaBlobUrl: string) => {
+      console.log('addAudioElementFromUrl', mediaBlobUrl);
       const response = await fetch(mediaBlobUrl);
       const blob = await response.blob();
       await addAudioElement(blob);
@@ -104,18 +105,16 @@ export default function FormContent({
   const { status, startRecording, stopRecording, mediaBlobUrl } = useReactMediaRecorder({
     audio: true,
     // When recording stops, fetch the blob and pass it along
-    onStart: () => { console.log('RECORDING STARTED'); },
-    onStop: async (blobUrl) => {
-      console.log('Media recording stopped, fetching blob...');
-      await addAudioElementFromUrl(blobUrl);
-    }
+    onStop: (blobUrl) => {
+      addAudioElementFromUrl(blobUrl);
+      console.log('Media recording stopped, fetching blob...', blobUrl);
+    },
   });
 
   // Memoized toggle handler for recording
   const toggleRecording = useCallback(() => {
     setRecording((prev) => {
-      const newValue = prev;
-      console.log('toggleRecording', 'prev value:', prev, ' new value:', newValue);
+      const newValue = !prev;
       if (newValue) {
         startRecording();
       } else {
@@ -126,11 +125,9 @@ export default function FormContent({
   }, [startRecording, stopRecording]);
 
   const onSpeechToTextChange = useCallback((isActive: boolean) => {
-    console.log('onSpeechToTextChange', isActive);
     setSpeechToTextActive(isActive);
     // Instead of calling setRecording directly from multiple points,
     // use our memoized toggle if needed or simply set the state.
-    // toggleRecording();
     setRecording(isActive);
   }, []);
 
@@ -176,7 +173,8 @@ export default function FormContent({
               speechToTextActive={speechToTextActive}
               onChange={onContentChange}
               onSpeechToText={onSpeechToTextChange}
-              toggleRecording={toggleRecording}
+              startRecording={startRecording}
+              stopRecording={stopRecording}
             />
           </label>
           {contentError && <div className="field-error">{contentError.error}</div>}
