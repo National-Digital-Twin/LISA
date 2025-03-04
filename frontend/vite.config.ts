@@ -1,14 +1,18 @@
 import path from 'path';
 import react from '@vitejs/plugin-react';
+import basicSSL from '@vitejs/plugin-basic-ssl';
 import { defineConfig } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
 import svgr from 'vite-plugin-svgr';
+
+const sslEnabled = process.env.SSL_ENABLED === 'true';
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
     svgr(),
     react(),
+    ...(sslEnabled ? [basicSSL()] : []),
     VitePWA({
       registerType: 'autoUpdate',
       devOptions: {
