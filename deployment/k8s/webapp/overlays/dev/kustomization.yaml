@@ -24,7 +24,7 @@ patches:
 
 labels:
   - pairs:
-      env: demo
+      env: dev
 
 images:
   - name: lisa-image
