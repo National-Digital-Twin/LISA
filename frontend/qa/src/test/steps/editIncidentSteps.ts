@@ -111,6 +111,7 @@ When('I add the log details', async (dataTable) => {
     await incidentEditLogPage.updateDropDownById(data[3]);
     await incidentEditLogPage.updateSitRepTextFields(data[4] === 'Yes');
     await incidentEditLogPage.setSitRepLocation(data[5]);
+    await incidentEditLogPage.doFileUpload(data[6]);
     break;
   }
   default: {
@@ -123,7 +124,6 @@ When('I add the log details', async (dataTable) => {
 });
 
 Then('I should be able to verify a new log entry is created for the {string} category', async (logType) => {
-  // eslint-disable-next-line no-console
   console.warn(`Verify a new entry is included for the log entry :${logType}`);
   incidentEditLogPage = new EditIncidentLogPage(basePage.page);
   await incidentEditLogPage.verifyLogStatusByCount(parseInt(process.env.getLogEntriesCount, 10));

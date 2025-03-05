@@ -80,7 +80,10 @@ export default class IncidentDashboardPage {
   }
 
   async selectIncidentByData(incidentId: string, incidentName: string, incidentStatus: string) {
-    await this.page.locator(this.Elements.selectIncidentByNameStatus.replace('$DATAINCIDENTID$', incidentId).replace('$DATASTATUS$', incidentStatus).replace('$DATAINCIDENTNAME$', incidentName)).click();
+    await this.page.locator(this.Elements.selectIncidentByNameStatus
+      .replace('$DATAINCIDENTID$', incidentId)
+      .replace('$DATASTATUS$', incidentStatus)
+      .replace('$DATAINCIDENTNAME$', incidentName)).click();
   }
 
   async editIncidentByField(fieldName, inputText: string) {

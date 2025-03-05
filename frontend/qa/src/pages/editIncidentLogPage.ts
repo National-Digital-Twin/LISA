@@ -1,4 +1,5 @@
 import { expect, Page } from '@playwright/test';
+import * as path from 'path';
 import PlaywrightWrapper from '../helper/wrapper/PlaywrightWrappers';
 
 import { UsernamesData } from '../helper/interface/usernameData';
@@ -10,7 +11,7 @@ const Elements = {
   txtPageName: "//div[contains(@class,'page-title')]//h1",
   btnAddLogEntry: "//button[contains(text(),'Add log entry')]",
   isLogTabActive: "//a[contains(@class,'active') and contains(text(),'$LINKNAME$')]",
-  linkLogEntryTab: "//h2[@class='rollup-header']//a[text()='$LINKNAME$']",
+  linkLogEntryTab: "//h2[@class='rollup-header']//a[starts-with(text(),'$LINKNAME$')]",
   ddCategoryById: "//div[@id='$DROPDOWNBYID$']//div[@data-value]",
   ddSelectCategory: "//div[starts-with(@id,'react-select-')]//span[contains(text(),'$DropdownOption$') and @class='option-label__label']",
   btnDateTimeNow: "//a[@class='date-now']",
@@ -21,6 +22,8 @@ const Elements = {
   btnFormExactLocation: '//div[@id="ExactLocation"]//button[.="$BUTTONSTATE$"]',
   txtFormTabByID: '//textarea[@id="$TEXTAREABYID$"]',
   inpFormLocationDescription: '//input[@id="location.description"]',
+
+  inpFileUpload: '//input[@id="fileUpload"]',
 
 };
 
@@ -130,18 +133,30 @@ export default class EditIncidentLogPage {
 
       case 'Point on a map':
         // eslint-disable-next-line no-console
-        console.log('TO-DO: Have a seperate work item');
+        console.warn('TO-DO: Have a seperate work item');
         break;
 
       case 'Both a point on a map and a description':
-        console.log('TO-DO: Have a seperate work item');
+        // eslint-disable-next-line no-console
+        console.warn('TO-DO: Have a seperate work item');
         break;
 
       default:
+        // eslint-disable-next-line no-console
         console.warn(`Invalid option: ${isSitRepLocationReq}`);
       }
     } else {
+      // eslint-disable-next-line no-console
       console.log(this.page.locator(Elements.btnFormExactLocation.replace('$BUTTONSTATE$', 'Set')));
+    }
+  }
+
+  async doFileUpload(isFileUpload: string) {
+    if (isFileUpload === 'Yes') {
+      await this.updateLogByTab('Files');
+      const filePath = path.resolve(__dirname, '../assets/sample-file.txt');
+
+      await this.page.locator(Elements.inpFileUpload).setInputFiles(filePath);
     }
   }
 

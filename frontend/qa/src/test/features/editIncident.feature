@@ -3,7 +3,7 @@ Feature: Edit Incident Page
   Background:
     Given I am a valid user logged into the "IRIS" NDTP application
 
-    @DPAV-562 @functional
+    @DPAV-562 @functional 
     Scenario: Verify active and closed title are displayed on the l!sa dashboard
       And I select the Incident from the incident list
           |incidentId|incidentName|incidentStatus|
@@ -30,13 +30,13 @@ Feature: Edit Incident Page
       | Form    | General | Now      | Yes            | Yes             |
     Then I should be able to verify a new log entry is created for the "General" category
 
-   
+  @DPAV-573
 	Scenario: Verify that a LISA user can create a log of 'SitRep' category type, with text, plotting a point on the location tab and attaching a file 
 		 And I select the Incident from the incident list
       |incidentId|incidentName|incidentStatus|
       |38fe39ff-1625-4115-bd76-1464770eb803|Rob|MONITORING|
 			And I proceed to add a Log entry page from the Incident Log page
 		  When I add the log details
-			  | tabName | logType | DateTime | isIncidentDeclared | isOptionalFieldReq | isLocationRequired|
-			  | Form    | SitRep | Now      | Yes,MajorIncident| No             | Description only|
-			And I should be able to successfully save the Log details
+			  | tabName | logType | DateTime | isIncidentDeclared | isOptionalFieldReq | isLocationRequired|isFileRequired|
+			  | Form    | SitRep | Now      | Yes,MajorIncident| No             | Description only|Yes|
+      Then I should be able to verify a new log entry is created for the "SitRep" category
