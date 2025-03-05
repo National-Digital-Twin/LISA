@@ -3,11 +3,11 @@ import { MouseEvent, ReactNode, useState } from 'react';
 import { Link, useLocation, useParams } from 'react-router-dom';
 import { Box, AppBar, Toolbar, IconButton } from '@mui/material';
 import SettingsIcon from '@mui/icons-material/Settings';
+import MenuIcon from '@mui/icons-material/Menu';
 
 // Local imports
 // eslint-disable-next-line import/no-unresolved
 import logo from '@shared-assets/lisa-ndtp-logo.svg';
-import NavButt from '../assets/images/button-nav.svg';
 // eslint-disable-next-line import/no-relative-packages
 import { User } from '../../../common/User';
 import { useAuth, useIncidents, useOutsideClick } from '../hooks';
@@ -86,14 +86,18 @@ const Header = ({ helpVisible = false }: Props) => {
       >
         <Toolbar
           variant="dense"
-          sx={{ display: 'flex', paddingX: '1rem', flexDirection: 'row' }}
+          sx={{ height: '100%', display: 'flex', paddingX: '1rem', flexDirection: 'row' }}
           disableGutters
         >
-          <span className="nav-menu-butt">
-            <button onMouseDown={handleNavbutt} type="button">
-              <img src={NavButt} alt="Menu" />
-            </button>
-          </span>
+          <IconButton
+            sx={{ display: { xs: 'block', md: 'none' } }}
+            onMouseDown={handleNavbutt}
+            disableFocusRipple
+            disableRipple
+            disableTouchRipple
+          >
+            <MenuIcon sx={{ color: 'accent.main' }} />
+          </IconButton>
 
           <Box component="nav" className={`nav-menu-links${navHidden ? ' nav-hidden-small' : ''}`}>
             <ul>
@@ -128,7 +132,7 @@ const Header = ({ helpVisible = false }: Props) => {
             <Icons.Person />
           </div>
           <IconButton type="button" onClick={handleHelpToggle} disableFocusRipple disableRipple>
-            <SettingsIcon fontSize="large" sx={{ color: 'text.secondary' }} />
+            <SettingsIcon fontSize="large" sx={{ color: 'accent.main' }} />
           </IconButton>
           {isHelpVisible && (
             <div ref={helpContainerRef} className="help-guidance-container">

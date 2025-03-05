@@ -2,7 +2,6 @@
 
 // Style overrides for printing / pdf creation
 @media print {
-
   .App:not(.printable) {
     display: none !important;
   }
@@ -12,7 +11,6 @@
   footer,
   .rollup-container,
   .search-container,
-  .title-children,
   .tsqd-parent-container,
   .log-entry-attachments {
     display: none !important;
@@ -20,7 +18,7 @@
 
   // Adjust elements
   .title:before {
-    content: "L.I.S.A";
+    content: 'L.I.S.A';
     margin-right: 10px;
   }
 
@@ -39,7 +37,7 @@
       }
       &__label {
         &--indent::before {
-          content: "\203A";
+          content: '\203A';
           padding: 0 4px;
         }
       }
