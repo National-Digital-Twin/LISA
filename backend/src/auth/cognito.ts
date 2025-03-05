@@ -1,7 +1,7 @@
 import {
   AttributeType,
   CognitoIdentityProviderClient,
-  ListUsersCommand,
+  ListUsersInGroupCommand,
   UserType
 } from '@aws-sdk/client-cognito-identity-provider';
 
@@ -40,8 +40,9 @@ function cognitoUserToUserListItem(cognitoUser: UserType) {
 export async function getUsers(): Promise<UserList> {
   const client = getCognitoClient();
 
-  const command = new ListUsersCommand({
-    UserPoolId: settings.COGNITO_USER_POOL_ID
+  const command = new ListUsersInGroupCommand({
+    UserPoolId: settings.COGNITO_USER_POOL_ID,
+    GroupName: settings.COGNITO_USER_GROUP_NAME
   });
 
   const resp = await client.send(command);
