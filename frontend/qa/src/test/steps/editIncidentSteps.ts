@@ -20,6 +20,13 @@ Given(
   }
 );
 
+When('I select the Incident from the incident list', async (dataTable) => {
+  const data = dataTable.rows()[0];
+
+  dashboardPage = new IncidentDashboardPage(basePage.page);
+  await dashboardPage.selectIncidentByData(await data[0], await data[1], await data[2]);
+});
+
 Given('I click the {string} menu in the {string} menu', async (menuName, navMenu) => {
   dashboardPage = new IncidentDashboardPage(basePage.page);
   await basePage.navigateMenuByLink(navMenu);
@@ -81,7 +88,7 @@ Then('I should be able to save the application successfully', async () => {
 
 Given('I proceed to add a Log entry page from the Incident Log page', async () => {
   incidentEditLogPage = new EditIncidentLogPage(basePage.page);
-  await basePage.customSleep(1000);
+  await basePage.customSleep(2000);
   await incidentEditLogPage.verifyPageTitle();
   process.env.getLogEntriesCount = (await incidentEditLogPage.setLogStatusByCount()).toString();
   await incidentEditLogPage.btnClickAddLogEntry();
@@ -92,9 +99,26 @@ When('I add the log details', async (dataTable) => {
 
   incidentEditLogPage = new EditIncidentLogPage(basePage.page);
   await incidentEditLogPage.updateLogByTab(await data[0]);
-  await incidentEditLogPage.updateLogTabFormType(await data[1]);
+  await incidentEditLogPage.updateDropDownById(await data[1]);
   await incidentEditLogPage.updateLogTabFormDateTimeNow(await data[2]);
-  await incidentEditLogPage.updateLogTabFormDesc(data[3] === 'Yes', data[4] === 'Yes');
+
+  switch (data[1]) {
+  case 'General': {
+    await incidentEditLogPage.updateLogTabFormDesc(data[3] === 'Yes', data[4] === 'Yes');
+    break;
+  }
+  case 'SitRep': {
+    await incidentEditLogPage.updateDropDownById(data[3]);
+    await incidentEditLogPage.updateSitRepTextFields(data[4] === 'Yes');
+    await incidentEditLogPage.setSitRepLocation(data[5]);
+    break;
+  }
+  default: {
+    // eslint-disable-next-line no-console
+    console.log('No Matching dropdown types');
+  }
+  }
+
   await incidentEditLogPage.btnAddLogSave();
 });
 
