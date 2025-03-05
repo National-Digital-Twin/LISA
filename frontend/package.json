@@ -7,8 +7,6 @@
     "start": "npm run dev",
     "dev": "vite",
     "build": "tsc && vite build",
-    "bundle": "npm run generate-pwa-assets && tsc --noEmit && vite build --outDir ../backend/dist/frontend --emptyOutDir",
-    "dev:backend": "vite build --mode development --outDir ../backend/dist/frontend --emptyOutDir --watch",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 3",
     "lint:fix": "eslint --fix .",
     "preview": "vite preview",
@@ -81,8 +79,5 @@
     "vite": "^5.3.1",
     "vite-plugin-pwa": "^0.20.0",
     "workbox-window": "^7.1.0"
-  },
-  "lint-staged": {
-    "./src/**/*.{js,ts}": "npm run lint"
   }
 }
