@@ -22,11 +22,11 @@ patches:
 
 labels:
   - pairs:
-      env: demo
+      env: dev
 
 images:
   - name: lisa-image
-    newName: 503561419905.dkr.ecr.eu-west-2.amazonaws.com/lisa/webapp
+    newName: 537124944113.dkr.ecr.eu-west-2.amazonaws.com/lisa/webapp
     newTag: '1739959086'
 
 
