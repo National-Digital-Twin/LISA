@@ -128,12 +128,16 @@ export default class EditIncidentLogPage {
       case 'Description only':
         await this.page.locator(Elements.inpFormLocationDescription).fill('London');
         await this.updateLogByTab('Form');
-
         break;
 
       case 'Point on a map':
-        // eslint-disable-next-line no-console
-        console.warn('TO-DO: Have a seperate work item');
+        await this.page.getByRole('region', { name: 'Map' }).click({
+          position: {
+            x: 792,
+            y: 283
+          }
+        });
+        await this.updateLogByTab('Form');
         break;
 
       case 'Both a point on a map and a description':
@@ -158,6 +162,25 @@ export default class EditIncidentLogPage {
 
       await this.page.locator(Elements.inpFileUpload).setInputFiles(filePath);
     }
+  }
+
+  async clickRandomPointOnMap() {
+    // Locate the map region
+    const mapElement = this.page.getByRole('region', { name: 'Map' });
+
+    // Get the bounding box of the map
+    const boundingBox = await mapElement.boundingBox();
+    if (!boundingBox) {
+      throw new Error('Map element not found or not visible.');
+    }
+
+    // Generate a random (x, y) coordinate within the map area
+    const randomX = Math.floor(boundingBox.x + Math.random() * boundingBox.width);
+    const randomY = Math.floor(boundingBox.y + Math.random() * boundingBox.height);
+
+    // Click on the random location
+    await mapElement.scrollIntoViewIfNeeded();
+    await mapElement.click({ position: { x: randomX, y: randomY } });
   }
 
   private getRandomUsername(): string {
