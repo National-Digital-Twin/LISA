@@ -30,7 +30,7 @@ Feature: Edit Incident Page
       | Form    | General | Now      | Yes            | Yes             |
     Then I should be able to verify a new log entry is created for the "General" category
 
-  @functional @DPAV-573 @DPAV-591 @DPAV-587
+  @functional @DPAV-573 @DPAV-591 @DPAV-587 @DPAV-592
 	Scenario Outline: Verify that a LISA user can create a log of 'SitRep' category type, with text, plotting a point on the location tab and attaching a file 
 		 And I select the Incident from the incident list
       |incidentId|incidentName|incidentStatus|
@@ -44,3 +44,4 @@ Feature: Edit Incident Page
         |isLocationRequired|
         |Description only|
         |Point on a map|
+        |Both a point on a map and a description|

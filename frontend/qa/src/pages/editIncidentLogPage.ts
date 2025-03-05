@@ -127,9 +127,7 @@ export default class EditIncidentLogPage {
       switch (isSitRepLocationReq) {
       case 'Description only':
         await this.page.locator(Elements.inpFormLocationDescription).fill('London');
-        await this.updateLogByTab('Form');
         break;
-
       case 'Point on a map':
         await this.page.getByRole('region', { name: 'Map' }).click({
           position: {
@@ -137,14 +135,16 @@ export default class EditIncidentLogPage {
             y: 283
           }
         });
-        await this.updateLogByTab('Form');
         break;
-
       case 'Both a point on a map and a description':
-        // eslint-disable-next-line no-console
-        console.warn('TO-DO: Have a seperate work item');
+        await this.page.locator(Elements.inpFormLocationDescription).fill('London');
+        await this.page.getByRole('region', { name: 'Map' }).click({
+          position: {
+            x: 792,
+            y: 283
+          }
+        });
         break;
-
       default:
         // eslint-disable-next-line no-console
         console.warn(`Invalid option: ${isSitRepLocationReq}`);
@@ -153,6 +153,7 @@ export default class EditIncidentLogPage {
       // eslint-disable-next-line no-console
       console.log(this.page.locator(Elements.btnFormExactLocation.replace('$BUTTONSTATE$', 'Set')));
     }
+    await this.updateLogByTab('Form');
   }
 
   async doFileUpload(isFileUpload: string) {
