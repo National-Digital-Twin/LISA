@@ -5,6 +5,7 @@ frontend/qa/node_modules/*
 
 # build
 **/dist/*
+**/dev-dist/*
 
 # IDE / OS
 .idea
