@@ -43,7 +43,7 @@ export default function FilesContent({
     <ul className={classes()}>
       <li className="full-width field-label">{title}</li>
       {selectedFiles.map((file) => (
-        <li key={file.lastModified} className="full-width selected-file">
+        <li key={file.name} className="full-width selected-file">
           <span>
             {file.name}
             <span className="file-size">
@@ -61,7 +61,7 @@ export default function FilesContent({
         </li>
       ))}
       {recordings.map((recording) => (
-        <li key={recording.lastModified} className="full-width selected-file">
+        <li key={recording.name} className="full-width selected-file">
           <span>
             {recording.name}
             <span className="file-size">
