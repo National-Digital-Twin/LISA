@@ -1,14 +1,14 @@
-@import 'colors';
+@use 'colors';
 
 .react-select {
   &__control,
   &__menu {
-    background-color: $white;
+    background-color: colors.$white;
     font-size: 1.15rem;
-    color: $blue-dark;
+    color: colors.$blue-dark;
     font-family: lato-reg, Arial, Helvetica, sans-serif;
     font-weight: 400;
-    border: solid 1px $grey-mid;
+    border: solid 1px colors.$grey-mid;
     border-radius: 0;
     text-align: left;
   }
@@ -19,7 +19,7 @@
       border-bottom-right-radius: 0;
     }
     &:focus-within {
-      outline: auto $blue 1px !important;
+      outline: auto colors.$blue 1px !important;
     }
   }
   &__menu {
@@ -52,12 +52,12 @@
     color: inherit;
     box-sizing: border-box;
     &--is-focused {
-      background-color: $blue-dark;
-      color: $white;
+      background-color: colors.$blue-dark;
+      color: colors.$white;
     }
     &--is-selected {
-      background-color: $blue;
-      color: $white;
+      background-color: colors.$blue;
+      color: colors.$white;
     }
   }
   &__group-heading,
@@ -72,15 +72,15 @@
   }
   &__clear-indicator + &__indicator-separator {
     margin: 0 4px;
-    border-left: dotted 2px $blue-dark;
+    border-left: dotted 2px colors.$blue-dark;
   }
   &__group {
     padding-bottom: 8px;
   }
   &__group-heading {
-    background-color: $grey-light;
-    border-bottom: solid 1px $grey-mid;
-    color: $black;
+    background-color: colors.$grey-light;
+    border-bottom: solid 1px colors.$grey-mid;
+    color: colors.$black;
   }
   &__option,
   &__single-value {
