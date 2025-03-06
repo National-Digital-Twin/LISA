@@ -421,7 +421,7 @@ li.major-incident-no {
     right: 10px;
     display: flex;
     gap: 10px;
-    border: 0px;
+    border: 0;
     .pen {
       width: 30px;
       height: 30px;
@@ -513,7 +513,7 @@ ul.label-field {
     top: 150px;
     margin-bottom: 8px;
     margin-left: -200px;
-    box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
   }
   &__title {
     font-size: 1rem;
