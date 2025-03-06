@@ -71,7 +71,21 @@ export default defineConfig({
         process.cwd(),
         '../node_modules/@national-digital-twin/ndtp-styling-assets/dist/scss'
       ),
+      ndtp: path.resolve(__dirname, '../node_modules/@national-digital-twin/ndtp-styling-assets/dist/scss/main.scss'),
       common: path.resolve(__dirname, '../common')
+    }
+  },
+  css: {
+    preprocessorOptions: {
+      scss: {
+        api: 'modern-compiler',
+        includePaths: [
+          path.resolve(
+            __dirname,
+            '../node_modules/@national-digital-twin/ndtp-styling-assets/dist/scss'
+          )
+        ]
+      }
     }
   }
 });

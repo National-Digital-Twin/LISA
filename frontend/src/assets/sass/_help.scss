@@ -1,12 +1,13 @@
 // 'HELP.SCSS' - IMPORTED INTO APP.SCSS
 
-@import 'colors';
+@use 'colors';
+@use 'ndtp';
 
 .help-guidance-container {
   display: block;
-  background-color: $white;
+  background-color: colors.$white;
   padding: 40px;
-  color: $black;
+  color: colors.$black;
   width: 400px;
   z-index: 3;
   position: absolute;
@@ -21,7 +22,7 @@
       list-style-type: square;
       margin-bottom: 5px;
       &::marker {
-        color: $gold;
+        color: colors.$gold;
       }
     }
   }
@@ -29,11 +30,11 @@
     position: absolute;
     left: 0;
     top: 0;
-    background-color: $gold;
+    background-color: colors.$gold;
     font-family: ndtp.$font-family;
     width: 100%;
     padding: 19px;
-    color: $black;
+    color: colors.$black;
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -53,12 +54,12 @@
       background-color: transparent;
       transition: background-color 0.5s;
       &:hover {
-        background-color: $white;
+        background-color: colors.$white;
       }
       svg {
         height: auto;
         width: 13px;
-        fill: $blue;
+        fill: colors.$blue;
       }
     }
   }
