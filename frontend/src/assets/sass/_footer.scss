@@ -1,13 +1,13 @@
 // '_FOOTER.SCSS' - IMPORTED INTO APP.SCSS
 
-@import 'colors';
+@use 'colors';
 
 footer {
   height: 150px;
   padding-top: 5px;
-  background-color: $grey-footer;
-  border-top: 5px solid $blue-header;
-  color: $black;
+  background-color: colors.$grey-footer;
+  border-top: 5px solid colors.$blue-header;
+  color: colors.$black;
   position: relative;
   box-sizing: border-box;
   width: 100%;
@@ -20,7 +20,7 @@ footer {
   }
   .footer-irc {
     left: 20px;
-    color: $white;
+    color: colors.$white;
   }
   .footer-logo {
     left: 20px;
@@ -34,20 +34,20 @@ footer {
     position: absolute;
     bottom: 0;
     width: 100%;
-    background-color: $blue;
+    background-color: colors.$blue;
     padding: 10px 8px 8px 38px;
     text-align: center;
     a:link, a:visited, a:active {
-      color: $white;
+      color: colors.$white;
     }
     a:hover {
-      color: $gold;
+      color: colors.$gold;
     }   
     svg {
       position: relative;
       width: 18px;
       height: auto;
-      color: $white;
+      color: colors.$white;
       margin-right: 10px;
     }
   }
