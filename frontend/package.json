@@ -7,6 +7,7 @@
     "start": "npm run dev",
     "dev": "vite",
     "build": "tsc && vite build",
+    "bundle": "npm run generate-pwa-assets && tsc --noEmit && vite build --emptyOutDir",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 3",
     "lint:fix": "eslint --fix .",
     "preview": "vite preview",
