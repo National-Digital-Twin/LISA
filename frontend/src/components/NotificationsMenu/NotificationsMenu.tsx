@@ -44,7 +44,7 @@ export default function NotificationsMenu() {
   return (
     <div ref={containerRef} className={classes()}>
       {!expanded && (
-        <IconButton type="button" onClick={onMenuBtnClick} disableFocusRipple disableRipple>
+        <IconButton type="button" onClick={onMenuBtnClick}>
           <Badge badgeContent={unreadCount} color="error" overlap="circular" max={99}>
             <NotificationsIcon sx={{ color: 'text.primary' }} />
           </Badge>

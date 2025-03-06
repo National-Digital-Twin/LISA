@@ -92,9 +92,6 @@ const Header = ({ helpVisible = false }: Props) => {
           <IconButton
             sx={{ display: { xs: 'block', md: 'none' } }}
             onMouseDown={handleNavbutt}
-            disableFocusRipple
-            disableRipple
-            disableTouchRipple
           >
             <MenuIcon sx={{ color: 'accent.main' }} />
           </IconButton>
@@ -131,7 +128,7 @@ const Header = ({ helpVisible = false }: Props) => {
             </div>
             <Icons.Person />
           </div>
-          <IconButton type="button" onClick={handleHelpToggle} disableFocusRipple disableRipple>
+          <IconButton type="button" onClick={handleHelpToggle}>
             <SettingsIcon fontSize="large" sx={{ color: 'accent.main' }} />
           </IconButton>
           {isHelpVisible && (

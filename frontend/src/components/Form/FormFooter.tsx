@@ -43,8 +43,6 @@ export default function FormFooter({
         <Button
           type="button"
           variant="text"
-          disableRipple
-          disableTouchRipple
           onClick={onToggleShowErrors}
           sx={{ color: 'text.primary' }}
         >
@@ -52,14 +50,12 @@ export default function FormFooter({
           {validationErrors.length > 1 ? ' errors' : ' error'}
         </Button>
       )}
-      <Button onClick={onCancelClick} variant="outlined" disableRipple disableTouchRipple>
+      <Button onClick={onCancelClick} variant="outlined">
         Cancel
       </Button>
       <Button
         variant="contained"
         startIcon={<ImportContactsIcon />}
-        disableRipple
-        disableTouchRipple
         onClick={onSubmit}
         disabled={validationErrors.length > 0}
         loading={loading}
