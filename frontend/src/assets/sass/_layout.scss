@@ -1,6 +1,7 @@
 // '_LAYOUT.SCSS' - IMPORTED INTO APP.SCSS
 
-@import 'colors';
+@use 'colors';
+@use 'ndtp';
 
 body,
 p,
@@ -50,16 +51,16 @@ svg {
   max-width: 1500px;
   margin: 0 auto 0 auto;
   min-height: calc(100vh - 150px);
-  background-color: $white;
+  background-color: colors.$white;
   padding: 130px 60px;
   &.login-screen {
-    background-color: $blue;
+    background-color: colors.$blue;
   }
   .page-title {
     font-size: 2rem;
     font-family: ndtp.$font-family;
     margin-bottom: 30px;
-    color: $black;
+    color: colors.$black;
     position: relative;
     display: flex;
     flex-direction: row;
@@ -104,12 +105,12 @@ svg {
   .rollup-container {
     margin: 0 0 20px 0;
     padding: 10px 0;
-    background-color: $grey-light;
+    background-color: colors.$grey-light;
 
     .rollup-header {
       margin: 10px 30px 0 30px;
       padding-bottom: 10px;
-      border-bottom: solid 1px $grey-mid;
+      border-bottom: solid 1px colors.$grey-mid;
       display: flex;
       flex-direction: row;
       gap: 10px;
@@ -125,10 +126,10 @@ svg {
         gap: 10px;
 
         a {
-          border: solid 1px $grey-mid;
+          border: solid 1px colors.$grey-mid;
           border-bottom: none;
           padding: 8px 12px 11px 12px;
-          background: $grey-mid;
+          background: colors.$grey-mid;
           &.in-error {
             position: relative;
             &::after {
@@ -139,8 +140,8 @@ svg {
             }
           }
           &.active {
-            background-color: $grey-light;
-            border-bottom: solid 1px $grey-light;
+            background-color: colors.$grey-light;
+            border-bottom: solid 1px colors.$grey-light;
           }
         }
       }
@@ -149,12 +150,12 @@ svg {
         .rollup-tabs {
           a {
             &.in-error {
-              border-color: $red-dark;
-              border-bottom-color: $grey-mid;
-              outline: solid 1px $red-dark;
-              color: $red-dark;
+              border-color: colors.$red-dark;
+              border-bottom-color: colors.$grey-mid;
+              outline: solid 1px colors.$red-dark;
+              color: colors.$red-dark;
               &.active {
-                border-bottom-color: $grey-light;
+                border-bottom-color: colors.$grey-light;
               }
             }
           }
@@ -178,27 +179,27 @@ svg {
 
   &.dark {
     background-color: rgba(43, 52, 64, 0.5);
-    color: $section-dark-text;
+    color: colors.$section-dark-text;
     .text-highlight {
-      color: $gold;
+      color: colors.$gold;
     }
   }
   &.light {
     background-color: rgba(204, 204, 204, 0.5);
-    color: $section-light-text;
+    color: colors.$section-light-text;
     .text-highlight {
-      color: $blue;
+      color: colors.$blue;
     }
   }
   &.white {
     background-color: rgba(255, 255, 255, 0.5);
-    color: $section-light-text;
+    color: colors.$section-light-text;
     .text-highlight {
-      color: $blue;
+      color: colors.$blue;
     }
   }
   hr {
-    color: $grey-mid;
+    color: colors.$grey-mid;
     margin: 20px 0;
   }
   h2,

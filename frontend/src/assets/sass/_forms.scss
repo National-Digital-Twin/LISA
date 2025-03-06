@@ -1,6 +1,6 @@
 // '_FORMS.SCSS' - IMPORTED INTO APP.SCSS
 
-@import 'colors';
+@use 'colors';
 
 li.major-incident-no,
 li.major-incident-yes {
@@ -10,7 +10,7 @@ li.major-incident-yes {
   button {
     display: block;
     width: 80% !important;
-    background-color: $green !important;
+    background-color: colors.$green !important;
     text-align: center;
     margin: 0 !important;
   }
@@ -18,19 +18,19 @@ li.major-incident-yes {
 li.major-incident-no {
   a,
   button {
-    background-color: $red-dark !important;
+    background-color: colors.$red-dark !important;
   }
 }
 
 .log-form {
   position: relative;
-  background-color: $grey-light;
+  background-color: colors.$grey-light;
   padding: 20px;
   text-align: left;
   h3 {
     padding: 10px 0;
     margin: 0 10px;
-    border-bottom: 1px solid $grey-mid;
+    border-bottom: 1px solid colors.$grey-mid;
     font-size: 1.25rem;
   }
   label,
@@ -62,8 +62,8 @@ li.major-incident-no {
         &::-webkit-datetime-edit-year-field:focus,
         &::-webkit-datetime-edit-hour-field:focus,
         &::-webkit-datetime-edit-minute-field:focus {
-          background-color: $blue-dark;
-          color: $white;
+          background-color: colors.$blue-dark;
+          color: colors.$white;
           outline: none;
         }
       }
@@ -83,8 +83,8 @@ li.major-incident-no {
       margin-top: 5px;
       padding: 6px 6px 6px 10px;
       height: 45px;
-      border: solid 1px $grey-mid;
-      background-color: $white;
+      border: solid 1px colors.$grey-mid;
+      background-color: colors.$white;
       font-weight: 400;
       &__value {
         white-space: nowrap;
@@ -99,14 +99,14 @@ li.major-incident-no {
         max-width: 82px;
         padding: 6px 12px;
         border: none;
-        border-left: dotted 2px $blue-dark;
+        border-left: dotted 2px colors.$blue-dark;
         font-size: 1.15rem;
         background: transparent;
-        color: $blue-dark;
+        color: colors.$blue-dark;
         cursor: pointer;
         &:hover,
         &:focus {
-          color: $blue;
+          color: colors.$blue;
         }
       }
     }
@@ -114,11 +114,11 @@ li.major-incident-no {
   input,
   select,
   textarea {
-    background-color: $white;
+    background-color: colors.$white;
     width: 100%;
     padding: 10px;
-    color: $blue-dark;
-    border: 1px solid $grey-mid;
+    color: colors.$blue-dark;
+    border: 1px solid colors.$grey-mid;
     &.input-calendar {
       background-image: url('/icon-calendar.svg');
       background-repeat: no-repeat;
@@ -143,7 +143,7 @@ li.major-incident-no {
     .optional-field {
       margin-left: 1rem;
       font-size: 1rem;
-      color: $grey-dark;
+      color: colors.$grey-dark;
       &::before {
         content: '(';
       }
@@ -167,7 +167,7 @@ li.major-incident-no {
         .h-sep {
           flex: 1;
           height: 1px;
-          border-bottom: dotted 4px $grey-mid;
+          border-bottom: dotted 4px colors.$grey-mid;
         }
         .react-select {
           margin-top: 0;
@@ -192,7 +192,7 @@ li.major-incident-no {
         top: 0;
         height: 28px; // middle of the label
         width: 8px;
-        border: dotted 4px $grey-mid;
+        border: dotted 4px colors.$grey-mid;
         border-width: 0 0 4px 4px;
       }
       .field-error {
@@ -202,7 +202,7 @@ li.major-incident-no {
     &.form-group {
       width: 100%;
       padding: 0;
-      border: solid 1px $grey-mid;
+      border: solid 1px colors.$grey-mid;
       margin: 10px 0;
       ul {
         margin: 0;
@@ -216,7 +216,7 @@ li.major-incident-no {
         width: 100%;
         margin: 0;
         font-weight: 700;
-        background-color: $grey-mid;
+        background-color: colors.$grey-mid;
         padding: 10px;
 
         a {
@@ -227,7 +227,7 @@ li.major-incident-no {
           &:hover,
           &:focus {
             text-decoration: none;
-            color: $blue-dark;
+            color: colors.$blue-dark;
             outline-offset: 10px;
           }
         }
@@ -247,9 +247,9 @@ li.major-incident-no {
         &:hover,
         &:focus,
         &:focus-within {
-          background-color: $blue-light;
+          background-color: colors.$blue-light;
           a {
-            color: $blue-dark;
+            color: colors.$blue-dark;
           }
         }
       }
@@ -270,7 +270,7 @@ li.major-incident-no {
       }
     }
     .field-error {
-      color: $red-dark;
+      color: colors.$red-dark;
       position: absolute;
       bottom: -0.45rem;
       left: 10px;
@@ -288,7 +288,7 @@ li.major-incident-no {
   }
   &.login {
     padding: 20px;
-    background-color: $grey-light;
+    background-color: colors.$grey-light;
     width: 450px;
     @media screen and (max-width: 800px) {
       width: 100%;
@@ -310,20 +310,20 @@ li.major-incident-no {
         .react-select__control,
         .editor-container,
         .location-field {
-          border-color: $red-dark;
+          border-color: colors.$red-dark;
         }
       }
 
       &.form-group {
         &:has(ul li.in-error) {
           .form-group__label {
-            border-color: $red-dark;
+            border-color: colors.$red-dark;
             a {
-              color: $red-dark;
+              color: colors.$red-dark;
               &:hover,
               &:focus {
-                color: $white;
-                outline-color: $red-dark;
+                color: colors.$white;
+                outline-color: colors.$red-dark;
               }
             }
 
@@ -334,9 +334,9 @@ li.major-incident-no {
             &:hover,
             &:focus,
             &:focus-within {
-              background-color: $red-dark;
+              background-color: colors.$red-dark;
               a {
-                color: $white;
+                color: colors.$white;
               }
             }
           }
@@ -346,15 +346,15 @@ li.major-incident-no {
   }
   .field-error {
     label {
-      color: $red-dark;
+      color: colors.$red-dark;
     }
     input {
-      border: 2px solid $red-dark;
+      border: 2px solid colors.$red-dark;
     }
   }
 
   &.readonly {
-    background-color: $grey-light;
+    background-color: colors.$grey-light;
     margin-bottom: 20px;
     padding-bottom: 4px;
 
@@ -386,15 +386,15 @@ li.major-incident-no {
 }
 
 .highlight-gold {
-  color: $gold !important;
+  color: colors.$gold !important;
 }
 
 .highlight-blue-dark {
-  color: $blue-dark !important;
+  color: colors.$blue-dark !important;
 }
 
 .highlight-blue {
-  color: $blue !important;
+  color: colors.$blue !important;
 }
 
 .icon {
@@ -407,8 +407,8 @@ li.major-incident-no {
 
 .sketch-stage {
   position: relative;
-  border: 1px solid $grey-mid;
-  background-color: $white;
+  border: 1px solid colors.$grey-mid;
+  background-color: colors.$white;
   width: 100%;
   height: 500px;
   cursor:
@@ -436,13 +436,13 @@ li.major-incident-no {
     button {
       font-size: 1rem;
       line-height: 1.25rem;
-      background-color: $black;
-      color: $white;
+      background-color: colors.$black;
+      color: colors.$white;
       padding: 3px 8px;
       border-radius: 0;
       cursor: pointer;
       &:hover {
-        background-color: $red-dark;
+        background-color: colors.$red-dark;
       }
     }
   }
@@ -491,8 +491,8 @@ ul.label-field {
   &__btn {
     width: 24px;
     height: 24px;
-    border: 1px solid $blue;
-    color: $blue;
+    border: 1px solid colors.$blue;
+    color: colors.$blue;
     border-radius: 12px;
     cursor: pointer;
     font-size: 1rem;
@@ -505,7 +505,7 @@ ul.label-field {
     font-size: 0.875rem;
     font-weight: normal;
     padding: 12px 16px;
-    border: 1px solid $blue;
+    border: 1px solid colors.$blue;
     width: 400px;
     max-width: 400px;
     line-height: 1rem;
@@ -519,7 +519,7 @@ ul.label-field {
     font-size: 1rem;
     font-weight: 700;
     padding-bottom: 10px;
-    border-bottom: 1px solid $grey-mid;
+    border-bottom: 1px solid colors.$grey-mid;
   }
   &__content {
     overflow-x: auto;

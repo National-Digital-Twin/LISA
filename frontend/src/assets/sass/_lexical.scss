@@ -6,22 +6,22 @@
  *
  */
 
-@import 'colors';
+@use 'colors';
 
 @keyframes mic-pulsate-color {
   0% {
-    background-color: $brand;
+    background-color: colors.$brand;
   }
   50% {
-    background-color: $red-dark;
+    background-color: colors.$red-dark;
   }
   100% {
-    background-color: $brand;
+    background-color: colors.$brand;
   }
 }
 
 .editor-container {
-  border: 1px solid $grey-mid;
+  border: 1px solid colors.$grey-mid;
   color: #000;
   position: relative;
   line-height: 1.4rem;
@@ -245,7 +245,7 @@
       margin-top: 4px;
 
       &.mic {
-        color: $green;
+        color: colors.$green;
         background-image: url(./assets/images/icon-mic.svg);
       }
     }
@@ -260,11 +260,11 @@
       width: 50px;
       display: inline-block;
       cursor: pointer;
-      color: $green;
+      color: colors.$green;
 
       &:hover {
-        background-color: $green;
-        color: $white;
+        background-color: colors.$green;
+        color: colors.$white;
       }
 
       &:disabled {
@@ -275,7 +275,7 @@
     }
 
     .action-button-mic.active {
-      color: $white;
+      color: colors.$white;
       animation: mic-pulsate-color 2s infinite;
     }
   }
@@ -376,7 +376,7 @@
 
 
 [data-lexical-mention] {
-  background-color: $blue-light;
+  background-color: colors.$blue-light;
   padding: 3px 6px;
   border-radius: 4px;
   font-weight: bold;
@@ -386,8 +386,8 @@
     content: "@";
   }
   &:hover {
-    background-color: $blue;
-    color: $white;
+    background-color: colors.$blue;
+    color: colors.$white;
   }
 }
 
@@ -397,11 +397,11 @@
 }
 .lexical-html {
   .mention {
-    background-color: $blue-light;
+    background-color: colors.$blue-light;
     cursor: pointer;
     &:hover, &:active, &:focus {
-      background-color: $blue;
-      color: $white;
+      background-color: colors.$blue;
+      color: colors.$white;
     }
   }
 }

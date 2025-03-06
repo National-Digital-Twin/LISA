@@ -1,3 +1,5 @@
+@use "colors";
+
 .map-container {
   width: 100%;
   height: 500px;
@@ -9,13 +11,13 @@
 
   .maplibregl-marker {
     cursor: grab;
-    color: $red-pin;
+    color: colors.$red-pin;
     opacity: 0.98823529;
     &.blue {
-      color: $blue;
+      color: colors.$blue;
     }
     &.map-marker--highlighted {
-      color: $black;
+      color: colors.$black;
     }
     svg {
       height: 40px;
