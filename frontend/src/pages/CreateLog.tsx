@@ -7,12 +7,15 @@ import { type Referrer, type Incident } from 'common/Incident';
 import { Box, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid2';
 import { FormField, FormFooter } from '../components/Form';
-import { useCreateIncident } from '../hooks/useIncidents';
+import { useCreateIncident, useIncidents } from '../hooks/useIncidents';
 import { Form, Incident as IncidentUtil, Validate } from '../utils';
 import { type FieldValueType, type ValidationError } from '../utils/types';
 import { PageTitle } from '../components';
 
 const CreateLog = () => {
+  const { incidents } = useIncidents();
+  const [incidentId, setIncidentId] = useState<string | undefined>();
+  const [loading, setLoading] = useState(false);
   const [incident, setIncident] = useState<Partial<Incident>>({
     stage: 'Monitoring',
     referrer: {} as Referrer
@@ -25,10 +28,20 @@ const CreateLog = () => {
 
   // Go back to where we've just come from.
   const onCancel = () => navigate(-1);
+  useEffect(() => {
+    if (incidentId) {
+      if (incidents?.find(({ id }) => id === incidentId)) {
+        setLoading(false);
+        navigate(`/logbook/${incidentId}`);
+      }
+    }
+  }, [incidentId, incidents]);
 
   const onSubmit = () => {
+    setLoading(true);
     createIncident.mutate(incident as Incident, {
-      onSuccess: (data) => navigate(`/logbook/${data.id}`)
+      onSuccess: (data) => setIncidentId(data.id),
+      onError: () => setLoading(false)
     });
   };
 
@@ -70,6 +83,7 @@ const CreateLog = () => {
           onSubmit={onSubmit}
           submitLabel="Create"
           onShowValidationErrors={setShowValidationErrors}
+          loading={loading}
         />
       </Box>
     </div>

@@ -12,13 +12,15 @@ interface Props {
   onSubmit: () => void;
   submitLabel?: string;
   onShowValidationErrors: (show: boolean) => void;
+  loading?: boolean;
 }
 export default function FormFooter({
   validationErrors,
   onCancel,
   onSubmit,
   submitLabel = 'Save',
-  onShowValidationErrors
+  onShowValidationErrors,
+  loading = false
 }: Readonly<Props>) {
   const [showingErrors, setShowingErrors] = useState<boolean>(false);
 
@@ -60,6 +62,7 @@ export default function FormFooter({
         disableTouchRipple
         onClick={onSubmit}
         disabled={validationErrors.length > 0}
+        loading={loading}
       >
         {submitLabel}
       </Button>
