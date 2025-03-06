@@ -8,10 +8,10 @@
 
 # For the root ("/") route, add the CSP header along with the cache headers.
 - op: replace
-  path: /spec/http/0/headers/response/add/Content-Security-Policy
+  path: /spec/http/1/headers/response/add/Content-Security-Policy
   value: "connect-src 'self' data: wss://lisa.dev.ndtp.co.uk ws://lisa.dev.ndtp.co.uk https://lisa.dev.ndtp.co.uk https://landing.dev.ndtp.co.uk https://access.dev.ndtp.co.uk https://api.os.uk https://nominatim.openstreetmap.org; worker-src 'self' blob:; child-src 'self' blob:; img-src 'self' data: blob:"
 
 # For the catch-all route, set the CSP header.
 - op: replace
-  path: /spec/http/1/route/0/headers/response/add/Content-Security-Policy
+  path: /spec/http/1/route/2/headers/response/add/Content-Security-Policy
   value: "connect-src 'self' data: wss://lisa.dev.ndtp.co.uk ws://lisa.dev.ndtp.co.uk https://lisa.dev.ndtp.co.uk https://landing.dev.ndtp.co.uk https://access.dev.ndtp.co.uk https://api.os.uk https://nominatim.openstreetmap.org; worker-src 'self' blob:; child-src 'self' blob:; img-src 'self' data: blob:"
