@@ -31,8 +31,10 @@ const CreateLog = () => {
   useEffect(() => {
     if (incidentId) {
       if (incidents?.find(({ id }) => id === incidentId)) {
-        setLoading(false);
-        navigate(`/logbook/${incidentId}`);
+        setTimeout(() => {
+          setLoading(false);
+          navigate(`/logbook/${incidentId}`);
+        }, 1000);
       }
     }
   }, [incidentId, incidents]);
