@@ -12,13 +12,14 @@ const PageTitle = ({ title, subtitle = undefined, children }: Props) => (
     style={{ alignItems: 'center' }}
     display="flex"
     flexDirection="row"
+    flexWrap="wrap"
     alignItems="center"
     justifyContent="space-between"
     gap="1rem"
     width="100%"
   >
     <Box>
-      <Typography fontSize="2rem" variant="h1">
+      <Typography fontSize="2rem" variant="h1" className="title">
         {title}
       </Typography>
       {subtitle && (
