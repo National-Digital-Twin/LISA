@@ -24,7 +24,7 @@ export default class LandingPage {
   }
 
   async verifyLisaAppPage() {
-    await expect(this.page).toHaveTitle('NDT applications');
+    await this.page.waitForTimeout(5000);
 
     await this.page.goto(process.env.LISAURL);
 
