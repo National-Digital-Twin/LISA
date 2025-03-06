@@ -1,16 +1,16 @@
 // Global imports
 import { ChangeEvent, MouseEvent, useState } from 'react';
-import { Link } from 'react-router-dom';
-
-// Local imports
+import { Box, Button, FormControl, FormHelperText, TextField } from '@mui/material';
 import { Format } from '../utils';
+import { type ValidationError } from '../utils/types';
 
 type Props = {
   id: string;
   value: string | undefined;
+  error?: ValidationError;
   onChange: (value: string | undefined) => void;
 };
-const DateTimeInput = ({ id, value, onChange }: Props) => {
+const DateTimeInput = ({ id, value, error = undefined, onChange }: Props) => {
   const [date, setDate] = useState<string>(value ? Format.isoDate(value) : '');
   const [time, setTime] = useState<string>(value ? Format.time(value) : '');
 
@@ -32,7 +32,7 @@ const DateTimeInput = ({ id, value, onChange }: Props) => {
     setTime(evt.target.value);
     dispatchOnChange(date, evt.target.value);
   };
-  const onSetNow = (evt: MouseEvent<HTMLAnchorElement>) => {
+  const onSetNow = (evt: MouseEvent<HTMLButtonElement>) => {
     evt.preventDefault();
     const now = new Date().toISOString();
     const d = Format.isoDate(now);
@@ -43,28 +43,41 @@ const DateTimeInput = ({ id, value, onChange }: Props) => {
   };
 
   return (
-    <div className="log-date-time" id={id}>
-      <input
-        data-testid="date-input"
-        className="date-input"
-        type="date"
-        value={date}
-        onChange={onDateChange}
-      />
-      <input
-        data-testid="time-input"
-        className="time-input"
-        type="time"
-        min="00:00"
-        max="23:59"
-        value={time}
-        onChange={onTimeChange}
-      />
-      {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-      <Link className="date-now" to="" onClick={onSetNow}>
-        &lt; Now
-      </Link>
-    </div>
+    <FormControl id={id}>
+      <Box display="flex" alignItems="center" gap={2}>
+        <TextField
+          data-testid="date-input"
+          hiddenLabel
+          variant="filled"
+          fullWidth
+          type="date"
+          value={date}
+          onChange={onDateChange}
+          error={Boolean(error)}
+        />
+        <TextField
+          data-testid="time-input"
+          hiddenLabel
+          variant="filled"
+          fullWidth
+          type="time"
+          value={time}
+          onChange={onTimeChange}
+          error={Boolean(error)}
+        />
+        <Button
+          type="button"
+          variant="text"
+          disableRipple
+          disableTouchRipple
+          onClick={onSetNow}
+          sx={{ fontWeight: 600, textTransform: 'none' }}
+        >
+          &lt; Now
+        </Button>
+      </Box>
+      <FormHelperText error={Boolean(error)}>{error?.error}</FormHelperText>
+    </FormControl>
   );
 };
 

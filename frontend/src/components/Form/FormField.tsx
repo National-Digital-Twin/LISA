@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { type Field } from 'common/Field';
 import { type FieldType } from 'common/FieldType';
 import { type LogEntry } from 'common/LogEntry';
+import { Box, InputLabel, TextField } from '@mui/material';
 import { Form } from '../../utils';
 import { type OnFieldChange } from '../../utils/handlers';
 import { type FieldValueType, type Linkable, type ValidationError } from '../../utils/types';
@@ -65,39 +66,63 @@ const FormField = ({
   const isSelect = useMemo(() => ARE_SELECTS.includes(field.type), [field.type]);
 
   return (
-    <li className={`${className ?? ''} field-type--${field.type} ${error ? 'in-error' : ''}`}>
-      <label htmlFor={field.id}>
+    <Box className={`${className ?? ''}`} display="flex" flexDirection="column" gap={1}>
+      <InputLabel htmlFor={field.id} sx={{ color: 'text.primary', fontWeight: 600 }}>
         {field.label}
-        {field.optional && <span className="optional-field">optional</span>}
-        <FormHelpButton field={field} />
-        {field.className?.includes('horizontalYN') && (
-          <span data-testid="horizontal-span" className="h-sep" />
-        )}
-        {field.type === 'Input' && (
-          <input type="text" id={field.id} value={field.value} onChange={onTextChange} />
-        )}
-        {field.type === 'TextArea' && (
-          <textarea id={field.id} value={field.value} onChange={onTextChange} />
-        )}
-        {isSelect && (
-          <SelectField
-            id={field.id}
-            options={options ?? []}
-            multi={field.type === 'SelectMulti'}
-            value={field.value}
-            onChange={onSelectionChange}
-          />
-        )}
-        {field.type === 'DateTime' && (
-          <DateTimeInput id={field.id} value={field.value as string} onChange={onDateTimeChange} />
-        )}
-        {field.type === 'Location' && (
-          <LocationField id={field.id} value={field.value as string} onClick={onClickLocation} />
-        )}
-        {field.type === 'Label' && <LabelField id={field.id} hint={field.hint} />}
-      </label>
-      {error && <div className="field-error">{error.error}</div>}
-    </li>
+      </InputLabel>
+      {field.optional && <span className="optional-field">optional</span>}
+      <FormHelpButton field={field} />
+      {field.className?.includes('horizontalYN') && (
+        <span data-testid="horizontal-span" className="h-sep" />
+      )}
+      {field.type === 'Input' && (
+        <TextField
+          hiddenLabel
+          fullWidth
+          variant="filled"
+          id={field.id}
+          value={field.value}
+          onChange={onTextChange}
+          error={Boolean(error)}
+          helperText={error?.error}
+        />
+      )}
+      {field.type === 'TextArea' && (
+        <TextField
+          hiddenLabel
+          fullWidth
+          variant="filled"
+          multiline
+          id={field.id}
+          value={field.value}
+          onChange={onTextChange}
+          error={Boolean(error)}
+          helperText={error?.error}
+        />
+      )}
+      {isSelect && (
+        <SelectField
+          id={field.id}
+          options={options ?? []}
+          multi={field.type === 'SelectMulti'}
+          value={field.value}
+          placeholder="Select"
+          onChange={onSelectionChange}
+        />
+      )}
+      {field.type === 'DateTime' && (
+        <DateTimeInput
+          id={field.id}
+          value={field.value as string}
+          onChange={onDateTimeChange}
+          error={error}
+        />
+      )}
+      {field.type === 'Location' && (
+        <LocationField id={field.id} value={field.value as string} onClick={onClickLocation} />
+      )}
+      {field.type === 'Label' && <LabelField id={field.id} hint={field.hint} />}
+    </Box>
   );
 };
 
