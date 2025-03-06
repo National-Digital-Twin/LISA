@@ -4,10 +4,13 @@ import { useNavigate } from 'react-router-dom';
 
 // Local imports
 import { type Referrer, type Incident } from 'common/Incident';
+import { Box, Typography } from '@mui/material';
+import Grid from '@mui/material/Grid2';
 import { FormField, FormFooter } from '../components/Form';
 import { useCreateIncident } from '../hooks/useIncidents';
 import { Form, Incident as IncidentUtil, Validate } from '../utils';
 import { type FieldValueType, type ValidationError } from '../utils/types';
+import { PageTitle } from '../components';
 
 const CreateLog = () => {
   const [incident, setIncident] = useState<Partial<Incident>>({
@@ -38,35 +41,37 @@ const CreateLog = () => {
   }, [incident]);
 
   return (
-    <div className="wrapper">
-      <div className="container">
-        <h1 className="page-title">New Incident Log</h1>
-        <form>
-          {IncidentUtil.Sections.map((section) => (
-            <div key={section.id} className={`section log-form ${showValidationErrors ? 'validation-errors' : ''}`}>
-              <h2>{section.title}</h2>
-              <ul>
-                {section.fields(incident).map((field) => (
+    <div className="container">
+      <PageTitle title="New Incident Log" />
+      <Box display="flex" flexDirection="column" gap={4}>
+        {IncidentUtil.Sections.map((section) => (
+          <Box key={section.id}>
+            <Typography variant="h2">{section.title}</Typography>
+            <Grid container spacing={4} bgcolor="background.default" padding={3}>
+              {section.fields(incident).map((field) => (
+                <Grid key={field.id} size={{ xs: 12, md: 6 }}>
                   <FormField
                     key={field.id}
                     field={{ ...field, value: incident[field.id as keyof Incident] as string }}
-                    error={Form.getError(field, validationErrors)}
+                    error={
+                      showValidationErrors ? Form.getError(field, validationErrors) : undefined
+                    }
                     className={field.className}
                     onChange={onFieldChange}
                   />
-                ))}
-              </ul>
-            </div>
-          ))}
-          <FormFooter
-            validationErrors={validationErrors}
-            onCancel={onCancel}
-            onSubmit={onSubmit}
-            submitLabel="Create incident log"
-            onShowValidationErrors={setShowValidationErrors}
-          />
-        </form>
-      </div>
+                </Grid>
+              ))}
+            </Grid>
+          </Box>
+        ))}
+        <FormFooter
+          validationErrors={validationErrors}
+          onCancel={onCancel}
+          onSubmit={onSubmit}
+          submitLabel="Create"
+          onShowValidationErrors={setShowValidationErrors}
+        />
+      </Box>
     </div>
   );
 };

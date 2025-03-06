@@ -6,7 +6,8 @@ li.major-incident-no,
 li.major-incident-yes {
   margin: 0 !important;
   padding: 0 !important;
-  a, button {
+  a,
+  button {
     display: block;
     width: 80% !important;
     background-color: $green !important;
@@ -15,7 +16,8 @@ li.major-incident-yes {
   }
 }
 li.major-incident-no {
-  a, button {
+  a,
+  button {
     background-color: $red-dark !important;
   }
 }
@@ -31,7 +33,8 @@ li.major-incident-no {
     border-bottom: 1px solid $grey-mid;
     font-size: 1.25rem;
   }
-  label, .field-label {
+  label,
+  .field-label {
     display: block;
     font-weight: bold;
     font-size: 1.15rem;
@@ -101,7 +104,8 @@ li.major-incident-no {
         background: transparent;
         color: $blue-dark;
         cursor: pointer;
-        &:hover, &:focus {
+        &:hover,
+        &:focus {
           color: $blue;
         }
       }
@@ -116,13 +120,13 @@ li.major-incident-no {
     color: $blue-dark;
     border: 1px solid $grey-mid;
     &.input-calendar {
-      background-image: url("/icon-calendar.svg");
+      background-image: url('/icon-calendar.svg');
       background-repeat: no-repeat;
       background-position: center right 15px;
       background-size: 20px auto;
     }
     &.input-search {
-      background-image: url("/icon-search.svg");
+      background-image: url('/icon-search.svg');
       background-repeat: no-repeat;
       background-position: center right 5px;
     }
@@ -141,10 +145,10 @@ li.major-incident-no {
       font-size: 1rem;
       color: $grey-dark;
       &::before {
-        content: "(";
+        content: '(';
       }
       &::after {
-        content: ")";
+        content: ')';
       }
     }
     &.full-width {
@@ -182,7 +186,7 @@ li.major-incident-no {
       padding: 15px 10px 10px 35px;
       position: relative;
       &::before {
-        content: "";
+        content: '';
         position: absolute;
         left: 16px;
         top: 0;
@@ -220,7 +224,8 @@ li.major-incident-no {
           width: 100%;
           height: 100%;
           border-bottom: none;
-          &:hover, &:focus {
+          &:hover,
+          &:focus {
             text-decoration: none;
             color: $blue-dark;
             outline-offset: 10px;
@@ -239,7 +244,9 @@ li.major-incident-no {
           display: none;
         }
 
-        &:hover, &:focus, &:focus-within {
+        &:hover,
+        &:focus,
+        &:focus-within {
           background-color: $blue-light;
           a {
             color: $blue-dark;
@@ -313,7 +320,8 @@ li.major-incident-no {
             border-color: $red-dark;
             a {
               color: $red-dark;
-              &:hover, &:focus {
+              &:hover,
+              &:focus {
                 color: $white;
                 outline-color: $red-dark;
               }
@@ -323,7 +331,9 @@ li.major-incident-no {
               display: inline-block;
             }
 
-            &:hover, &:focus, &:focus-within {
+            &:hover,
+            &:focus,
+            &:focus-within {
               background-color: $red-dark;
               a {
                 color: $white;
@@ -361,81 +371,6 @@ li.major-incident-no {
     position: absolute;
     right: 20px;
     top: 20px;
-  }
-}
-.log-date-time {
-  height: 45px;
-  line-height: 45px;
-  display: flex;
-  gap: 10px;
-  img,
-  svg {
-    width: 20px;
-    height: auto;
-    margin-right: 10px;
-    &:last-of-type {
-      margin-left: 20px;
-      position: relative;
-      top: 2px;
-    }
-  }
-  .date-now {
-    white-space: nowrap;
-  }
-}
-.log-form-buttons {
-  display: flex;
-  flex-direction: row;
-  position: relative;
-  margin: 20px 10px 0 10px;
-  align-items: center;
-  justify-content: flex-end;
-  .button {
-    display: inline-block;
-    margin-left: 10px;
-    background-color: $blue;
-    padding: 10px;
-    border-radius: 6px;
-    border-style: solid;
-    border: solid 1px $white;
-    color: $white;
-    cursor: pointer;
-    transition: background-color .5s;
-    &:hover {
-      background-color: $blue-header;
-    }
-    &.cancel {
-      background-color: $grey-dark;
-      &:hover {
-        background-color: $black;
-      }
-    }
-    &:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-      &:hover {
-        background-color: $blue;
-      }
-    }
-    img,
-    svg {
-      height: auto;
-      width: 20px;
-      margin-right: 10px;
-      position: relative;
-      top: 2px;
-      color: $white;
-    }
-  }
-  .validation-errors {
-    font-size: 1.15rem;
-    margin-right: 20px;
-    a {
-      color: $red-dark;
-      &:hover, &:focus {
-        color: $red;
-      }
-    }
   }
 }
 
@@ -476,7 +411,9 @@ li.major-incident-no {
   background-color: $white;
   width: 100%;
   height: 500px;
-  cursor: url("/images/icon-pencil.svg") 10 10, auto;
+  cursor:
+    url('/images/icon-pencil.svg') 10 10,
+    auto;
 
   .pens {
     position: absolute;
@@ -512,13 +449,13 @@ li.major-incident-no {
 }
 
 .sig-outgoing {
-  background-image: url("/sig-1.svg");
+  background-image: url('/sig-1.svg');
   background-repeat: no-repeat;
   background-size: 50% auto;
   background-position: center center;
 }
 .sig-incoming {
-  background-image: url("/sig-2.svg");
+  background-image: url('/sig-2.svg');
   background-repeat: no-repeat;
   background-size: 50% auto;
   background-position: center center;
@@ -526,7 +463,8 @@ li.major-incident-no {
 
 .add-entry-tab {
   display: none;
-  &.active, &--active {
+  &.active,
+  &--active {
     display: block;
   }
 }
@@ -541,7 +479,7 @@ ul.label-field {
     padding: 5px 0;
     font-weight: 400;
     &::before {
-      content: "\2022";
+      content: '\2022';
       margin-right: 0.5rem;
     }
   }
@@ -564,7 +502,7 @@ ul.label-field {
     position: fixed;
     background-color: white;
     z-index: 2;
-    font-size: .875rem;
+    font-size: 0.875rem;
     font-weight: normal;
     padding: 12px 16px;
     border: 1px solid $blue;

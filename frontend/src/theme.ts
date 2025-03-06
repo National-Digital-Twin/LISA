@@ -1,6 +1,15 @@
 import { createTheme } from '@mui/material';
 
 const theme = createTheme({
+  components: {
+    MuiFilledInput: {
+      styleOverrides: {
+        root: {
+          backgroundColor: 'white'
+        }
+      }
+    }
+  },
   typography: {
     fontFamily: ['Roboto', '"Helvetica Neue"', 'Arial', 'sans-serif'].join(',')
   },

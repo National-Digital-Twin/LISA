@@ -1,13 +1,5 @@
 @import 'colors';
 
-.container {
-  .page-title {
-    label.include-closed {
-      font-size: 1.15rem;
-    }
-  }
-}
-
 .incident-stage {
   display: flex;
   flex-direction: row;
