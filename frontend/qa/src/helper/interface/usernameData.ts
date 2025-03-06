@@ -1,3 +1,3 @@
 export interface UsernamesData {
-  data: string[];
-}
+    data: string[];
+  }
