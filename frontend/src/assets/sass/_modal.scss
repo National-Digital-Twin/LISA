@@ -1,3 +1,5 @@
+@use "colors";
+
 .modal-dialog {
   padding: 15px;
   width: 100%;
@@ -7,11 +9,11 @@
   border: none;
   background: transparent;
   &::backdrop {
-    background: $grey-dark;
+    background: colors.$grey-dark;
     opacity: 0.8;
   }
   .rollup-container {
-    border: solid 1px $grey-dark;
+    border: solid 1px colors.$grey-dark;
     margin: 0;
     .rollup-header {
       margin: 10px 20px 0;
@@ -24,7 +26,7 @@
     }
   }
   &__close {
-    border: solid 2px $black;
+    border: solid 2px colors.$black;
     border-radius: 50%;
     position: absolute;
     top: 0px;

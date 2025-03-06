@@ -1,12 +1,4 @@
-@import 'colors';
-
-.container {
-  .page-title {
-    label.include-closed {
-      font-size: 1.15rem;
-    }
-  }
-}
+@use 'colors';
 
 .incident-stage {
   display: flex;
@@ -98,20 +90,20 @@
 
   // Default = Closed
   .stageColour {
-    fill: $grey-incident-stage;
+    fill: colors.$grey-incident-stage;
   }
 
   &.Closed .stageColour {
-    fill: $grey-incident-stage;
+    fill: colors.$grey-incident-stage;
   }
 
   &.Monitoring .stageColour {
-    fill: $orange-incident-stage;
+    fill: colors.$orange-incident-stage;
   }
   &.Response .stageColour {
-    fill: $red-incident-stage;
+    fill: colors.$red-incident-stage;
   }
   &.Recovery .stageColour {
-    fill: $purple-incident-stage;
+    fill: colors.$purple-incident-stage;
   }
 }

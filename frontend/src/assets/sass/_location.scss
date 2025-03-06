@@ -1,3 +1,5 @@
+@use "colors";
+
 .container--location {
   .map-container {
     position: relative;
@@ -28,8 +30,8 @@
       top: 3px;
       height: 24px;
       width: 24px;
-      border: solid 1px $black;
-      background-color: $grey-light;
+      border: solid 1px colors.$black;
+      background-color: colors.$grey-light;
       padding: 0;
       cursor: pointer;
 

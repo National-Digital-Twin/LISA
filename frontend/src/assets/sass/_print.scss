@@ -1,3 +1,5 @@
+@use "colors";
+
 // '_PRINT.SCSS' - IMPORTED INTO APP.SCSS
 
 // Style overrides for printing / pdf creation
@@ -32,8 +34,8 @@
     display: block;
     .log-entry-fields {
       &__group-label {
-        border-top: solid 1px $grey-mid;
-        border-bottom: solid 1px $grey-mid;
+        border-top: solid 1px colors.$grey-mid;
+        border-bottom: solid 1px colors.$grey-mid;
       }
       &__label {
         &--indent::before {
@@ -46,8 +48,8 @@
 
   .item__header {
     print-color-adjust: exact;
-    background-color: $blue-dark !important;
-    color: $white !important;
+    background-color: colors.$blue-dark !important;
+    color: colors.$white !important;
     margin: 0;
 
     .log-entry-meta {
