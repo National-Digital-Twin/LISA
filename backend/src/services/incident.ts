@@ -41,16 +41,16 @@ export async function create(req: Request, res: Response) {
     [referrerNode, ns.lisa.hasOrg, literalString(incident.referrer.organisation)],
     [referrerNode, ns.lisa.hasTel, literalString(incident.referrer.telephone)],
     [referrerNode, ns.lisa.hasEmail, literalString(incident.referrer.email)],
-    [referrerNode, ns.lisa.hasSupportRequest, literalString(incident.referrer.supportRequested)],
+    [referrerNode, ns.lisa.hasSupportRequest, literalString(incident.referrer.supportRequested)]
   ];
   if (incident.referrer.supportRequested === 'Yes') {
-    referrerTriples.push(
-      [referrerNode, ns.lisa.hasSupportRequestDesc, literalString(incident.referrer.supportDescription)]
-    );
+    referrerTriples.push([
+      referrerNode,
+      ns.lisa.hasSupportRequestDesc,
+      literalString(incident.referrer.supportDescription)
+    ]);
   }
-  referrerTriples.push(
-    [incidentIdNode, ns.lisa.hasReferrer, referrerNode]
-  );
+  referrerTriples.push([incidentIdNode, ns.lisa.hasReferrer, referrerNode]);
 
   await ia.insertData([
     [incidentIdNode, ns.rdf.type, ns.lisa(addIncidentSuffix(incident.type))],
@@ -69,7 +69,7 @@ export async function create(req: Request, res: Response) {
     [incidentStateNode, ns.rdf.type, ns.lisa(addStageSuffix(incident.stage))],
     [incidentStateNode, ns.ies.isStateOf, incidentIdNode],
     [ns.data(stateBoundingState), ns.ies.inPeriod, startDateNode],
-    [ns.data(stateBoundingState), ns.ies.isStartOf, incidentStateNode],
+    [ns.data(stateBoundingState), ns.ies.isStartOf, incidentStateNode]
   ]);
 
   res.json({ id: incident.id }).end();
@@ -92,7 +92,7 @@ export async function changeStage(req: Request, res: Response) {
       ['?lastBoundingStateId', ns.ies.isStartOf, '?lastStateNodeId'],
       ['?lastBoundingStateId', ns.ies.inPeriod, '?startDate'],
       `FILTER NOT EXISTS {${notExistsFilter}}`
-    ],
+    ]
   });
 
   if (results.length === 0) {
@@ -101,7 +101,9 @@ export async function changeStage(req: Request, res: Response) {
   }
 
   if (results.length !== 1) {
-    throw new ApplicationError(`Query for latest stage of incident ${incidentId} returned multiple rows: ${results}`);
+    throw new ApplicationError(
+      `Query for latest stage of incident ${incidentId} returned multiple rows: ${results}`
+    );
   }
 
   const row = results[0];
@@ -141,7 +143,7 @@ export async function changeStage(req: Request, res: Response) {
 
       [authorNode, ns.rdf.type, ns.ies.Creator],
       [authorNode, ns.ies.hasName, literalString(res.locals.user.username)],
-      [authorNode, ns.ies.isParticipantIn, entryIdNode],
+      [authorNode, ns.ies.isParticipantIn, entryIdNode]
     ],
     where: [
       `FILTER NOT EXISTS {${new TriplePattern('?x', ns.ies.isEndOf, ns.data(lastStateNodeId))}}`,
@@ -167,10 +169,12 @@ function getReferrer(row: ia.ResultRow, amendments?: Amendments): Referrer | und
     telephone: amendments?.['referrer.telephone'] || row.referrerTel?.value,
     email: amendments?.['referrer.email'] || row.referrerEmail?.value
   };
-  const supportRequested = amendments?.['referrer.supportRequested'] || row.referrerSupportRequested?.value;
+  const supportRequested =
+    amendments?.['referrer.supportRequested'] || row.referrerSupportRequested?.value;
   if (supportRequested === 'Yes') {
     referrer.supportRequested = 'Yes';
-    referrer.supportDescription = amendments?.['referrer.supportDescription'] || row.referrerSupportDesc?.value;
+    referrer.supportDescription =
+      amendments?.['referrer.supportDescription'] || row.referrerSupportDesc?.value;
   } else {
     referrer.supportRequested = 'No';
   }
@@ -188,58 +192,50 @@ export async function get(_: Request, res: Response) {
 
   const requests: Promise<ia.ResultRow[]>[] = [];
 
-  requests.push(ia.select({
-    clause: [
-      ['?id', ns.lisa.hasLogEntry, '?entryId'],
-      ['?entryId', ns.lisa.createdAt, '?createdAt'],
-      ['?entryId', ns.rdf.type, '?type'],
-      ['?entryId', ns.lisa.hasField, '?fieldId'],
-      ['?fieldId', ns.ies.hasName, '?fieldName'],
-      ['?fieldId', ns.ies.hasValue, '?fieldValue']
-    ],
-    orderBy: [
-      ['?createdAt', 'ASC']
-    ],
-    filters: [
-      `?type IN (<${ns.lisa('SetIncidentInformation').value}>)`
-    ]
-  }));
+  requests.push(
+    ia.select({
+      clause: [
+        ['?id', ns.lisa.hasLogEntry, '?entryId'],
+        ['?entryId', ns.lisa.createdAt, '?createdAt'],
+        ['?entryId', ns.rdf.type, '?type'],
+        ['?entryId', ns.lisa.hasField, '?fieldId'],
+        ['?fieldId', ns.ies.hasName, '?fieldName'],
+        ['?fieldId', ns.ies.hasValue, '?fieldValue'],
+        `VALUES (?type) { (<${ns.lisa('SetIncidentInformation').value}>) }`
+      ],
+      orderBy: [['?createdAt', 'ASC']]
+    })
+  );
 
-  requests.push(ia.select({
-    clause: [
-      ['?id', ns.rdf.type, '?type'],
-      ['?isStateOf', ns.ies.isStateOf, '?id'],
-      ['?isStateOf', ns.rdf.type, '?stage'],
-      ['?isStartOf', ns.ies.isStartOf, '?id'],
-      ['?isStartOf', ns.ies.inPeriod, '?startedAt'],
-      sparql.optional([
-        ['?id', ns.ies.hasName, '?name'],
-        ['?reportedBy', ns.ies.isParticipantIn, '?id'],
-        ['?reportedBy', ns.ies.hasName, '?reportedByName']
-      ]),
-      sparql.optional([
-        ['?id', ns.lisa.hasReferrer, '?referrer'],
-        ['?referrer', ns.ies.hasName, '?referrerName'],
-        ['?referrer', ns.lisa.hasOrg, '?referrerOrg'],
-        ['?referrer', ns.lisa.hasTel, '?referrerTel'],
-        ['?referrer', ns.lisa.hasEmail, '?referrerEmail'],
-        ['?referrer', ns.lisa.hasSupportRequest, '?referrerSupportRequested'],
+  requests.push(
+    ia.select({
+      clause: [
+        ['?id', ns.rdf.type, '?type'],
+        ['?isStateOf', ns.ies.isStateOf, '?id'],
+        ['?isStateOf', ns.rdf.type, '?stage'],
+        ['?isStartOf', ns.ies.isStartOf, '?id'],
+        ['?isStartOf', ns.ies.inPeriod, '?startedAt'],
         sparql.optional([
-          ['?referrer', ns.lisa.hasSupportRequestDesc, '?referrerSupportDesc']
+          ['?id', ns.ies.hasName, '?name'],
+          ['?reportedBy', ns.ies.isParticipantIn, '?id'],
+          ['?reportedBy', ns.ies.hasName, '?reportedByName']
         ]),
-      ]),
-      sparql.optional([
-        ['?id', ns.lisa.createdAt, '?createdAt']
-      ]),
-      `FILTER NOT EXISTS {${new TriplePattern('?x', ns.ies.isEndOf, '?isStateOf')}}`
-    ],
-    orderBy: [
-      ['?startedAt', 'DESC']
-    ],
-    filters: [[
-      `?type IN (${typeFilters.join(',')})`,
-    ]]
-  }));
+        sparql.optional([
+          ['?id', ns.lisa.hasReferrer, '?referrer'],
+          ['?referrer', ns.ies.hasName, '?referrerName'],
+          ['?referrer', ns.lisa.hasOrg, '?referrerOrg'],
+          ['?referrer', ns.lisa.hasTel, '?referrerTel'],
+          ['?referrer', ns.lisa.hasEmail, '?referrerEmail'],
+          ['?referrer', ns.lisa.hasSupportRequest, '?referrerSupportRequested'],
+          sparql.optional([['?referrer', ns.lisa.hasSupportRequestDesc, '?referrerSupportDesc']])
+        ]),
+        sparql.optional([['?id', ns.lisa.createdAt, '?createdAt']]),
+        `FILTER NOT EXISTS {${new TriplePattern('?x', ns.ies.isEndOf, '?isStateOf')}}`,
+        `VALUES (?type) { ${typeFilters.map((typeFilter) => `(${typeFilter})`).join('\n')} }`
+      ],
+      orderBy: [['?startedAt', 'DESC']]
+    })
+  );
 
   const [amendments, results] = await Promise.all(requests);
 
@@ -250,18 +246,21 @@ export async function get(_: Request, res: Response) {
     return { ...map, [incidentId]: amends };
   }, new Map<string, Amendments>());
 
-  const incidents = results.map((row) => ({
-    id: nodeValue(row.id.value),
-    type: removeIncidentSuffix(nodeValue(row.type.value)),
-    stage: removeStageSuffix(nodeValue(row.stage.value)),
-    startedAt: row.startedAt.value,
-    createdAt: row.createdAt?.value,
-    name: getName(row, amendmentsByIncident[nodeValue(row.id.value)]),
-    referrer: getReferrer(row, amendmentsByIncident[nodeValue(row.id.value)]),
-    reportedBy: {
-      username: row.reportedByName?.value || undefined
-    }
-  } satisfies Incident));
+  const incidents = results.map(
+    (row) =>
+      ({
+        id: nodeValue(row.id.value),
+        type: removeIncidentSuffix(nodeValue(row.type.value)),
+        stage: removeStageSuffix(nodeValue(row.stage.value)),
+        startedAt: row.startedAt.value,
+        createdAt: row.createdAt?.value,
+        name: getName(row, amendmentsByIncident[nodeValue(row.id.value)]),
+        referrer: getReferrer(row, amendmentsByIncident[nodeValue(row.id.value)]),
+        reportedBy: {
+          username: row.reportedByName?.value || undefined
+        }
+      }) satisfies Incident
+  );
 
   res.json(incidents);
 }
@@ -280,22 +279,25 @@ export async function getAttachments(req: Request, res: Response) {
       ['?attachmentId', ns.ies.hasKey, '?attachmentKey'],
       ['?attachmentId', ns.lisa.hasSize, '?attachmentSize'],
       ['?attachmentId', ns.lisa.hasMimeType, '?attachmentMimeType'],
-      ['?attachmentId', ns.lisa.hasAttachmentType, '?attachmentType'],
-    ],
+      ['?attachmentId', ns.lisa.hasAttachmentType, '?attachmentType']
+    ]
   });
 
-  const attachments = results.map((row) => ({
-    logEntryId: nodeValue(row.id.value),
-    author: {
-      username: row.authorName?.value
-    },
-    uploadedAt: row.createdAt.value,
-    name: row.attachmentName.value,
-    type: row.attachmentType.value as LogEntryAttachmentType,
-    key: row.attachmentKey.value,
-    mimeType: row.attachmentMimeType.value,
-    size: Number(row.attachmentSize.value)
-  } satisfies IncidentAttachment));
+  const attachments = results.map(
+    (row) =>
+      ({
+        logEntryId: nodeValue(row.id.value),
+        author: {
+          username: row.authorName?.value
+        },
+        uploadedAt: row.createdAt.value,
+        name: row.attachmentName.value,
+        type: row.attachmentType.value as LogEntryAttachmentType,
+        key: row.attachmentKey.value,
+        mimeType: row.attachmentMimeType.value,
+        size: Number(row.attachmentSize.value)
+      }) satisfies IncidentAttachment
+  );
 
   res.json(attachments);
 }
