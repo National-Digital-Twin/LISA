@@ -11,7 +11,7 @@ export const basePage = {
   },
 
   async navigateMenuByLink(menuName: string) {
-    await this.page.getByRole('link', { name: menuName }).click();
+    await this.page.locator(`//nav//a[@href and .="${menuName}"]`).click();
   },
 
   async navigateMenuByButton(menuName: string) {

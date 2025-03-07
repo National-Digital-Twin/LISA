@@ -1,5 +1,6 @@
 import { expect, Page } from '@playwright/test';
 import PlaywrightWrapper from '../helper/wrapper/PlaywrightWrappers';
+import { basePage } from '../hooks/basePage';
 
 export default class LoginPage {
   private readonly base: PlaywrightWrapper;
@@ -19,6 +20,7 @@ export default class LoginPage {
 
   async navigateToLoginPage(url: string) {
     await this.base.goto(url);
+    await basePage.customSleep(2000);
     await expect(this.page).toHaveTitle('Sign-in');
   }
 

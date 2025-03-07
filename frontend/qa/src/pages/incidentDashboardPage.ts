@@ -20,7 +20,8 @@ export default class IncidentDashboardPage {
     editIncidentReferredBy: '//input[@id="referrer.name"]',
     editIncidentOrganisation: '//input[@id="referrer.organisation"]',
     editIncidentTelephoneNo: '//input[@id="referrer.telephone"]',
-    editIncidentEmail: '//input[@id="referrer.email"]'
+    editIncidentEmail: '//input[@id="referrer.email"]',
+    chkCloseIncidents: '//input[@id="include-closed"]',
   };
 
   async verifyAddIncidentBtn() {
@@ -33,6 +34,15 @@ export default class IncidentDashboardPage {
     expect(await checkbox.isChecked()).toBeFalsy();
     await checkbox.check();
     expect(await checkbox.isChecked()).toBeTruthy();
+  }
+
+  async setChkboxIncludeClosedIncidents(shouldInclude: boolean) {
+    const chklocator = this.page.locator(this.Elements.chkCloseIncidents);
+    const isChecked = await chklocator.isChecked();
+
+    if (isChecked !== shouldInclude) {
+      await chklocator.click();
+    }
   }
 
   async verifyAllIncidenceDetailsAndCount() {
