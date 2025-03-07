@@ -207,6 +207,8 @@ export async function get(_: Request, res: Response) {
     })
   );
 
+  const valuesMappedtypeFilters = typeFilters.map((typeFilter) => `(${typeFilter})`);
+
   requests.push(
     ia.select({
       clause: [
@@ -231,7 +233,7 @@ export async function get(_: Request, res: Response) {
         ]),
         sparql.optional([['?id', ns.lisa.createdAt, '?createdAt']]),
         `FILTER NOT EXISTS {${new TriplePattern('?x', ns.ies.isEndOf, '?isStateOf')}}`,
-        `VALUES (?type) { ${typeFilters.map((typeFilter) => `(${typeFilter})`).join('\n')} }`
+        `VALUES (?type) { ${valuesMappedtypeFilters.join('\n')} }`
       ],
       orderBy: [['?startedAt', 'DESC']]
     })
