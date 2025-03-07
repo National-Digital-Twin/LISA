@@ -1,4 +1,6 @@
 import { MouseEvent, useEffect, useState } from 'react';
+import { Box, Divider, Typography } from '@mui/material';
+import Grid from '@mui/material/Grid2';
 
 import { type Field } from 'common/Field';
 import { type Incident } from 'common/Incident';
@@ -8,7 +10,7 @@ import { LogEntryTypes } from 'common/LogEntryTypes';
 import { Form } from '../../utils';
 import { MODAL_KEY } from '../../utils/constants';
 import { FieldValueType, ValidationError } from '../../utils/types';
-import { FormFields, FormFooter } from '../Form';
+import { FormField, FormFooter } from '../Form';
 import Modal from '../Modal';
 import { getDirtyEntry, getInitialEntry, validate } from './utils';
 
@@ -60,40 +62,53 @@ export default function SetInformation({ incident, onSetInformation, onCancel }:
 
   return (
     <Modal modal={modal} onClose={onCancel}>
-      <div className="rollup-container">
-        <h2 className="rollup-header">
+      <Box display="flex" flexDirection="column" gap={2}>
+        <Typography variant="h2" fontSize="1.6rem">
           Set Incident Information
-        </h2>
-        <form id="rollup-log-book-entry">
-          <div className={`section log-form ${showValidationErrors ? 'validation-errors' : ''}`}>
-            <ul>
-              <FormFields
-                entry={entry}
-                fields={[nameField]}
-                groups={[]}
-                onFieldChange={onFieldChange}
-                validationErrors={validationErrors}
+        </Typography>
+        <Box
+          component="form"
+          display="flex"
+          flexDirection="column"
+          gap={2}
+          id="rollup-log-book-entry"
+        >
+          <Grid component="ul" container spacing={4} bgcolor="background.default" padding={3}>
+            <Grid component="li" size={{ xs: 12, md: 6 }}>
+              <FormField
+                onChange={onFieldChange}
+                key={nameField.id}
+                field={{ ...nameField, value: Form.getFieldValue(nameField, entry) }}
+                error={
+                  showValidationErrors ? Form.getError(nameField, validationErrors) : undefined
+                }
               />
-            </ul>
-            <h3>Referral information</h3>
-            <ul>
-              <FormFields
-                entry={entry}
-                fields={referrerFields}
-                groups={[]}
-                onFieldChange={onFieldChange}
-                validationErrors={validationErrors}
-              />
-            </ul>
-            <FormFooter
-              validationErrors={validationErrors}
-              onCancel={onCancel}
-              onSubmit={onSubmit}
-              onShowValidationErrors={setShowValidationErrors}
-            />
-          </div>
-        </form>
-      </div>
+            </Grid>
+            <Grid component="li" size={12}>
+              <Typography variant="h3" fontSize="1rem" fontWeight="bold">
+                Referral information
+              </Typography>
+              <Divider sx={{ marginY: '1rem' }} />
+            </Grid>
+            {referrerFields.map((field) => (
+              <Grid component="li" key={field.id} size={{ xs: 12, md: 6 }}>
+                <FormField
+                  onChange={onFieldChange}
+                  key={field.id}
+                  field={{ ...field, value: Form.getFieldValue(field, entry) }}
+                  error={showValidationErrors ? Form.getError(field, validationErrors) : undefined}
+                />
+              </Grid>
+            ))}
+          </Grid>
+          <FormFooter
+            validationErrors={validationErrors}
+            onCancel={onCancel}
+            onSubmit={onSubmit}
+            onShowValidationErrors={setShowValidationErrors}
+          />
+        </Box>
+      </Box>
     </Modal>
   );
 }
