@@ -11,7 +11,7 @@ It's nginx, in a Docker container. The config is brought in from files in this d
 Building it, as an example:
 
 ```bash
-docker build --tag lisa-transparent-proxy:latest .
+docker build --tag lisa/transparent-proxy:latest .
 ```
 
 When run, various access keys need to be passed in as environment variables. Currently this is:
@@ -21,5 +21,5 @@ When run, various access keys need to be passed in as environment variables. Cur
 It can be run for example as:
 
 ```bash
-docker run -ti -p 5013:80 --env OS_RASTER_API_KEY=... lisa-transparent-proxy:latest
+docker run -ti -p 5013:80 --env OS_RASTER_API_KEY=... lisa/transparent-proxy:latest
 ```
