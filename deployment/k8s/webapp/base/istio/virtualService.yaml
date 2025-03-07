@@ -8,6 +8,22 @@ spec:
   gateways:
     - placeholder
   http:
+    # Rule for paths starting with /api to add no-cache headers
+    - match:
+        - uri:
+            prefix: /api
+      headers:
+        response:
+          add:
+            Cache-Control: "no-cache, no-store, must-revalidate"
+            Pragma: "no-cache"
+            Expires: "0"
+      route:
+        - destination:
+            host: lisa
+            port:
+              number: 80
+
     # Rule for root ("/") to prevent caching and add CSP header
     - match:
         - uri:
