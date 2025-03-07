@@ -4,7 +4,9 @@ import { basePage } from '../../hooks/basePage';
 import IncidentDashboardPage from '../../pages/incidentDashboardPage';
 import { RandomDataGenerator } from '../../helper/util/RandomDataGenerator';
 import EditIncidentLogPage from '../../pages/editIncidentLogPage';
+import LandingPage from '../../pages/landingPage';
 
+let landingPage: LandingPage;
 let dashboardPage: IncidentDashboardPage;
 let incidentEditLogPage : EditIncidentLogPage;
 
@@ -14,6 +16,8 @@ Given(
   'I select the Incident with name contains {string} and Status as {string}',
   async (incidentName, incidentStatus) => {
     dashboardPage = new IncidentDashboardPage(basePage.page);
+    await basePage.customSleep(5000);
+
     await dashboardPage.selectIncidentByNameStatus(incidentName, incidentStatus);
 
     await basePage.customSleep(3000);
@@ -127,4 +131,43 @@ Then('I should be able to verify a new log entry is created for the {string} cat
   console.warn(`Verify a new entry is included for the log entry :${logType}`);
   incidentEditLogPage = new EditIncidentLogPage(basePage.page);
   await incidentEditLogPage.verifyLogStatusByCount(parseInt(process.env.getLogEntriesCount, 10));
+});
+
+When('I update the Incident stage', async (dataTable) => {
+  const data = dataTable.rows()[0];
+
+  incidentEditLogPage = new EditIncidentLogPage(basePage.page);
+  await incidentEditLogPage.updateDropDownById(await data[0]);
+
+  await incidentEditLogPage.btnAddLogSave();
+});
+
+Then('I should be able to verify the stage details as {string}', async (newStage: string) => {
+  await basePage.customSleep(1000);
+
+  incidentEditLogPage = new EditIncidentLogPage(basePage.page);
+  await basePage.navigateMenuByLink('LOG');
+
+  await basePage.customSleep(5000);
+  await incidentEditLogPage.verifyUpdatedStage(newStage);
+});
+
+Then('I reset the stage back for the incident name {string} from {string} to {string}', async (incidentName: string, newStage: string, initalStage: string) => {
+  landingPage = new LandingPage(basePage.page);
+  await landingPage.verifyLisaAppPage();
+
+  dashboardPage = new IncidentDashboardPage(basePage.page);
+  await basePage.customSleep(5000);
+  await dashboardPage.selectIncidentByNameStatus(incidentName, newStage);
+
+  await basePage.navigateMenuByLink('OVERVIEW');
+  await basePage.customSleep(500);
+
+  await basePage.navigateMenuByButton('Change stage');
+  await basePage.customSleep(500);
+
+  incidentEditLogPage = new EditIncidentLogPage(basePage.page);
+  await incidentEditLogPage.updateDropDownById(initalStage);
+
+  await incidentEditLogPage.btnAddLogSave();
 });
