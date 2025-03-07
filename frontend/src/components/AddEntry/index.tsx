@@ -1,5 +1,3 @@
-/* eslint-disable function-paren-newline */
-/* eslint-disable implicit-arrow-linebreak */
 // Global imports
 import { type Stage } from 'konva/lib/Stage';
 import { MouseEvent, useEffect, useMemo, useRef, useState } from 'react';
