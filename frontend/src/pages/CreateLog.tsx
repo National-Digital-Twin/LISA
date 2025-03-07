@@ -11,6 +11,7 @@ import { useCreateIncident } from '../hooks/useIncidents';
 import { Form, Incident as IncidentUtil, Validate } from '../utils';
 import { type FieldValueType, type ValidationError } from '../utils/types';
 import { PageTitle } from '../components';
+import PageWrapper from '../components/PageWrapper';
 
 const CreateLog = () => {
   const [incident, setIncident] = useState<Partial<Incident>>({
@@ -41,15 +42,17 @@ const CreateLog = () => {
   }, [incident]);
 
   return (
-    <div className="container">
+    <PageWrapper>
       <PageTitle title="New Incident Log" />
-      <Box display="flex" flexDirection="column" gap={4}>
+      <Box component="form" display="flex" flexDirection="column" gap={2}>
         {IncidentUtil.Sections.map((section) => (
-          <Box key={section.id}>
-            <Typography variant="h2">{section.title}</Typography>
-            <Grid container spacing={4} bgcolor="background.default" padding={3}>
+          <Box display="flex" flexDirection="column" gap={2} key={section.id}>
+            <Typography variant="h2" fontSize="1.6rem">
+              {section.title}
+            </Typography>
+            <Grid component="ul" container spacing={4} bgcolor="background.default" padding={3}>
               {section.fields(incident).map((field) => (
-                <Grid key={field.id} size={{ xs: 12, md: 6 }}>
+                <Grid component="li" key={field.id} size={{ xs: 12, md: 6 }}>
                   <FormField
                     key={field.id}
                     field={{ ...field, value: incident[field.id as keyof Incident] as string }}
@@ -72,7 +75,7 @@ const CreateLog = () => {
           onShowValidationErrors={setShowValidationErrors}
         />
       </Box>
-    </div>
+    </PageWrapper>
   );
 };
 
