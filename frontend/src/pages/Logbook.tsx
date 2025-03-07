@@ -6,7 +6,13 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { type LogEntry } from 'common/LogEntry';
 import { type Mentionable, type MentionableType } from 'common/Mentionable';
 import { AddEntry, EntryList, Filter, PageTitle, Search } from '../components';
-import { useAuth, useCreateLogEntry, useIncidents, useLogEntries, useLogEntriesUpdates } from '../hooks';
+import {
+  useAuth,
+  useCreateLogEntry,
+  useIncidents,
+  useLogEntries,
+  useLogEntriesUpdates
+} from '../hooks';
 import { Format, Icons, Search as SearchUtil } from '../utils';
 import { type OnCreateEntry } from '../utils/handlers';
 import { type FieldValueType, type FilterType, type SpanType } from '../utils/types';
@@ -17,10 +23,25 @@ const Logbook = () => {
   const { logEntries } = useLogEntries(incidentId);
   const createLogEntry = useCreateLogEntry(incidentId);
   const { user } = useAuth();
+  const [incidentEntryId, setIncidentEntryId] = useState<string | undefined>();
+  const [loading, setLoading] = useState(false);
   const [adding, setAdding] = useState<boolean>();
   const [sortAsc, setSortAsc] = useState<boolean>(false);
   const [appliedFilters, setAppliedFilters] = useState<FilterType>({ author: [], category: [] });
   const [searchText, setSearchText] = useState<string>('');
+
+  useEffect(() => {
+    if (incidentEntryId) {
+      if (logEntries?.find(({ id }) => id === incidentEntryId)) {
+        setTimeout(() => {
+          setLoading(false);
+          setAdding(false);
+          setIncidentEntryId(undefined);
+          document.documentElement.scrollTo(0, 0);
+        }, 1000);
+      }
+    }
+  }, [incidentEntryId, logEntries]);
 
   useEffect(() => {
     const preventRefresh = (ev: BeforeUnloadEvent) => {
@@ -48,10 +69,7 @@ const Logbook = () => {
     () => Format.incident.authors(user.current, logEntries),
     [logEntries, user]
   );
-  const filterCategories = useMemo(
-    () => Format.incident.categories(logEntries),
-    [logEntries]
-  );
+  const filterCategories = useMemo(() => Format.incident.categories(logEntries), [logEntries]);
   if (!incident) {
     return null;
   }
@@ -72,8 +90,17 @@ const Logbook = () => {
   };
 
   const onAddEntry: OnCreateEntry = (_entry, files) => {
-    createLogEntry.mutate({ newLogEntry: _entry, selectedFiles: files });
-    onCancel();
+    setLoading(true);
+    createLogEntry.mutate(
+      { newLogEntry: _entry, selectedFiles: files },
+      {
+        onSuccess: (data) => setIncidentEntryId(data.id),
+        onError: () => {
+          setLoading(false);
+          onCancel();
+        }
+      }
+    );
     return undefined;
   };
 
@@ -88,7 +115,10 @@ const Logbook = () => {
       const parentEntry = logEntries?.find((ent) => ent.id === entryId);
       const attachment = parentEntry?.attachments?.find((att) => att.name === fileName);
       if (attachment) {
-        window.open(`api/files/${attachment.key}/${attachment.name}?mimeType=${attachment.mimeType}`, attachment.key);
+        window.open(
+          `api/files/${attachment.key}/${attachment.name}?mimeType=${attachment.mimeType}`,
+          attachment.key
+        );
       }
     } else {
       navigate(`#${mention.id}`);
@@ -135,6 +165,7 @@ const Logbook = () => {
             entries={logEntries ?? []}
             onCreateEntry={onAddEntry}
             onCancel={onCancel}
+            loading={loading}
           />
         )}
 
@@ -147,7 +178,14 @@ const Logbook = () => {
                   {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
                   <Link className="highlight-blue" onClick={onSort} to="">
                     {sortAsc ? 'bottom' : 'top'}
-                    <Icons.Sort style={{ position: 'relative', width: '9px', marginLeft: '10px', height: 'auto' }} />
+                    <Icons.Sort
+                      style={{
+                        position: 'relative',
+                        width: '9px',
+                        marginLeft: '10px',
+                        height: 'auto'
+                      }}
+                    />
                   </Link>
                 </div>
                 <hr />
