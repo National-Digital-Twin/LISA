@@ -12,10 +12,3 @@ labels:
       app: lisa-transparent-proxy
       env: ENV_PLACEHOLDER
       app.kubernetes.io/name: lisa-transparent-proxy
-
-
-
-
-
-
-
