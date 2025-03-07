@@ -27,10 +27,17 @@ export const useCreateIncident = () => {
   const createIncident = useMutation<
     Incident,
     Error,
-    Omit<Incident, 'id' | 'reportedBy'>
+    Omit<Incident, 'id' | 'reportedBy'>,
+    { newIncident: Incident }
   >({
     mutationFn: (incident) => post('/incident', incident),
-    onSuccess: () => {
+    onSuccess: (data, _variables, context) => {
+      queryClient.setQueryData<Incident[]>(['incidents'], (previousIncidents) =>
+        previousIncidents!.map((previousIncident) =>
+          previousIncident.id === context?.newIncident.id ? data : previousIncident
+        )
+      );
+
       queryClient.invalidateQueries({
         queryKey: ['incidents']
       });
@@ -52,7 +59,7 @@ export const useCreateIncident = () => {
           ]
         );
       }
-      return { previousIncidents };
+      return { newIncident };
     }
   });
 
@@ -61,11 +68,7 @@ export const useCreateIncident = () => {
 
 export const useChangeIncidentStage = () => {
   const queryClient = useQueryClient();
-  const createIncident = useMutation<
-    Incident,
-    Error,
-    Incident
-  >({
+  const createIncident = useMutation<Incident, Error, Incident>({
     mutationFn: (incident) => post(`/incident/${incident.id}/stage`, incident),
     onSuccess: () => {
       queryClient.invalidateQueries({
@@ -79,10 +82,9 @@ export const useChangeIncidentStage = () => {
       if (previousIncidents) {
         queryClient.setQueryData<Incident[]>(
           ['incidents'],
-          [
-            ...previousIncidents.filter((p) => p.id !== updatedIncident.id),
-            updatedIncident
-          ].sort((a, b) => b.startedAt.localeCompare(a.startedAt))
+          [...previousIncidents.filter((p) => p.id !== updatedIncident.id), updatedIncident].sort(
+            (a, b) => b.startedAt.localeCompare(a.startedAt)
+          )
         );
       }
       return { previousIncidents };

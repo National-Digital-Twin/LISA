@@ -76,7 +76,6 @@ const Home = () => {
             label="Include closed incidents"
             htmlFor="include-closed"
             control={
-              // eslint-disable-next-line react/jsx-wrap-multilines
               <Checkbox
                 disableRipple
                 disableFocusRipple
