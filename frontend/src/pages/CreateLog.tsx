@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 
 // Local imports
 import { type Referrer, type Incident } from 'common/Incident';
-import { Box, Typography } from '@mui/material';
+import { Box, Typography, useMediaQuery } from '@mui/material';
 import Grid from '@mui/material/Grid2';
 import { FormField, FormFooter } from '../components/Form';
 import { useCreateIncident, useIncidents } from '../hooks/useIncidents';
@@ -12,6 +12,7 @@ import { Form, Incident as IncidentUtil, Validate } from '../utils';
 import { type FieldValueType, type ValidationError } from '../utils/types';
 import { PageTitle } from '../components';
 import PageWrapper from '../components/PageWrapper';
+import theme from '../theme';
 
 const CreateLog = () => {
   const { incidents } = useIncidents();
@@ -56,6 +57,8 @@ const CreateLog = () => {
     setValidationErrors(Validate.incident(incident));
   }, [incident]);
 
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
   return (
     <PageWrapper>
       <PageTitle title="New Incident Log" />
@@ -86,7 +89,7 @@ const CreateLog = () => {
           validationErrors={validationErrors}
           onCancel={onCancel}
           onSubmit={onSubmit}
-          submitLabel="Create"
+          submitLabel={isMobile ? 'Create' : 'Create Incident Log'}
           onShowValidationErrors={setShowValidationErrors}
           loading={loading}
         />
