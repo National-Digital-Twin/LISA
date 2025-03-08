@@ -9,8 +9,8 @@ import { FetchError, get, post } from '../api';
 
 export const useIncidents = () => {
   const queryClient = useQueryClient();
-  const invalidateIncidents = useCallback(() => {
-    queryClient.invalidateQueries({
+  const invalidateIncidents = useCallback(async () => {
+    await queryClient.invalidateQueries({
       queryKey: ['incidents']
     });
   }, [queryClient]);
@@ -24,24 +24,9 @@ export const useIncidents = () => {
 
 export const useCreateIncident = () => {
   const queryClient = useQueryClient();
-  const createIncident = useMutation<
-    Incident,
-    Error,
-    Omit<Incident, 'id' | 'reportedBy'>,
-    { newIncident: Incident }
-  >({
+  const createIncident = useMutation<Incident, Error, Omit<Incident, 'id' | 'reportedBy'>>({
     mutationFn: (incident) => post('/incident', incident),
-    onSuccess: (data, _variables, context) => {
-      queryClient.setQueryData<Incident[]>(['incidents'], (previousIncidents) =>
-        previousIncidents!.map((previousIncident) =>
-          previousIncident.id === context?.newIncident.id ? data : previousIncident
-        )
-      );
-
-      queryClient.invalidateQueries({
-        queryKey: ['incidents']
-      });
-    },
+    onSuccess: async () => queryClient.invalidateQueries({ queryKey: ['incidents'] }),
     // optimistic update
     onMutate: async (newIncident) => {
       await queryClient.cancelQueries({ queryKey: ['incidents'] });
@@ -59,7 +44,7 @@ export const useCreateIncident = () => {
           ]
         );
       }
-      return { newIncident };
+      return { previousIncidents };
     }
   });
 
@@ -70,11 +55,10 @@ export const useChangeIncidentStage = () => {
   const queryClient = useQueryClient();
   const createIncident = useMutation<Incident, Error, Incident>({
     mutationFn: (incident) => post(`/incident/${incident.id}/stage`, incident),
-    onSuccess: () => {
+    onSuccess: async () =>
       queryClient.invalidateQueries({
         queryKey: ['incidents']
-      });
-    },
+      }),
     // optimistic update
     onMutate: async (updatedIncident) => {
       await queryClient.cancelQueries({ queryKey: ['incidents'] });

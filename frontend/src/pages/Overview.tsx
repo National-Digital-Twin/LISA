@@ -67,8 +67,8 @@ const Overview = () => {
     createLogEntry.mutate(
       { newLogEntry: logEntry as LogEntry },
       {
-        onSuccess: () => {
-          invalidateIncidents();
+        onSuccess: async () => {
+          await invalidateIncidents();
         }
       }
     );

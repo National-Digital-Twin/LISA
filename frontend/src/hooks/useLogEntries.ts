@@ -24,8 +24,7 @@ export const useCreateLogEntry = (incidentId?: string) => {
     {
       newLogEntry: Omit<LogEntry, 'id' | 'author'>;
       selectedFiles?: File[];
-    },
-    { newLogEntry: LogEntry }
+    }
   >({
     mutationFn: async ({ newLogEntry, selectedFiles }) => {
       let data: FormData | Omit<LogEntry, 'id' | 'author'> = newLogEntry;
@@ -36,17 +35,8 @@ export const useCreateLogEntry = (incidentId?: string) => {
       }
       return post(`/incident/${incidentId}/logEntry`, data);
     },
-    onSuccess: async (data, _variables, context) => {
-      queryClient.setQueryData<LogEntry[]>(
-        [`incident/${incidentId}/logEntries`],
-        (previousLogEntries) =>
-          previousLogEntries!.map((previousLogEntry) =>
-            previousLogEntry.id === context?.newLogEntry.id ? data : previousLogEntry
-          )
-      );
-
-      await queryClient.invalidateQueries({ queryKey: [`incident/${incidentId}/logEntries`] });
-    },
+    onSuccess: async () =>
+      queryClient.invalidateQueries({ queryKey: [`incident/${incidentId}/logEntries`] }),
     // optimistic update
     onMutate: async ({ newLogEntry }) => {
       await queryClient.cancelQueries({ queryKey: [`incident/${incidentId}/logEntries`] });
@@ -68,7 +58,7 @@ export const useCreateLogEntry = (incidentId?: string) => {
           ]
         );
       }
-      return { newLogEntry };
+      return { previousEntries };
     }
   });
 };

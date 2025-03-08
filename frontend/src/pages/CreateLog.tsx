@@ -14,7 +14,7 @@ import { PageTitle } from '../components';
 import PageWrapper from '../components/PageWrapper';
 
 const CreateLog = () => {
-  const { incidents } = useIncidents();
+  const { incidents, invalidateIncidents } = useIncidents();
   const [incidentId, setIncidentId] = useState<string | undefined>();
   const [loading, setLoading] = useState(false);
   const [incident, setIncident] = useState<Partial<Incident>>({
@@ -43,7 +43,10 @@ const CreateLog = () => {
   const onSubmit = () => {
     setLoading(true);
     createIncident.mutate(incident as Incident, {
-      onSuccess: (data) => setIncidentId(data.id),
+      onSuccess: (data) => {
+        setIncidentId(data.id);
+        invalidateIncidents();
+      },
       onError: () => setLoading(false)
     });
   };
