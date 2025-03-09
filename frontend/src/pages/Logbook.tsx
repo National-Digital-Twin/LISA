@@ -32,14 +32,12 @@ const Logbook = () => {
 
   useEffect(() => {
     if (incidentEntryId) {
-      if (logEntries?.find(({ id }) => id === incidentEntryId)) {
-        setTimeout(() => {
-          setLoading(false);
-          setAdding(false);
-          setIncidentEntryId(undefined);
-          document.documentElement.scrollTo(0, 0);
-        }, 1000);
-      }
+      setTimeout(() => {
+        setLoading(false);
+        setAdding(false);
+        setIncidentEntryId(undefined);
+        document.documentElement.scrollTo(0, 0);
+      }, 500);
     }
   }, [incidentEntryId, logEntries]);
 
