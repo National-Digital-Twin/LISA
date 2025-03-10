@@ -14,7 +14,7 @@ import { PageTitle } from '../components';
 import PageWrapper from '../components/PageWrapper';
 
 const CreateLog = () => {
-  const { incidents } = useIncidents();
+  const { incidents, invalidateIncidents } = useIncidents();
   const [incidentId, setIncidentId] = useState<string | undefined>();
   const [loading, setLoading] = useState(false);
   const [incident, setIncident] = useState<Partial<Incident>>({
@@ -31,20 +31,24 @@ const CreateLog = () => {
   const onCancel = () => navigate(-1);
   useEffect(() => {
     if (incidentId) {
-      if (incidents?.find(({ id }) => id === incidentId)) {
-        setTimeout(() => {
-          setLoading(false);
-          navigate(`/logbook/${incidentId}`);
-        }, 1000);
-      }
+      setTimeout(() => {
+        setLoading(false);
+        navigate(`/logbook/${incidentId}`);
+      }, 500);
     }
   }, [incidentId, incidents]);
 
   const onSubmit = () => {
     setLoading(true);
     createIncident.mutate(incident as Incident, {
-      onSuccess: (data) => setIncidentId(data.id),
-      onError: () => setLoading(false)
+      onSuccess: async (data) => {
+        await invalidateIncidents();
+        setIncidentId(data.id);
+      },
+      onError: () => {
+        setLoading(false);
+        onCancel();
+      }
     });
   };
 
