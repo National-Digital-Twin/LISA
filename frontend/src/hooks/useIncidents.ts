@@ -55,10 +55,6 @@ export const useChangeIncidentStage = () => {
   const queryClient = useQueryClient();
   const createIncident = useMutation<Incident, Error, Incident>({
     mutationFn: (incident) => post(`/incident/${incident.id}/stage`, incident),
-    onSuccess: async () =>
-      queryClient.invalidateQueries({
-        queryKey: ['incidents']
-      }),
     // optimistic update
     onMutate: async (updatedIncident) => {
       await queryClient.cancelQueries({ queryKey: ['incidents'] });
