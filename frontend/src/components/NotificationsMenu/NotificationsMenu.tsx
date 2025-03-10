@@ -22,7 +22,7 @@ export default function NotificationsMenu() {
 
   useEffect(() => {
     if (!hasNewNotifications) {
-      return;
+      // return;
     }
     invalidate();
   }, [hasNewNotifications, invalidate]);
@@ -44,7 +44,7 @@ export default function NotificationsMenu() {
   return (
     <div ref={containerRef} className={classes()}>
       {!expanded && (
-        <IconButton type="button" onClick={onMenuBtnClick}>
+        <IconButton type="button" onClick={onMenuBtnClick} disableFocusRipple disableRipple>
           <Badge badgeContent={unreadCount} color="error" overlap="circular" max={99}>
             <NotificationsIcon sx={{ color: 'text.primary' }} />
           </Badge>
@@ -54,13 +54,9 @@ export default function NotificationsMenu() {
         <div className={classes('menu')}>
           <div className={classes('menu-title')}>
             <span>Notifications</span>
-            <button
-              type="button"
-              className={classes('menu-close')}
-              onClick={() => setExpanded(false)}
-            >
+            <IconButton  className={classes('menu-close')} onClick={() => setExpanded(false)}>
               <Icons.Close />
-            </button>
+            </IconButton>
           </div>
           <div className={classes('menu-list')}>
             {notifications?.length === 0 && (
