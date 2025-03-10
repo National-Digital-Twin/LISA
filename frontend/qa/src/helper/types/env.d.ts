@@ -9,6 +9,7 @@ declare global {
       LISAURL: string;
       HEAD: 'true' | 'false';
       USERNAME: string;
+      OS_MAPS_KEY: string;
     }
   }
 }

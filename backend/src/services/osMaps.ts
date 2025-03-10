@@ -1,8 +1,5 @@
 import { Request, Response } from 'express';
 
-import { getParameter } from '../ssm';
-
-const key = await getParameter('/lisa/os-maps-key');
 interface Query {
   point?: string;
   searchTerm?: string;
@@ -10,6 +7,8 @@ interface Query {
 export async function searchLocation(req: Request<object, object, object, Query>, res: Response) {
   const type = req.query.point ? 'nearest' : 'find';
   const url = new URL(`https://api.os.uk/search/places/v1/${type}`);
+  const key = process.env.os_maps_key;
+
   if (type === 'nearest') {
     url.searchParams.set('point', req.query.point);
     url.searchParams.set('srs', 'WGS84');
