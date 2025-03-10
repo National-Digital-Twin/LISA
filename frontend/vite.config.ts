@@ -1,8 +1,11 @@
 import path from 'path';
 import react from '@vitejs/plugin-react';
+import basicSSL from '@vitejs/plugin-basic-ssl';
 import { defineConfig, loadEnv } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
 import svgr from 'vite-plugin-svgr';
+
+const sslEnabled = process.env.SSL_ENABLED === 'true';
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
@@ -12,6 +15,7 @@ export default defineConfig(({ mode }) => {
     plugins: [
       svgr(),
       react(),
+      ...(sslEnabled ? [basicSSL()] : []),
       VitePWA({
         registerType: 'autoUpdate',
         devOptions: {
@@ -70,7 +74,21 @@ export default defineConfig(({ mode }) => {
           process.cwd(),
           '../node_modules/@national-digital-twin/ndtp-styling-assets/dist/scss'
         ),
+        ndtp: path.resolve(__dirname, '../node_modules/@national-digital-twin/ndtp-styling-assets/dist/scss/main.scss'),
         common: path.resolve(__dirname, '../common')
+      }
+    },
+    css: {
+      preprocessorOptions: {
+        scss: {
+          api: 'modern-compiler',
+          includePaths: [
+            path.resolve(
+              __dirname,
+              '../node_modules/@national-digital-twin/ndtp-styling-assets/dist/scss'
+            )
+          ]
+        }
       }
     }
   };

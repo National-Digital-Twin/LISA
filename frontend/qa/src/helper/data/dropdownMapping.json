@@ -1,0 +1,22 @@
+{
+    "type": {
+      "General": "TypeId1",
+      "SitRep": "TypeId2"
+    },
+    "MajorIncident": {
+      "Yes,MajorIncident": "MajorIncidentId1",
+      "No,MajorIncident": "MajorIncidentId2"
+    },
+    "location.type":{
+      "Description only":"LocationTab1",
+      "Point on a map":"LocationTab1",
+      "Both a point on a map and a description":"LocationTab1"
+    },
+    "stage":{
+      "Monitoring":"stage1",
+      "Response":"stage2",
+      "Recovery":"stage3",
+      "Closed":"stage4"
+    }
+  }
+  

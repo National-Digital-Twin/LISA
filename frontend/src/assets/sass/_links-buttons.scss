@@ -1,13 +1,13 @@
 // '_LINKS/BUTTONS.SCSS' - IMPORTED INTO APP.SCSS
 
-@import 'colors';
+@use 'colors';
 
 a:link,
 a:visited,
 a:active,
 a:hover {
   text-decoration: none;
-  color: $blue;
+  color: colors.$blue;
   font-family: lato-bold, serif;
   border-bottom: 1px solid transparent;
 }

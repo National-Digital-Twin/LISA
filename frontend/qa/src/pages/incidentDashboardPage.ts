@@ -15,12 +15,13 @@ export default class IncidentDashboardPage {
     incidentH1: '.title',
     closedIncident: '.subtitle',
     selectIncidentByNameStatus:
-      "//a[contains(@class, 'incident')][.//span[normalize-space(.) = '$INCIDENTNAME$'] and .//span[contains(@class, 'incident-stage') and contains(text(), '$INCIDENTSTATUS$')]]",
+      "//tr[td[contains(text(),'$DATAINCIDENTID$')] and td[5]//span[contains(text(),'$DATASTATUS$')]]//a[@data-discover='true' and contains(text(),'$DATAINCIDENTNAME$')]",
 
     editIncidentReferredBy: '//input[@id="referrer.name"]',
     editIncidentOrganisation: '//input[@id="referrer.organisation"]',
     editIncidentTelephoneNo: '//input[@id="referrer.telephone"]',
-    editIncidentEmail: '//input[@id="referrer.email"]'
+    editIncidentEmail: '//input[@id="referrer.email"]',
+    chkCloseIncidents: '//input[@id="include-closed"]',
   };
 
   async verifyAddIncidentBtn() {
@@ -33,6 +34,15 @@ export default class IncidentDashboardPage {
     expect(await checkbox.isChecked()).toBeFalsy();
     await checkbox.check();
     expect(await checkbox.isChecked()).toBeTruthy();
+  }
+
+  async setChkboxIncludeClosedIncidents(shouldInclude: boolean) {
+    const chklocator = this.page.locator(this.Elements.chkCloseIncidents);
+    const isChecked = await chklocator.isChecked();
+
+    if (isChecked !== shouldInclude) {
+      await chklocator.click();
+    }
   }
 
   async verifyAllIncidenceDetailsAndCount() {
@@ -77,6 +87,13 @@ export default class IncidentDashboardPage {
 
   async selectIncidentByNameStatus(incidentName: string, incidentStatus: string) {
     await this.page.getByRole('link', { name: `${incidentName} ${incidentStatus}` }).click();
+  }
+
+  async selectIncidentByData(incidentId: string, incidentName: string, incidentStatus: string) {
+    await this.page.locator(this.Elements.selectIncidentByNameStatus
+      .replace('$DATAINCIDENTID$', incidentId)
+      .replace('$DATASTATUS$', incidentStatus)
+      .replace('$DATAINCIDENTNAME$', incidentName)).click();
   }
 
   async editIncidentByField(fieldName, inputText: string) {

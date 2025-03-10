@@ -30,17 +30,19 @@ import { useAttachments } from '../../hooks/useAttachments';
 import { getSortedEntriesWithDisplaySequence } from '../../utils/sortEntries';
 
 type AddEntryProps = {
-  incident?: Incident,
-  entries: Array<LogEntry>,
-  onCreateEntry: OnCreateEntry,
-  onCancel: () => void
+  incident?: Incident;
+  entries: Array<LogEntry>;
+  onCreateEntry: OnCreateEntry;
+  onCancel: () => void;
+  loading?: boolean;
 };
 
 const AddEntry = ({
   incident = undefined,
   entries,
   onCreateEntry,
-  onCancel
+  onCancel,
+  loading = false
 }: AddEntryProps) => {
   const { hash } = useLocation();
   const { users } = useUsers();
@@ -70,13 +72,20 @@ const AddEntry = ({
     return incidentAttachments.map(Format.mentionable.attachment);
   }, [incidentAttachments]);
 
-  const mentionables: Array<Mentionable> = useMemo(() => ([
-    ...(getSortedEntriesWithDisplaySequence(false, entries)?.map((e) => Format.mentionable.entry(e)) ?? []),
-    ...(users?.map(Format.mentionable.user) ?? []),
-    ...(selectedFiles.map((file) => Format.mentionable.attachment({ name: file.name, type: 'File' }))),
-    ...(recordings.map((file) => Format.mentionable.attachment({ name: file.name, type: 'File' }))),
-    ...otherAttachments,
-  ]), [entries, users, selectedFiles, recordings, otherAttachments]);
+  const mentionables: Array<Mentionable> = useMemo(
+    () => [
+      ...(getSortedEntriesWithDisplaySequence(false, entries)?.map((e) =>
+        Format.mentionable.entry(e)
+      ) ?? []),
+      ...(users?.map(Format.mentionable.user) ?? []),
+      ...selectedFiles.map((file) =>
+        Format.mentionable.attachment({ name: file.name, type: 'File' })
+      ),
+      ...recordings.map((file) => Format.mentionable.attachment({ name: file.name, type: 'File' })),
+      ...otherAttachments
+    ],
+    [entries, users, selectedFiles, recordings, otherAttachments]
+  );
 
   if (!incident) {
     return null;
@@ -109,10 +118,11 @@ const AddEntry = ({
     }
     const attachments = [...fileAttachments, ...recordingAttachments, ...sketchAttachments];
     entry.attachments = attachments.length > 0 ? attachments : undefined;
-    onCreateEntry(
-      { ...entry, dateTime } as LogEntry,
-      [...selectedFiles, ...recordings, ...sketches]
-    );
+    onCreateEntry({ ...entry, dateTime } as LogEntry, [
+      ...selectedFiles,
+      ...recordings,
+      ...sketches
+    ]);
   };
 
   const onFieldChange = (id: string, value: FieldValueType, nested = false) => {
@@ -132,7 +142,10 @@ const AddEntry = ({
     });
   };
 
-  const getUniqueFiles = (newFiles: File[], existingFiles: File[]): File[] => newFiles.filter((file) => !existingFiles.some((existingFile) => existingFile.name === file.name));
+  const getUniqueFiles = (newFiles: File[], existingFiles: File[]): File[] =>
+    newFiles.filter(
+      (file) => !existingFiles.some((existingFile) => existingFile.name === file.name)
+    );
 
   const onFilesSelect = (files: File[]): void => {
     setSelectedFiles((prevFiles) => [...prevFiles, ...getUniqueFiles(files, prevFiles)]);
@@ -147,7 +160,7 @@ const AddEntry = ({
   };
 
   const onLocationChange = (location: Partial<LocationType>) => {
-    setEntry((prev) => ({ ...prev, location } as LogEntry));
+    setEntry((prev) => ({ ...prev, location }) as LogEntry);
   };
 
   return (
@@ -197,6 +210,7 @@ const AddEntry = ({
               onCancel={onCancel}
               onSubmit={onLogEntry}
               onShowValidationErrors={setShowValidationErrors}
+              loading={loading}
             />
           </div>
         </form>

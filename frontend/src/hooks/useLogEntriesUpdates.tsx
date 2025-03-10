@@ -12,11 +12,11 @@ export function useLogEntriesUpdates(incidentId: string) {
   useEffect(() => {
     if (!hasNewLogEntries) return;
 
-    const handler = () => {
-      queryClient.invalidateQueries({
+    const handler = async () => {
+      await queryClient.invalidateQueries({
         queryKey: [`incident/${incidentId}/logEntries`]
       });
-      queryClient.invalidateQueries({
+      await queryClient.invalidateQueries({
         queryKey: [`incident/${incidentId}/attachments`]
       });
     };
@@ -26,10 +26,10 @@ export function useLogEntriesUpdates(incidentId: string) {
       id: `NEW_LOG_ENTRIES:${incidentId}`,
       content: (
         <span>
-          New log entries have been added to this incident.
-          {' '}
-          <button type="button" onClick={handler}>Click here</button>
-          {' '}
+          New log entries have been added to this incident.{' '}
+          <button type="button" onClick={handler}>
+            Click here
+          </button>{' '}
           to load them.
         </span>
       ),

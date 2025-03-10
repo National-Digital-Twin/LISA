@@ -1,9 +1,9 @@
 // Global imports
 import { MouseEvent, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Box, Button } from '@mui/material';
+import ImportContactsIcon from '@mui/icons-material/ImportContacts';
 
 // Local imports
-import { Icons } from '../../utils';
 import { ValidationError } from '../../utils/types';
 
 interface Props {
@@ -11,23 +11,25 @@ interface Props {
   onCancel: () => void;
   onSubmit: () => void;
   submitLabel?: string;
-  onShowValidationErrors: (show: boolean) => void
+  onShowValidationErrors: (show: boolean) => void;
+  loading?: boolean;
 }
 export default function FormFooter({
   validationErrors,
   onCancel,
   onSubmit,
   submitLabel = 'Save',
-  onShowValidationErrors
+  onShowValidationErrors,
+  loading = false
 }: Readonly<Props>) {
   const [showingErrors, setShowingErrors] = useState<boolean>(false);
 
-  const onCancelClick = (evt: MouseEvent<HTMLAnchorElement>) => {
+  const onCancelClick = (evt: MouseEvent<HTMLButtonElement>) => {
     evt.preventDefault();
     onCancel();
   };
 
-  const onToggleShowErrors = (evt: MouseEvent<HTMLAnchorElement>) => {
+  const onToggleShowErrors = (evt: MouseEvent<HTMLButtonElement>) => {
     evt.preventDefault();
     setShowingErrors((prev) => {
       onShowValidationErrors(!prev);
@@ -36,30 +38,34 @@ export default function FormFooter({
   };
 
   return (
-    <div className="log-form-buttons">
+    <Box display="flex" flexDirection="row" justifyContent="flex-end" alignItems="center" gap={1}>
       {validationErrors.length > 0 && (
-        <div className="validation-errors">
-          {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-          <Link onClick={onToggleShowErrors} to="">
-            {showingErrors ? 'Hide' : 'Show'}
-          </Link>
-          {' '}
-          error
-          {validationErrors.length > 1 && 's'}
-        </div>
+        <Button
+          type="button"
+          variant="text"
+          disableRipple
+          disableTouchRipple
+          onClick={onToggleShowErrors}
+          sx={{ color: 'text.primary' }}
+        >
+          {showingErrors ? 'Hide' : 'Show'}
+          {validationErrors.length > 1 ? ' errors' : ' error'}
+        </Button>
       )}
-      {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-      <Link className="button cancel" onClick={onCancelClick} to="">Cancel</Link>
-      <button
-        type="button"
-        className="button submit"
+      <Button onClick={onCancelClick} variant="outlined" disableRipple disableTouchRipple>
+        Cancel
+      </Button>
+      <Button
+        variant="contained"
+        startIcon={<ImportContactsIcon />}
+        disableRipple
+        disableTouchRipple
         onClick={onSubmit}
-        title={validationErrors.length > 0 ? 'Correct the errors before you can save' : ''}
         disabled={validationErrors.length > 0}
+        loading={loading}
       >
-        <Icons.LogBook />
         {submitLabel}
-      </button>
-    </div>
+      </Button>
+    </Box>
   );
 }

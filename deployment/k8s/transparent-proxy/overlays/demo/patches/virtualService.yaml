@@ -1,0 +1,7 @@
+- op: replace
+  path: /spec/hosts/0
+  value: lisa.demo.ndtp.co.uk
+
+- op: replace
+  path: /spec/gateways/0
+  value: lisa/lisa-ingress-gateway

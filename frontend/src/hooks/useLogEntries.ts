@@ -1,19 +1,29 @@
 // Global imports
 import { v4 as uuidV4 } from 'uuid';
+import { useCallback } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-
 // Local imports
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { LogEntry } from 'common/LogEntry';
 import { FetchError, get, post } from '../api';
 
 export const useLogEntries = (incidentId?: string) => {
+  const queryClient = useQueryClient();
   const { data, isLoading, isError, error } = useQuery<LogEntry[], FetchError>({
     queryKey: [`incident/${incidentId}/logEntries`],
     queryFn: () => get(`/incident/${incidentId}/logEntries`)
   });
 
-  return { logEntries: data, isLoading, isError, error };
+  const invalidateLogEntries = useCallback(async () => {
+    await queryClient.invalidateQueries({
+      queryKey: [`incident/${incidentId}/logEntries`]
+    });
+    await queryClient.invalidateQueries({
+      queryKey: [`incident/${incidentId}/attachments`]
+    });
+  }, [queryClient]);
+
+  return { logEntries: data, isLoading, isError, error, invalidateLogEntries };
 };
 
 export const useCreateLogEntry = (incidentId?: string) => {
@@ -34,9 +44,6 @@ export const useCreateLogEntry = (incidentId?: string) => {
         data.append('logEntry', JSON.stringify(newLogEntry));
       }
       return post(`/incident/${incidentId}/logEntry`, data);
-    },
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: [`incident/${incidentId}/logEntries`] });
     },
     // optimistic update
     onMutate: async ({ newLogEntry }) => {

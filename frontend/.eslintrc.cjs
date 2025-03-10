@@ -6,7 +6,8 @@ module.exports = {
     'plugin:react-hooks/recommended',
     'plugin:testing-library/react',
     'plugin:jest/recommended',
-    'airbnb'
+    'airbnb',
+    'prettier'
   ],
   parser: '@typescript-eslint/parser',
   parserOptions: { ecmaVersion: 'latest', sourceType: 'module' },

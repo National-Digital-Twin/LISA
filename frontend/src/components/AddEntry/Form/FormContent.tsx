@@ -96,7 +96,7 @@ export default function FormContent({
     async (blobUrl: string) => {
       const response = await fetch(blobUrl);
       const blob = await response.blob();
-      addAudioElement(blob);
+      await addAudioElement(blob);
     },
     [addAudioElement]
   );
@@ -105,8 +105,8 @@ export default function FormContent({
   const { startRecording, stopRecording, mediaBlobUrl } = useReactMediaRecorder({
     audio: true,
     // When recording stops, fetch the blob and pass it along
-    onStop: (blobUrl) => {
-      addAudioElementFromUrl(blobUrl);
+    onStop: async (blobUrl) => {
+      await addAudioElementFromUrl(blobUrl);
     }
   });
 

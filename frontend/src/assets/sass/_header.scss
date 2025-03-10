@@ -1,13 +1,14 @@
 // '_HEADER.SCSS' - IMPORTED INTO APP.SCSS
 
-@import 'colors';
+@use 'colors';
+@use 'ndtp';
 
 header {
   box-sizing: border-box;
-  border-bottom: 5px solid $blue-header;
-  background-color: $grey-light;
+  border-bottom: 5px solid colors.$blue-header;
+  background-color: colors.$grey-light;
   font-size: 1rem;
-  color: $white;
+  color: colors.$white;
   font-family: ndtp.$font-family;
   z-index: 3;
   width: 100%;
@@ -22,10 +23,10 @@ header {
     align-items: center;
     height: 60px;
     width: 100%;
-    background-color: $blue-dark;
+    background-color: colors.$blue-dark;
   }
   .header-user {
-    color: $white;
+    color: colors.$white;
     padding-right: 1rem;
     display: flex;
     flex-direction: row;
@@ -49,12 +50,12 @@ header {
     a:link,
     a:visited,
     a:active {
-      color: $gold;
+      color: colors.$gold;
       transition: color 0.3s;
       border-bottom: none;
     }
     a:hover {
-      color: $white;
+      color: colors.$white;
     }
     @media screen and (max-width: 1050px) {
       margin-left: auto;
@@ -81,7 +82,7 @@ header {
   top: -17px;
   &.corp {
     margin-right: 20px;
-    border-right: 3px solid $grey-mid;
+    border-right: 3px solid colors.$grey-mid;
     padding-right: 20px;
     width: 100px;
     top: -14px;
