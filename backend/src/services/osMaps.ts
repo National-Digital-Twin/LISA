@@ -1,4 +1,7 @@
 import { Request, Response } from 'express';
+import { settings } from '../settings';
+
+const key = settings.OS_MAPS_KEY;
 
 interface Query {
   point?: string;
@@ -7,7 +10,6 @@ interface Query {
 export async function searchLocation(req: Request<object, object, object, Query>, res: Response) {
   const type = req.query.point ? 'nearest' : 'find';
   const url = new URL(`https://api.os.uk/search/places/v1/${type}`);
-  const key = process.env.os_maps_key;
 
   if (type === 'nearest') {
     url.searchParams.set('point', req.query.point);
