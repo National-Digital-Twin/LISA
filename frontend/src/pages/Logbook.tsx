@@ -5,6 +5,8 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 // Local imports
 import { type LogEntry } from 'common/LogEntry';
 import { type Mentionable, type MentionableType } from 'common/Mentionable';
+import { Button, useMediaQuery } from '@mui/material';
+import AddCircleIcon from '@mui/icons-material/AddCircle';
 import { AddEntry, EntryList, Filter, PageTitle, Search } from '../components';
 import {
   useAuth,
@@ -16,6 +18,7 @@ import {
 import { Format, Icons, Search as SearchUtil } from '../utils';
 import { type OnCreateEntry } from '../utils/handlers';
 import { type FieldValueType, type FilterType, type SpanType } from '../utils/types';
+import theme from '../theme';
 
 const Logbook = () => {
   const { incidentId } = useParams();
@@ -29,6 +32,7 @@ const Logbook = () => {
   const [sortAsc, setSortAsc] = useState<boolean>(false);
   const [appliedFilters, setAppliedFilters] = useState<FilterType>({ author: [], category: [] });
   const [searchText, setSearchText] = useState<string>('');
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   useEffect(() => {
     if (incidentEntryId) {
@@ -154,9 +158,15 @@ const Logbook = () => {
       <div className="container">
         <PageTitle title="Incident log" subtitle={subtitle}>
           {!adding && (
-            <button type="button" className="button blue" onClick={onAddEntryClick}>
-              + Add log entry
-            </button>
+            <Button
+              type="button"
+              variant="contained"
+              size={isMobile ? 'medium' : 'large'}
+              startIcon={<AddCircleIcon />}
+              onClick={onAddEntryClick}
+            >
+              Add log entry
+            </Button>
           )}
         </PageTitle>
 
