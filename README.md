@@ -33,10 +33,34 @@ docker compose up
 2. In the main app folder run:
 
 ```shell
-npm run dev
+npm run start
 ```
 
 This will start watchers for both the frontend and the backend.
+
+# Docker build configuration
+
+### Backend
+
+Ensure the backend layer has been bundled and then run the following command from the root directory.
+```shell
+docker build -t backend -f Dockerfile.backend .
+```
+The built image can then be run, but requires the appropriate env vars to be passed in on start.
+
+### Frontend
+
+Run the following command from the root directory.
+```shell
+docker build \
+  --build-arg BACKEND_URL="http://localhost:3000" \
+  --build-arg BACKEND_HOST="localhost:3000" \
+  --build-arg NPM_TOKEN="<GithubAccessToken>" \
+  -t frontend \
+  -f Dockerfile.frontend \
+  .
+```
+The built image can then be run.
 
 ## Running local code development tools
 
