@@ -20,7 +20,7 @@ import { type FieldValueType, type FilterType, type SpanType } from '../utils/ty
 const Logbook = () => {
   const { incidentId } = useParams();
   const { incidents } = useIncidents();
-  const { logEntries } = useLogEntries(incidentId);
+  const { logEntries, invalidateLogEntries } = useLogEntries(incidentId);
   const createLogEntry = useCreateLogEntry(incidentId);
   const { user } = useAuth();
   const [incidentEntryId, setIncidentEntryId] = useState<string | undefined>();
@@ -32,14 +32,12 @@ const Logbook = () => {
 
   useEffect(() => {
     if (incidentEntryId) {
-      if (logEntries?.find(({ id }) => id === incidentEntryId)) {
-        setTimeout(() => {
-          setLoading(false);
-          setAdding(false);
-          setIncidentEntryId(undefined);
-          document.documentElement.scrollTo(0, 0);
-        }, 1000);
-      }
+      setTimeout(() => {
+        setLoading(false);
+        setAdding(false);
+        setIncidentEntryId(undefined);
+        document.documentElement.scrollTo(0, 0);
+      }, 500);
     }
   }, [incidentEntryId, logEntries]);
 
@@ -94,7 +92,10 @@ const Logbook = () => {
     createLogEntry.mutate(
       { newLogEntry: _entry, selectedFiles: files },
       {
-        onSuccess: (data) => setIncidentEntryId(data.id),
+        onSuccess: async (data) => {
+          await invalidateLogEntries();
+          setIncidentEntryId(data.id);
+        },
         onError: () => {
           setLoading(false);
           onCancel();
