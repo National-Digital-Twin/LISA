@@ -7,16 +7,13 @@ import { type Referrer, type Incident } from 'common/Incident';
 import { Box, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid2';
 import { FormField, FormFooter } from '../components/Form';
-import { useCreateIncident, useIncidents } from '../hooks/useIncidents';
+import { useCreateIncident } from '../hooks/useIncidents';
 import { Form, Incident as IncidentUtil, Validate } from '../utils';
 import { type FieldValueType, type ValidationError } from '../utils/types';
 import { PageTitle } from '../components';
 import PageWrapper from '../components/PageWrapper';
 
 const CreateLog = () => {
-  const { incidents, invalidateIncidents } = useIncidents();
-  const [incidentId, setIncidentId] = useState<string | undefined>();
-  const [loading, setLoading] = useState(false);
   const [incident, setIncident] = useState<Partial<Incident>>({
     stage: 'Monitoring',
     referrer: {} as Referrer
@@ -24,32 +21,17 @@ const CreateLog = () => {
   const [validationErrors, setValidationErrors] = useState<Array<ValidationError>>([]);
   const [showValidationErrors, setShowValidationErrors] = useState<boolean>(false);
 
-  const createIncident = useCreateIncident();
+  const { createIncident, isLoading } = useCreateIncident();
   const navigate = useNavigate();
 
   // Go back to where we've just come from.
   const onCancel = () => navigate(-1);
-  useEffect(() => {
-    if (incidentId) {
-      setTimeout(() => {
-        setLoading(false);
-        navigate(`/logbook/${incidentId}`);
-      }, 500);
-    }
-  }, [incidentId, incidents]);
 
   const onSubmit = () => {
-    setLoading(true);
-    createIncident.mutate(incident as Incident, {
-      onSuccess: async (data) => {
-        await invalidateIncidents();
-        setIncidentId(data.id);
-      },
-      onError: () => {
-        setLoading(false);
-        onCancel();
-      }
-    });
+    createIncident(incident as Incident);
+    setTimeout(() => {
+      navigate('/');
+    }, 1000);
   };
 
   const onFieldChange = (id: string, value: FieldValueType) => {
@@ -92,7 +74,7 @@ const CreateLog = () => {
           onSubmit={onSubmit}
           submitLabel="Create"
           onShowValidationErrors={setShowValidationErrors}
-          loading={loading}
+          loading={isLoading}
         />
       </Box>
     </PageWrapper>
