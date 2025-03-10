@@ -1,6 +1,6 @@
 .typeahead-popover {
   background: #fff;
-  box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
   border-radius: 8px;
   position: absolute;
 }
@@ -57,11 +57,11 @@
 }
 
 .typeahead-popover li:first-child {
-  border-radius: 8px 8px 0px 0px;
+  border-radius: 8px 8px 0 0;
 }
 
 .typeahead-popover li:last-child {
-  border-radius: 0px 0px 8px 8px;
+  border-radius: 0 0 8px 8px;
 }
 
 .typeahead-popover li:hover {

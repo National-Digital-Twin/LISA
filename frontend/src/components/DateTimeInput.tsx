@@ -68,8 +68,6 @@ const DateTimeInput = ({ id, value, error = undefined, onChange }: Props) => {
         <Button
           type="button"
           variant="text"
-          disableRipple
-          disableTouchRipple
           onClick={onSetNow}
           sx={{ fontWeight: 600, textTransform: 'none' }}
         >

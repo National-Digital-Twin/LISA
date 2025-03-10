@@ -77,8 +77,6 @@ const Home = () => {
             htmlFor="include-closed"
             control={
               <Checkbox
-                disableRipple
-                disableFocusRipple
                 id="include-closed"
                 value={includeClosed}
                 onChange={onIncludeClosedChange}
@@ -100,8 +98,6 @@ const Home = () => {
               variant="contained"
               size={isMobile ? 'medium' : 'large'}
               startIcon={<AddCircleIcon />}
-              disableRipple
-              disableFocusRipple
               onClick={onAddIncident}
               color="primary"
             >
