@@ -2,7 +2,7 @@ FROM node:20-alpine
 RUN mkdir -p /home/node/dist
 
 WORKDIR /home/node
-COPY --chown=root:root --chmod=755 ./dist ./dist
+COPY --chown=root:root --chmod=755 ./backend/dist ./dist
 
 USER node
 
