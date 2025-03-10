@@ -6,6 +6,7 @@ import type { Stage as StageType } from 'konva/lib/Stage';
 
 // Local imports
 import '../assets/images/icon-pencil.svg';
+import { Button } from '@mui/material';
 import { SketchLine } from '../utils/types';
 
 interface Props {
@@ -137,24 +138,22 @@ const Sketch = ({ lines, setLines, canvasRef, active }: Props) => {
       </Stage>
       <div className="pens">
         {PEN_OPTIONS.map((pen) => (
-          <button
+          <Button
             key={pen.color}
-            type="button"
             className="pen"
-            style={{ backgroundColor: pen.hex }}
+            sx={{ backgroundColor: pen.hex }}
             onClick={() => setPenColor(pen.color)}
             aria-label={`Select ${pen.label} pen`}
           />
         ))}
       </div>
       <div className="clear">
-        <button
-          type="button"
+        <Button
           onClick={() => setLines([])}
           className="sketch-clear"
         >
           Clear
-        </button>
+        </Button>
       </div>
     </div>
   );

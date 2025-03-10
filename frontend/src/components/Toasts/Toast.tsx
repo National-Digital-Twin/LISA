@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { IconButton } from '@mui/material';
 import { Icons, bem } from '../../utils';
 import { ToastEntry } from '../../utils/types';
 
@@ -56,9 +57,9 @@ export default function Toast({ toast, onRemove }: Readonly<Props>) {
       </button>
       {isDismissable && (
         <div className={classes('close')}>
-          <button type="button" onClick={onClose}>
+          <IconButton onClick={onClose}>
             <Icons.Close />
-          </button>
+          </IconButton>
         </div>
       )}
     </div>

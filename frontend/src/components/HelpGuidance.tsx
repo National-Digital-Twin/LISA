@@ -3,6 +3,7 @@ import { MouseEvent, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 // Local imports
+import { IconButton } from '@mui/material';
 import { MODAL_KEY, PRINTABLE_KEY } from '../utils/constants';
 import helpGuidanceData from './helpGuidanceData.json';
 import { Icons } from '../utils';
@@ -41,12 +42,9 @@ const HelpGuidance = ({ helpId, onClose }: PropsHelp) => {
     <>
       <h3 className="help-title">
         <span>HELP / GUIDANCE</span>
-        <button
-          type="button"
-          onClick={onClose}
-        >
+        <IconButton onClick={onClose}>
           <Icons.Close />
-        </button>
+        </IconButton>
       </h3>
       <h5>Log Book</h5>
       <ul>

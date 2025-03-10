@@ -11,6 +11,7 @@ import { type LogEntry } from 'common/LogEntry';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { LogEntryTypes } from 'common/LogEntryTypes';
 import { type MentionableType } from 'common/Mentionable';
+import { IconButton } from '@mui/material';
 import { bem, Icons, MapUtils } from '../../utils';
 import { type FullLocationType, type SpanType } from '../../utils/types';
 import EntryItem from '../EntryList/EntryItem';
@@ -172,12 +173,12 @@ export default function IncidentMap({
             onContentClick={onEntryContentClick}
             onMentionClick={() => {}}
           />
-          <button type="button" className="visit-log" onClick={onVisitLog} title="See in incident log">
+          <IconButton className="visit-log" onClick={onVisitLog} title="See in incident log">
             <Icons.LogBook />
-          </button>
-          <button type="button" className="close-info" onClick={onCloseInfo} title="Close information">
+          </IconButton>
+          <IconButton className="close-info" onClick={onCloseInfo} title="Close information">
             <Icons.Close />
-          </button>
+          </IconButton>
         </div>
       )}
     </div>
