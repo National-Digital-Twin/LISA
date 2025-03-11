@@ -4,10 +4,10 @@ resources:
 namespace: lisa
 
 
-configMapGenerator:
-  - name: lisa-configs
-    envs:
-      - params.env
+#configMapGenerator:
+#  - name: lisa-configs
+#    envs:
+#      - params.env
 
 
 patches:
