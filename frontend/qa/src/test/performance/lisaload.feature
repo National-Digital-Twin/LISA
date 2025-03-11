@@ -1,4 +1,4 @@
-Feature: Lisa Landing Page
+Feature: NFR - Lisa Landing Page
 
 @performance
  Scenario: Measure performance of the landing page

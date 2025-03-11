@@ -12,6 +12,9 @@ import { type FieldValueType, type ValidationError } from '../../utils/types';
 import { FormField, FormFooter } from '../Form';
 import Modal from '../Modal';
 import { STAGE_FIELD } from './constants';
+import Stage from '../Stage';
+
+import { GridListItem } from '../GridListItem';
 
 interface Props {
   incident: Incident;
@@ -66,12 +69,12 @@ export default function ChangeStage({ incident, onChangeStage, onCancel }: Reado
           id="rollup-log-book-entry"
         >
           <Grid component="ul" container spacing={4} bgcolor="background.default" padding={3}>
-            <Grid component="li" size={{ xs: 12, md: 6 }}>
-              <Typography variant="h3" fontSize="1rem" fontWeight="bold">
-                Current stage
-              </Typography>
-              <Typography variant="body1">{Format.incident.stage(incident.stage)}</Typography>
-            </Grid>
+            <GridListItem title="Current stage">
+              <Stage
+                label={Format.incident.stage(incident.stage).toUpperCase()}
+                stage={incident.stage}
+              />
+            </GridListItem>
             <Grid component="li" size={{ xs: 12, md: 6 }}>
               <FormField
                 field={{ ...STAGE_FIELD, value: stage }}
