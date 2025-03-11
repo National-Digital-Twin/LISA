@@ -44,7 +44,7 @@ This will start watchers for both the frontend and the backend.
 
 Ensure the backend layer has been bundled and then run the following command from the root directory.
 ```shell
-docker build -t backend -f Dockerfile.backend .
+docker build -t lisa/backend -f Dockerfile.backend .
 ```
 The built image can then be run, but requires the appropriate env vars to be passed in on start.
 
@@ -56,7 +56,7 @@ docker build \
   --build-arg BACKEND_URL="http://localhost:3000" \
   --build-arg BACKEND_HOST="localhost:3000" \
   --build-arg NPM_TOKEN="<GithubAccessToken>" \
-  -t frontend \
+  -t lisa/frontend \
   -f Dockerfile.frontend \
   .
 ```

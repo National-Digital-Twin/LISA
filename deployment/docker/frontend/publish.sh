@@ -8,7 +8,7 @@ TAG=1.0.$(date +%s)
 
 IMAGE=$AWS_ACCOUNT.dkr.ecr.$AWS_REGION.amazonaws.com/lisa/webapp:$TAG
 
-sudo docker tag lisa:latest $IMAGE
+sudo docker tag lisa/frontend:latest $IMAGE
 sudo docker push $IMAGE
 
 echo "Revision tag: $TAG"
