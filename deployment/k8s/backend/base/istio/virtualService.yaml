@@ -8,10 +8,9 @@ spec:
   gateways:
     - placeholder
   http:
-    # Rule for root ("/") to prevent caching and add CSP header
     - match:
         - uri:
-            exact: /
+            prefix: /transparent-proxy
       headers:
         response:
           add:
@@ -24,21 +23,3 @@ spec:
             host: lisa-backend
             port:
               number: 80
-
-    # Rule for all other paths with the CSP header
-    - match:
-        - uri:
-            prefix: /
-      rewrite:
-        uriRegexRewrite:
-          match: ^/(/|$)(.*)
-          rewrite: /\2
-      route:
-        - destination:
-            host: lisa-backend
-            port:
-              number: 80
-          headers:
-            response:
-              add:
-                Content-Security-Policy: "placeholder"
