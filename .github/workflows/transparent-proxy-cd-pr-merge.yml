@@ -20,6 +20,8 @@ on:
 permissions:
   id-token: write
   contents: read
+  packages: read
+  statuses: write
 
 jobs:
   versioning:
