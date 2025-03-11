@@ -73,9 +73,11 @@ jobs:
           node-version: "23.x"
 
       - name: Install Dependencies
+        working-directory: backend
         run: npm ci
 
       - name: Build Backend
+        working-directory: backend
         run: |
           npm run build
 

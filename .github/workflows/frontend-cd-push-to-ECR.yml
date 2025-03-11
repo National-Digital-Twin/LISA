@@ -73,12 +73,13 @@ jobs:
           node-version: "23.x"
 
       - name: Install Dependencies
+        working-directory: backend
         run: npm ci
 
       - name: Build Frontend
+        working-directory: frontend
         run: |
           npm run build
-          npm run bundle
 
       - name: Build Docker Image
         working-directory: deployment/docker
