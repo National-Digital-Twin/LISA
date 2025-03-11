@@ -11,7 +11,7 @@ import { ChangeStage, PageTitle } from '../components';
 import SetInformation from '../components/SetInformation';
 import { useChangeIncidentStage, useIncidents } from '../hooks/useIncidents';
 import { Format } from '../utils';
-import { useCreateLogEntry, useLogEntries } from '../hooks';
+import { useCreateLogEntry } from '../hooks';
 import Stage from '../components/Stage';
 import PageWrapper from '../components/PageWrapper';
 
@@ -37,10 +37,9 @@ const GridListItem = ({
 
 const Overview = () => {
   const { incidentId } = useParams();
-  const { incidents, invalidateIncidents } = useIncidents();
-  const { invalidateLogEntries } = useLogEntries(incidentId);
+  const { incidents } = useIncidents();
   const changeIncidentStage = useChangeIncidentStage();
-  const createLogEntry = useCreateLogEntry(incidentId);
+  const { createLogEntry } = useCreateLogEntry(incidentId);
   const [changingStage, setChangingStage] = useState<boolean>();
   const [settingInformation, setSettingInformation] = useState<boolean>();
 
@@ -65,15 +64,7 @@ const Overview = () => {
   };
 
   const onSetInformation = (logEntry: Partial<LogEntry>) => {
-    createLogEntry.mutate(
-      { newLogEntry: logEntry as LogEntry },
-      {
-        onSuccess: async () => {
-          await invalidateLogEntries();
-          await invalidateIncidents();
-        }
-      }
-    );
+    createLogEntry({ newLogEntry: logEntry as LogEntry });
     setSettingInformation(false);
   };
 

@@ -23,27 +23,14 @@ import theme from '../theme';
 const Logbook = () => {
   const { incidentId } = useParams();
   const { incidents } = useIncidents();
-  const { logEntries, invalidateLogEntries } = useLogEntries(incidentId);
-  const createLogEntry = useCreateLogEntry(incidentId);
+  const { logEntries } = useLogEntries(incidentId);
+  const { createLogEntry, isLoading } = useCreateLogEntry(incidentId);
   const { user } = useAuth();
-  const [incidentEntryId, setIncidentEntryId] = useState<string | undefined>();
-  const [loading, setLoading] = useState(false);
   const [adding, setAdding] = useState<boolean>();
   const [sortAsc, setSortAsc] = useState<boolean>(false);
   const [appliedFilters, setAppliedFilters] = useState<FilterType>({ author: [], category: [] });
   const [searchText, setSearchText] = useState<string>('');
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-
-  useEffect(() => {
-    if (incidentEntryId) {
-      setTimeout(() => {
-        setLoading(false);
-        setAdding(false);
-        setIncidentEntryId(undefined);
-        document.documentElement.scrollTo(0, 0);
-      }, 500);
-    }
-  }, [incidentEntryId, logEntries]);
 
   useEffect(() => {
     const preventRefresh = (ev: BeforeUnloadEvent) => {
@@ -92,20 +79,11 @@ const Logbook = () => {
   };
 
   const onAddEntry: OnCreateEntry = (_entry, files) => {
-    setLoading(true);
-    createLogEntry.mutate(
-      { newLogEntry: _entry, selectedFiles: files },
-      {
-        onSuccess: async (data) => {
-          await invalidateLogEntries();
-          setIncidentEntryId(data.id);
-        },
-        onError: () => {
-          setLoading(false);
-          onCancel();
-        }
-      }
-    );
+    createLogEntry({ newLogEntry: _entry, selectedFiles: files });
+    setTimeout(() => {
+      setAdding(false);
+      document.documentElement.scrollTo(0, 0);
+    }, 500);
     return undefined;
   };
 
@@ -176,7 +154,7 @@ const Logbook = () => {
             entries={logEntries ?? []}
             onCreateEntry={onAddEntry}
             onCancel={onCancel}
-            loading={loading}
+            loading={isLoading}
           />
         )}
 
