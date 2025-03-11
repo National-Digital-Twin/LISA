@@ -37,9 +37,9 @@ const GridListItem = ({
 
 const Overview = () => {
   const { incidentId } = useParams();
-  const { incidents, invalidateIncidents } = useIncidents();
+  const { incidents } = useIncidents();
   const changeIncidentStage = useChangeIncidentStage();
-  const createLogEntry = useCreateLogEntry(incidentId);
+  const { createLogEntry } = useCreateLogEntry(incidentId);
   const [changingStage, setChangingStage] = useState<boolean>();
   const [settingInformation, setSettingInformation] = useState<boolean>();
 
@@ -64,14 +64,7 @@ const Overview = () => {
   };
 
   const onSetInformation = (logEntry: Partial<LogEntry>) => {
-    createLogEntry.mutate(
-      { newLogEntry: logEntry as LogEntry },
-      {
-        onSuccess: () => {
-          invalidateIncidents();
-        }
-      }
-    );
+    createLogEntry({ newLogEntry: logEntry as LogEntry });
     setSettingInformation(false);
   };
 

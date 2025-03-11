@@ -165,6 +165,24 @@ export default class EditIncidentLogPage {
     }
   }
 
+  async verifyUpdatedStage(newStage: string) {
+    await this.page.reload();
+    await basePage.customSleep(1000);
+
+    const lastLogEntry = this.page.locator('.log-entry-list .item').last();
+    // Check if the last log entry is visible
+    await expect(lastLogEntry).toBeVisible();
+
+    // Get the text content of the log entry meta
+    const logMetaText = await lastLogEntry.locator('.log-entry-meta div').first().textContent();
+
+    // Assert that the meta text contains "Stage change"
+    expect(logMetaText).toContain('Stage change');
+
+    const logEntryDetails = await lastLogEntry.locator('.log-entry-details').first().textContent();
+    expect(logEntryDetails).toContain(newStage);
+  }
+
   async clickRandomPointOnMap() {
     // Locate the map region
     const mapElement = this.page.getByRole('region', { name: 'Map' });

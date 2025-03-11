@@ -1,7 +1,6 @@
 // Global imports
 import { v4 as uuidV4 } from 'uuid';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-
 // Local imports
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { LogEntry } from 'common/LogEntry';
@@ -18,7 +17,7 @@ export const useLogEntries = (incidentId?: string) => {
 
 export const useCreateLogEntry = (incidentId?: string) => {
   const queryClient = useQueryClient();
-  return useMutation<
+  const { mutate, isPending } = useMutation<
     LogEntry,
     Error,
     {
@@ -35,8 +34,10 @@ export const useCreateLogEntry = (incidentId?: string) => {
       }
       return post(`/incident/${incidentId}/logEntry`, data);
     },
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: [`incident/${incidentId}/logEntries`] });
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: [`incident/${incidentId}/logEntries`]
+      });
     },
     // optimistic update
     onMutate: async ({ newLogEntry }) => {
@@ -45,21 +46,17 @@ export const useCreateLogEntry = (incidentId?: string) => {
         `incident/${incidentId}/logEntries`
       ]);
       const countOffline = previousEntries?.filter((pe) => pe.offline).length ?? 0;
-      if (previousEntries) {
-        queryClient.setQueryData<LogEntry[]>(
-          [`incident/${incidentId}/logEntries`],
-          [
-            ...previousEntries,
-            {
-              ...newLogEntry,
-              id: uuidV4(),
-              displaySequence: `${countOffline + 1}`,
-              offline: true
-            }
-          ]
-        );
-      }
+      const newLogEntryOffline = {
+        ...newLogEntry,
+        id: uuidV4(),
+        displaySequence: `${countOffline + 1}`,
+        offline: true
+      };
+      queryClient.setQueryData<LogEntry[]>([`incident/${incidentId}/logEntries`], (oldData) =>
+        oldData!.concat(newLogEntryOffline)
+      );
       return { previousEntries };
     }
   });
+  return { createLogEntry: mutate, isLoading: isPending };
 };

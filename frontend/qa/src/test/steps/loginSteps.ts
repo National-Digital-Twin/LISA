@@ -1,4 +1,4 @@
-import { Given, When, setDefaultTimeout } from '@cucumber/cucumber';
+import { Given, When, Then, setDefaultTimeout } from '@cucumber/cucumber';
 
 import { basePage } from '../../hooks/basePage';
 import LoginPage from '../../pages/loginPage';
@@ -16,7 +16,7 @@ Given('I login to the ndtp app with the user credentials', async () => {
   await loginPage.loginUser(process.env.USERNAME, process.env.PASSWORD);
 });
 
-When('I click the {string} menu', async () => {
+When('I click the LISA menu', async () => {
   landingPage = new LandingPage(basePage.page);
   await landingPage.clickMenuByName();
 });
@@ -32,4 +32,17 @@ Given('I am a valid user logged into the {string} NDTP application', async (appN
 
   landingPage = new LandingPage(basePage.page);
   await landingPage.verifyLisaAppPage();
+});
+
+Then('I should be on the LISA dashboard page', async () => {
+  landingPage = new LandingPage(basePage.page);
+  await landingPage.verifyLisaPageTitle();
+});
+
+When('I launch the LISA NDTP direct link with {string} login', async (loginState: string) => {
+  landingPage = new LandingPage(basePage.page);
+
+  if (loginState === 'successful') {
+    await landingPage.launchNDTPapp();
+  }
 });

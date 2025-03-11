@@ -52,13 +52,14 @@ const App = () => {
   });
 
   useEffect(
-    () => onlineManager.subscribe((isOnline) => {
-      if (isOnline) {
-        queryClient.resumePausedMutations().then(() => {
-          queryClient.invalidateQueries();
-        });
-      }
-    }),
+    () =>
+      onlineManager.subscribe((isOnline) => {
+        if (isOnline) {
+          queryClient.resumePausedMutations().then(async () => {
+            await queryClient.invalidateQueries();
+          });
+        }
+      }),
     []
   );
   return (
