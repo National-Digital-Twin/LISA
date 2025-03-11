@@ -120,7 +120,7 @@ jobs:
       - name: Run Trivy Scan on Docker Image
         uses: aquasecurity/trivy-action@0.28.0
         with:
-          image-ref: "lisa/frontend:latest"
+          image-ref: "lisa/webapp:latest"
           format: "table"
           exit-code: "1"
           ignore-unfixed: true
@@ -129,4 +129,4 @@ jobs:
 
       - name: Cleanup
         if: always()
-        run: docker stop frontend
+        run: docker stop webapp
