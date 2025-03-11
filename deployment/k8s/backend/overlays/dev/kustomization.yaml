@@ -5,7 +5,7 @@ namespace: lisa
 
 
 configMapGenerator:
-  - name: lisa-configs
+  - name: lisa-backend-configs
     envs:
       - params.env
 
