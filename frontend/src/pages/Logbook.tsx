@@ -5,6 +5,8 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 // Local imports
 import { type LogEntry } from 'common/LogEntry';
 import { type Mentionable, type MentionableType } from 'common/Mentionable';
+import { Button, useMediaQuery } from '@mui/material';
+import AddCircleIcon from '@mui/icons-material/AddCircle';
 import { AddEntry, EntryList, Filter, PageTitle, Search } from '../components';
 import {
   useAuth,
@@ -16,30 +18,19 @@ import {
 import { Format, Icons, Search as SearchUtil } from '../utils';
 import { type OnCreateEntry } from '../utils/handlers';
 import { type FieldValueType, type FilterType, type SpanType } from '../utils/types';
+import theme from '../theme';
 
 const Logbook = () => {
   const { incidentId } = useParams();
   const { incidents } = useIncidents();
-  const { logEntries, invalidateLogEntries } = useLogEntries(incidentId);
-  const createLogEntry = useCreateLogEntry(incidentId);
+  const { logEntries } = useLogEntries(incidentId);
+  const { createLogEntry, isLoading } = useCreateLogEntry(incidentId);
   const { user } = useAuth();
-  const [incidentEntryId, setIncidentEntryId] = useState<string | undefined>();
-  const [loading, setLoading] = useState(false);
   const [adding, setAdding] = useState<boolean>();
   const [sortAsc, setSortAsc] = useState<boolean>(false);
   const [appliedFilters, setAppliedFilters] = useState<FilterType>({ author: [], category: [] });
   const [searchText, setSearchText] = useState<string>('');
-
-  useEffect(() => {
-    if (incidentEntryId) {
-      setTimeout(() => {
-        setLoading(false);
-        setAdding(false);
-        setIncidentEntryId(undefined);
-        document.documentElement.scrollTo(0, 0);
-      }, 500);
-    }
-  }, [incidentEntryId, logEntries]);
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   useEffect(() => {
     const preventRefresh = (ev: BeforeUnloadEvent) => {
@@ -88,20 +79,11 @@ const Logbook = () => {
   };
 
   const onAddEntry: OnCreateEntry = (_entry, files) => {
-    setLoading(true);
-    createLogEntry.mutate(
-      { newLogEntry: _entry, selectedFiles: files },
-      {
-        onSuccess: async (data) => {
-          await invalidateLogEntries();
-          setIncidentEntryId(data.id);
-        },
-        onError: () => {
-          setLoading(false);
-          onCancel();
-        }
-      }
-    );
+    createLogEntry({ newLogEntry: _entry, selectedFiles: files });
+    setTimeout(() => {
+      setAdding(false);
+      document.documentElement.scrollTo(0, 0);
+    }, 500);
     return undefined;
   };
 
@@ -154,9 +136,15 @@ const Logbook = () => {
       <div className="container">
         <PageTitle title="Incident log" subtitle={subtitle}>
           {!adding && (
-            <button type="button" className="button blue" onClick={onAddEntryClick}>
-              + Add log entry
-            </button>
+            <Button
+              type="button"
+              variant="contained"
+              size={isMobile ? 'medium' : 'large'}
+              startIcon={<AddCircleIcon />}
+              onClick={onAddEntryClick}
+            >
+              Add log entry
+            </Button>
           )}
         </PageTitle>
 
@@ -166,7 +154,7 @@ const Logbook = () => {
             entries={logEntries ?? []}
             onCreateEntry={onAddEntry}
             onCancel={onCancel}
-            loading={loading}
+            loading={isLoading}
           />
         )}
 

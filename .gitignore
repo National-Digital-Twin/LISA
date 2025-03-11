@@ -34,3 +34,4 @@ frontend/qa/*.deb
 #jest
 frontend/coverage
 
+.npmrc

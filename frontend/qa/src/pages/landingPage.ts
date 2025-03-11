@@ -10,7 +10,7 @@ export default class LandingPage {
 
   // Object Locators
   private readonly Elements = {
-    menuLisa: "//div[.='LISA']",
+    menuLisa: "//a[contains(@href,'$MENUNAME$')]",
     navMenu: "//div[@class='top-header']//li/a[.='$MENUNAME$']"
   };
 
@@ -19,8 +19,20 @@ export default class LandingPage {
   }
 
   async clickMenuByName() {
-    await this.page.locator(this.Elements.menuLisa).click();
+    await this.page.locator(this.Elements.menuLisa.replace('$MENUNAME$', process.env.LISAURL)).click();
     await this.page.waitForTimeout(3000);
+  }
+
+  async verifyLisaPageTitle() {
+    await this.page.waitForTimeout(5000);
+
+    await expect(this.page).toHaveTitle('LISA');
+  }
+
+  async launchNDTPapp() {
+    await this.page.waitForTimeout(5000);
+
+    await this.page.goto(process.env.LISAURL);
   }
 
   async verifyLisaAppPage() {

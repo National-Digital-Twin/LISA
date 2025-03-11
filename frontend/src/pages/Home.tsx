@@ -57,9 +57,7 @@ const Home = () => {
 
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
-  const tableHeaders = isMobile
-    ? ['ID', 'Incident']
-    : ['Incident ID', 'Incident name', 'Reported by', 'Date', 'Stage'];
+  const tableHeaders = isMobile ? ['Incident'] : ['Incident name', 'Reported by', 'Date', 'Stage'];
 
   return (
     <PageWrapper>
@@ -77,8 +75,6 @@ const Home = () => {
             htmlFor="include-closed"
             control={
               <Checkbox
-                disableRipple
-                disableFocusRipple
                 id="include-closed"
                 value={includeClosed}
                 onChange={onIncludeClosedChange}
@@ -100,8 +96,6 @@ const Home = () => {
               variant="contained"
               size={isMobile ? 'medium' : 'large'}
               startIcon={<AddCircleIcon />}
-              disableRipple
-              disableFocusRipple
               onClick={onAddIncident}
               color="primary"
             >
@@ -129,7 +123,6 @@ const Home = () => {
               const { id, name, reportedBy, startedAt } = incident;
               return isMobile ? (
                 <TableRow key={id}>
-                  <TableCell>{id}</TableCell>
                   <TableCell width="70%">
                     <Box display="flex" flexDirection="column" gap="0.3rem">
                       <Typography
@@ -155,7 +148,6 @@ const Home = () => {
                 </TableRow>
               ) : (
                 <TableRow key={id}>
-                  <TableCell>{id}</TableCell>
                   <TableCell>
                     <Typography
                       component={Link}
