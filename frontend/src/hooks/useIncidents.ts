@@ -1,26 +1,32 @@
 // Global imports
 import { v4 as uuidV4 } from 'uuid';
-import { useCallback } from 'react';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { QueryClient, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 // Local imports
 import { type Incident } from 'common/Incident';
 import { FetchError, get, post } from '../api';
 
-export const useIncidents = () => {
-  const queryClient = useQueryClient();
-  const invalidateIncidents = useCallback(async () => {
-    await queryClient.invalidateQueries({
-      queryKey: ['incidents']
-    });
-  }, [queryClient]);
-  const { data, isLoading, isError, error } = useQuery<Incident[], FetchError>({
+export const useIncidents = () =>
+  useQuery<Incident[], FetchError>({
     queryKey: ['incidents'],
     queryFn: () => get('/incidents')
   });
 
-  return { incidents: data, isLoading, isError, error, invalidateIncidents };
-};
+async function poll(
+  incidentId: string | undefined,
+  queryClient: QueryClient,
+  attemptNumber: number
+) {
+  const incidents = await get<Incident[]>('/incidents');
+
+  if (attemptNumber <= 10) {
+    if (incidents!.find((incident) => incident.id === incidentId)) {
+      queryClient.invalidateQueries({ queryKey: ['incidents'] });
+    } else {
+      setTimeout(() => poll(incidentId, queryClient, attemptNumber + 1), 10000);
+    }
+  }
+}
 
 export const useCreateIncident = () => {
   const queryClient = useQueryClient();
@@ -30,14 +36,13 @@ export const useCreateIncident = () => {
     Omit<Incident, 'id' | 'reportedBy'>,
     {
       previousIncidents?: Incident[];
-      newlyCachedIncidents?: Incident[];
     }
   >({
     mutationFn: (incident) => post('/incident', incident),
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ['incidents'] });
+    onSuccess: async (data) => {
+      setTimeout(() => poll(data.id, queryClient, 1), 1000);
     },
-    onError: (_error, _variables, context) => {
+    onError: async (_error, _variables, context) => {
       // rollback to previously captured incidents from the context.
       queryClient.setQueryData<Incident[]>(['incidents'], context!.previousIncidents);
     },

@@ -21,17 +21,25 @@ const CreateLog = () => {
   const [validationErrors, setValidationErrors] = useState<Array<ValidationError>>([]);
   const [showValidationErrors, setShowValidationErrors] = useState<boolean>(false);
 
-  const { createIncident, isLoading } = useCreateIncident();
+  const { createIncident } = useCreateIncident();
   const navigate = useNavigate();
 
   // Go back to where we've just come from.
   const onCancel = () => navigate(-1);
 
   const onSubmit = () => {
-    createIncident(incident as Incident);
-    setTimeout(() => {
-      navigate('/');
-    }, 1000);
+    createIncident(incident as Incident, {
+      onSuccess: (newIncident) => {
+        setTimeout(() => {
+          navigate(`/logbook/${newIncident.id}`);
+        }, 1000);
+      },
+      onError: () => {
+        setTimeout(() => {
+          navigate('/');
+        }, 1000);
+      }
+    });
   };
 
   const onFieldChange = (id: string, value: FieldValueType) => {
@@ -74,7 +82,6 @@ const CreateLog = () => {
           onSubmit={onSubmit}
           submitLabel="Create"
           onShowValidationErrors={setShowValidationErrors}
-          loading={isLoading}
         />
       </Box>
     </PageWrapper>

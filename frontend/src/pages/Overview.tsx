@@ -37,13 +37,13 @@ const GridListItem = ({
 
 const Overview = () => {
   const { incidentId } = useParams();
-  const { incidents } = useIncidents();
+  const query = useIncidents();
   const changeIncidentStage = useChangeIncidentStage();
   const { createLogEntry } = useCreateLogEntry(incidentId);
   const [changingStage, setChangingStage] = useState<boolean>();
   const [settingInformation, setSettingInformation] = useState<boolean>();
 
-  const incident = incidents?.find((inc) => inc.id === incidentId);
+  const incident = query.data?.find((inc) => inc.id === incidentId);
   if (!incident) {
     return null;
   }
