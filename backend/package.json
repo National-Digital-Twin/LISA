@@ -10,7 +10,7 @@
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 3",
     "lint:fix": "eslint --fix .",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "bundle": "npm run build && npx esbuild src/server.ts --platform=node --target=es2022,node20  --format=esm --inject:./src/cjs-shim.ts --bundle --minify --sourcemap --sources-content=false --outfile=dist/server.mjs"
+    "bundle": "npm run build && npx esbuild src/server.ts --platform=node --target=es2022,node20 --format=esm --inject:./src/cjs-shim.ts --bundle --minify --sourcemap --sources-content=false --outfile=dist/server.mjs"
   },
   "author": "",
   "license": "ISC",
