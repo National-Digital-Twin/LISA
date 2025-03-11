@@ -59,8 +59,8 @@ jobs:
     uses: ./.github/workflows/frontend-cd-push-to-ECR.yml
     with:
       aws_account_number: "537124944113"
-      repo_name: "lisa/frontend"
-      app_name: "frontend"
+      repo_name: "lisa/webapp"
+      app_name: "lisa/webapp"
       version: ${{ needs.versioning.outputs.version }}
 
   tag-repository:
