@@ -54,7 +54,7 @@ jobs:
         with:
           node-version: "23.x"
 
-      - name: Install Yarn
+      - name: Install Dependencies
         run: npm ci
 
       - name: Run Linting
