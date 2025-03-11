@@ -83,7 +83,10 @@ jobs:
 
       - name: Build Docker Image
         run: |
-          docker build -t lisa/webapp:latest -f deployment/docker/Dockerfile .
+          docker build --load \
+                  -t ${{ inputs.aws_account_number }}.dkr.ecr.eu-west-2.amazonaws.com/${{ inputs.repo_name }}:${{ github.sha }} \
+                  -t ${{ inputs.aws_account_number }}.dkr.ecr.eu-west-2.amazonaws.com/${{ inputs.repo_name }}:${{ inputs.version }} \
+                  -f deployment/docker/Dockerfile ./${{ inputs.app_name }}
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
