@@ -34,12 +34,13 @@ function open(incident: Incident) {
 
 const Home = () => {
   const theme = useTheme();
-  const { incidents } = useIncidents();
+  const query = useIncidents();
   const [includeClosed, setIncludeClosed] = useState<boolean>(false);
   const navigate = useNavigate();
 
   const show = (incident: Incident): boolean => includeClosed || open(incident);
 
+  const incidents = query.data;
   const openCount = incidents?.filter(open)?.length ?? 0;
   const openCountName = openCount === 0 ? 'No' : openCount.toString();
   const closedCount = (incidents?.length ?? 0) - openCount;

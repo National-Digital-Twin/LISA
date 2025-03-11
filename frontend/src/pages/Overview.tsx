@@ -1,5 +1,5 @@
 // Global imports
-import { ReactElement, useState } from 'react';
+import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import Grid from '@mui/material/Grid2';
 import { Box, Button, Typography } from '@mui/material';
@@ -14,36 +14,17 @@ import { Format } from '../utils';
 import { useCreateLogEntry } from '../hooks';
 import Stage from '../components/Stage';
 import PageWrapper from '../components/PageWrapper';
-
-const GridListItem = ({
-  title,
-  text = undefined,
-  children = undefined
-}: {
-  title: string;
-  text?: string;
-  children?: ReactElement;
-}) => (
-  <Grid component="li" size={{ xs: 12, md: 6 }}>
-    <Box display="flex" flexDirection="column" gap={1}>
-      <Typography variant="h3" fontSize="1rem" fontWeight="bold">
-        {title}
-      </Typography>
-      {text && <Typography variant="body1">{text}</Typography>}
-      {children}
-    </Box>
-  </Grid>
-);
+import { GridListItem } from '../components/GridListItem';
 
 const Overview = () => {
   const { incidentId } = useParams();
-  const { incidents } = useIncidents();
+  const query = useIncidents();
   const changeIncidentStage = useChangeIncidentStage();
   const { createLogEntry } = useCreateLogEntry(incidentId);
   const [changingStage, setChangingStage] = useState<boolean>();
   const [settingInformation, setSettingInformation] = useState<boolean>();
 
-  const incident = incidents?.find((inc) => inc.id === incidentId);
+  const incident = query.data?.find((inc) => inc.id === incidentId);
   if (!incident) {
     return null;
   }
