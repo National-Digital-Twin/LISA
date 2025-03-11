@@ -25,14 +25,14 @@ spec:
           image: lisa-backend-image
           livenessProbe:
             httpGet:
-              path: /
+              path: /auth/logout-links
               port: 3000
             failureThreshold: 5
             periodSeconds: 30
             timeoutSeconds: 20
           readinessProbe:
               httpGet:
-                path: /
+                path: /auth/logout-links
                 port: 3000
               failureThreshold: 5
               periodSeconds: 30
