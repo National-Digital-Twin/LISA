@@ -129,4 +129,4 @@ jobs:
 
       - name: Cleanup
         if: always()
-        run: docker stop webapp
+        run: docker stop lisa/webapp
