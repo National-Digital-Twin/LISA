@@ -22,9 +22,9 @@ import theme from '../theme';
 
 const Logbook = () => {
   const { incidentId } = useParams();
-  const { incidents } = useIncidents();
+  const query = useIncidents();
   const { logEntries } = useLogEntries(incidentId);
-  const { createLogEntry, isLoading } = useCreateLogEntry(incidentId);
+  const { createLogEntry } = useCreateLogEntry(incidentId);
   const { user } = useAuth();
   const [adding, setAdding] = useState<boolean>();
   const [sortAsc, setSortAsc] = useState<boolean>(false);
@@ -52,16 +52,13 @@ const Logbook = () => {
   useLogEntriesUpdates(incidentId ?? '');
   const navigate = useNavigate();
 
-  const incident = incidents?.find((inc) => inc.id === incidentId);
+  const incident = query.data?.find((inc) => inc.id === incidentId);
   const subtitle = useMemo(() => Format.incident.name(incident), [incident]);
   const filterAuthors = useMemo(
     () => Format.incident.authors(user.current, logEntries),
     [logEntries, user]
   );
   const filterCategories = useMemo(() => Format.incident.categories(logEntries), [logEntries]);
-  if (!incident) {
-    return null;
-  }
 
   const onSort = (evt: MouseEvent<HTMLAnchorElement>) => {
     evt.preventDefault();
@@ -154,7 +151,6 @@ const Logbook = () => {
             entries={logEntries ?? []}
             onCreateEntry={onAddEntry}
             onCancel={onCancel}
-            loading={isLoading}
           />
         )}
 
