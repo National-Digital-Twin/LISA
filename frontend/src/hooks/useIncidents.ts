@@ -20,7 +20,7 @@ async function poll(
   const incidents = await get<Incident[]>('/incidents');
 
   if (attemptNumber <= 10) {
-    if (incidents!.find((incident) => incident.id === incidentId)) {
+    if (incidents.find((incident) => incident.id === incidentId)) {
       queryClient.invalidateQueries({ queryKey: ['incidents'] });
     } else {
       setTimeout(() => poll(incidentId, queryClient, attemptNumber + 1), 10000);

@@ -24,7 +24,7 @@ async function poll(
   const logEntries = await get<LogEntry[]>(`/incident/${incidentId}/logEntries`);
 
   if (attemptNumber <= 10) {
-    if (logEntries!.find((logEntry) => logEntry.id === logEntryId)) {
+    if (logEntries.find((logEntry) => logEntry.id === logEntryId)) {
       queryClient.invalidateQueries({ queryKey: [`incident/${incidentId}/logEntries`] });
     } else {
       setTimeout(() => poll(incidentId, logEntryId, queryClient, attemptNumber + 1), 10000);
