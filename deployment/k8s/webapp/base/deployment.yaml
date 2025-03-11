@@ -16,13 +16,7 @@ spec:
     spec:
       serviceAccountName: lisa-sa
       containers:
-        - envFrom:
-               - configMapRef:
-                   name: lisa-configs
-               - secretRef:
-                   name: lisa-secrets
-
-          image: lisa-image
+        - image: lisa-image
           livenessProbe:
             httpGet:
               path: /
