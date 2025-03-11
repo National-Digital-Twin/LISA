@@ -107,7 +107,7 @@ jobs:
           npm run build
           npm run bundle
 
-      - name: list files in dist dir
+      - name: List files in dist dir
         working-directory: frontend
         if: success()
         run: |
@@ -127,6 +127,3 @@ jobs:
           vuln-type: "os,library"
           severity: "CRITICAL,HIGH"
 
-      - name: Cleanup
-        if: always()
-        run: docker stop lisa/webapp
