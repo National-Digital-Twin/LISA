@@ -9,7 +9,6 @@ configMapGenerator:
     envs:
       - params.env
 
-
 patches:
   - path: patches/virtualService.yaml
     target:
@@ -17,7 +16,7 @@ patches:
   - path: patches/service-account.yaml
     target:
       kind: ServiceAccount
-      name: lisa-sa
+      name: lisa-backend-sa
   - path: patches/allow-ingress.yaml
     target:
       kind: AuthorizationPolicy
