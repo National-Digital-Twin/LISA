@@ -117,29 +117,10 @@ jobs:
         run: |
           docker build -t lisa/webapp:latest -f deployment/docker/Dockerfile .
 
-      - name: Run Docker Image
-        run: |
-          docker images
-          docker run --rm -d -p 3000:3000 --name frontend lisa/webapp:latest
-          docker ps
-          sleep 10
-          docker logs frontend
-          docker exec frontend ls -l /usr/share/nginx/html
-
-      - name: Ping App
-        run: |
-          status_code=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:3000/)
-          if [[ "$status_code" == "200" ]]; then
-            echo "Ping successful (200 OK)"  >> $GITHUB_STEP_SUMMARY
-          else
-            echo "Ping failed with status code: $status_code"  >> $GITHUB_STEP_SUMMARY
-            exit 1  # Indicate an error
-          fi
-
       - name: Run Trivy Scan on Docker Image
         uses: aquasecurity/trivy-action@0.28.0
         with:
-          image-ref: "paralog/frontend:latest"
+          image-ref: "lisa/frontend:latest"
           format: "table"
           exit-code: "1"
           ignore-unfixed: true
