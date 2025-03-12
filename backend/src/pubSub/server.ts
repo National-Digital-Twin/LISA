@@ -14,7 +14,7 @@ wss.on('connection', async (ws: WebSocket, request: IncomingMessage) => {
 
   try {
     const username = request.headers['sec-websocket-protocol'].split(',')[1].trim();
-    user = new User(username, '');
+    user = new User(username, '', '');
   } catch (error) {
     ws.close();
     console.log(error);
