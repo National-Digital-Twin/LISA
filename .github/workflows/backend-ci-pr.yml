@@ -1,4 +1,4 @@
-name: backend CI on PR
+name: Backend CI on PR
 
 on:
   workflow_call:
@@ -106,6 +106,7 @@ jobs:
 
       - name: List files in dist dir
         if: success()
+        working-directory: backend
         run: |
           ls -l dist/
 
