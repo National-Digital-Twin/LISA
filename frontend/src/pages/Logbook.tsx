@@ -8,7 +8,6 @@ import {
   Popover,
   TextField,
   Typography,
-  useMediaQuery
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
@@ -31,7 +30,7 @@ import {
 import { Format, Search as SearchUtil } from '../utils';
 import { type OnCreateEntry } from '../utils/handlers';
 import { type FieldValueType, type FilterType, type SpanType } from '../utils/types';
-import theme from '../theme';
+import { useResponsive } from '../hooks/useResponsiveHook';
 
 const Logbook = () => {
   const { incidentId } = useParams();
@@ -45,12 +44,11 @@ const Logbook = () => {
   const [searchText, setSearchText] = useState<string>('');
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const openFilters = Boolean(anchorEl);
+  const { isMobile } = useResponsive();
 
   const handleOpenFilters = (event: MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(anchorEl ? null : event.currentTarget);
   };
-
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   useEffect(() => {
     const preventRefresh = (ev: BeforeUnloadEvent) => {

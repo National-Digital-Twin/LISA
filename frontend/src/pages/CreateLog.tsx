@@ -7,7 +7,7 @@ import { type Referrer, type Incident } from 'common/Incident';
 import { Box, Typography, useMediaQuery } from '@mui/material';
 import Grid from '@mui/material/Grid2';
 import { FormField, FormFooter } from '../components/Form';
-import { useCreateIncident } from '../hooks/useIncidents';
+import { useCreateIncident } from '../hooks';
 import { Form, Incident as IncidentUtil, Validate } from '../utils';
 import { type FieldValueType, type ValidationError } from '../utils/types';
 import { PageTitle } from '../components';

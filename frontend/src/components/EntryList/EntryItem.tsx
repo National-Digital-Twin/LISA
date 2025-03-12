@@ -1,7 +1,7 @@
 // Global imports
 import { MouseEvent, useEffect, useMemo, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
-import { Box, Divider, Paper, Typography, useMediaQuery } from '@mui/material';
+import { Box, Divider, Paper, Typography } from '@mui/material';
 
 // Local imports
 import { type LogEntry } from 'common/LogEntry';
@@ -12,8 +12,8 @@ import Details from './Details';
 import EntryLocation from './EntryLocation';
 import Mentions from './Mentions';
 import Meta from './Meta';
-import theme from '../../theme';
 import { Format } from '../../utils';
+import { useResponsive } from '../../hooks/useResponsiveHook';
 
 interface Props {
   entry: LogEntry;
@@ -29,6 +29,7 @@ const EntryItem = ({
   onContentClick,
   onMentionClick
 }: Props) => {
+  const { isMobile } = useResponsive();
   const { hash } = useLocation();
   const divRef = useRef<HTMLDivElement>(null);
   const { id, offline } = entry;
@@ -47,8 +48,6 @@ const EntryItem = ({
       divRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
   }, [hash, id, disableScrollTo]);
-
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   return (
     <Box component={Paper} square id={id} ref={divRef} className={classes()}>
