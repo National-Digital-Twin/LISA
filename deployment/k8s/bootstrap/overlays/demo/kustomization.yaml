@@ -12,3 +12,4 @@ patches:
   - path: patches/gateway.yaml
     target:
       kind: Gateway
+

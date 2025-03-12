@@ -1,0 +1,17 @@
+
+apiVersion: security.istio.io/v1
+kind: AuthorizationPolicy
+metadata:
+  name: allow-ingress-to-lisa-backend
+spec:
+  selector:
+    matchLabels:
+      io.kompose.service: lisa-backend
+  action: ALLOW
+  rules:
+    - from:
+        - source:
+            principals : ["PLACE_HOLDER"]
+      to:
+        - operation:
+            methods: ["GET","POST","PUT"]

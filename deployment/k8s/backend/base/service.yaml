@@ -4,13 +4,13 @@ metadata:
   annotations: {}
 
   labels:
-    io.kompose.service: lisa
-  name: lisa
+    io.kompose.service: lisa-backend
+  name: lisa-backend
 spec:
   type: NodePort
   ports:
     - name: "80"
       port: 80
-      targetPort: 80
+      targetPort: 3000
   selector:
-    io.kompose.service: lisa
+    io.kompose.service: lisa-backend
