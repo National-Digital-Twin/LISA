@@ -1,10 +1,9 @@
+import { Typography } from '@mui/material';
+import Grid from '@mui/material/Grid2';
 // Local imports
 import { type Field } from 'common/Field';
 import { type LogEntry } from 'common/LogEntry';
-import bem from '../../../bem';
 import { FieldValue } from './FieldValue';
-
-const classes = bem('log-entry-fields');
 
 interface Props {
   field: Field;
@@ -20,13 +19,18 @@ export function FieldItem({ field, entry }: Readonly<Props>) {
     return null;
   }
 
-  const fieldClasses = field.className?.split(' ') ?? [];
   return (
-    <>
-      <div className={classes('label', fieldClasses)}>{field.label}</div>
-      <div className={classes('value')}>
-        <FieldValue field={field} entry={entry} value={value} />
-      </div>
-    </>
+    <Grid component="li" container width="100%" columnGap={32}>
+      <Grid size={{ xs: 12, md: 'grow' }}>
+        <Typography display="flex" variant="body1" fontWeight="bold">
+          {field.label}
+        </Typography>
+      </Grid>
+      <Grid size={{ xs: 12, md: 'auto' }}>
+        <Typography display="flex" variant="body1">
+          <FieldValue field={field} entry={entry} value={value} />
+        </Typography>
+      </Grid>
+    </Grid>
   );
 }
