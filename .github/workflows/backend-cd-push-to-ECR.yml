@@ -78,6 +78,7 @@ jobs:
       - name: Build Backend
         run: |
           npm run build
+          npm run bundle
 
       - name: Build Docker Image
         run: |
