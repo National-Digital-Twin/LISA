@@ -1,13 +1,39 @@
+
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
+
 metadata:
-  name: lisa
+  name: lisa-virtual-service
 spec:
   hosts:
     - placeholder
   gateways:
     - placeholder
   http:
+    - match:
+        - uri:
+            prefix: /transparent-proxy
+
+      route:
+        - destination:
+            host: lisa-transparent-proxy
+            port:
+              number: 80
+    - match:
+        - uri:
+            prefix: /api
+      headers:
+        response:
+          add:
+            Cache-Control: "no-cache, no-store, must-revalidate"
+            Pragma: "no-cache"
+            Expires: "0"
+            Content-Security-Policy: "placeholder"
+      route:
+        - destination:
+            host: lisa-backend
+            port:
+              number: 80
 
     # Rule for root ("/") to prevent caching and add CSP header
     - match:
@@ -43,3 +69,4 @@ spec:
             response:
               add:
                 Content-Security-Policy: "placeholder"
+
