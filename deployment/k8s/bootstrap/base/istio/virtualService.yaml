@@ -13,7 +13,6 @@ spec:
     - match:
         - uri:
             prefix: /transparent-proxy
-
       route:
         - destination:
             host: lisa-transparent-proxy
