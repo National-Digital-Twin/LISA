@@ -1,3 +1,4 @@
+/* eslint-disable dot-notation */
 // Global imports
 import * as sparql from 'rdf-sparql-builder';
 import { Request } from 'express';
@@ -15,6 +16,10 @@ async function sendInsertQuery(req: Request, insertQuery) {
 
   if (req.headers['X-Auth-Request-Access-Token']) {
     headers['X-Auth-Request-Access-Token'] = req.headers['X-Auth-Request-Access-Token'];
+  }
+
+  if (req.headers['Authorization']) {
+    headers['Authorization'] = req.headers['Authorization'];
   }
 
   const insertResp = await fetch(url, {
@@ -76,7 +81,13 @@ export async function select(req: Request, {
   };
 
   if (req.headers['X-Auth-Request-Access-Token']) {
+    console.log('Temporary logging - X-Auth token found');
     headers['X-Auth-Request-Access-Token'] = req.headers['X-Auth-Request-Access-Token'];
+  }
+
+  if (req.headers['Authorization']) {
+    console.log('Temporary logging - Authorization found');
+    headers['Authorization'] = req.headers['Authorization'];
   }
 
   const selectResp = await fetch(url, {
