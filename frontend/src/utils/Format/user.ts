@@ -8,3 +8,12 @@ export function user(userObj?: User): string {
   }
   return '';
 }
+
+export const userInitials = (userObj?: User): string => {
+
+  if (userObj) {
+    const name = userObj.displayName ?? userObj.username;
+    return pretty.initials(name);
+  }
+  return '';
+};

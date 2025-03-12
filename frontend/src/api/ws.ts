@@ -37,7 +37,9 @@ export class WebSocketClient {
 
   private connect(isRestoration: boolean = false) {
     const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
-    const ws = new WebSocket(`${protocol}://${window.location.host}/api/ws`, [protocol, this.user.username]);
+    /* eslint-disable-next-line no-restricted-globals */
+    const backendHost = import.meta.env.VITE_BACKEND_HOST || self.window.location.host;
+    const ws = new WebSocket(`${protocol}://${backendHost}/api/ws`, [protocol, this.user.username]);
     ws.onopen = () => {
       this.handleOpen(isRestoration);
     };

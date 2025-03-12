@@ -236,7 +236,8 @@
     bottom: 0;
     right: 0;
 
-    i, svg {
+    i,
+    svg {
       background-size: contain;
       display: inline-block;
       height: 36px;
@@ -374,34 +375,8 @@
   border-radius: 20px;
 }
 
-
 [data-lexical-mention] {
-  background-color: colors.$blue-light;
-  padding: 3px 6px;
-  border-radius: 4px;
-  font-weight: bold;
-  position: relative;
-  cursor: pointer;
   &::before {
-    content: "@";
-  }
-  &:hover {
-    background-color: colors.$blue;
-    color: colors.$white;
-  }
-}
-
-
-.mention {
-  white-space: nowrap;
-}
-.lexical-html {
-  .mention {
-    background-color: colors.$blue-light;
-    cursor: pointer;
-    &:hover, &:active, &:focus {
-      background-color: colors.$blue;
-      color: colors.$white;
-    }
+    content: '@';
   }
 }

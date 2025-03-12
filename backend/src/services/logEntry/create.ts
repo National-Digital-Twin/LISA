@@ -84,10 +84,10 @@ export async function create(req: Request, res: Response) {
     triples.push([entryIdNode, ns.ies.inLocation, locationIdNode]);
   }
 
-  await ia.insertData(triples);
+  await ia.insertData(req, triples);
 
   userMentions.forEach((mention) => {
-    createNotification({
+    createNotification(req, {
       recipient: mention.username,
       type: 'UserMentionNotification',
       entryId: entry.id,

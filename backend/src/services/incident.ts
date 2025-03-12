@@ -52,7 +52,7 @@ export async function create(req: Request, res: Response) {
   }
   referrerTriples.push([incidentIdNode, ns.lisa.hasReferrer, referrerNode]);
 
-  await ia.insertData([
+  await ia.insertData(req, [
     [incidentIdNode, ns.rdf.type, ns.lisa(addIncidentSuffix(incident.type))],
     [incidentIdNode, ns.ies.hasName, literalString(incident.name)],
     [incidentIdNode, ns.lisa.createdAt, literalDate(new Date())],
@@ -84,7 +84,7 @@ export async function changeStage(req: Request, res: Response) {
 
   const notExistsFilter = new TriplePattern('?x', ns.ies.isEndOf, '?lastStateNodeId');
 
-  const results = await ia.select({
+  const results = await ia.select(req, {
     selection: ['?stage', '?lastStateNodeId'],
     clause: [
       ['?lastStateNodeId', ns.ies.isStateOf, incidentIdNode],
@@ -122,7 +122,7 @@ export async function changeStage(req: Request, res: Response) {
   const incidentStateNode = ns.data(incidentState);
   const startDateNode = literalDate(new Date());
 
-  await ia.insert({
+  await ia.insert(req, {
     triples: [
       // Closing the last state
       [lastStateBoundingStateNode, ns.ies.inPeriod, startDateNode],
@@ -185,7 +185,7 @@ function getName(row: ia.ResultRow, amendments?: Amendments): string {
   return amendments?.name || row.name?.value;
 }
 
-export async function get(_: Request, res: Response) {
+export async function get(req: Request, res: Response) {
   const typeFilters = Object.keys(IncidentTypes).map(
     (value: string) => `<${ns.lisa(addIncidentSuffix(value as IncidentType)).value}>`
   );
@@ -193,7 +193,7 @@ export async function get(_: Request, res: Response) {
   const requests: Promise<ia.ResultRow[]>[] = [];
 
   requests.push(
-    ia.select({
+    ia.select(req, {
       clause: [
         ['?id', ns.lisa.hasLogEntry, '?entryId'],
         ['?entryId', ns.lisa.createdAt, '?createdAt'],
@@ -210,7 +210,7 @@ export async function get(_: Request, res: Response) {
   const valuesMappedtypeFilters = typeFilters.map((typeFilter) => `(${typeFilter})`);
 
   requests.push(
-    ia.select({
+    ia.select(req, {
       clause: [
         ['?id', ns.rdf.type, '?type'],
         ['?isStateOf', ns.ies.isStateOf, '?id'],
@@ -270,7 +270,7 @@ export async function get(_: Request, res: Response) {
 export async function getAttachments(req: Request, res: Response) {
   const { incidentId } = req.params;
 
-  const results = await ia.select({
+  const results = await ia.select(req, {
     clause: [
       [ns.data(incidentId), ns.lisa.hasLogEntry, '?id'],
       ['?id', ns.lisa.createdAt, '?createdAt'],
