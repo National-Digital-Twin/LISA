@@ -107,7 +107,7 @@ jobs:
         run: |
           pwd
           ls -l
-          ls -l ./backend/dist/          
+          cd backend && ls -l
           ls -l backend/dist/
 
       - name: Build Docker Image
