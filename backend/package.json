@@ -13,7 +13,7 @@
     "bundle": "npm run build && npx esbuild src/server.ts --platform=node --target=es2022,node20 --format=esm --inject:./src/cjs-shim.ts --bundle --minify --sourcemap --sources-content=false --outfile=dist/server.mjs"
   },
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "@aws-sdk/client-cognito-identity-provider": "^3.621.0",
     "@aws-sdk/client-s3": "^3.621.0",

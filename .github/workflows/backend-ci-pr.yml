@@ -1,12 +1,12 @@
-name: Frontend CI on PR
+name: Backend CI on PR
 
 on:
   workflow_call:
   pull_request:
     paths:
-      - "frontend/**"
-      - ".github/workflows/frontend-ci-pr.yml"
-      - ".github/workflows/frontend-ci-pr-merge.yml"
+      - "backend/**"
+      - ".github/workflows/backend-ci-pr.yml"
+      - ".github/workflows/backend-ci-pr-merge.yml"
   workflow_dispatch:
 
 permissions:
@@ -57,7 +57,6 @@ jobs:
         run: npm ci
 
       - name: Run Linting
-        working-directory: frontend
         run: npm run lint
         continue-on-error: true
 
@@ -74,7 +73,7 @@ jobs:
         uses: aquasecurity/trivy-action@0.28.0
         with:
           scan-type: "fs"
-          scan-ref: frontend
+          scan-ref: backend
           format: "table"
           exit-code: "1"
           ignore-unfixed: true
@@ -100,25 +99,25 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
-      - name: Build Frontend
-        run: |
+      - name: Build backend
+        run: | 
           npm run build
           npm run bundle
 
       - name: List files in dist dir
         if: success()
-        working-directory: frontend
+        working-directory: backend
         run: |
           ls -l dist
 
       - name: Build Docker Image
         run: |
-          docker build -t lisa/webapp:latest -f Dockerfile.frontend .
+          docker build -t lisa/api:latest -f Dockerfile.backend .
 
       - name: Run Trivy Scan on Docker Image
         uses: aquasecurity/trivy-action@0.28.0
         with:
-          image-ref: "lisa/webapp:latest"
+          image-ref: "lisa/api:latest"
           format: "table"
           exit-code: "1"
           ignore-unfixed: true
