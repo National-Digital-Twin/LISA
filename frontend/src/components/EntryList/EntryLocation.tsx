@@ -1,6 +1,7 @@
 // Global imports
 import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
+import { Box, Typography } from '@mui/material';
 
 // Local imports
 import { type LogEntry } from 'common/LogEntry';
@@ -18,13 +19,19 @@ export default function EntryLocation({ entry }: Readonly<Props>) {
   }
 
   return (
-    <ul className="log-entry-location">
-      <li>Location:</li>
-      <li>
-        {link ? (
-          <Link to={link}>{Format.entry.location(entry)}</Link>
-        ) : Format.entry.location(entry)}
-      </li>
-    </ul>
+    <Box display="flex" flexDirection="row" component="ul" gap={0.5}>
+      <Typography component="li" variant="body1" fontWeight="bold">
+        Location:
+      </Typography>
+      {link ? (
+        <Typography component={Link} to={link} variant="body1" fontWeight={600}>
+          {Format.entry.location(entry)}
+        </Typography>
+      ) : (
+        <Typography component="li" variant="body1">
+          {Format.entry.location(entry)}
+        </Typography>
+      )}
+    </Box>
   );
 }

@@ -1,6 +1,7 @@
 // '_LINKS/BUTTONS.SCSS' - IMPORTED INTO APP.SCSS
 
 @use 'colors';
+@use 'ndtp';
 
 a:link,
 a:visited,
@@ -8,6 +9,6 @@ a:active,
 a:hover {
   text-decoration: none;
   color: colors.$blue;
-  font-family: lato-bold, serif;
+  font-family: ndtp.$font-family;
   border-bottom: 1px solid transparent;
 }

@@ -1,4 +1,5 @@
 import { type LogEntry } from 'common/LogEntry';
+import { Box, Typography } from '@mui/material';
 import AttachmentLink from '../AttachmentLink';
 
 interface Props {
@@ -12,13 +13,15 @@ export default function Attachments({ entry }: Readonly<Props>) {
   }
 
   return (
-    <ul className="log-entry-attachments">
-      <li>Attachments:</li>
+    <Box display="flex" flexDirection="row" flexWrap="wrap" gap={0.5}>
+      <Typography component="li" variant="body1" fontWeight="bold">
+        Attachments:
+      </Typography>
       {attachments.map((attachment) => (
-        <li key={attachment.key}>
+        <Box displayPrint="none" key={attachment.key}>
           <AttachmentLink attachment={attachment} isOnServer={!entry.offline} />
-        </li>
+        </Box>
       ))}
-    </ul>
+    </Box>
   );
 }

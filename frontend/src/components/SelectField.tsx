@@ -90,7 +90,7 @@ const SelectField = ({
       onChange={(_, selection) => handleOnChange(selection)}
       renderOption={(props, option) => (
         // eslint-disable-next-line react/jsx-props-no-spreading
-        <li {...props}>
+        <li {...props} key={`${option.index}-${option.subIndex}`}>
           {option.index && (
             <span style={{ marginRight: '1rem' }}>
               {option.index}
