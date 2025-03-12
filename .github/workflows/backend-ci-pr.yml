@@ -105,6 +105,9 @@ jobs:
       - name: List files in dist dir
         if: success()
         run: |
+          pwd
+          ls -l
+          ls -l ./backend/dist/          
           ls -l backend/dist/
 
       - name: Build Docker Image
