@@ -6,7 +6,7 @@ export const MAP_STYLE: StyleSpecification = {
   sources: {
     'raster-tiles': {
       type: 'raster',
-      tiles: ['/transparent-proxy/maps/raster/v1/zxy/Outdoor_3857/{z}/{x}/{y}.png?'],
+      tiles: ['/transparent-proxy/os/maps/raster/v1/zxy/Outdoor_3857/{z}/{x}/{y}.png?'],
       tileSize: 256
     }
   },
