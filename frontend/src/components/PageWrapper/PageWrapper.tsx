@@ -1,13 +1,22 @@
+import { ReactNode } from 'react';
 import { Box } from '@mui/material';
-import { ReactElement } from 'react';
 
-const PageWrapper = ({ children }: { children: ReactElement[] | ReactElement }) => (
+const PageWrapper = ({ children }: { children: ReactNode }) => (
   <Box
     display="flex"
     flexDirection="column"
     gap={4}
     paddingY="130px"
-    sx={{ paddingLeft: { xs: '20px', md: '60px' }, paddingRight: { xs: '20px', md: '60px' } }}
+    maxWidth="1500px"
+    margin="auto"
+    sx={{
+      '@media print': {
+        padding: 0,
+        marginTop: '1rem'
+      },
+      paddingLeft: { xs: '20px', md: '60px' },
+      paddingRight: { xs: '20px', md: '60px' }
+    }}
     minHeight="calc(100vh - 150px)"
   >
     {children}
