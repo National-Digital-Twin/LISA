@@ -101,8 +101,7 @@ jobs:
         run: npm ci
 
       - name: Build backend
-        run: |
-          npm run build
+        run: npm run build
 
       - name: List files in dist dir
         if: success()

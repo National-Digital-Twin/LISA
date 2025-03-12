@@ -1,37 +1,5 @@
-FROM node:23-alpine AS builder
+# FROM nginx as runner
+FROM nginx:1.27
 
-WORKDIR /app
-
-ARG BACKEND_URL
-ARG BACKEND_HOST
-ARG NPM_TOKEN
-
-# Setup npm authentication with GitHub registry
-RUN echo "@national-digital-twin:registry=https://npm.pkg.github.com/" >> .npmrc && \
-    echo "//npm.pkg.github.com/:_authToken=${NPM_TOKEN}" >> .npmrc
-
-# Copy root package files
-COPY package.json /app/
-COPY package-lock.json /app/
-
-# Copy the required workspace code
-COPY frontend /app/frontend
-COPY common /app/common
-
-# Install dependencies within the required workspaces
-RUN npm install --workspace=frontend
-RUN npm install --workspace=common
-RUN rm -f .npmrc
-
-# Set environment variables for the frontend build
-ENV VITE_BACKEND_URL=$BACKEND_URL
-ENV VITE_BACKEND_HOST=$BACKEND_HOST
-
-# Run the build command
-RUN npm run build --workspace=frontend
-
-# Start a new stage from scratch using NGINX as the runner
-FROM nginx as runner
-
-# Copy the built files from the builder stage to the nginx default directory
-COPY --from=builder /app/frontend/dist /usr/share/nginx/html
+# Copy the built files from the builder stage to the runner stage
+COPY frontend/dist /usr/share/nginx/html
