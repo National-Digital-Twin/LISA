@@ -9,7 +9,7 @@ import { mentionable } from './mentionable';
 import { pretty } from './pretty';
 import { time } from './time';
 import { timestamp } from './timestamp';
-import { user } from './user';
+import { user, userInitials } from './user';
 
 export const VIEW_LOCATION = 'View location';
 
@@ -24,7 +24,8 @@ const Format = {
   pretty,
   time,
   timestamp,
-  user
+  user,
+  userInitials
 };
 
 export default Format;

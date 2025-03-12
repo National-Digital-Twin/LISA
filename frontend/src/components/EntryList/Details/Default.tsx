@@ -1,4 +1,5 @@
 import { ReactNode } from 'react';
+import { Box } from '@mui/material';
 
 import { type LogEntry } from 'common/LogEntry';
 import { Format } from '../../../utils';
@@ -21,8 +22,7 @@ export default function Default({ entry }: Readonly<Props>) {
   return (
     <>
       {content}
-      {content && fields && <hr />}
-      {fields}
+      {fields && <Box mt={4}>{fields}</Box>}
     </>
   );
 }
