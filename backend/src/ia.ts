@@ -15,6 +15,7 @@ async function sendInsertQuery(insertQuery) {
     },
     body: insertQuery.toString()
   });
+  console.log(insertResp);
   if (insertResp.status !== 204) {
     throw new Error(`Unexpected response status: ${insertResp.status}`);
   }
