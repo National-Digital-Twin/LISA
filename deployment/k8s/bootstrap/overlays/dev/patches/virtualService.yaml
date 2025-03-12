@@ -7,5 +7,13 @@
   value: lisa/lisa-ingress-gateway
 
 - op: replace
-  path: /spec/http/1/route/2/headers/response/add/Content-Security-Policy
+  path: /spec/http/1/headers/response/add/Content-Security-Policy
+  value: "connect-src 'self' data: wss://lisa.dev.ndtp.co.uk ws://lisa.dev.ndtp.co.uk https://lisa.dev.ndtp.co.uk https://landing.dev.ndtp.co.uk https://access.dev.ndtp.co.uk https://api.os.uk https://nominatim.openstreetmap.org https://eu-west-224focjndv.auth.eu-west-2.amazoncognito.com; worker-src 'self' blob:; child-src 'self' blob:; img-src 'self' data: blob:"
+
+- op: replace
+  path: /spec/http/2/headers/response/add/Content-Security-Policy
+  value: "connect-src 'self' data: wss://lisa.dev.ndtp.co.uk ws://lisa.dev.ndtp.co.uk https://lisa.dev.ndtp.co.uk https://landing.dev.ndtp.co.uk https://access.dev.ndtp.co.uk https://api.os.uk https://nominatim.openstreetmap.org https://eu-west-224focjndv.auth.eu-west-2.amazoncognito.com; worker-src 'self' blob:; child-src 'self' blob:; img-src 'self' data: blob:"
+
+- op: replace
+  path: /spec/http/3/route/0/headers/response/add/Content-Security-Policy
   value: "connect-src 'self' data: wss://lisa.dev.ndtp.co.uk ws://lisa.dev.ndtp.co.uk https://lisa.dev.ndtp.co.uk https://landing.dev.ndtp.co.uk https://access.dev.ndtp.co.uk https://api.os.uk https://nominatim.openstreetmap.org https://eu-west-224focjndv.auth.eu-west-2.amazoncognito.com; worker-src 'self' blob:; child-src 'self' blob:; img-src 'self' data: blob:"
