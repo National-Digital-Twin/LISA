@@ -35,7 +35,6 @@ jobs:
         run: npm ci
 
       - name: Check for Outdated Dependencies
-        working-directory: backend
         run: npm audit
         continue-on-error: true
 
@@ -56,11 +55,9 @@ jobs:
           node-version: "23.x"
 
       - name: Install Dependencies
-        working-directory: backend
         run: npm ci
 
       - name: Run Linting
-        working-directory: backend
         run: npm run lint
         continue-on-error: true
 
@@ -101,16 +98,13 @@ jobs:
           node-version: "23.x"
 
       - name: Install Dependencies
-        working-directory: backend
         run: npm ci
 
       - name: Build backend
-        working-directory: backend
         run: |
           npm run build
 
       - name: List files in dist dir
-        working-directory: backend
         if: success()
         run: |
           ls -l dist/

@@ -73,11 +73,9 @@ jobs:
           node-version: "23.x"
 
       - name: Install Dependencies
-        working-directory: backend
         run: npm ci
 
       - name: Build Frontend
-        working-directory: frontend
         run: |
           npm run build
 
@@ -87,7 +85,7 @@ jobs:
           docker build --load \
                   -t ${{ inputs.aws_account_number }}.dkr.ecr.eu-west-2.amazonaws.com/${{ inputs.repo_name }}:${{ github.sha }} \
                   -t ${{ inputs.aws_account_number }}.dkr.ecr.eu-west-2.amazonaws.com/${{ inputs.repo_name }}:${{ inputs.version }} \
-                  -f ./Dockerfile .
+                  -f ./Dockerfile.frontend .
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
