@@ -13,8 +13,8 @@ async function sendInsertQuery(req: Request, insertQuery) {
     'Content-Type': 'application/sparql-update',
   };
 
-  if (req.headers['x-auth-request-access-token']) {
-    headers['X-Auth-Request-Access-Token'] = req.headers['x-auth-request-access-token'];
+  if (req.headers['X-Auth-Request-Access-Token']) {
+    headers['X-Auth-Request-Access-Token'] = req.headers['X-Auth-Request-Access-Token'];
   }
 
   const insertResp = await fetch(url, {
@@ -75,8 +75,8 @@ export async function select(req: Request, {
     'Content-Type': 'application/sparql-query',
   };
 
-  if (req.headers['x-auth-request-access-token']) {
-    headers['X-Auth-Request-Access-Token'] = req.headers['x-auth-request-access-token'];
+  if (req.headers['X-Auth-Request-Access-Token']) {
+    headers['X-Auth-Request-Access-Token'] = req.headers['X-Auth-Request-Access-Token'];
   }
 
   const selectResp = await fetch(url, {
