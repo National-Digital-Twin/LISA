@@ -14,12 +14,16 @@ function open(incident: Incident) {
 
 const NotificationsBanner = () => {
   const { incidentId } = useParams();
-  const { incidents } = useIncidents();
+  const query = useIncidents();
 
+  const incidents = query.data;
   const incident = incidents?.find((inc) => inc.id === incidentId);
   const incidentTitle = useMemo(() => Format.incident.title(incident), [incident]);
   const openCount = incidents?.filter(open)?.length ?? 'No';
-  const countTitle = useMemo(() => `${openCount} active incident${openCount === 1 ? '' : 's'}`, [openCount]);
+  const countTitle = useMemo(
+    () => `${openCount} active incident${openCount === 1 ? '' : 's'}`,
+    [openCount]
+  );
 
   return (
     <div className="notification-container">

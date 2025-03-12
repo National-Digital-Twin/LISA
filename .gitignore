@@ -2,9 +2,11 @@
 node_modules/*
 frontend/node_modules/*
 frontend/qa/node_modules/*
+common/node_modules/*
 
 # build
 **/dist/*
+**/dev-dist/*
 
 # IDE / OS
 .idea
@@ -32,3 +34,4 @@ frontend/qa/*.deb
 #jest
 frontend/coverage
 
+.npmrc

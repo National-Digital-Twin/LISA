@@ -6,7 +6,7 @@ import IconArrowDown from '../assets/images/icon-arrow-down-thick.svg';
 import { useIncidents } from '../hooks';
 
 const IncidentSwitcher = () => {
-  const { incidents } = useIncidents();
+  const query = useIncidents();
   const [open, setOpen] = useState<boolean>(false);
 
   const handleToggle = () => {
@@ -23,7 +23,7 @@ const IncidentSwitcher = () => {
       </button>
       {open && (
         <div className="dropdown">
-          {incidents?.map((incident) => (
+          {query.data?.map((incident) => (
             <div key={incident.id} className="item">
               {incident.name}
             </div>
