@@ -80,7 +80,6 @@ jobs:
           npm run build
 
       - name: Build Docker Image
-        working-directory: deployment/docker
         run: |
           docker build --load \
                   -t ${{ inputs.aws_account_number }}.dkr.ecr.eu-west-2.amazonaws.com/${{ inputs.repo_name }}:${{ github.sha }} \

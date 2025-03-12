@@ -112,7 +112,7 @@ jobs:
 
       - name: Build Docker Image
         run: |
-          docker build -t lisa/api:latest -f deployment/docker/Dockerfile.backend .
+          docker build -t lisa/api:latest -f Dockerfile.backend .
 
       - name: Run Trivy Scan on Docker Image
         uses: aquasecurity/trivy-action@0.28.0
