@@ -15,9 +15,10 @@ async function sendInsertQuery(req: Request, insertQuery) {
   };
 
   if (req.headers['x-auth-request-access-token']) {
-    console.log('Temporary logging - X-Auth token found');
     headers['Authorization'] = `Bearer ${req.headers['x-auth-request-access-token']}`;
   }
+
+  console.log(`Temporary logging - INSERT query - ${JSON.stringify(headers)}`);
 
   const insertResp = await fetch(url, {
     method: 'POST',
@@ -78,9 +79,10 @@ export async function select(req: Request, {
   };
 
   if (req.headers['x-auth-request-access-token']) {
-    console.log('Temporary logging - X-Auth token found');
     headers['Authorization'] = `Bearer ${req.headers['x-auth-request-access-token']}`;
   }
+
+  console.log(`Temporary logging - SELECT query - ${JSON.stringify(headers)}`);
 
   const selectResp = await fetch(url, {
     method: 'POST',
