@@ -51,7 +51,7 @@ export async function create(req: Request, res: Response) {
       [entryIdNode, ns.ies.inPeriod, literalDate(new Date(entry.dateTime))],
 
       [authorNode, ns.rdf.type, ns.ies.Creator],
-      [authorNode, ns.ies.hasName, literalString(res.locals.user.username)],
+      [authorNode, ns.ies.hasName, literalString(res.locals.user.displayName)],
       [authorNode, ns.ies.isParticipantIn, entryIdNode],
 
       ...fields.extract(entry, entryIdNode),

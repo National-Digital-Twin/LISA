@@ -23,7 +23,7 @@ export async function create(req: Request, res: Response) {
   const incident = Incident.check(req.body);
 
   incident.id = randomUUID();
-  incident.reportedBy = { username: res.locals.user.username };
+  incident.reportedBy = { username: res.locals.user.username, displayName: res.locals.user.displayName };
 
   const incidentBoundingState = randomUUID();
   const incidentState = randomUUID();
@@ -58,7 +58,7 @@ export async function create(req: Request, res: Response) {
     [incidentIdNode, ns.lisa.createdAt, literalDate(new Date())],
 
     [reportedByNode, ns.rdf.type, ns.ies.Creator],
-    [reportedByNode, ns.ies.hasName, literalString(incident.reportedBy.username)],
+    [reportedByNode, ns.ies.hasName, literalString(incident.reportedBy.displayName)],
     [reportedByNode, ns.ies.isParticipantIn, incidentIdNode],
 
     ...referrerTriples,
@@ -142,7 +142,7 @@ export async function changeStage(req: Request, res: Response) {
       [entryIdNode, ns.lisa.hasSequence, '?seq'],
 
       [authorNode, ns.rdf.type, ns.ies.Creator],
-      [authorNode, ns.ies.hasName, literalString(res.locals.user.username)],
+      [authorNode, ns.ies.hasName, literalString(res.locals.user.displayName)],
       [authorNode, ns.ies.isParticipantIn, entryIdNode]
     ],
     where: [
@@ -259,7 +259,8 @@ export async function get(req: Request, res: Response) {
         name: getName(row, amendmentsByIncident[nodeValue(row.id.value)]),
         referrer: getReferrer(row, amendmentsByIncident[nodeValue(row.id.value)]),
         reportedBy: {
-          username: row.reportedByName?.value || undefined
+          username: row.reportedByName?.value || undefined,
+          displayName: row.reportedByName?.value || undefined
         }
       }) satisfies Incident
   );
@@ -290,7 +291,8 @@ export async function getAttachments(req: Request, res: Response) {
       ({
         logEntryId: nodeValue(row.id.value),
         author: {
-          username: row.authorName?.value
+          username: row.authorName?.value,
+          displayName: row.authorName?.value
         },
         uploadedAt: row.createdAt.value,
         name: row.attachmentName.value,
