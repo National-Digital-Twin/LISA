@@ -4,7 +4,7 @@ import { Format, Icons } from '../../../utils';
 interface Props {
   entry: LogEntry;
 }
-export default function ChangeStage({ entry }: Props) {
+export default function ChangeStage({ entry }: Readonly<Props>) {
   const { stage } = entry;
   if (!stage) {
     return null;
@@ -12,7 +12,7 @@ export default function ChangeStage({ entry }: Props) {
 
   return (
     <>
-      Stage changed to
+      <span>Stage changed to</span>
       <span className={`incident-stage ${stage}`}>
         <Icons.Stage />
         {Format.incident.stage(stage)}

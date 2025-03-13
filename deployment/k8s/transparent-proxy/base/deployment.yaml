@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations: {}
+  name: transparent-proxy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: lisa-transparent-proxy
+  template:
+    metadata:
+      annotations: {}
+      labels:
+        io.kompose.service: lisa-transparent-proxy
+    spec:
+      serviceAccountName: lisa-transparent-proxy-sa
+      containers:
+        - envFrom:
+               - configMapRef:
+                   name: lisa-transparent-proxy-configs
+               - secretRef:
+                   name: lisa-transparent-proxy-secrets
+
+
+          image: lisa-transparent-proxy-image
+          livenessProbe:
+            httpGet:
+              path: /transparent-proxy/health
+              port: 80
+            failureThreshold: 5
+            periodSeconds: 30
+            timeoutSeconds: 10
+          name: lisa-transparent-proxy
+          ports:
+            - containerPort: 80
+              protocol: TCP
+      restartPolicy: Always

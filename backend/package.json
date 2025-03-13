@@ -1,26 +1,24 @@
 {
   "name": "backend",
   "version": "0.0.0",
-  "description": "C477 middleware",
+  "description": "L!SA middleware",
   "type": "module",
   "scripts": {
     "build": "tsc --noEmit",
     "start": "if [ -r ./.env-iam ]; then . ./.env-iam; fi && DOTENV_CONFIG_PATH=.env tsx ./src/server.ts",
-    "dev": "if [ -r ./.env-iam ]; then . ./.env-iam; fi && DOTENV_CONFIG_PATH=.env-local npx tsx watch --clear-screen=false ./src/server.ts",
+    "dev": "if [ -r ./.env-iam ]; then . ./.env-iam; fi && DOTENV_CONFIG_PATH=.env-local cross-env NODE_ENV=development npx tsx watch --clear-screen=false ./src/server.ts",
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 3",
     "lint:fix": "eslint --fix .",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "bundle": "npm run build && npx esbuild src/server.ts --platform=node --target=es2022,node20  --format=esm --inject:./src/cjs-shim.ts --bundle --minify --sourcemap --sources-content=false --outfile=dist/server.mjs"
+    "bundle": "npm run build && npx esbuild src/server.ts --platform=node --target=es2022,node20 --format=esm --inject:./src/cjs-shim.ts --bundle --minify --sourcemap --sources-content=false --outfile=dist/server.mjs"
   },
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "@aws-sdk/client-cognito-identity-provider": "^3.621.0",
     "@aws-sdk/client-s3": "^3.621.0",
-    "@aws-sdk/client-ssm": "^3.632.0",
     "@rdfjs/data-model": "^2.0.2",
     "@rdfjs/namespace": "^2.0.1",
-    "aws-jwt-verify": "^4.0.1",
     "body-parser": "^1.20.2",
     "cookie-parser": "^1.4.6",
     "dotenv": "^16.4.5",

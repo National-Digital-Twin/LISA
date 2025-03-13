@@ -11,10 +11,12 @@ import { type LogEntry } from 'common/LogEntry';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { LogEntryTypes } from 'common/LogEntryTypes';
 import { type MentionableType } from 'common/Mentionable';
-import { bem, Icons, Map as MapUtil } from '../../utils';
+import { IconButton } from '@mui/material';
+import { bem, Icons, MapUtils } from '../../utils';
 import { type FullLocationType, type SpanType } from '../../utils/types';
 import EntryItem from '../EntryList/EntryItem';
 import { INITIAL_VIEW_STATE, MAP_BOUNDS, MAP_STYLE } from './config';
+import { useResponsive } from '../../hooks/useResponsiveHook';
 
 type LogEntryMarkerType = {
   id: string;
@@ -27,7 +29,7 @@ interface Props {
   marker: LogEntryMarkerType;
   onClick: (marker: LogEntryMarkerType) => void;
 }
-function LogEntryMarker({ marker, onClick }: Props) {
+function LogEntryMarker({ marker, onClick }: Readonly<Props>) {
   const classes = bem('map-marker', marker.highlighted ? 'highlighted' : '', marker.colour);
   return (
     <Marker
@@ -50,7 +52,8 @@ interface MapProps {
 export default function IncidentMap({
   logEntries,
   highlightId = undefined
-}: MapProps) {
+}: Readonly<MapProps>) {
+  const { isMobile } = useResponsive();
   const [redrawing, setRedrawing] = useState<boolean>(false);
   const mapRef = useRef<MapRef>(null);
   const navigate = useNavigate();
@@ -71,7 +74,7 @@ export default function IncidentMap({
     }).filter((m) => !!m) as LogEntryMarkerType[];
   }, [logEntries, highlightId]);
 
-  const mapBounds: LngLatBoundsLike | undefined = useMemo(() => MapUtil.getBounds(
+  const mapBounds: LngLatBoundsLike | undefined = useMemo(() => MapUtils.getBounds(
     markers.map((m) => m.coordinates)
   ), [markers]);
 
@@ -94,7 +97,6 @@ export default function IncidentMap({
     setTimeout(() => {
       if (mapBounds && mapRef.current) {
         zoomMap(mapBounds, highlighted);
-        // mapRef.current.fitBounds(mapBounds, { padding: 60, duration: 250 });
       }
     }, 100);
   }, [mapBounds, highlighted]);
@@ -134,7 +136,7 @@ export default function IncidentMap({
 
   const onEntryContentClick = (evt: MouseEvent<HTMLElement>) => {
     const target: SpanType = evt.target as unknown as SpanType;
-    if (target && target.getAttribute('data-lexical-mention')) {
+    if (target?.getAttribute('data-lexical-mention')) {
       const type = target.getAttribute('data-lexical-mention-type') as MentionableType;
       if (type === 'LogEntry') {
         const id = target.getAttribute('data-lexical-mention') as string;
@@ -173,14 +175,12 @@ export default function IncidentMap({
             onContentClick={onEntryContentClick}
             onMentionClick={() => {}}
           />
-          {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
-          <button type="button" className="visit-log" onClick={onVisitLog} title="See in incident log">
+          {!isMobile && <IconButton className="visit-log" onClick={onVisitLog} title="See in incident log">
             <Icons.LogBook />
-          </button>
-          {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
-          <button type="button" className="close-info" onClick={onCloseInfo} title="Close information">
-            <Icons.Close />
-          </button>
+          </IconButton>}
+          <IconButton className="close-info" onClick={onCloseInfo} title="Close information">
+            <Icons.Close style={{ fill: 'white' }} />
+          </IconButton>
         </div>
       )}
     </div>

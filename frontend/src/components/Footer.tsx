@@ -12,7 +12,7 @@ const Footer = () => (
       />
     </div>
     <div className="feedback">
-      <Link to="mailto:c477feedback@radicalit.co.uk?subject=LISA Feedback">
+      <Link to="mailto:ndtp@businessandtrade.gov.uk?subject=LISA Feedback">
         <Icons.Email />
         Send us feedback
       </Link>

@@ -11,8 +11,7 @@ type Subscriber = {
   username: string;
 };
 export default class PubSubManager {
-  // eslint-disable-next-line no-use-before-define
-  static #instance: PubSubManager;
+  public static readonly instance = new PubSubManager();
 
   private subscribers: Subscriber[] = [];
 
@@ -68,9 +67,6 @@ export default class PubSubManager {
   }
 
   public static getInstance(): PubSubManager {
-    if (!PubSubManager.#instance) {
-      PubSubManager.#instance = new PubSubManager();
-    }
-    return PubSubManager.#instance;
+    return PubSubManager.instance;
   }
 }

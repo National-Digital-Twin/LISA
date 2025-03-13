@@ -3,7 +3,7 @@ export function getBlobHash(blob: Blob): Promise<string> {
     const fileReader = new FileReader();
 
     fileReader.addEventListener('error', () => {
-      reject(fileReader.error);
+      reject(new Error(fileReader.error?.message));
     });
 
     fileReader.addEventListener('load', async () => {

@@ -1,19 +1,25 @@
+// eslint-disable-next-line import/no-relative-packages
+import { User } from '../../../common/User';
+
 export class WebSocketClient {
   private ws: WebSocket | undefined;
 
-  private pendingMessages: string[] = [];
+  private readonly pendingMessages: string[] = [];
 
   private attemptCount = 0;
 
   private timer: ReturnType<typeof setTimeout> | undefined;
 
-  private messageCallback: (msg: string) => void | undefined;
+  private readonly messageCallback: (msg: string) => void | undefined;
 
-  private connectionCallback: () => void | undefined;
+  private readonly connectionCallback: () => void | undefined;
 
-  constructor(connectionCallback: () => void, messageCallback: (msg: string) => void) {
+  private readonly user: User;
+
+  constructor(connectionCallback: () => void, messageCallback: (msg: string) => void, user: User) {
     this.connectionCallback = connectionCallback;
     this.messageCallback = messageCallback;
+    this.user = user;
     this.connect();
   }
 
@@ -30,8 +36,10 @@ export class WebSocketClient {
   }
 
   private connect(isRestoration: boolean = false) {
-    const protocol = window.location.protocol === 'https' ? 'wss' : 'ws';
-    const ws = new WebSocket(`${protocol}://${window.location.host}/api/ws`);
+    const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
+    /* eslint-disable-next-line no-restricted-globals */
+    const backendHost = import.meta.env.VITE_BACKEND_HOST || self.window.location.host;
+    const ws = new WebSocket(`${protocol}://${backendHost}/api/ws`, [protocol, this.user.username]);
     ws.onopen = () => {
       this.handleOpen(isRestoration);
     };
@@ -62,7 +70,7 @@ export class WebSocketClient {
   private handleClose() {
     const delay = Math.min(500 * 2 ** this.attemptCount, 32000);
     // eslint-disable-next-line no-console
-    console.warn('ws connection was closed, retrying in', (delay / 1000), 's');
+    console.warn('ws connection was closed, retrying in', delay / 1000, 's');
     clearTimeout(this.timer);
     this.timer = setTimeout(() => {
       this.connect(true);

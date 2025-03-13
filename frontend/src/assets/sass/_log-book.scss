@@ -1,4 +1,4 @@
-@import 'colors';
+@use 'colors';
 
 .container {
   .log-book-quick-entry {
@@ -7,39 +7,39 @@
     gap: 0.75rem;
     margin-bottom: 1rem;
     .button {
-      background-color: $grey-dark;
+      background-color: colors.$grey-dark;
       padding: 0.75rem;
       border-radius: 6px;
-      border-style: solid;
-      border: solid 1px $white;
-      color: $white;
+      border: solid 1px colors.$white;
+      color: colors.$white;
       white-space: nowrap;
       cursor: pointer;
       &.green {
-        background-color: $green;
+        background-color: colors.$green;
       }
       &.red {
-        background-color: $red-dark;
+        background-color: colors.$red-dark;
       }
       &.blue {
-        background-color: $blue;
+        background-color: colors.$blue;
       }
       &.yellow {
-        background-color: $yellow;
-        color: $black;
+        background-color: colors.$yellow;
+        color: colors.$black;
       }
       &.turquoise {
-        background-color: $turquoise;
-        color: $black;
+        background-color: colors.$turquoise;
+        color: colors.$black;
       }
       &.purple {
-        background-color: $purple;
+        background-color: colors.$purple;
       }
       &.light-grey {
-        background-color: $grey-mid;
-        color: $black;
+        background-color: colors.$grey-mid;
+        color: colors.$black;
       }
-      img, svg {
+      img,
+      svg {
         height: auto;
         width: 30px;
         margin-right: 10px;
@@ -55,20 +55,21 @@
 
   .page-title .button {
     float: right;
-    background-color: $grey-dark;
+    background-color: colors.$grey-dark;
     font-size: 1.15rem;
-    margin-top: -5px; // TODO: Replace this temporary adjustment
+    margin-top: -5px;
     padding: 0.75rem;
     border-radius: 6px;
     border-style: solid;
-    border: solid 1px $white;
-    color: $white;
+    border: solid 1px colors.$white;
+    color: colors.$white;
     white-space: nowrap;
     cursor: pointer;
     &.blue {
-      background-color: $blue;
+      background-color: colors.$blue;
     }
-    img, svg {
+    img,
+    svg {
       height: auto;
       width: 30px;
       margin-right: 10px;
@@ -85,7 +86,7 @@
       &:not(.recording) {
         position: relative;
         ::before {
-          content: "Record voice log entry";
+          content: 'Record voice log entry';
           position: absolute;
           right: 30px;
           top: 0;
@@ -97,14 +98,6 @@
     }
   }
 
-  .log-entries-wrapper {
-      display: flex;
-      flex-direction: row;
-      @media screen and (max-width: 1110px) {
-        flex-direction: column;
-      }
-  }
-
   .search-container {
     box-sizing: border-box;
     width: 310px;
@@ -114,7 +107,7 @@
     background: unset;
     margin: 0 10px 20px 0;
     padding: 20px;
-    border: 1px solid $grey-mid;
+    border: 1px solid colors.$grey-mid;
     font-size: 1.15rem;
     font-weight: bold;
     .search-heading {
@@ -177,6 +170,8 @@
   vertical-align: top;
   .log-entry-details,
   .log-entry-meta {
+    background: none;
+    border: none;
     padding-left: 10px;
     display: inline-block;
     div {
@@ -190,7 +185,7 @@
       height: auto;
       position: relative;
       top: 1px;
-      color: $white;
+      color: colors.$white;
     }
     p:first-of-type {
       margin-top: 0;
@@ -207,18 +202,13 @@
       }
     }
   }
-  hr {
-    margin: 20px 0;
-    border: none;
-    border-bottom: 1px solid #e8e8e8;
-  }
   @media screen and (max-width: 1110px) {
     width: 100%;
   }
   .log-entry-meta {
     margin: 0;
     margin-left: 60px;
-    color: $white;
+    color: colors.$white;
     display: flex;
     flex-direction: row;
     gap: 2rem;
@@ -227,7 +217,7 @@
       margin: 0;
     }
     svg {
-      color: $white;
+      color: colors.$white;
       margin-right: 8px;
     }
     @media screen and (max-width: 1000px) {
@@ -237,15 +227,7 @@
       margin-left: 0;
     }
   }
-  .log-entry-details {
-    padding-top: 4px;
-    padding-bottom: 10px;
-    font-size: 1rem;
-    width: 100%;
-    @media screen and (max-width: 1000px) {
-      padding-top: 0px;
-    }
-  }
+
   div {
     &.log-entry-fields,
     &.log-entry-fields__group {
@@ -254,7 +236,8 @@
       flex-wrap: wrap;
       width: 100%;
       gap: 0;
-      &__label, &__value {
+      &__label,
+      &__value {
         flex: 1 0 calc(50% - 20px);
         padding: 6px;
 
@@ -277,13 +260,13 @@
             width: calc(50% - 10px);
             position: relative;
             &::before {
-              content: "";
+              content: '';
               position: absolute;
               left: 6px;
               top: 0;
               height: 50%;
               width: 8px;
-              border: dotted 4px $grey-mid;
+              border: dotted 4px colors.$grey-mid;
               border-width: 0 0 4px 4px;
             }
           }
@@ -303,7 +286,7 @@
         font-weight: 700;
         margin: 0 -20px 0 -10px;
         padding: 0.5rem 10px;
-        background-color: $grey-mid;
+        background-color: colors.$grey-mid;
       }
       &--nowrap {
         flex-wrap: nowrap;
@@ -319,53 +302,53 @@
   .item {
     padding: 0;
     position: relative;
-    background-color: $grey-light;
+    background-color: colors.$grey-light;
     margin-bottom: 1.5rem;
 
     svg {
-      color: $white;
+      color: colors.$white;
     }
 
     &--light-grey {
-      border-left-color: $grey-mid;
+      border-left-color: colors.$grey-mid;
       svg {
-        color: $grey-mid;
+        color: colors.$grey-mid;
       }
     }
     &--green {
-      border-left-color: $green;
+      border-left-color: colors.$green;
       svg {
-        color: $green;
+        color: colors.$green;
       }
     }
     &--red {
-      border-left-color: $red-dark;
+      border-left-color: colors.$red-dark;
       svg {
-        color: $red-dark;
+        color: colors.$red-dark;
       }
     }
     &--blue {
-      border-left-color: $blue;
+      border-left-color: colors.$blue;
       svg {
-        color: $blue;
+        color: colors.$blue;
       }
     }
     &--yellow {
-      border-left-color: $yellow;
+      border-left-color: colors.$yellow;
       svg {
-        color: $yellow;
+        color: colors.$yellow;
       }
     }
     &--turquoise {
-      border-left-color: $turquoise;
+      border-left-color: colors.$turquoise;
       svg {
-        color: $turquoise;
+        color: colors.$turquoise;
       }
     }
     &--purple {
-      border-left-color: $purple;
+      border-left-color: colors.$purple;
       svg {
-        color: $purple;
+        color: colors.$purple;
       }
     }
 
@@ -374,10 +357,7 @@
       flex-direction: row;
       gap: 1rem;
       width: 100%;
-      background-color: $blue-dark;
-      padding: 0 4px;
-      margin-bottom: 1rem;
-      font-weight: 700;
+      background-color: colors.$blue-dark;
       div {
         font-size: 1.15rem;
       }
@@ -391,61 +371,67 @@
     }
 
     &--highlighted {
-      border: solid 0.25rem $black;
+      border: solid 0.25rem colors.$black;
       border-top: none;
       margin: 0 -0.25rem 1.25rem -0.25rem;
       .item__header {
-        background-color: $black;
+        background-color: colors.$black;
       }
     }
 
     &--offline {
       .item__header {
-        background-color: $red-dark;
+        background-color: colors.$red-dark;
       }
     }
   }
 
   .item-index {
     padding: 4px 8px;
-    color: $white;
+    color: colors.$white;
     max-width: 75px;
     width: 75px;
 
-    a, a:link {
-      color: $white;
+    a,
+    a:link {
+      color: colors.$white;
     }
 
     &--light-grey {
-      background-color: $grey-mid;
+      background-color: colors.$grey-mid;
     }
     &--green {
-      background-color: $green;
+      background-color: colors.$green;
     }
     &--red {
-      background-color: $red-dark;
+      background-color: colors.$red-dark;
     }
     &--blue {
-      background-color: $blue;
+      background-color: colors.$blue;
     }
     &--yellow {
-      background-color: $yellow;
-      color: $black;
+      background-color: colors.$yellow;
+      color: colors.$black;
     }
     &--turquoise {
-      background-color: $turquoise;
-      color: $black;
+      background-color: colors.$turquoise;
+      color: colors.$black;
     }
     &--purple {
-      background-color: $purple;
+      background-color: colors.$purple;
     }
   }
 
   .log-entry-details {
+    padding-top: 4px;
+    padding-bottom: 10px;
     white-space: pre-wrap;
     position: relative;
     font-size: 1.1rem;
     line-height: 1.5rem;
+    width: 100%;
+    background: none;
+    border: none;
     .recordings {
       font-weight: 700;
       div {
@@ -453,7 +439,10 @@
       }
     }
 
-    div, span, a, p {
+    div,
+    span,
+    a,
+    p {
       font-size: 1.15rem;
       line-height: 1.5rem;
     }
@@ -462,6 +451,7 @@
       width: 100%;
       display: block;
       vertical-align: unset;
+      padding-top: 0;
       padding-right: 0;
     }
   }
@@ -501,19 +491,21 @@
   .log-entry-mentions {
     li {
       ::after {
-        content: "..., ";
+        content: '..., ';
       }
       &:last-child {
         margin-right: 0;
         ::after {
-          content: "...";
+          content: '...';
         }
       }
 
-      a, a:link {
-        color: $red-dark;
-        &:hover, &:focus {
-          border-bottom-color: $red-dark;
+      a,
+      a:link {
+        color: colors.$red-dark;
+        &:hover,
+        &:focus {
+          border-bottom-color: colors.$red-dark;
         }
       }
     }
@@ -522,13 +514,13 @@
   .log-entry-attachments {
     li {
       &::after {
-        content: ", ";
+        content: ', ';
       }
       &:first-child::after {
-        content: "";
+        content: '';
       }
       &:last-child::after {
-        content: "";
+        content: '';
       }
     }
   }

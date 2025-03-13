@@ -5,7 +5,10 @@
     "module": "ESNext",
     "skipLibCheck": true,
     "paths": {
-      "common/*": ["../common/*"]
+      "common/*": ["../common/*"],
+      "@shared-assets/*": [
+        "../../node_modules/@national-digital-twin/ndtp-styling-assets/dist/assets"
+      ]
     },
 
     /* Bundler mode */
@@ -20,7 +23,7 @@
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true,
+    "noFallthroughCasesInSwitch": true
   },
   "include": ["src"],
   "references": [{ "path": "./tsconfig.node.json" }]

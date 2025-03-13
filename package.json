@@ -1,29 +1,31 @@
 {
-  "name": "c477",
+  "name": "lisa",
   "version": "0.0.0",
   "type": "module",
-  "description": "C477",
+  "description": "L!SA is a system in the incident response and resilience domain. It allows the communication, actions and decisions taken in response to an incident to be recorded and also allows files to be uploaded in connection with an incident.",
   "scripts": {
-    "build": "(cd ./frontend && npm run bundle) && (cd ./backend && npm run build)",
+    "build": "(cd ./frontend && npm run build) && (cd ./backend && npm run build)",
     "bundle": "(cd ./frontend && npm run bundle) && (cd ./backend && npm run bundle)",
-    "prestart": "npm run build",
-    "start": "cd ./backend && npm start",
-    "dev:frontend": "cd ./frontend && npm run dev:backend",
-    "dev:backend": "cd ./backend && npm run dev",
-    "dev": "./node_modules/.bin/run-p dev:frontend dev:backend",
-    "lint": "(cd ./common && npm run lint) && (cd ./backend && npm run lint) && (cd ./frontend && npm run lint)",
-    "clean": "rm -rf ./backend/dist",
+    "start": "concurrently \"npm run start --workspace backend\" \"npm run start --workspace frontend\"",
+    "dev:frontend": "npm run start --workspace frontend",
+    "dev:backend": "npm run start --workspace backend",
+    "lint": "npm run lint --workspace common && npm run lint --workspace backend && npm run lint --workspace frontend",
+    "clean": "rm -rf ./**/*dist && rm -rf node_modules && rm -rf ./**/node_modules",
     "prepare": "husky"
   },
   "workspaces": [
     "backend",
     "frontend",
+    "frontend/qa",
     "common"
   ],
   "author": "",
   "private": true,
   "license": "ISC",
   "devDependencies": {
+    "concurrently": "^7.0.0",
+    "eslint-plugin-import": "^2.31.0",
+    "eslint-plugin-react": "^7.37.4",
     "husky": "^9.0.11",
     "lint-staged": "^15.2.2"
   }

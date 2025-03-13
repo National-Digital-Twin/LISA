@@ -1,6 +1,6 @@
 // '_NAVIGATION.SCSS' - IMPORTED INTO APP.SCSS
 
-@import 'colors';
+@use 'colors';
 
 nav {
   display: inline-block;
@@ -10,22 +10,9 @@ nav {
     top: 63px;
     left: 0;
     width: 100%;
-    background-color: $blue-header;
+    background-color: colors.$blue-header;
     padding-top: 20px;
     padding-bottom: 20px;
-  }
-}
-
-.nav-menu-butt {
-  display: none;
-  position: absolute;
-  left: 10px;
-  top: 21px;
-  width: 20px;
-  height: auto;
-  @media screen and (max-width: 1050px) {
-    display: block;
-    cursor: pointer;
   }
 }
 
@@ -36,14 +23,17 @@ nav {
   justify-content: space-between;
   flex-grow: 1;
   min-height: 55px;
-  background-color: $blue-header;
+  background-color: colors.$blue-header;
   .arrow-down {
     position: absolute;
-    color: $gold;
+    color: colors.$gold;
     width: 10px;
     height: auto;
     margin-left: 5px;
     top: -2px;
+  }
+  img {
+    width: 150px;
   }
   ul {
     list-style-type: none;
@@ -53,8 +43,8 @@ nav {
 
     &.non-incident {
       padding: 4px 28px 0 28px;
-      background-color: $blue-dark;
-      border-right: solid 2px $blue-header;
+      background-color: colors.$blue-dark;
+      border-right: solid 2px colors.$blue-header;
     }
 
     @media screen and (max-width: 1050px) {
@@ -63,7 +53,7 @@ nav {
 
       &.non-incident {
         padding: 0 0 0 12px;
-        background-color: $blue-header;
+        background-color: colors.$blue-header;
         border-right: none;
       }
     }
@@ -83,14 +73,14 @@ nav {
       a:link,
       a:visited,
       a:active {
-        color: $white;
+        color: colors.$white;
         transition: color 0.3s;
       }
       a:hover {
-        color: $gold;
+        color: colors.$gold;
       }
       &.selected > a {
-        color: $yellow;
+        color: colors.$yellow;
         text-decoration-line: underline;
         text-decoration-thickness: 2px;
         text-underline-offset: 0.5rem;
@@ -102,7 +92,7 @@ nav {
         padding-left: 10px;
         padding-bottom: 10px;
         width: 100%;
-        background-color: $blue-header;
+        background-color: colors.$blue-header;
         a:link,
         a:visited,
         a:active {
@@ -119,7 +109,7 @@ nav {
 }
 
 .nav-menu-links.nav-hidden-small {
-	@media screen and (max-width: 1050px) {
+  @media screen and (max-width: 1050px) {
     display: none;
-	}
+  }
 }

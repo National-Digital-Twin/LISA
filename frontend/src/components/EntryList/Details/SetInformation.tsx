@@ -8,7 +8,7 @@ import { bem } from '../../../utils';
 interface Props {
   entry: LogEntry;
 }
-export default function SetInformation({ entry }: Props) {
+export default function SetInformation({ entry }: Readonly<Props>) {
   const { fields, type } = entry;
   if (!fields?.length) {
     return null;

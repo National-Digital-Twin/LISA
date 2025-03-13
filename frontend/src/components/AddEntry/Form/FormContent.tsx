@@ -1,7 +1,7 @@
 // Global imports
 import parse from 'html-react-parser';
-import { useEffect, useMemo, useState } from 'react';
-import { AudioRecorder, useAudioRecorder } from 'react-audio-voice-recorder';
+import { useEffect, useMemo, useState, useCallback } from 'react';
+import { useReactMediaRecorder } from 'react-media-recorder';
 
 // Local imports
 import { type Field } from 'common/Field';
@@ -19,14 +19,14 @@ import { FormField, FormFields } from '../../Form';
 import EntryContent from '../../lexical/EntryContent';
 
 interface Props {
-  active: boolean;
-  entry: Partial<LogEntry>;
-  entries: Array<Partial<LogEntry>> | undefined;
-  incident: Incident;
-  mentionables: Array<Mentionable>;
-  validationErrors: Array<ValidationError>;
-  onFieldChange: OnFieldChange;
-  onAddRecording: (recording: File) => void;
+  readonly active: boolean;
+  readonly entry: Partial<LogEntry>;
+  readonly entries: Array<Partial<LogEntry>> | undefined;
+  readonly incident: Incident;
+  readonly mentionables: Array<Mentionable>;
+  readonly validationErrors: Array<ValidationError>;
+  readonly onFieldChange: OnFieldChange;
+  readonly onAddRecording: (recording: File) => void;
 }
 
 export default function FormContent({
@@ -39,7 +39,7 @@ export default function FormContent({
   onFieldChange,
   onAddRecording
 }: Props) {
-  const recorderControls = useAudioRecorder();
+  const [recording, setRecording] = useState(false);
   const [noContent, setNoContent] = useState<boolean>(false);
   const [description, setDescription] = useState<string | undefined>();
   const [descriptionLabel, setDescriptionLabel] = useState<string>('Description');
@@ -47,6 +47,7 @@ export default function FormContent({
   const [groups, setGroups] = useState<Array<FieldGroup>>([]);
   const [speechToTextActive, setSpeechToTextActive] = useState<boolean>(false);
   const [processedRecordings, setProcessedRecordings] = useState<Array<string>>([]);
+
   const baseFields: Array<Field> = useMemo(
     () => Form.getBaseLogEntryFields(incident, entry),
     [incident, entry]
@@ -55,21 +56,6 @@ export default function FormContent({
     () => Form.getError({ id: 'content' }, validationErrors),
     [validationErrors]
   );
-
-  useEffect(() => {
-    const start = () => setSpeechToTextActive(true);
-    const stop = () => setSpeechToTextActive(false);
-    recorderControls?.mediaRecorder?.addEventListener('start', start);
-    recorderControls?.mediaRecorder?.addEventListener('stop', stop);
-    return () => {
-      if (start) {
-        recorderControls?.mediaRecorder?.removeEventListener('start', start);
-      }
-      if (stop) {
-        recorderControls?.mediaRecorder?.removeEventListener('stop', stop);
-      }
-    };
-  }, [recorderControls]);
 
   useEffect(() => {
     const type = LogEntryTypes[entry.type as LogEntryType];
@@ -90,27 +76,51 @@ export default function FormContent({
 
   const onSpeechToTextChange = (isActive: boolean) => {
     setSpeechToTextActive(isActive);
-    if (isActive) {
-      recorderControls.startRecording();
-    } else {
-      recorderControls.stopRecording();
-    }
+    setRecording(isActive);
   };
 
-  const addAudioElement = async (blob: Blob) => {
-    // Check to see if we've already handled this one.
-    // This is due to an issue with the AudioRecorder, which fires
-    // the onRecordingComplete event multiple times.
-    // So we hash the blob to get a pretty reliable signature for it.
-    const blobHash = await Document.getBlobHash(blob);
-    if (!processedRecordings.includes(blobHash)) {
-      const name = `Recording ${Format.timestamp()}.webm`;
-      onAddRecording(new File([blob], name, { type: 'audio/webm' }));
-      setProcessedRecordings((prev) => [...prev, blobHash]);
+  const addAudioElement = useCallback(
+    async (blob: Blob) => {
+      const blobHash = await Document.getBlobHash(blob);
+      if (!processedRecordings.includes(blobHash)) {
+        const name = `Recording ${Format.timestamp()}.webm`;
+        onAddRecording(new File([blob], name, { type: 'audio/webm' }));
+        setProcessedRecordings((prev) => [...prev, blobHash]);
+      }
+    },
+    [processedRecordings, onAddRecording]
+  );
+
+  // Helper to fetch the Blob from the blob URL provided by react-media-recorder
+  const addAudioElementFromUrl = useCallback(
+    async (blobUrl: string) => {
+      const response = await fetch(blobUrl);
+      const blob = await response.blob();
+      await addAudioElement(blob);
+    },
+    [addAudioElement]
+  );
+
+  // Set up react-media-recorder hook
+  const { startRecording, stopRecording, mediaBlobUrl } = useReactMediaRecorder({
+    audio: true,
+    // When recording stops, fetch the blob and pass it along
+    onStop: async (blobUrl) => {
+      await addAudioElementFromUrl(blobUrl);
     }
-  };
+  });
+
+  // Start or stop recording based on the `recording` state
+  useEffect(() => {
+    if (recording) {
+      startRecording();
+    } else {
+      stopRecording();
+    }
+  }, [recording, startRecording, stopRecording]);
 
   const classes = bem('add-entry-tab', [active ? 'active' : ''], 'form');
+
   return (
     <ul className={classes()}>
       {baseFields.map((field) => (
@@ -123,9 +133,7 @@ export default function FormContent({
           className={field.className}
         />
       ))}
-      {description && (
-        <li className="full-width">{parse(description)}</li>
-      )}
+      {description && <li className="full-width">{parse(description)}</li>}
       {!noContent && (
         <li className={`full-width field-type--Lexical ${contentError ? 'in-error' : ''}`}>
           <label htmlFor="content">
@@ -140,24 +148,32 @@ export default function FormContent({
               onSpeechToText={onSpeechToTextChange}
             />
           </label>
-          {contentError && (
-            <div className="field-error">{contentError.error}</div>
-          )}
+          {contentError && <div className="field-error">{contentError.error}</div>}
 
           <div className="recorder-controls">
-            {/* eslint-disable no-console */}
-            <AudioRecorder
-              onRecordingComplete={addAudioElement}
-              audioTrackConstraints={{
-                noiseSuppression: true,
-                echoCancellation: true
-              }}
-              onNotAllowedOrFound={(err) => console.table(err)}
-              mediaRecorderOptions={{
-                audioBitsPerSecond: 128000
-              }}
-              recorderControls={recorderControls}
-            />
+            {/* Display a simple indicator and controls for recording */}
+            {recording ? (
+              <>
+                <div className="recording-indicator">Recording in progress...</div>
+                <button type="button" onClick={() => setRecording(false)}>
+                  Stop Recording
+                </button>
+              </>
+            ) : (
+              <>
+                <button type="button" onClick={() => setRecording(true)}>
+                  Start Recording
+                </button>
+                {/* Optionally, if a recording exists, display an audio preview */}
+                {mediaBlobUrl && (
+                  <div className="audio-preview">
+                    <audio src={mediaBlobUrl} controls aria-label="Audio preview recording">
+                      <track kind="captions" />
+                    </audio>
+                  </div>
+                )}
+              </>
+            )}
           </div>
         </li>
       )}

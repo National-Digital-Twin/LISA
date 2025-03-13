@@ -2,7 +2,7 @@
 import { AutoFocusPlugin } from '@lexical/react/LexicalAutoFocusPlugin';
 import { LexicalComposer } from '@lexical/react/LexicalComposer';
 import { ContentEditable } from '@lexical/react/LexicalContentEditable';
-import LexicalErrorBoundary from '@lexical/react/LexicalErrorBoundary';
+import { LexicalErrorBoundary } from '@lexical/react/LexicalErrorBoundary';
 import { HistoryPlugin } from '@lexical/react/LexicalHistoryPlugin';
 import { OnChangePlugin } from '@lexical/react/LexicalOnChangePlugin';
 import { PlainTextPlugin } from '@lexical/react/LexicalPlainTextPlugin';
@@ -14,6 +14,7 @@ import { type Mentionable } from 'common/Mentionable';
 import EntryContentTheme from './EntryContentTheme';
 import { ActionsPlugin, MentionsPlugin, nodes, SpeechToTextPlugin } from './plugins';
 import { SPEECH_TO_TEXT_COMMAND } from './plugins/SpeechToTextPlugin';
+import { useIsMobile } from '../../hooks/useIsMobile';
 
 const editorConfig = {
   namespace: 'LISA',
@@ -45,10 +46,10 @@ const EntryContent = ({
   onSpeechToText = undefined
 }: EntryContentProps) => {
   const [json, setJSON] = useState<string | undefined>(_json);
+  const isMobile = useIsMobile();
 
   const onCommand = (type: string | undefined, active: boolean) => {
     if (type === SPEECH_TO_TEXT_COMMAND.type) {
-      // setSpeechToTextActive(active);
       if (typeof onSpeechToText === 'function') {
         onSpeechToText(active);
       }
@@ -83,7 +84,7 @@ const EntryContent = ({
           <HistoryPlugin />
           <AutoFocusPlugin />
           <MentionsPlugin mentionables={mentionables ?? []} />
-          <SpeechToTextPlugin />
+          {!isMobile && <SpeechToTextPlugin /> }
           <ActionsPlugin onCommand={onCommand} speechToTextActive={speechToTextActive} />
           <OnChangePlugin onChange={onEditorChange} />
         </div>

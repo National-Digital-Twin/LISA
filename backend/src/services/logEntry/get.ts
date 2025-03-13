@@ -48,9 +48,9 @@ export async function get(req: Request, res: Response) {
       stage: (row.stage?.value ?? undefined) as IncidentStage,
       dateTime: row.dateTime.value,
       createdAt: row.createdAt?.value,
-      sequence: row.sequence.value,
       author: {
-        username: row.authorName?.value ?? undefined
+        username: row.authorName?.value ?? undefined,
+        displayName: row.authorName?.value ?? undefined
       },
       fields: fieldResultsByEntry[id],
       mentionsUsers: mentionedUsersByEntry[id],

@@ -1,4 +1,5 @@
 import { ReactNode } from 'react';
+import { Box } from '@mui/material';
 
 import { type LogEntry } from 'common/LogEntry';
 import { Format } from '../../../utils';
@@ -6,7 +7,7 @@ import { Format } from '../../../utils';
 interface Props {
   entry: LogEntry;
 }
-export default function Default({ entry }: Props) {
+export default function Default({ entry }: Readonly<Props>) {
   let content: ReactNode = null;
   let fields: ReactNode = null;
   if (entry.content.json) {
@@ -21,8 +22,7 @@ export default function Default({ entry }: Props) {
   return (
     <>
       {content}
-      {content && fields && <hr />}
-      {fields}
+      {fields && <Box mt={4}>{fields}</Box>}
     </>
   );
 }

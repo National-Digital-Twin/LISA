@@ -1,75 +1,76 @@
 // Global imports
-import { useCallback } from 'react';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { v4 as uuidV4 } from 'uuid';
+import { QueryClient, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 // Local imports
 import { type Incident } from 'common/Incident';
 import { FetchError, get, post } from '../api';
 
-export const useIncidents = () => {
-  const queryClient = useQueryClient();
-  const invalidateIncidents = useCallback(() => {
-    queryClient.invalidateQueries({
-      queryKey: ['incidents']
-    });
-  }, [queryClient]);
-  const { data, isLoading, isError, error } = useQuery<Incident[], FetchError>({
+export const useIncidents = () =>
+  useQuery<Incident[], FetchError>({
     queryKey: ['incidents'],
     queryFn: () => get('/incidents')
   });
 
-  return { incidents: data, isLoading, isError, error, invalidateIncidents };
-};
+async function poll(
+  incidentId: string | undefined,
+  queryClient: QueryClient,
+  attemptNumber: number
+) {
+  const incidents = await get<Incident[]>('/incidents');
+
+  if (attemptNumber <= 10) {
+    if (incidents.find((incident) => incident.id === incidentId)) {
+      queryClient.invalidateQueries({ queryKey: ['incidents'] });
+    } else {
+      setTimeout(() => poll(incidentId, queryClient, attemptNumber + 1), 10000);
+    }
+  }
+}
 
 export const useCreateIncident = () => {
   const queryClient = useQueryClient();
-  const createIncident = useMutation<
+  const { mutate, isPending } = useMutation<
     Incident,
     Error,
-    Omit<Incident, 'id' | 'reportedBy'>
+    Omit<Incident, 'id' | 'reportedBy'>,
+    {
+      previousIncidents?: Incident[];
+    }
   >({
     mutationFn: (incident) => post('/incident', incident),
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ['incidents']
-      });
+    onSuccess: async (data) => {
+      setTimeout(() => poll(data.id, queryClient, 1), 1000);
+    },
+    onError: async (_error, _variables, context) => {
+      // rollback to previously captured incidents from the context.
+      queryClient.setQueryData<Incident[]>(['incidents'], context!.previousIncidents);
     },
     // optimistic update
     onMutate: async (newIncident) => {
       await queryClient.cancelQueries({ queryKey: ['incidents'] });
       const previousIncidents = queryClient.getQueryData<Incident[]>(['incidents']);
-      if (previousIncidents) {
-        queryClient.setQueryData<Incident[]>(
-          ['incidents'],
-          [
-            ...previousIncidents,
-            {
-              ...newIncident,
-              id: Math.random().toString(), // We should probably have UUIDs here
-              offline: true
-            }
-          ]
-        );
-      }
+      const newIncidentOffline = {
+        ...newIncident,
+        id: uuidV4(),
+        offline: true
+      };
+      queryClient.setQueryData<Incident[]>(['incidents'], (oldData) =>
+        oldData!.concat(newIncidentOffline)
+      );
       return { previousIncidents };
     }
   });
 
-  return createIncident;
+  return { createIncident: mutate, isLoading: isPending };
 };
 
 export const useChangeIncidentStage = () => {
   const queryClient = useQueryClient();
-  const createIncident = useMutation<
-    Incident,
-    Error,
-    Incident
-  >({
+  const createIncident = useMutation<Incident, Error, Incident>({
     mutationFn: (incident) => post(`/incident/${incident.id}/stage`, incident),
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ['incidents']
-      });
+      queryClient.invalidateQueries({ queryKey: ['incidents'] });
     },
     // optimistic update
     onMutate: async (updatedIncident) => {
@@ -78,10 +79,9 @@ export const useChangeIncidentStage = () => {
       if (previousIncidents) {
         queryClient.setQueryData<Incident[]>(
           ['incidents'],
-          [
-            ...previousIncidents.filter((p) => p.id !== updatedIncident.id),
-            updatedIncident
-          ].sort((a, b) => b.startedAt.localeCompare(a.startedAt))
+          [...previousIncidents.filter((p) => p.id !== updatedIncident.id), updatedIncident].sort(
+            (a, b) => b.startedAt.localeCompare(a.startedAt)
+          )
         );
       }
       return { previousIncidents };

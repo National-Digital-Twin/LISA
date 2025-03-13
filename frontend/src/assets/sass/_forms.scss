@@ -1,37 +1,40 @@
 // '_FORMS.SCSS' - IMPORTED INTO APP.SCSS
 
-@import 'colors';
+@use 'colors';
 
 li.major-incident-no,
 li.major-incident-yes {
   margin: 0 !important;
   padding: 0 !important;
-  a {
+  a,
+  button {
     display: block;
     width: 80% !important;
-    background-color: $green !important;
+    background-color: colors.$green !important;
     text-align: center;
     margin: 0 !important;
   }
 }
 li.major-incident-no {
-  a {
-    background-color: $red-dark !important;
+  a,
+  button {
+    background-color: colors.$red-dark !important;
   }
 }
 
 .log-form {
   position: relative;
-  background-color: $grey-light;
+  background-color: colors.$grey-light;
   padding: 20px;
   text-align: left;
   h3 {
     padding: 10px 0;
     margin: 0 10px;
-    border-bottom: 1px solid $grey-mid;
+    border-bottom: 1px solid colors.$grey-mid;
     font-size: 1.25rem;
   }
-  label, .field-label {
+  label,
+  .field-label {
     display: block;
     font-weight: bold;
     font-size: 1.15rem;
@@ -59,8 +62,8 @@ li.major-incident-no {
         &::-webkit-datetime-edit-year-field:focus,
         &::-webkit-datetime-edit-hour-field:focus,
         &::-webkit-datetime-edit-minute-field:focus {
-          background-color: $blue-dark;
-          color: $white;
+          background-color: colors.$blue-dark;
+          color: colors.$white;
           outline: none;
         }
       }
@@ -80,8 +83,8 @@ li.major-incident-no {
       margin-top: 5px;
       padding: 6px 6px 6px 10px;
       height: 45px;
-      border: solid 1px $grey-mid;
-      background-color: $white;
+      border: solid 1px colors.$grey-mid;
+      background-color: colors.$white;
       font-weight: 400;
       &__value {
         white-space: nowrap;
@@ -96,13 +99,14 @@ li.major-incident-no {
         max-width: 82px;
         padding: 6px 12px;
         border: none;
-        border-left: dotted 2px $blue-dark;
+        border-left: dotted 2px colors.$blue-dark;
         font-size: 1.15rem;
         background: transparent;
-        color: $blue-dark;
+        color: colors.$blue-dark;
         cursor: pointer;
-        &:hover, &:focus {
-          color: $blue;
+        &:hover,
+        &:focus {
+          color: colors.$blue;
         }
       }
     }
@@ -110,19 +114,19 @@ li.major-incident-no {
   input,
   select,
   textarea {
-    background-color: $white;
+    background-color: colors.$white;
     width: 100%;
     padding: 10px;
-    color: $blue-dark;
-    border: 1px solid $grey-mid;
+    color: colors.$blue-dark;
+    border: 1px solid colors.$grey-mid;
     &.input-calendar {
-      background-image: url("/icon-calendar.svg");
+      background-image: url('/icon-calendar.svg');
       background-repeat: no-repeat;
       background-position: center right 15px;
       background-size: 20px auto;
     }
     &.input-search {
-      background-image: url("/icon-search.svg");
+      background-image: url('/icon-search.svg');
       background-repeat: no-repeat;
       background-position: center right 5px;
     }
@@ -139,12 +143,12 @@ li.major-incident-no {
     .optional-field {
       margin-left: 1rem;
       font-size: 1rem;
-      color: $grey-dark;
+      color: colors.$grey-dark;
       &::before {
-        content: "(";
+        content: '(';
       }
       &::after {
-        content: ")";
+        content: ')';
       }
     }
     &.full-width {
@@ -163,7 +167,7 @@ li.major-incident-no {
         .h-sep {
           flex: 1;
           height: 1px;
-          border-bottom: dotted 4px $grey-mid;
+          border-bottom: dotted 4px colors.$grey-mid;
         }
         .react-select {
           margin-top: 0;
@@ -182,13 +186,13 @@ li.major-incident-no {
       padding: 15px 10px 10px 35px;
       position: relative;
       &::before {
-        content: "";
+        content: '';
         position: absolute;
         left: 16px;
         top: 0;
         height: 28px; // middle of the label
         width: 8px;
-        border: dotted 4px $grey-mid;
+        border: dotted 4px colors.$grey-mid;
         border-width: 0 0 4px 4px;
       }
       .field-error {
@@ -198,7 +202,7 @@ li.major-incident-no {
     &.form-group {
       width: 100%;
       padding: 0;
-      border: solid 1px $grey-mid;
+      border: solid 1px colors.$grey-mid;
       margin: 10px 0;
       ul {
         margin: 0;
@@ -212,7 +216,7 @@ li.major-incident-no {
         width: 100%;
         margin: 0;
         font-weight: 700;
-        background-color: $grey-mid;
+        background-color: colors.$grey-mid;
         padding: 10px;
 
         a {
@@ -220,9 +224,10 @@ li.major-incident-no {
           width: 100%;
           height: 100%;
           border-bottom: none;
-          &:hover, &:focus {
+          &:hover,
+          &:focus {
             text-decoration: none;
-            color: $blue-dark;
+            color: colors.$blue-dark;
             outline-offset: 10px;
           }
         }
@@ -239,10 +244,12 @@ li.major-incident-no {
           display: none;
         }
 
-        &:hover, &:focus, &:focus-within {
-          background-color: $blue-light;
+        &:hover,
+        &:focus,
+        &:focus-within {
+          background-color: colors.$blue-light;
           a {
-            color: $blue-dark;
+            color: colors.$blue-dark;
           }
         }
       }
@@ -263,7 +270,7 @@ li.major-incident-no {
       }
     }
     .field-error {
-      color: $red-dark;
+      color: colors.$red-dark;
       position: absolute;
       bottom: -0.45rem;
       left: 10px;
@@ -281,7 +288,7 @@ li.major-incident-no {
   }
   &.login {
     padding: 20px;
-    background-color: $grey-light;
+    background-color: colors.$grey-light;
     width: 450px;
     @media screen and (max-width: 800px) {
       width: 100%;
@@ -303,19 +310,20 @@ li.major-incident-no {
         .react-select__control,
         .editor-container,
         .location-field {
-          border-color: $red-dark;
+          border-color: colors.$red-dark;
         }
       }
 
       &.form-group {
         &:has(ul li.in-error) {
           .form-group__label {
-            border-color: $red-dark;
+            border-color: colors.$red-dark;
             a {
-              color: $red-dark;
-              &:hover, &:focus {
-                color: $white;
-                outline-color: $red-dark;
+              color: colors.$red-dark;
+              &:hover,
+              &:focus {
+                color: colors.$white;
+                outline-color: colors.$red-dark;
               }
             }
 
@@ -323,10 +331,12 @@ li.major-incident-no {
               display: inline-block;
             }
 
-            &:hover, &:focus, &:focus-within {
-              background-color: $red-dark;
+            &:hover,
+            &:focus,
+            &:focus-within {
+              background-color: colors.$red-dark;
               a {
-                color: $white;
+                color: colors.$white;
               }
             }
           }
@@ -336,15 +346,15 @@ li.major-incident-no {
   }
   .field-error {
     label {
-      color: $red-dark;
+      color: colors.$red-dark;
     }
     input {
-      border: 2px solid $red-dark;
+      border: 2px solid colors.$red-dark;
     }
   }
 
   &.readonly {
-    background-color: $grey-light;
+    background-color: colors.$grey-light;
     margin-bottom: 20px;
     padding-bottom: 4px;
 
@@ -363,82 +373,6 @@ li.major-incident-no {
     top: 20px;
   }
 }
-.log-date-time {
-  height: 45px; // TODO: Standardise these heights.
-  line-height: 45px;
-  display: flex;
-  gap: 10px;
-  img,
-  svg {
-    width: 20px;
-    height: auto;
-    margin-right: 10px;
-    &:last-of-type {
-      margin-left: 20px;
-      position: relative;
-      top: 2px;
-    }
-  }
-  .date-now {
-    white-space: nowrap;
-  }
-}
-.log-form-buttons {
-  display: flex;
-  flex-direction: row;
-  position: relative;
-  margin: 20px 10px 0 10px;
-  align-items: center;
-  justify-content: flex-end;
-  .button {
-    display: inline-block;
-    margin-left: 10px;
-    background-color: $blue;
-    padding: 10px;
-    border-radius: 6px;
-    border-style: solid;
-    border: solid 1px $white;
-    color: $white;
-    cursor: pointer;
-    transition: background-color .5s;
-    &:hover {
-      background-color: $blue-header;
-    }
-    &.cancel {
-      background-color: $grey-dark;
-      &:hover {
-        background-color: $black;
-      }
-    }
-    /* TODO: Look at appropriate styling for disabled buttons */
-    &:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-      &:hover {
-        background-color: $blue;
-      }
-    }
-    img,
-    svg {
-      height: auto;
-      width: 20px;
-      margin-right: 10px;
-      position: relative;
-      top: 2px;
-      color: $white;
-    }
-  }
-  .validation-errors {
-    font-size: 1.15rem;
-    margin-right: 20px;
-    a {
-      color: $red-dark;
-      &:hover, &:focus {
-        color: $red;
-      }
-    }
-  }
-}
 
 .recorder-controls {
   visibility: hidden;
@@ -452,15 +386,15 @@ li.major-incident-no {
 }
 
 .highlight-gold {
-  color: $gold !important;
+  color: colors.$gold !important;
 }
 
 .highlight-blue-dark {
-  color: $blue-dark !important;
+  color: colors.$blue-dark !important;
 }
 
 .highlight-blue {
-  color: $blue !important;
+  color: colors.$blue !important;
 }
 
 .icon {
@@ -473,11 +407,13 @@ li.major-incident-no {
 
 .sketch-stage {
   position: relative;
-  border: 1px solid $grey-mid;
-  background-color: $white;
+  border: 1px solid colors.$grey-mid;
+  background-color: colors.$white;
   width: 100%;
   height: 500px;
-  cursor: url("/images/icon-pencil.svg") 10 10, auto;
+  cursor:
+    url('/images/icon-pencil.svg') 10 10,
+    auto;
 
   .pens {
     position: absolute;
@@ -485,7 +421,7 @@ li.major-incident-no {
     right: 10px;
     display: flex;
     gap: 10px;
-    border: 0px;
+    border: 0;
     .pen {
       width: 30px;
       height: 30px;
@@ -498,28 +434,25 @@ li.major-incident-no {
     left: 10px;
 
     button {
-      font-size: 1rem;
       line-height: 1.25rem;
-      background-color: $black;
-      color: $white;
-      padding: 3px 8px;
-      border-radius: 0;
+      background-color: colors.$black;
+      color: colors.$white;
       cursor: pointer;
       &:hover {
-        background-color: $red-dark;
+        background-color: colors.$red-dark;
       }
     }
   }
 }
 
 .sig-outgoing {
-  background-image: url("/sig-1.svg");
+  background-image: url('/sig-1.svg');
   background-repeat: no-repeat;
   background-size: 50% auto;
   background-position: center center;
 }
 .sig-incoming {
-  background-image: url("/sig-2.svg");
+  background-image: url('/sig-2.svg');
   background-repeat: no-repeat;
   background-size: 50% auto;
   background-position: center center;
@@ -527,7 +460,8 @@ li.major-incident-no {
 
 .add-entry-tab {
   display: none;
-  &.active, &--active {
+  &.active,
+  &--active {
     display: block;
   }
 }
@@ -542,7 +476,7 @@ ul.label-field {
     padding: 5px 0;
     font-weight: 400;
     &::before {
-      content: "\2022";
+      content: '\2022';
       margin-right: 0.5rem;
     }
   }
@@ -554,8 +488,8 @@ ul.label-field {
   &__btn {
     width: 24px;
     height: 24px;
-    border: 1px solid $blue;
-    color: $blue;
+    border: 1px solid colors.$blue;
+    color: colors.$blue;
     border-radius: 12px;
     cursor: pointer;
     font-size: 1rem;
@@ -565,10 +499,10 @@ ul.label-field {
     position: fixed;
     background-color: white;
     z-index: 2;
-    font-size: .875rem;
+    font-size: 0.875rem;
     font-weight: normal;
     padding: 12px 16px;
-    border: 1px solid $blue;
+    border: 1px solid colors.$blue;
     width: 400px;
     max-width: 400px;
     line-height: 1rem;
@@ -576,13 +510,13 @@ ul.label-field {
     top: 150px;
     margin-bottom: 8px;
     margin-left: -200px;
-    box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
   }
   &__title {
     font-size: 1rem;
     font-weight: 700;
     padding-bottom: 10px;
-    border-bottom: 1px solid $grey-mid;
+    border-bottom: 1px solid colors.$grey-mid;
   }
   &__content {
     overflow-x: auto;

@@ -2,16 +2,20 @@ import Stream from 'node:stream';
 
 import fs from 'fs';
 import { Request, Response } from 'express';
-import { GetObjectCommand, PutObjectCommand, S3Client, S3ServiceException } from '@aws-sdk/client-s3';
-import { env } from '../settings';
+import {
+  GetObjectCommand,
+  PutObjectCommand,
+  S3Client,
+  S3ServiceException
+} from '@aws-sdk/client-s3';
+import { settings } from '../settings';
 
-const browserEnabledTypes = [
-  'image/',
-  'application/pdf',
-  'audio/webm'
-];
+const browserEnabledTypes = ['image/', 'application/pdf', 'audio/webm'];
 
-function getContentInfo(fileName: string, mimeType: string): { disposition: string; type?: string; } {
+function getContentInfo(
+  fileName: string,
+  mimeType: string
+): { disposition: string; type?: string } {
   let canOpenInBrowser = false;
   for (const allowedType of browserEnabledTypes) {
     if (mimeType.startsWith(allowedType)) {
@@ -21,7 +25,7 @@ function getContentInfo(fileName: string, mimeType: string): { disposition: stri
   }
   return {
     disposition: canOpenInBrowser ? 'inline' : `attachment; filename*="${fileName}"`,
-    type: canOpenInBrowser ? mimeType : undefined,
+    type: canOpenInBrowser ? mimeType : undefined
   };
 }
 
@@ -36,7 +40,7 @@ export async function streamS3Object(req: Request, res: Response) {
   const client = new S3Client();
   const ims = req.header('If-Modified-Since');
   const command = new GetObjectCommand({
-    Bucket: env.S3_BUCKET_ID,
+    Bucket: settings.S3_BUCKET_ID,
     Key: key,
     IfNoneMatch: req.header('If-None-Match'),
     IfModifiedSince: ims ? new Date(ims) : undefined
@@ -49,7 +53,7 @@ export async function streamS3Object(req: Request, res: Response) {
       'Content-Type': type || fileResponse.ContentType,
       'Last-Modified': fileResponse.LastModified,
       'Content-Disposition': disposition,
-      ETag: fileResponse.ETag,
+      ETag: fileResponse.ETag
     });
     const stream = fileResponse.Body as Stream;
     stream.pipe(res);
@@ -59,7 +63,7 @@ export async function streamS3Object(req: Request, res: Response) {
         const headers = e.$response.headers;
         res.set({
           'Last-Modified': headers['last-modified'],
-          ETag: headers.etag,
+          ETag: headers.etag
         });
         res.status(304).end();
         return;
@@ -84,7 +88,7 @@ export async function storeS3Object(key: string, filePath: string): Promise<stri
 
   const client = new S3Client();
   const command = new PutObjectCommand({
-    Bucket: env.S3_BUCKET_ID,
+    Bucket: settings.S3_BUCKET_ID,
     Key: key,
     Body: fileReadStream
   });

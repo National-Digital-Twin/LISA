@@ -1,26 +1,42 @@
-import cookie from 'cookie';
 import { randomUUID } from 'crypto';
 import { IncomingMessage } from 'http';
 import { Duplex } from 'stream';
 import { WebSocket, WebSocketServer } from 'ws';
-
-import { createAuthenticator } from '../auth/middleware';
 import { User } from '../auth/user';
-import { cookieManager, tokenVerifier } from '../util';
 import Broker from './broker';
 import PubSubManager from './manager';
-
-const authenticator = createAuthenticator(tokenVerifier, cookieManager);
 
 const wss = new WebSocketServer({ noServer: true });
 const broker = new Broker();
 
-wss.on('connection', (ws: WebSocket, request: IncomingMessage, user: User) => {
+wss.on('connection', async (ws: WebSocket, request: IncomingMessage) => {
+  let user: User;
+
+  try {
+    const username = request.headers['sec-websocket-protocol'].split(',')[1].trim();
+    user = new User(username, '', '');
+  } catch (error) {
+    ws.close();
+    console.log(error);
+    return;
+  }
+
   const id = randomUUID();
   broker.addClient(id, ws, user);
 
-  ws.on('message', (message) => {
-    PubSubManager.getInstance().processMessage(id, user, ws, message.toString());
+  ws.on('message', (data) => {
+    let message: string;
+
+    if (typeof data === 'string') {
+      message = data;
+    } else if (Buffer.isBuffer(data)) {
+      message = data.toString('utf8');
+    } else {
+      // For any other type (or object), use JSON.stringify to get a readable string
+      message = JSON.stringify(data);
+    }
+
+    PubSubManager.getInstance().processMessage(id, user, ws, message);
   });
 
   ws.on('pong', () => {
@@ -42,17 +58,12 @@ wss.on('close', () => {
   broker.clear();
 });
 
-export async function handleUpgrade(request: IncomingMessage, socket: Duplex, head: Buffer) {
-  const cookies = cookie.parse(request.headers.cookie);
-
-  const user = await authenticator(cookies);
-  if (!user) {
-    socket.write('HTTP/1.1 403 Unauthorized\r\n\r\n');
-    socket.destroy();
-    return;
-  }
-
+export async function handleUpgrade(
+  request: IncomingMessage,
+  socket: Duplex,
+  head: Buffer,
+) {
   wss.handleUpgrade(request, socket, head, (ws) => {
-    wss.emit('connection', ws, request, user);
+    wss.emit('connection', ws, request);
   });
 }

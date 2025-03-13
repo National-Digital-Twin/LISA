@@ -1,7 +1,7 @@
 import * as sparql from 'rdf-sparql-builder';
 
 import { NotificationType, UserMentionNotification, type Notification } from 'common/Notification';
-import { type NotificationInput } from './types';
+import { type UserMentionInput } from './types';
 import { ResultRow } from '../../ia';
 import { nodeValue, ns } from '../../rdfutil';
 import { ApplicationError } from '../../errors';
@@ -10,16 +10,14 @@ export function getTypesList(): unknown {
   return [ns.lisa('UserMentionNotification')];
 }
 
-export function getCreateData(idNode: unknown, input: NotificationInput): unknown[] {
-  switch (input.type) {
-  case 'UserMentionNotification':
+export function getCreateData(idNode: unknown, input: UserMentionInput): unknown[] {
+  if (input.type === 'UserMentionNotification') {
     return [
       [idNode, ns.lisa.hasLogEntry, ns.data(input.entryId)],
       [idNode, ns.lisa.hasIncident, ns.data(input.incidentId)],
     ];
-  default:
-    return [];
   }
+  return [];
 }
 
 export function getFetchOptionals(): unknown[] {
@@ -29,7 +27,6 @@ export function getFetchOptionals(): unknown[] {
       ['?id', ns.lisa.hasLogEntry, '?entryId'],
       ['?id', ns.lisa.hasIncident, '?incidentId'],
       ['?entryId', ns.ies.inPeriod, '?dateTime'],
-      ['?entryId', ns.lisa.hasSequence, '?sequence'],
       ['?entryId', ns.lisa.contentText, '?contentText'],
       ['?author', ns.ies.isParticipantIn, '?entryId'],
       ['?author', ns.ies.hasName, '?authorName'],
@@ -44,8 +41,7 @@ export function parseNotification(row: ResultRow): Notification {
   const dateTime = row.createdAt.value;
   const read = row.read?.value !== undefined;
 
-  switch (type) {
-  case 'UserMentionNotification':
+  if (type === 'UserMentionNotification') {
     return {
       id,
       type,
@@ -56,16 +52,15 @@ export function parseNotification(row: ResultRow): Notification {
         id: nodeValue(row.entryId.value),
         incidentId: nodeValue(row.incidentId.value),
         dateTime: row.dateTime.value,
-        sequence: row.sequence.value,
         content: {
           text: row.contentText?.value,
         },
         author: {
-          username: row.authorName?.value
+          username: row.authorName?.value,
+          displayName: row.authorName?.value
         }
       }
     } as UserMentionNotification;
-  default:
-    throw new ApplicationError(`unknown notification type ${type} could not be parsed`);
   }
+  throw new ApplicationError(`unknown notification type ${type} could not be parsed`);
 }

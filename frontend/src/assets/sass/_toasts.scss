@@ -1,3 +1,5 @@
+@use "colors";
+
 .toasts-container {
   position: fixed;
   top: 20px;
@@ -16,6 +18,8 @@
     &__content {
       flex-grow: 1;
       padding-top: 1px;
+      border: none;
+      background: none;
       a,
       button {
         font-size: inherit;
@@ -23,7 +27,7 @@
         font-weight: inherit;
         border: none;
         background: none;
-        color: $blue;
+        color: colors.$blue;
         padding: 0;
         cursor: pointer;
         &:hover {
@@ -45,23 +49,23 @@
         background-color: white;
         transition: background-color .5s;
         &:hover {
-          background-color: $blue-light;
+          background-color: colors.$blue-light;
         }
         svg {
           height: auto;
           width: 13px;
-          fill: $blue;
+          fill: colors.$blue;
         }
       }
     }
     &--info {
-      border-color: $blue;
+      border-color: colors.$blue;
     }
     &--success {
-      border-color: $green;
+      border-color: colors.$green;
     }
     &--error {
-      border-color: $red;
+      border-color: colors.$red;
     }
   }
 }

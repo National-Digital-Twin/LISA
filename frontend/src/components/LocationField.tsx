@@ -6,14 +6,14 @@ import bem from '../utils/bem';
 type Props = {
   id: string;
   value: string | undefined;
-  onClick: () => void
+  onClick: () => void;
 };
-export default function LocationField({ id, value, onClick }: Props) {
+export default function LocationField({ id, value, onClick }: Readonly<Props>) {
   const classes = bem('location-field');
   return (
-    <div id={id} className={classes()}>
+    <div data-testid="location-field" id={id} className={classes()}>
       <span className={classes('value')}>
-        {value === 'View location' ? LocationTypes.coordinates : value }
+        {value === 'View location' ? LocationTypes.coordinates : value}
       </span>
       <button type="button" className={classes('button')} onClick={onClick}>
         {value ? 'Change' : 'Set'}

@@ -9,7 +9,7 @@ import { locationLink } from '../locationLink';
 type Props = {
   entry: LogEntry;
 };
-export function LocationValue({ entry }: Props) {
+export function LocationValue({ entry }: Readonly<Props>) {
   const href = locationLink(entry);
   const text = location(entry);
   if (href) {

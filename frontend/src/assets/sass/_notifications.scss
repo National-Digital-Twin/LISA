@@ -1,6 +1,7 @@
 // '_NOTIFICATIONS.SCSS' - IMPORTED INTO APP.SCSS
 
-@import 'colors';
+@use 'colors';
+@use 'ndtp';
 
 .notification-container {
   position: relative;
@@ -9,9 +10,9 @@
   align-items: center;
   gap: 0.5rem;
   z-index: 2;
-  background-color: $grey-light;
+  background-color: colors.$grey-light;
   min-height: 40px;
-  color: $black;
+  color: colors.$black;
   font-size: 1rem;
   padding: 0 10px;
   .alert-title {
@@ -22,7 +23,7 @@
     .incident-overview {
       margin-left: 0.5rem;
       padding-left: 0.5rem;
-      border-left: solid 1px $black;
+      border-left: solid 1px colors.$black;
     }
     .incident-stage {
       margin-left: -4px;
@@ -32,7 +33,7 @@
       }
     }
   }
-  @media screen and (max-width: 1050px){
+  @media screen and (max-width: 1050px) {
     min-height: unset;
     align-items: start;
     .alert-title {
@@ -59,20 +60,20 @@
   &__badge {
     position: absolute;
     display: block;
-    background-color: $red;
+    background-color: colors.$red;
     color: white;
     padding: 2px 6px;
     border-radius: 0.75rem;
     top: 3px;
     right: 3px;
-    font-size: 0.75rem;;
+    font-size: 0.75rem;
   }
   &__menu {
     position: absolute;
     top: 0;
     right: 0;
     background-color: white;
-    border: 1px solid $grey-mid;
+    border: 1px solid colors.$grey-mid;
     margin-top: -1px;
     width: 460px;
     max-height: 600px;
@@ -86,7 +87,7 @@
       height: 44px;
       min-height: 44px;
       padding: 0 8px 0 16px;
-      border-bottom: 1px solid $grey-mid;
+      border-bottom: 1px solid colors.$grey-mid;
       span:first-of-type {
         display: inline-block;
         flex-grow: 1;
@@ -95,7 +96,7 @@
     &-close {
       display: flex;
       cursor: pointer;
-      width: 24px;
+      width: 30px;
       height: 24px;
       align-items: center;
       justify-content: center;
@@ -103,14 +104,14 @@
       border: none;
       border-radius: 4px;
       background-color: white;
-      transition: background-color .5s;
+      transition: background-color 0.5s;
       &:hover {
-        background-color: $blue-light;
+        background-color: colors.$blue-light;
       }
       svg {
         height: auto;
         width: 13px;
-        fill: $blue;
+        fill: colors.$blue;
       }
     }
     &-list {
@@ -122,16 +123,16 @@
   }
   &__empty {
     display: block;
-    font-family: lato-reg, Arial, Helvetica, sans-serif;
+    font-family: ndtp.$font-family;
     text-align: center;
     padding: 40px 0;
-    color: $section-light-text;
+    color: colors.$section-light-text;
   }
   &__item {
-    background-color: $white;
+    background-color: colors.$white;
     display: block;
     border: none;
-    border-bottom: 1px solid $grey-light;
+    border-bottom: 1px solid colors.$grey-light;
     cursor: pointer;
     width: 100%;
     text-align: left;
@@ -142,12 +143,12 @@
       font-family: inherit;
     }
     &:hover {
-      background-color: $grey-light;
+      background-color: colors.$grey-light;
     }
     &--read {
-      font-family: lato-reg, Arial, Helvetica, sans-serif;
-      background-color: $grey-light;
-      border-bottom-color: $grey-mid;
+      font-family: ndtp.$font-family;
+      background-color: colors.$grey-light;
+      border-bottom-color: colors.$grey-mid;
       &:hover {
         opacity: 0.8;
       }
@@ -169,11 +170,11 @@
       width: 10px;
       height: 10px;
       border-radius: 5px;
-      background-color: $blue;
+      background-color: colors.$blue;
     }
     &-content {
       display: block;
-      font-family: lato-reg, Arial, Helvetica, sans-serif;
+      font-family: ndtp.$font-family;
       padding: 10px 8px;
     }
   }
@@ -196,7 +197,7 @@
     }
     img,
     svg {
-      color: $grey-dark;
+      color: colors.$grey-dark;
       height: 15px;
       width: auto;
     }

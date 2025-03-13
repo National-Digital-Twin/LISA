@@ -1,21 +1,22 @@
 import { LngLatBoundsLike, StyleSpecification } from 'maplibre-gl';
 import { ViewState } from 'react-map-gl/dist/esm/types';
 
-const apiKey = '<insert os api key here>';
 export const MAP_STYLE: StyleSpecification = {
   version: 8,
   sources: {
     'raster-tiles': {
       type: 'raster',
-      tiles: [`https://api.os.uk/maps/raster/v1/zxy/Outdoor_3857/{z}/{x}/{y}.png?key=${apiKey}`],
+      tiles: ['/transparent-proxy/os/maps/raster/v1/zxy/Outdoor_3857/{z}/{x}/{y}.png?'],
       tileSize: 256
     }
   },
-  layers: [{
-    id: 'os-maps-zxy',
-    type: 'raster',
-    source: 'raster-tiles'
-  }]
+  layers: [
+    {
+      id: 'os-maps-zxy',
+      type: 'raster',
+      source: 'raster-tiles'
+    }
+  ]
 };
 
 // UK bounds, with a bit of padding.

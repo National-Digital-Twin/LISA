@@ -1,21 +1,25 @@
+@use "colors";
+
 .files-selector {
   padding: 24px 0;
-  border: 2px dashed $grey-mid;
+  border: 2px dashed colors.$grey-mid;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  width: 100%;
+  background: none;
 
   label {
     cursor: pointer;
     margin: 0;
 
     .prompt {
-      color: $blue;
+      color: colors.$blue;
       padding: 2px 4px;
 
       &:hover {
-        color: $blue-dark;
+        color: colors.$blue-dark;
         text-decoration: underline;
       }
 
@@ -36,8 +40,8 @@
   }
 
   &__dragging {
-    background-color: $blue-light;
-    border-color: $blue;
+    background-color: colors.$blue-light;
+    border-color: colors.$blue;
   }
 }
 .selected-file {
@@ -46,7 +50,7 @@
   align-items: center;
   column-gap: 30px;
   .file-size {
-    color: $section-light-text;
+    color: colors.$section-light-text;
   }
   .remove-button {
     display: inline-block;
@@ -63,18 +67,18 @@
     border-radius: 4px;
     transition: background-color .5s;
     &:hover {
-      background-color: $blue-light;
+      background-color: colors.$blue-light;
     }
     svg {
       height: auto;
       width: 13px;
-      fill: $blue;
+      fill: colors.$blue;
     }
   }
 }
 
 .incident-attachments {
-  background-color: $grey-light;
+  background-color: colors.$grey-light;
   margin: 0 auto 20px;
   padding: 20px;
   .attachment-row {

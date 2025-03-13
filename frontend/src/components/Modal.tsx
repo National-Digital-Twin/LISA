@@ -22,7 +22,6 @@ export default function Modal({ modal, onClose, children }: Props) {
   if (modal) {
     return (
       <dialog className={classes()} ref={dialogRef}>
-        {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
         <button type="button" onClick={onClose} className={classes('close')} title="Close and cancel">
           <Icons.Close />
         </button>

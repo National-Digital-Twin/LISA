@@ -5,7 +5,7 @@ import { useCallback, useRef, useState } from 'react';
 
 // Local imports
 import { type Coordinates } from 'common/Location';
-import { Icons, Map as MapUtils } from '../../utils';
+import { Icons, MapUtils } from '../../utils';
 import { type LocationResult } from '../../utils/types';
 import { INITIAL_VIEW_STATE, MAP_BOUNDS, MAP_STYLE } from './config';
 import SearchLocation from './SearchLocation';

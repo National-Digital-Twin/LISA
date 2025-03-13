@@ -1,5 +1,7 @@
 // Global imports
 import { MouseEvent, useEffect, useState } from 'react';
+import { Box, Typography } from '@mui/material';
+import Grid from '@mui/material/Grid2';
 
 // Local imports
 import { type Incident } from 'common/Incident';
@@ -10,13 +12,16 @@ import { type FieldValueType, type ValidationError } from '../../utils/types';
 import { FormField, FormFooter } from '../Form';
 import Modal from '../Modal';
 import { STAGE_FIELD } from './constants';
+import Stage from '../Stage';
+
+import { GridListItem } from '../GridListItem';
 
 interface Props {
   incident: Incident;
   onChangeStage: (stage: IncidentStage) => void;
   onCancel: () => void;
 }
-export default function ChangeStage({ incident, onChangeStage, onCancel }: Props) {
+export default function ChangeStage({ incident, onChangeStage, onCancel }: Readonly<Props>) {
   const [modal] = useState<boolean>(sessionStorage.getItem(MODAL_KEY) === 'yes');
   const [stage, setStage] = useState<IncidentStage>(incident.stage);
   const [validationErrors, setValidationErrors] = useState<Array<ValidationError>>([]);
@@ -52,33 +57,42 @@ export default function ChangeStage({ incident, onChangeStage, onCancel }: Props
 
   return (
     <Modal modal={modal} onClose={onCancel}>
-      <div className="rollup-container">
-        <h2 className="rollup-header">
+      <Box display="flex" flexDirection="column" gap={2}>
+        <Typography variant="h2" fontSize="1.6rem">
           Change incident stage
-        </h2>
-        <form id="rollup-log-book-entry">
-          <div className={`section log-form ${showValidationErrors ? 'validation-errors' : ''}`}>
-            <ul>
-              <li>
-                <div className="field-label">Current stage</div>
-                {Format.incident.stage(incident.stage)}
-              </li>
+        </Typography>
+        <Box
+          component="form"
+          display="flex"
+          flexDirection="column"
+          gap={2}
+          id="rollup-log-book-entry"
+        >
+          <Grid component="ul" container spacing={4} bgcolor="background.default" padding={3}>
+            <GridListItem title="Current stage">
+              <Stage
+                label={Format.incident.stage(incident.stage).toUpperCase()}
+                stage={incident.stage}
+              />
+            </GridListItem>
+            <Grid component="li" size={{ xs: 12, md: 6 }}>
               <FormField
                 field={{ ...STAGE_FIELD, value: stage }}
-                error={Form.getError(STAGE_FIELD, validationErrors)}
+                error={
+                  showValidationErrors ? Form.getError(STAGE_FIELD, validationErrors) : undefined
+                }
                 onChange={onFieldChange}
               />
-            </ul>
-
-            <FormFooter
-              validationErrors={validationErrors}
-              onCancel={onCancel}
-              onSubmit={onSubmit}
-              onShowValidationErrors={setShowValidationErrors}
-            />
-          </div>
-        </form>
-      </div>
+            </Grid>
+          </Grid>
+          <FormFooter
+            validationErrors={validationErrors}
+            onCancel={onCancel}
+            onSubmit={onSubmit}
+            onShowValidationErrors={setShowValidationErrors}
+          />
+        </Box>
+      </Box>
     </Modal>
   );
 }
