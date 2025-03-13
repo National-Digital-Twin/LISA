@@ -1,25 +1,18 @@
 // Global imports
 import * as sparql from 'rdf-sparql-builder';
-import { Request } from 'express';
 
 // Local imports
 import { settings } from './settings';
 
-async function sendInsertQuery(req: Request, insertQuery) {
+async function sendInsertQuery(insertQuery) {
   const url = new URL(settings.SCG_URL);
   url.pathname = 'knowledge/update';
 
-  const headers = {
-    'Content-Type': 'application/sparql-update',
-  };
-
-  if (req.headers['x-auth-request-access-token']) {
-    headers['X-Auth-Request-Access-Token'] = req.headers['x-auth-request-access-token'];
-  }
-
   const insertResp = await fetch(url, {
     method: 'POST',
-    headers,
+    headers: {
+      'Content-Type': 'application/sparql-update'
+    },
     body: insertQuery.toString()
   });
   if (insertResp.status !== 204) {
@@ -27,16 +20,16 @@ async function sendInsertQuery(req: Request, insertQuery) {
   }
 }
 
-export async function insert(req: Request, { triples, where }: { triples; where?}) {
+export async function insert({ triples, where }: { triples; where? }) {
   let insertQuery = sparql.insert(triples);
   if (where) {
     insertQuery = insertQuery.where(where);
   }
-  await sendInsertQuery(req, insertQuery);
+  await sendInsertQuery(insertQuery);
 }
 
-export async function insertData(req: Request, triples) {
-  await sendInsertQuery(req, sparql.insertData(triples));
+export async function insertData(triples) {
+  await sendInsertQuery(sparql.insertData(triples));
 }
 
 export type ResultRow = Record<
@@ -47,7 +40,7 @@ export type ResultRow = Record<
   }
 >;
 
-export async function select(req: Request, {
+export async function select({
   clause,
   filters,
   orderBy,
@@ -71,17 +64,11 @@ export async function select(req: Request, {
   const url = new URL(settings.SCG_URL);
   url.pathname = 'knowledge/sparql';
 
-  const headers = {
-    'Content-Type': 'application/sparql-query',
-  };
-
-  if (req.headers['x-auth-request-access-token']) {
-    headers['X-Auth-Request-Access-Token'] = req.headers['x-auth-request-access-token'];
-  }
-
   const selectResp = await fetch(url, {
     method: 'POST',
-    headers,
+    headers: {
+      'Content-Type': 'application/sparql-query'
+    },
     body: selectQuery.toString()
   });
 
