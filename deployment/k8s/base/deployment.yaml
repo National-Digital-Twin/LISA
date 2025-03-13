@@ -19,7 +19,8 @@ spec:
         - envFrom:
                - configMapRef:
                    name: lisa-configs
-
+               - secretRef:
+                   name: lisa-secrets
 
 
 #        - env:
