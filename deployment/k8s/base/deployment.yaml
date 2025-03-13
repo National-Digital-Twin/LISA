@@ -34,13 +34,6 @@ spec:
 #              value: 17orb2f19hu0ih6328bhn50jaqrmkg41btpeokbhet9pins6nhln
 
           image: lisa-image
-          livenessProbe:
-            exec:
-              command:
-                - curl -X GET "http://localhost:3000/" || exit 1
-            failureThreshold: 5
-            periodSeconds: 30
-            timeoutSeconds: 10
           name: lisa
           ports:
             - containerPort: 3000
