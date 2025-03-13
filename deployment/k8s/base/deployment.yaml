@@ -34,6 +34,13 @@ spec:
 #              value: 17orb2f19hu0ih6328bhn50jaqrmkg41btpeokbhet9pins6nhln
 
           image: lisa-image
+          livenessProbe:
+           httpGet:
+             port: 3000
+             path: /
+           failureThreshold: 5
+           periodSeconds: 30
+           timeoutSeconds: 10
           name: lisa
           ports:
             - containerPort: 3000
