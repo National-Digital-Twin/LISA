@@ -18,8 +18,8 @@ async function sendInsertQuery(req: Request, insertQuery) {
     headers['X-Auth-Request-Access-Token'] = req.headers['x-auth-request-access-token'];
   }
 
-  if (req.headers['Authorization']) {
-    headers['Authorization'] = req.headers['Authorization'];
+  if (req.headers['authorization']) {
+    headers['Authorization'] = req.headers['authorization'];
   }
 
   const insertResp = await fetch(url, {
@@ -85,9 +85,9 @@ export async function select(req: Request, {
     headers['X-Auth-Request-Access-Token'] = req.headers['x-auth-request-access-token'];
   }
 
-  if (req.headers['Authorization']) {
+  if (req.headers['authorization']) {
     console.log('Temporary logging - Authorization found');
-    headers['Authorization'] = req.headers['Authorization'];
+    headers['Authorization'] = req.headers['authorization'];
   }
 
   const selectResp = await fetch(url, {
