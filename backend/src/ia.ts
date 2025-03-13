@@ -77,14 +77,10 @@ export async function select(req: Request, {
     'Content-Type': 'application/sparql-query',
   };
 
-  req.headers['x-auth-request-access-token'] = 'mock-jwt-value';
-
   if (req.headers['x-auth-request-access-token']) {
     console.log('Temporary logging - X-Auth token found');
     headers['Authorization'] = `Bearer ${req.headers['x-auth-request-access-token']}`;
   }
-
-  console.log(headers);
 
   const selectResp = await fetch(url, {
     method: 'POST',
