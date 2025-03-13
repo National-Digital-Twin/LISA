@@ -61,13 +61,13 @@ spec:
         uriRegexRewrite:
           match: ^/(/|$)(.*)
           rewrite: /\2
+      headers:
+        response:
+          add:
+            Content-Security-Policy: "placeholder"
+            Access-Control-Allow-Origin: "placeholder"
       route:
         - destination:
             host: lisa
             port:
               number: 80
-          headers:
-            response:
-              add:
-                Content-Security-Policy: "placeholder"
-                Access-Control-Allow-Origin: "placeholder"
