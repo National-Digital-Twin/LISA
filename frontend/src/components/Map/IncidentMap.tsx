@@ -16,6 +16,7 @@ import { bem, Icons, MapUtils } from '../../utils';
 import { type FullLocationType, type SpanType } from '../../utils/types';
 import EntryItem from '../EntryList/EntryItem';
 import { INITIAL_VIEW_STATE, MAP_BOUNDS, MAP_STYLE } from './config';
+import { useResponsive } from '../../hooks/useResponsiveHook';
 
 type LogEntryMarkerType = {
   id: string;
@@ -52,6 +53,7 @@ export default function IncidentMap({
   logEntries,
   highlightId = undefined
 }: Readonly<MapProps>) {
+  const { isMobile } = useResponsive();
   const [redrawing, setRedrawing] = useState<boolean>(false);
   const mapRef = useRef<MapRef>(null);
   const navigate = useNavigate();
@@ -173,11 +175,11 @@ export default function IncidentMap({
             onContentClick={onEntryContentClick}
             onMentionClick={() => {}}
           />
-          <IconButton className="visit-log" onClick={onVisitLog} title="See in incident log">
+          {!isMobile && <IconButton className="visit-log" onClick={onVisitLog} title="See in incident log">
             <Icons.LogBook />
-          </IconButton>
+          </IconButton>}
           <IconButton className="close-info" onClick={onCloseInfo} title="Close information">
-            <Icons.Close />
+            <Icons.Close style={{ fill: 'white' }} />
           </IconButton>
         </div>
       )}

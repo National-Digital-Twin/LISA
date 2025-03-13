@@ -16,17 +16,12 @@ type Props = {
   // onAction: (id: string, action: RelationshipType) => void;
 };
 
-const EntryList = ({
-  entries,
-  sortAsc,
-  onContentClick,
-  onMentionClick
-}: Props) => {
+const EntryList = ({ entries, sortAsc, onContentClick, onMentionClick }: Props) => {
   const hasOffline = entries?.some((e) => e.offline === true);
   const classes = bem('log-entry-list', hasOffline ? ['has-offline'] : []);
   return (
-    <div className={classes()}>
-      {(getSortedEntriesWithDisplaySequence(sortAsc, entries))?.map((entry) => (
+    <div className={classes()} style={{ width: '100%' }}>
+      {getSortedEntriesWithDisplaySequence(sortAsc, entries)?.map((entry) => (
         <EntryItem
           key={entry.id}
           entry={entry}

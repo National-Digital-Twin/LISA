@@ -1,6 +1,6 @@
 // Global imports
 import { v4 as uuidV4 } from 'uuid';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { QueryClient, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 // Local imports
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { LogEntry } from 'common/LogEntry';
@@ -15,6 +15,23 @@ export const useLogEntries = (incidentId?: string) => {
   return { logEntries: data, isLoading, isError, error };
 };
 
+async function poll(
+  incidentId: string | undefined,
+  logEntryId: string | undefined,
+  queryClient: QueryClient,
+  attemptNumber: number
+) {
+  const logEntries = await get<LogEntry[]>(`/incident/${incidentId}/logEntries`);
+
+  if (attemptNumber <= 10) {
+    if (logEntries.find((logEntry) => logEntry.id === logEntryId)) {
+      queryClient.invalidateQueries({ queryKey: [`incident/${incidentId}/logEntries`] });
+    } else {
+      setTimeout(() => poll(incidentId, logEntryId, queryClient, attemptNumber + 1), 10000);
+    }
+  }
+}
+
 export const useCreateLogEntry = (incidentId?: string) => {
   const queryClient = useQueryClient();
   const { mutate, isPending } = useMutation<
@@ -23,6 +40,9 @@ export const useCreateLogEntry = (incidentId?: string) => {
     {
       newLogEntry: Omit<LogEntry, 'id' | 'author'>;
       selectedFiles?: File[];
+    },
+    {
+      previousEntries?: LogEntry[];
     }
   >({
     mutationFn: async ({ newLogEntry, selectedFiles }) => {
@@ -34,10 +54,14 @@ export const useCreateLogEntry = (incidentId?: string) => {
       }
       return post(`/incident/${incidentId}/logEntry`, data);
     },
-    onSettled: () => {
-      queryClient.invalidateQueries({
-        queryKey: [`incident/${incidentId}/logEntries`]
-      });
+    onSuccess: async (data) => {
+      setTimeout(() => poll(incidentId, data.id, queryClient, 1), 1000);
+    },
+    onError(_error, _variables, context) {
+      queryClient.setQueryData<LogEntry[]>(
+        [`incident/${incidentId}/logEntries`],
+        context!.previousEntries
+      );
     },
     // optimistic update
     onMutate: async ({ newLogEntry }) => {

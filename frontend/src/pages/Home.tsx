@@ -17,8 +17,6 @@ import {
   TableHead,
   TableRow,
   Typography,
-  useMediaQuery,
-  useTheme
 } from '@mui/material';
 
 import AddCircleIcon from '@mui/icons-material/AddCircle';
@@ -27,19 +25,21 @@ import { Format } from '../utils';
 import { PageTitle } from '../components';
 import Stage from '../components/Stage';
 import PageWrapper from '../components/PageWrapper';
+import { useResponsive } from '../hooks/useResponsiveHook';
 
 function open(incident: Incident) {
   return incident.stage !== 'Closed';
 }
 
 const Home = () => {
-  const theme = useTheme();
-  const { incidents } = useIncidents();
+  const { isMobile } = useResponsive();
+  const query = useIncidents();
   const [includeClosed, setIncludeClosed] = useState<boolean>(false);
   const navigate = useNavigate();
 
   const show = (incident: Incident): boolean => includeClosed || open(incident);
 
+  const incidents = query.data;
   const openCount = incidents?.filter(open)?.length ?? 0;
   const openCountName = openCount === 0 ? 'No' : openCount.toString();
   const closedCount = (incidents?.length ?? 0) - openCount;
@@ -54,8 +54,6 @@ const Home = () => {
   const onAddIncident = () => {
     navigate('/createlog');
   };
-
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   const tableHeaders = isMobile ? ['Incident'] : ['Incident name', 'Reported by', 'Date', 'Stage'];
 

@@ -9,11 +9,11 @@ import Attachments from '../components/Attachments';
 
 export default function Files() {
   const { incidentId } = useParams();
-  const { incidents } = useIncidents();
+  const query = useIncidents();
   const { attachments } = useAttachments(incidentId);
   useLogEntriesUpdates(incidentId ?? '');
 
-  const incident = incidents?.find((inc) => inc.id === incidentId);
+  const incident = query.data?.find((inc) => inc.id === incidentId);
   const subtitle = useMemo(() => Format.incident.name(incident), [incident]);
   if (!incident || !incidentId) {
     return null;

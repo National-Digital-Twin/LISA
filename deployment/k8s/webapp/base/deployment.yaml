@@ -16,29 +16,23 @@ spec:
     spec:
       serviceAccountName: lisa-sa
       containers:
-        - envFrom:
-               - configMapRef:
-                   name: lisa-configs
-               - secretRef:
-                   name: lisa-secrets
-
-          image: lisa-image
+        - image: lisa-image
           livenessProbe:
             httpGet:
               path: /
-              port: 3000
+              port: 80
             failureThreshold: 5
             periodSeconds: 30
             timeoutSeconds: 20
           readinessProbe:
               httpGet:
                 path: /
-                port: 3000
+                port: 80
               failureThreshold: 5
               periodSeconds: 30
               timeoutSeconds: 20
           name: lisa
           ports:
-            - containerPort: 3000
+            - containerPort: 80
               protocol: TCP
       restartPolicy: Always

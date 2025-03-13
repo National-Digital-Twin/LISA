@@ -43,7 +43,7 @@ const Header = ({ helpVisible = false }: Props) => {
   const { pathname } = useLocation();
   const { incidentId } = useParams();
   const { user } = useAuth();
-  const { incidents } = useIncidents();
+  const query = useIncidents();
   const [isHelpVisible, setIsHelpVisible] = useState<boolean>(helpVisible);
 
   const helpContainerRef = useOutsideClick<HTMLDivElement>(() => {
@@ -55,7 +55,7 @@ const Header = ({ helpVisible = false }: Props) => {
   };
   const [navHidden, setNavHidden] = useState<boolean>(true);
 
-  const incident = incidents?.find((inc) => inc.id === incidentId);
+  const incident = query.data?.find((inc) => inc.id === incidentId);
   let items: Array<MenuItemType> = [HOME_ITEM];
   if (incident) {
     items = [
@@ -89,10 +89,7 @@ const Header = ({ helpVisible = false }: Props) => {
           sx={{ height: '100%', display: 'flex', paddingX: '1rem', flexDirection: 'row' }}
           disableGutters
         >
-          <IconButton
-            sx={{ display: { xs: 'block', md: 'none' } }}
-            onMouseDown={handleNavbutt}
-          >
+          <IconButton sx={{ display: { xs: 'block', md: 'none' } }} onMouseDown={handleNavbutt}>
             <MenuIcon sx={{ color: 'accent.main' }} />
           </IconButton>
 

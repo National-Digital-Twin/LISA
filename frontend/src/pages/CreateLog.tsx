@@ -4,14 +4,15 @@ import { useNavigate } from 'react-router-dom';
 
 // Local imports
 import { type Referrer, type Incident } from 'common/Incident';
-import { Box, Typography } from '@mui/material';
+import { Box, Typography, useMediaQuery } from '@mui/material';
 import Grid from '@mui/material/Grid2';
 import { FormField, FormFooter } from '../components/Form';
-import { useCreateIncident } from '../hooks/useIncidents';
+import { useCreateIncident } from '../hooks';
 import { Form, Incident as IncidentUtil, Validate } from '../utils';
 import { type FieldValueType, type ValidationError } from '../utils/types';
 import { PageTitle } from '../components';
 import PageWrapper from '../components/PageWrapper';
+import theme from '../theme';
 
 const CreateLog = () => {
   const [incident, setIncident] = useState<Partial<Incident>>({
@@ -21,17 +22,25 @@ const CreateLog = () => {
   const [validationErrors, setValidationErrors] = useState<Array<ValidationError>>([]);
   const [showValidationErrors, setShowValidationErrors] = useState<boolean>(false);
 
-  const { createIncident, isLoading } = useCreateIncident();
+  const { createIncident } = useCreateIncident();
   const navigate = useNavigate();
 
   // Go back to where we've just come from.
   const onCancel = () => navigate(-1);
 
   const onSubmit = () => {
-    createIncident(incident as Incident);
-    setTimeout(() => {
-      navigate('/');
-    }, 1000);
+    createIncident(incident as Incident, {
+      onSuccess: (newIncident) => {
+        setTimeout(() => {
+          navigate(`/logbook/${newIncident.id}`);
+        }, 1000);
+      },
+      onError: () => {
+        setTimeout(() => {
+          navigate('/');
+        }, 1000);
+      }
+    });
   };
 
   const onFieldChange = (id: string, value: FieldValueType) => {
@@ -41,6 +50,8 @@ const CreateLog = () => {
   useEffect(() => {
     setValidationErrors(Validate.incident(incident));
   }, [incident]);
+
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   return (
     <PageWrapper>
@@ -72,9 +83,8 @@ const CreateLog = () => {
           validationErrors={validationErrors}
           onCancel={onCancel}
           onSubmit={onSubmit}
-          submitLabel="Create"
+          submitLabel={isMobile ? 'Create' : 'Create Incident Log'}
           onShowValidationErrors={setShowValidationErrors}
-          loading={isLoading}
         />
       </Box>
     </PageWrapper>

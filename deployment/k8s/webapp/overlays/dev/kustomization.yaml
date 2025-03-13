@@ -3,17 +3,7 @@ resources:
 
 namespace: lisa
 
-
-configMapGenerator:
-  - name: lisa-configs
-    envs:
-      - params.env
-
-
 patches:
-  - path: patches/virtualService.yaml
-    target:
-      kind: VirtualService
   - path: patches/service-account.yaml
     target:
       kind: ServiceAccount

@@ -1,3 +1,4 @@
+import { Box } from '@mui/material';
 // Local imports
 import { type LogEntry } from 'common/LogEntry';
 // eslint-disable-next-line import/no-extraneous-dependencies
@@ -26,11 +27,11 @@ export function fields(entry: LogEntry) {
       );
     }
     return (
-      <div className={classes()}>
+      <Box component="ul" display="flex" flexDirection="column" gap={0.75} width="100%">
         {entryFields.map((field) => (
           <FieldItem key={field.id} field={field} entry={entry} />
         ))}
-      </div>
+      </Box>
     );
   }
   return null;
