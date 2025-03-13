@@ -26,6 +26,6 @@
   path: /spec/http/3/route/0/headers/response/add/Content-Security-Policy
   value: "connect-src 'self' data: wss://lisa.app.ndtp.co.uk ws://lisa.app.ndtp.co.uk https://lisa.app.ndtp.co.uk https://landing.app.ndtp.co.uk https://access.app.ndtp.co.uk https://api.os.uk https://nominatim.openstreetmap.org; worker-src 'self' blob:; child-src 'self' blob:; img-src 'self' data: blob:"
 
-- op: replace
-  path: /spec/http/3/headers/response/add/Access-Control-Allow-Origin
-  value: "*"
+#- op: replace
+#  path: /spec/http/3/headers/response/add/Access-Control-Allow-Origin
+#  value: "*"
