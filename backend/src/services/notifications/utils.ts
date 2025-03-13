@@ -56,7 +56,8 @@ export function parseNotification(row: ResultRow): Notification {
           text: row.contentText?.value,
         },
         author: {
-          username: row.authorName?.value
+          username: row.authorName?.value,
+          displayName: row.authorName?.value
         }
       }
     } as UserMentionNotification;

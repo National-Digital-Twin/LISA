@@ -1,9 +1,9 @@
 // Global imports
-import { Optional, Record, Static, String } from 'runtypes';
+import { Record, Static, String } from 'runtypes';
 
 export const User = Record({
   username: String,
-  displayName: Optional(String)
+  displayName: String
 });
 
 export interface UserListItem {
