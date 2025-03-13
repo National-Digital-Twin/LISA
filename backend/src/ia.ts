@@ -18,8 +18,6 @@ async function sendInsertQuery(req: Request, insertQuery) {
     headers['Authorization'] = `Bearer ${req.headers['x-auth-request-access-token']}`;
   }
 
-  console.log(`Temporary logging - INSERT query - ${JSON.stringify(headers)}`);
-
   const insertResp = await fetch(url, {
     method: 'POST',
     headers,
@@ -81,8 +79,6 @@ export async function select(req: Request, {
   if (req.headers['x-auth-request-access-token']) {
     headers['Authorization'] = `Bearer ${req.headers['x-auth-request-access-token']}`;
   }
-
-  console.log(`Temporary logging - SELECT query - ${JSON.stringify(headers)}`);
 
   const selectResp = await fetch(url, {
     method: 'POST',

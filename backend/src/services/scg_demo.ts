@@ -1,3 +1,4 @@
+/* eslint-disable dot-notation */
 // Global imports
 import rdf from '@rdfjs/data-model';
 import { Request, Response } from 'express';
@@ -19,12 +20,18 @@ export async function query(req: Request, res: Response) {
   const url = new URL(settings.SCG_URL);
   url.pathname = '/knowledge/sparql';
 
+  const headers = {
+    'Content-Type': 'application/sparql-query',
+  };
+
+  if (req.headers['x-auth-request-access-token']) {
+    headers['Authorization'] = `Bearer ${req.headers['x-auth-request-access-token']}`;
+  }
+
   try {
     const resp = await fetch(url.toString(), {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/sparql-query'
-      },
+      headers,
       body: select.toString()
     });
     if (resp.ok) {
@@ -36,7 +43,6 @@ export async function query(req: Request, res: Response) {
   } catch (e) {
     console.log(e);
     if (e instanceof TypeError) {
-      // eslint-disable-next-line dot-notation
       throw new Error(`SCG request has failed: ${e.cause['code']}`);
     }
     throw e;
