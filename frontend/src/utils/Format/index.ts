@@ -10,11 +10,13 @@ import { pretty } from './pretty';
 import { time } from './time';
 import { timestamp } from './timestamp';
 import { user, userInitials } from './user';
+import { dateMobile } from './dateMobile';
 
 export const VIEW_LOCATION = 'View location';
 
 const Format = {
   date,
+  dateMobile,
   entry,
   fileSize,
   incident,

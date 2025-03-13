@@ -78,15 +78,15 @@
 }
 
 .incident-attachments {
-  background-color: colors.$grey-light;
-  margin: 0 auto 20px;
-  padding: 20px;
-  .attachment-row {
+  .attachment-row, .attachment-row-empty {
+    margin-top: 1rem;
     display: flex;
-    flex-direction: row;
-    align-items: center;
+    width: 100%;
+    align-items: start;
     gap: 2rem;
-    padding: 8px 0;
+    background-color: colors.$grey-light;
+    min-height: 4rem;
+    padding: 1rem;
     div {
       display: flex;
       flex-direction: row;
@@ -101,5 +101,9 @@
       width: 15px;
       height: auto;
     }
+  }
+  .attachment-row-empty {
+    flex-direction: row;
+    align-items: center;
   }
 }

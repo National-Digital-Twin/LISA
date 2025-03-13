@@ -6,7 +6,7 @@ const PageWrapper = ({ children }: { children: ReactNode }) => (
     display="flex"
     flexDirection="column"
     gap={4}
-    paddingY="130px"
+    paddingY="1rem"
     maxWidth="1500px"
     margin="auto"
     sx={{

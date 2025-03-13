@@ -22,11 +22,11 @@ const PageTitle = ({ title, subtitle = undefined, children }: Props) => {
       width="100%"
     >
       <Box>
-        <Typography fontSize="2rem" variant="h1" className="title">
+        <Typography fontSize="2rem" variant="h1" className="title" fontWeight={400}>
           {title}
         </Typography>
         {!isMobile && subtitle && (
-          <Typography fontSize="1.15rem" variant="h2" color="primary">
+          <Typography fontSize="1.15rem" variant="h2" color="primary" fontWeight={400}>
             {subtitle}
           </Typography>
         )}

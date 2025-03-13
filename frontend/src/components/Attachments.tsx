@@ -1,8 +1,10 @@
 import { Link } from 'react-router-dom';
 
 import { type IncidentAttachment } from 'common/IncidentAttachment';
+import { Box } from '@mui/material';
 import { Format, Icons } from '../utils';
 import AttachmentLink from './AttachmentLink';
+import { useResponsive } from '../hooks/useResponsiveHook';
 
 interface Props {
   incidentId: string;
@@ -12,35 +14,40 @@ interface Props {
 }
 
 function Attachments({ incidentId, attachments, title, emptyMsg }: Readonly<Props>) {
+  const { isMobile } = useResponsive();
   return (
-    <div className="incident-attachments">
+    <Box className="incident-attachments">
       <h2>{title}</h2>
-      {attachments.length === 0 && <span>{emptyMsg}</span>}
+      {attachments.length === 0 && <span className="attachment-row-empty">{emptyMsg}</span>}
       {attachments
         .toSorted((a, b) => a.name.localeCompare(b.name))
         .map((attachment) => (
-          <div key={attachment.key} className="attachment-row">
+          <div key={attachment.key} className="attachment-row" style={{ flexDirection: isMobile ? 'column' : 'row' }}>
             <div>
               <AttachmentLink attachment={attachment} />
             </div>
             <div>
-              <Icons.Person />
+              {!isMobile && <Icons.Person />}
               {Format.user(attachment.author)}
             </div>
-            <div>
-              <Icons.Calendar />
-              {Format.date(attachment.uploadedAt)}
-            </div>
-            <div>
-              <Icons.Clock />
-              {Format.time(attachment.uploadedAt)}
-            </div>
+            {isMobile && <div>{Format.dateMobile(attachment.uploadedAt)}</div>}
+            {!isMobile && <>
+              <div>
+                <Icons.Calendar />
+                {Format.date(attachment.uploadedAt)}
+              </div>
+              <div>
+                <Icons.Clock />
+                {Format.time(attachment.uploadedAt)}
+              </div>
+            </>
+            }
             <div>
               <Link to={`/logbook/${incidentId}#${attachment.logEntryId}`}>View log entry</Link>
             </div>
           </div>
         ))}
-    </div>
+    </Box>
   );
 }
 
