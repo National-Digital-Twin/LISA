@@ -24,7 +24,7 @@ export async function get(req: Request, res: Response) {
     mentionsResults,
     mentionsUsersResults,
     attachmentResults
-  ] = await Promise.all(select(req, incidentId));
+  ] = await Promise.all(select(incidentId));
 
   /**
    * Make maps of the repeating rows for each entry id
