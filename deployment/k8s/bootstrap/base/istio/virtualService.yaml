@@ -28,6 +28,7 @@ spec:
             Pragma: "no-cache"
             Expires: "0"
             Content-Security-Policy: "placeholder"
+            Access-Control-Allow-Origin: "placeholder"
       route:
         - destination:
             host: lisa-backend
@@ -45,6 +46,7 @@ spec:
             Pragma: "no-cache"
             Expires: "0"
             Content-Security-Policy: "placeholder"
+            Access-Control-Allow-Origin: "placeholder"
       route:
         - destination:
             host: lisa
@@ -68,4 +70,4 @@ spec:
             response:
               add:
                 Content-Security-Policy: "placeholder"
-
+                Access-Control-Allow-Origin: "placeholder"
