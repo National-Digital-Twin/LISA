@@ -24,9 +24,16 @@ export default function FormFooter({
 }: Readonly<Props>) {
   const [showingErrors, setShowingErrors] = useState<boolean>(false);
 
+  const [isSubmitted, setIsSubmitted] = useState(false);
+
   const onCancelClick = (evt: MouseEvent<HTMLButtonElement>) => {
     evt.preventDefault();
     onCancel();
+  };
+
+  const handleSubmitClick = () => {
+    setIsSubmitted(true);
+    onSubmit();
   };
 
   const onToggleShowErrors = (evt: MouseEvent<HTMLButtonElement>) => {
@@ -56,8 +63,8 @@ export default function FormFooter({
       <Button
         variant="contained"
         startIcon={<ImportContactsIcon />}
-        onClick={onSubmit}
-        disabled={validationErrors.length > 0}
+        onClick={handleSubmitClick}
+        disabled={validationErrors.length > 0 || isSubmitted}
         loading={loading}
       >
         {submitLabel}
