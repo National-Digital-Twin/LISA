@@ -1,5 +1,5 @@
-import { Link as RouterLink } from 'react-router-dom';
-import { Box, Typography, Stack, Link, useTheme } from '@mui/material';
+import { Link } from 'react-router-dom';
+import { Box, Typography, Stack, useTheme } from '@mui/material';
 import { type IncidentAttachment } from 'common/IncidentAttachment';
 import { Format, Icons } from '../utils';
 import AttachmentLink from './AttachmentLink';
@@ -86,15 +86,7 @@ function Attachments({ incidentId, attachments, title, emptyMsg }: Readonly<Prop
                   </Stack>
                 </>
               )}
-
-              <Link
-                component={RouterLink}
-                to={`/logbook/${incidentId}#${attachment.logEntryId}`}
-                variant="body2"
-                sx={{ textDecoration: 'none' }}
-              >
-                View log entry
-              </Link>
+              <Link to={`/logbook/${incidentId}#${attachment.logEntryId}`}>View log entry</Link>
             </Stack>
           ))}
       </Stack>
