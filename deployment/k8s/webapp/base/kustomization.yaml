@@ -5,11 +5,8 @@ resources:
   - istio/envoy-filter.yaml
   - istio/allow-ingress-authorization-policy.yaml
 
-
 labels:
   - pairs:
       app: lisa
       env: ENV_PLACEHOLDER
       app.kubernetes.io/name: lisa
-
-

@@ -21,39 +21,48 @@ server {
     # Don't pass on Authorization headers if we receive them
     proxy_set_header Authorization "";
 
-  location  /transparent-proxy/health {
-            access_log off;
-            add_header 'Content-Type' 'application/json';
-            return 200 '{"status":"UP"}';
-    }
-
-    ## BEGIN UPSTREAM DEFINITIONS
-
-    # OS vector
-    location /transparent-proxy/os/ {
-        set $delimeter "?";
-
-        if ($is_args) {
-            set $delimeter "&";
+    location  /transparent-proxy/health {
+                access_log off;
+                add_header 'Content-Type' 'application/json';
+                return 200 '{"status":"UP"}';
         }
 
+        ## BEGIN UPSTREAM DEFINITIONS
+
+        # OS vector
+        location /transparent-proxy/os/ {
+
+        set $raster_fetch_with_args "";
+        
         if ($uri ~ ^/transparent-proxy/os/(.*)) {
             set $requested_path $1;
         }
 
-        if ($requested_path ~ ^maps/raster/.*) {
-            set $api_key_qs ${delimeter}key=$OS_RASTER_API_KEY;
+        if ($requested_path ~ ^maps/raster/.*) { 
+            set $raster_fetch_with_args  A; 
+        } 
+  
+        if ($is_args) { 
+        set $raster_fetch_with_args  "${raster_fetch_with_args}B"; 
+        } 
+    
+        if ($raster_fetch_with_args = AB) { 
+        set $args "$args&key=$OS_RASTER_API_KEY";
+        }
+	
+        if ($raster_fetch_with_args = A) {
+            set $args key=$OS_RASTER_API_KEY;
         }
 
         proxy_ssl_server_name on;
         proxy_ssl_name "api.os.uk";
-        proxy_pass https://api.os.uk/$requested_path?$args$api_key_qs;
-    }
+        proxy_pass https://api.os.uk/;
 
-    ## END UPSTREAM DEFINITIONS
+        ## END UPSTREAM DEFINITIONS
 
-    if ($upstream_http_content_type ~* "(text/html|application/xhtml+xml|text/javascript|application/javascript)") {
-        # Block upstreams ever serving us "dangerous" content
-        return 502;
+        if ($upstream_http_content_type ~* "(text/html|application/xhtml+xml|text/javascript|application/javascript)") {
+            # Block upstreams ever serving us "dangerous" content
+            return 502;
+        }   
     }
 }

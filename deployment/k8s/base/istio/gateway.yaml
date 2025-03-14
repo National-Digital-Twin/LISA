@@ -1,0 +1,26 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: lisa-ingress-gateway
+spec:
+  selector:
+    app: istio-ingress
+  servers:
+    - hosts:
+        - "HTTP_PLACE_HOLDER"
+      port:
+        name: http
+        number: 80
+        protocol: HTTP
+      tls:
+        httpsRedirect: true
+    - hosts:
+        - "HTTPS_PLACE_HOLDER"
+      port:
+        name: https
+        number: 443
+        protocol: HTTP
+#      tls:
+#        # Name of config map that contains the TLS key and cert
+#        credentialName: domain-certs
+#        mode: SIMPLE

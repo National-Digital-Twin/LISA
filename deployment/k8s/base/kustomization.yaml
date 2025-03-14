@@ -1,0 +1,17 @@
+resources:
+  - namespace.yaml
+  - service-account.yaml
+  - deployment.yaml
+  - service.yaml
+  - istio/preauthentication.yaml
+  - istio/gateway.yaml
+  - istio/virtualService.yaml
+
+
+labels:
+  - pairs:
+      app: lisa
+      env: ENV_PLACEHOLDER
+      app.kubernetes.io/name: lisa
+
+
