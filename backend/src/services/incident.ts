@@ -16,6 +16,7 @@ import { addStageSuffix, IncidentStage, removeStageSuffix } from 'common/Inciden
 import * as ia from '../ia';
 import { literalDate, literalString, ns, nodeValue } from '../rdfutil';
 import { ApplicationError, InvalidValueError } from '../errors';
+import { getScanResultInternal } from './fileStorage';
 
 type Amendments = Record<string, string>;
 
@@ -23,7 +24,10 @@ export async function create(req: Request, res: Response) {
   const incident = Incident.check(req.body);
 
   incident.id = randomUUID();
-  incident.reportedBy = { username: res.locals.user.username, displayName: res.locals.user.displayName };
+  incident.reportedBy = {
+    username: res.locals.user.username,
+    displayName: res.locals.user.displayName
+  };
 
   const incidentBoundingState = randomUUID();
   const incidentState = randomUUID();
@@ -286,21 +290,24 @@ export async function getAttachments(req: Request, res: Response) {
     ]
   });
 
-  const attachments = results.map(
-    (row) =>
-      ({
-        logEntryId: nodeValue(row.id.value),
-        author: {
-          username: row.authorName?.value,
-          displayName: row.authorName?.value
-        },
-        uploadedAt: row.createdAt.value,
-        name: row.attachmentName.value,
-        type: row.attachmentType.value as LogEntryAttachmentType,
-        key: row.attachmentKey.value,
-        mimeType: row.attachmentMimeType.value,
-        size: Number(row.attachmentSize.value)
-      }) satisfies IncidentAttachment
+  const attachments = await Promise.all(
+    results.map(
+      async (row) =>
+        ({
+          logEntryId: nodeValue(row.id.value),
+          author: {
+            username: row.authorName?.value,
+            displayName: row.authorName?.value
+          },
+          uploadedAt: row.createdAt.value,
+          name: row.attachmentName.value,
+          type: row.attachmentType.value as LogEntryAttachmentType,
+          key: row.attachmentKey.value,
+          mimeType: row.attachmentMimeType.value,
+          size: Number(row.attachmentSize.value),
+          scanResult: await getScanResultInternal(row.attachmentKey.value)
+        }) satisfies IncidentAttachment
+    )
   );
 
   res.json(attachments);

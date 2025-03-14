@@ -15,6 +15,7 @@ export const LogEntryAttachment = Record({
   key: Optional(String),
   size: Optional(Number),
   mimeType: Optional(String),
+  scanResult: Optional(String)
 });
 
 // eslint-disable-next-line no-redeclare

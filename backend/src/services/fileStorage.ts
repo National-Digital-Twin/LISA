@@ -4,11 +4,14 @@ import fs from 'fs';
 import { Request, Response } from 'express';
 import {
   GetObjectCommand,
+  GetObjectTaggingCommand,
+  GetObjectTaggingCommandOutput,
   PutObjectCommand,
   S3Client,
   S3ServiceException
 } from '@aws-sdk/client-s3';
 import { settings } from '../settings';
+import { ApplicationError } from '../errors';
 
 const browserEnabledTypes = ['image/', 'application/pdf', 'audio/webm'];
 
@@ -27,6 +30,53 @@ function getContentInfo(
     disposition: canOpenInBrowser ? 'inline' : `attachment; filename*="${fileName}"`,
     type: canOpenInBrowser ? mimeType : undefined
   };
+}
+
+export async function getScanResultInternal(key: string) {
+  if (!key) {
+    throw new ApplicationError('Key cannot be undefined.');
+  }
+
+  const client = new S3Client();
+
+  const command = new GetObjectTaggingCommand({
+    Bucket: settings.S3_BUCKET_ID,
+    Key: key
+  });
+
+  let response: GetObjectTaggingCommandOutput;
+
+  try {
+    response = await client.send(command);
+  } catch (error) {
+    console.log(error);
+    return 'PENDING';
+  }
+
+  if (response.TagSet) {
+    return response.TagSet.find((tag) => tag.Key === 'GuardDutyMalwareScanStatus').Value;
+  }
+  return 'PENDING';
+}
+
+export async function getScanResultExternal(req: Request, res: Response) {
+  const { key } = req.params;
+
+  try {
+    return await getScanResultInternal(key);
+  } catch (e) {
+    if (e instanceof S3ServiceException) {
+      if (e.$response.statusCode === 304) {
+        const headers = e.$response.headers;
+        res.set({
+          'Last-Modified': headers['last-modified'],
+          ETag: headers.etag
+        });
+        return res.status(304).end();
+      }
+    }
+    throw e;
+  }
 }
 
 export async function streamS3Object(req: Request, res: Response) {
@@ -96,6 +146,7 @@ export async function storeS3Object(key: string, filePath: string): Promise<stri
   try {
     await client.send(command);
   } catch (e) {
+    console.log(e);
     throw new Error('error storing file', e);
   }
 

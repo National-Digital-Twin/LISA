@@ -1,14 +1,7 @@
 // Global imports
 import { MouseEvent, useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import {
-  Box,
-  Button,
-  InputAdornment,
-  Popover,
-  TextField,
-  Typography,
-} from '@mui/material';
+import { Box, Button, InputAdornment, Popover, TextField, Typography } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
