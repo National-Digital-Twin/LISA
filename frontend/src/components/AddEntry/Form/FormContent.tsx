@@ -2,6 +2,8 @@
 import parse from 'html-react-parser';
 import { useEffect, useMemo, useState, useCallback } from 'react';
 import { useReactMediaRecorder } from 'react-media-recorder';
+import { Box, InputLabel, Typography } from '@mui/material';
+import Grid from '@mui/material/Grid2';
 
 // Local imports
 import { type Field } from 'common/Field';
@@ -27,6 +29,7 @@ interface Props {
   readonly validationErrors: Array<ValidationError>;
   readonly onFieldChange: OnFieldChange;
   readonly onAddRecording: (recording: File) => void;
+  readonly showValidationErrors: boolean;
 }
 
 export default function FormContent({
@@ -37,7 +40,8 @@ export default function FormContent({
   mentionables,
   validationErrors,
   onFieldChange,
-  onAddRecording
+  onAddRecording,
+  showValidationErrors
 }: Props) {
   const [recording, setRecording] = useState(false);
   const [noContent, setNoContent] = useState<boolean>(false);
@@ -122,33 +126,49 @@ export default function FormContent({
   const classes = bem('add-entry-tab', [active ? 'active' : ''], 'form');
 
   return (
-    <ul className={classes()}>
-      {baseFields.map((field) => (
-        <FormField
-          key={field.id}
-          field={{ ...field, value: entry[field.id as keyof LogEntry] as string }}
-          entries={entries}
-          error={validationErrors.find((e) => e.fieldId === field.id)}
-          onChange={onFieldChange}
-          className={field.className}
-        />
-      ))}
+    <Box display="flex" flexDirection="column" gap={4}>
+      <Grid component="ul" container spacing={4} className={classes()}>
+        {baseFields.map((field) => (
+          <Grid component="li" size={{ xs: 12, md: 6 }}>
+            <FormField
+              component="li"
+              key={field.id}
+              field={{ ...field, value: entry[field.id as keyof LogEntry] as string }}
+              entries={entries}
+              error={showValidationErrors ? Form.getError(field, validationErrors) : undefined}
+              onChange={onFieldChange}
+              className={field.className}
+            />
+          </Grid>
+        ))}
+      </Grid>
       {description && <li className="full-width">{parse(description)}</li>}
       {!noContent && (
-        <li className={`full-width field-type--Lexical ${contentError ? 'in-error' : ''}`}>
-          <label htmlFor="content">
+        <Box
+          display="flex"
+          flexDirection="column"
+          component="li"
+          gap={1}
+          className={`full-width field-type--Lexical ${contentError ? 'in-error' : ''}`}
+        >
+          <InputLabel htmlFor="content" sx={{ color: 'text.primary', fontWeight: 'bold' }}>
             {descriptionLabel}
-            <EntryContent
-              id="content"
-              json={typeof entry.content === 'object' ? entry.content.json : undefined}
-              editable
-              mentionables={mentionables}
-              speechToTextActive={speechToTextActive}
-              onChange={onContentChange}
-              onSpeechToText={onSpeechToTextChange}
-            />
-          </label>
-          {contentError && <div className="field-error">{contentError.error}</div>}
+          </InputLabel>
+          <EntryContent
+            id="content"
+            json={typeof entry.content === 'object' ? entry.content.json : undefined}
+            editable
+            mentionables={mentionables}
+            speechToTextActive={speechToTextActive}
+            onChange={onContentChange}
+            onSpeechToText={onSpeechToTextChange}
+            error={Boolean(showValidationErrors && contentError)}
+          />
+          {showValidationErrors && contentError && (
+            <Typography variant="body1" color="error">
+              {contentError.error}
+            </Typography>
+          )}
 
           <div className="recorder-controls">
             {/* Display a simple indicator and controls for recording */}
@@ -175,16 +195,18 @@ export default function FormContent({
               </>
             )}
           </div>
-        </li>
+        </Box>
       )}
       <FormFields
+        component="li"
         fields={fields}
         validationErrors={validationErrors}
         groups={groups}
         entry={entry}
         entries={entries}
         onFieldChange={onNestedFieldChange}
+        showValidationErrors={showValidationErrors}
       />
-    </ul>
+    </Box>
   );
 }

@@ -1,14 +1,7 @@
 // Global imports
 import { MouseEvent, useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import {
-  Box,
-  Button,
-  InputAdornment,
-  Popover,
-  TextField,
-  Typography,
-} from '@mui/material';
+import { Box, Button, InputAdornment, Popover, TextField, Typography } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
@@ -154,7 +147,7 @@ const Logbook = () => {
     <PageWrapper>
       <PageTitle title="Incident log">
         <Box display="flex" flexDirection="row" justifyContent="space-between">
-          {isMobile && (
+          {isMobile && !adding && (
             <Button variant="text" onClick={onSort} endIcon={sortIcon()} color="secondary">
               Sort
             </Button>

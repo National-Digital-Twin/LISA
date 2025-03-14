@@ -26,12 +26,10 @@ const PEN_OPTIONS = [
 
 const Sketch = ({ lines, setLines, canvasRef, active }: Props) => {
   const container = useRef<HTMLDivElement>(null);
-  const [size, setSize] = useState(
-    {
-      width: container.current?.offsetWidth ?? 0,
-      height: container.current?.offsetHeight ?? 0
-    }
-  );
+  const [size, setSize] = useState({
+    width: container.current?.offsetWidth ?? 0,
+    height: container.current?.offsetHeight ?? 0
+  });
   const [penColor, setPenColor] = useState(PEN_OPTIONS[0].color);
   const isDrawing = useRef(false);
 
@@ -90,7 +88,7 @@ const Sketch = ({ lines, setLines, canvasRef, active }: Props) => {
     if (container.current) {
       setSize({
         width: container.current.offsetWidth,
-        height: container.current.offsetHeight,
+        height: container.current.offsetHeight
       });
     }
   };
@@ -140,8 +138,7 @@ const Sketch = ({ lines, setLines, canvasRef, active }: Props) => {
         {PEN_OPTIONS.map((pen) => (
           <Button
             key={pen.color}
-            className="pen"
-            sx={{ backgroundColor: pen.hex }}
+            sx={{ borderRadius: 'unset', backgroundColor: pen.hex, minWidth: 30, minHeight: 30 }}
             onClick={() => setPenColor(pen.color)}
             aria-label={`Select ${pen.label} pen`}
           />
@@ -149,8 +146,10 @@ const Sketch = ({ lines, setLines, canvasRef, active }: Props) => {
       </div>
       <div className="clear">
         <Button
+          variant="contained"
           onClick={() => setLines([])}
           className="sketch-clear"
+          disabled={!lines.length}
         >
           Clear
         </Button>
