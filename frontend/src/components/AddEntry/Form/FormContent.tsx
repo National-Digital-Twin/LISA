@@ -1,6 +1,6 @@
 // Global imports
 import parse from 'html-react-parser';
-import { useEffect, useMemo, useState, useCallback } from 'react';
+import { useEffect, useMemo, useState, useCallback, useRef } from 'react';
 import { useReactMediaRecorder } from 'react-media-recorder';
 import { Box, InputLabel, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid2';
@@ -51,6 +51,7 @@ export default function FormContent({
   const [groups, setGroups] = useState<Array<FieldGroup>>([]);
   const [speechToTextActive, setSpeechToTextActive] = useState<boolean>(false);
   const [processedRecordings, setProcessedRecordings] = useState<Array<string>>([]);
+  const hasStoppedRef = useRef(false);
 
   const baseFields: Array<Field> = useMemo(
     () => Form.getBaseLogEntryFields(incident, entry),
@@ -110,13 +111,17 @@ export default function FormContent({
     audio: true,
     // When recording stops, fetch the blob and pass it along
     onStop: async (blobUrl) => {
-      await addAudioElementFromUrl(blobUrl);
+      if (!hasStoppedRef.current) {
+        hasStoppedRef.current = true;
+        await addAudioElementFromUrl(blobUrl);
+      }
     }
   });
 
   // Start or stop recording based on the `recording` state
   useEffect(() => {
     if (recording) {
+      hasStoppedRef.current = false
       startRecording();
     } else {
       stopRecording();
