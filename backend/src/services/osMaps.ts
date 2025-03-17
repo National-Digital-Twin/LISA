@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { settings } from '../settings';
 
 interface Query {
   point?: string;
@@ -6,7 +7,7 @@ interface Query {
 }
 export async function searchLocation(req: Request<object, object, object, Query>, res: Response) {
   const type = req.query.point ? 'nearest' : 'find';
-  const url = new URL(`http://lisa-transparent-proxy/transparent-proxy/os/search/places/v1/${type}`);
+  const url = new URL(`${settings.PROXY_HOST}/transparent-proxy/os/search/places/v1/${type}`);
 
   if (type === 'nearest') {
     url.searchParams.set('point', req.query.point);
