@@ -1,17 +1,15 @@
+import { Box, InputLabel, Typography } from '@mui/material';
+import UploadFileIcon from '@mui/icons-material/UploadFile';
 import { FormEvent, DragEvent, useRef, useLayoutEffect, useState } from 'react';
 
 type SelectorProps = {
   onSelect: (files: File[]) => void;
 };
 
-const TYPES_BLACKLIST: string[] = [
-  'application/x-msdownload',
-  'application/x-apple-diskimage',
-];
+const TYPES_BLACKLIST: string[] = ['application/x-msdownload', 'application/x-apple-diskimage'];
 
 export default function FilesSelector({ onSelect }: Readonly<SelectorProps>) {
   const [canDrag, setCanDrag] = useState<boolean>(false);
-  const [focused, setFocused] = useState<boolean>(false);
   const [isDragging, setIsDragging] = useState<boolean>(false);
 
   // We use the same button as the drop target
@@ -22,10 +20,11 @@ export default function FilesSelector({ onSelect }: Readonly<SelectorProps>) {
     if (!dragContainerRef.current) {
       return;
     }
-    const dropSupported = ('draggable' in dragContainerRef.current
-        || ('ondragstart' in dragContainerRef.current && 'ondrop' in dragContainerRef.current))
-      && 'FormData' in window
-      && 'FileReader' in window;
+    const dropSupported =
+      ('draggable' in dragContainerRef.current ||
+        ('ondragstart' in dragContainerRef.current && 'ondrop' in dragContainerRef.current)) &&
+      'FormData' in window &&
+      'FileReader' in window;
     setCanDrag(dropSupported);
   }, []);
 
@@ -71,34 +70,50 @@ export default function FilesSelector({ onSelect }: Readonly<SelectorProps>) {
   };
 
   return (
-    <>
-      <button
-        type="button"
-        className={`files-selector ${isDragging ? 'files-selector__dragging' : ''}`}
-        ref={dragContainerRef}
-        aria-label="Choose files or drag them here"
-        onClick={onClick}
-        onDragOver={onDragOver}
-        onDragEnter={onDragEnter}
-        onDragLeave={onDragLeave}
-        onDrop={onFilesDrop}
-        onFocus={() => setFocused(true)}
-        onBlur={() => setFocused(false)}
+    <Box
+      component="button"
+      type="button"
+      draggable
+      className={`files-selector ${isDragging ? 'files-selector__dragging' : ''}`}
+      ref={dragContainerRef}
+      aria-label="Choose files or drag them here"
+      onClick={onClick}
+      onDragOver={onDragOver}
+      onDragEnter={onDragEnter}
+      onDragLeave={onDragLeave}
+      onDrop={onFilesDrop}
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 1,
+        cursor: 'pointer',
+        border: '1px dashed stage.closed.primary'
+      }}
+      padding={3}
+    >
+      <UploadFileIcon color="primary" />
+      <InputLabel sx={{ textTransform: 'none', color: 'text.primary' }}>
+        <Typography variant="body1" component="u" color="primary">
+          Choose Files
+        </Typography>{' '}
+        {canDrag && 'or drag them here'}
+      </InputLabel>
+      <Typography
+        component="span"
+        variant="body1"
+        color="textDisabled"
+        sx={{ textTransform: 'none' }}
       >
-        <label htmlFor="fileUpload">
-          <span className={`prompt ${focused ? 'prompt__focused' : ''}`}>Choose files</span>
-          {canDrag && ' or drag them here'}
-        </label>
-      </button>
-      {/* Hidden file input */}
+        SVG, PNG, JPG or GIF (max. 3MB)
+      </Typography>
       <input
         id="fileUpload"
+        onChange={onFileSelect}
         type="file"
         multiple
-        onChange={onFileSelect}
         ref={fileInputRef}
         style={{ display: 'none' }}
       />
-    </>
+    </Box>
   );
 }

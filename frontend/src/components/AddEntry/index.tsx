@@ -2,6 +2,7 @@
 import { type Stage } from 'konva/lib/Stage';
 import { MouseEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
+import { Box } from '@mui/material';
 
 // Local imports
 import { type Incident } from 'common/Incident';
@@ -20,7 +21,7 @@ import Modal from '../Modal';
 import { TABS } from './constants';
 import Files from './Files';
 import Form from './Form';
-import Header from './Header';
+import { Header, TabPanel } from './Header';
 import Location from './Location';
 import Sketch from './Sketch';
 
@@ -44,7 +45,8 @@ const AddEntry = ({
   onCancel,
   loading = false
 }: AddEntryProps) => {
-  const { hash } = useLocation();
+  const locationMeta = useLocation();
+  const hash = locationMeta.hash.length > 0 ? locationMeta.hash : TABS.FORM;
   const { users } = useUsers();
   const [entry, setEntry] = useState<Partial<LogEntry>>({
     incidentId: incident?.id,
@@ -165,15 +167,14 @@ const AddEntry = ({
 
   return (
     <Modal modal={modal} onClose={onCancel}>
-      <div className="rollup-container">
+      <Box display="flex" flexDirection="column" displayPrint="none">
         <Header
-          hash={hash}
           fileCount={selectedFiles.length + recordings.length}
           validationErrors={validationErrors}
           showValidationErrors={showValidationErrors}
         />
-        <form id="rollup-log-book-entry">
-          <div className={`section log-form ${showValidationErrors ? 'validation-errors' : ''}`}>
+        <Box padding={3} component="form" bgcolor="background.default" id="rollup-log-book-entry">
+          <TabPanel value={TABS.FORM} hash={hash}>
             <Form.Content
               active={!hash || hash.includes(TABS.FORM)}
               entry={entry}
@@ -183,14 +184,21 @@ const AddEntry = ({
               validationErrors={validationErrors}
               onFieldChange={onFieldChange}
               onAddRecording={onAddRecording}
+              showValidationErrors={showValidationErrors}
             />
+          </TabPanel>
+
+          <TabPanel value={TABS.LOCATION} hash={hash}>
             <Location.Content
               active={hash?.includes(TABS.LOCATION)}
               required={entry.type && LogEntryTypes[entry.type].requireLocation}
               location={entry.location}
               validationErrors={validationErrors}
               onLocationChange={onLocationChange}
+              showValidationErrors={showValidationErrors}
             />
+          </TabPanel>
+          <TabPanel value={TABS.FILES} hash={hash}>
             <Files.Content
               active={hash?.includes(TABS.FILES)}
               selectedFiles={selectedFiles}
@@ -199,12 +207,16 @@ const AddEntry = ({
               removeSelectedFile={removeSelectedFile}
               removeRecording={removeRecording}
             />
+          </TabPanel>
+          <TabPanel value={TABS.SKETCH} hash={hash}>
             <Sketch.Content
               active={hash?.includes(TABS.SKETCH)}
               canvasRef={sketchCanvasRef}
               lines={sketchLines}
               onChangeLines={setSketchLines}
             />
+          </TabPanel>
+          <Box mt={2}>
             <FormFooter
               validationErrors={validationErrors}
               onCancel={onCancel}
@@ -212,9 +224,9 @@ const AddEntry = ({
               onShowValidationErrors={setShowValidationErrors}
               loading={loading}
             />
-          </div>
-        </form>
-      </div>
+          </Box>
+        </Box>
+      </Box>
     </Modal>
   );
 };

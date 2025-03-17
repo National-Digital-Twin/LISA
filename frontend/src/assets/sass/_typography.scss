@@ -1,44 +1,49 @@
 // '_TYPOGRAPHY.SCSS' - IMPORTED INTO APP.SCSS
+@use 'ndtp';
 
 @font-face {
   font-family: merriweather;
-  src: url("./assets/typography/merriweather/Merriweather-Regular.ttf");
-  src: local("?"),
-    url("./assets/typography/merriweather/Merriweather-Regular.ttf")
-      format("truetype");
+  src: url('./assets/typography/merriweather/Merriweather-Regular.ttf');
+  src:
+    local('?'),
+    url('./assets/typography/merriweather/Merriweather-Regular.ttf') format('truetype');
 }
 
 @font-face {
   font-family: lato-reg;
   font-style: normal;
   font-weight: 400;
-  src: url("./assets/typography/lato/lato-regular.ttf");
-  src: local("?"),
-    url("./assets/typography/lato/lato-regular.ttf") format("truetype");
+  src: url('./assets/typography/lato/lato-regular.ttf');
+  src:
+    local('?'),
+    url('./assets/typography/lato/lato-regular.ttf') format('truetype');
 }
 @font-face {
   font-family: lato-bold;
   font-style: normal;
   font-weight: 400;
-  src: url("./assets/typography/lato/lato-bold.ttf");
-  src: local("?"),
-    url("./assets/typography/lato/lato-bold.ttf") format("truetype");
+  src: url('./assets/typography/lato/lato-bold.ttf');
+  src:
+    local('?'),
+    url('./assets/typography/lato/lato-bold.ttf') format('truetype');
 }
 @font-face {
   font-family: lato-black;
   font-style: normal;
   font-weight: 400;
-  src: url("./assets/typography/lato/lato-black.ttf");
-  src: local("?"),
-    url("./assets/typography/lato/lato-black.ttf") format("truetype");
+  src: url('./assets/typography/lato/lato-black.ttf');
+  src:
+    local('?'),
+    url('./assets/typography/lato/lato-black.ttf') format('truetype');
 }
 @font-face {
   font-family: lato-light;
   font-style: normal;
   font-weight: 400;
-  src: url("./assets/typography/lato/lato-light.ttf");
-  src: local("?"),
-    url("./assets/typography/lato/lato-light.ttf") format("truetype");
+  src: url('./assets/typography/lato/lato-light.ttf');
+  src:
+    local('?'),
+    url('./assets/typography/lato/lato-light.ttf') format('truetype');
 }
 
 body,
@@ -50,7 +55,7 @@ li,
 tr,
 td,
 button {
-  font-family: "lato-bold", Helvetica Neue, Helvetica, Roboto, Arial, sans-serif;
+  font-family: ndtp.$font-family;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
@@ -75,4 +80,3 @@ button {
 .note {
   font-size: 0.75em;
 }
-
