@@ -75,7 +75,10 @@ const FormField = ({
       flexDirection="column"
       gap={1}
     >
-      <InputLabel htmlFor={field.id} sx={{ color: 'text.primary', fontWeight: 'bold' }}>
+      <InputLabel
+        htmlFor={field.id}
+        sx={{ color: 'text.primary', fontWeight: 'bold', whiteSpace: 'normal' }}
+      >
         {field.label}{' '}
         {field.optional && (
           <Typography component="span" className="optional-field">

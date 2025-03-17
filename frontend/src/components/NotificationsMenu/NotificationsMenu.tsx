@@ -54,7 +54,7 @@ export default function NotificationsMenu() {
         <div className={classes('menu')}>
           <div className={classes('menu-title')}>
             <span>Notifications</span>
-            <IconButton  className={classes('menu-close')} onClick={() => setExpanded(false)}>
+            <IconButton className={classes('menu-close')} onClick={() => setExpanded(false)}>
               <Icons.Close />
             </IconButton>
           </div>
