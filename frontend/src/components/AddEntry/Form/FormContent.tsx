@@ -129,7 +129,7 @@ export default function FormContent({
     <Box display="flex" flexDirection="column" gap={4}>
       <Grid component="ul" container spacing={4} className={classes()}>
         {baseFields.map((field) => (
-          <Grid component="li" size={{ xs: 12, md: 6 }}>
+          <Grid key={field.id} component="li" size={{ xs: 12, md: 6 }}>
             <FormField
               component="li"
               key={field.id}
