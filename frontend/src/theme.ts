@@ -8,6 +8,15 @@ const theme = createTheme({
           backgroundColor: 'white'
         }
       }
+    },
+    MuiTab: {
+      styleOverrides: {
+        root: {
+          '&.Mui-selected': {
+            backgroundColor: '#f0f2f2'
+          }
+        }
+      }
     }
   },
   typography: {
@@ -40,6 +49,9 @@ const theme = createTheme({
     },
     accent: {
       main: '#ffcf06'
+    },
+    border: {
+      main: '#c2c2c2'
     },
     stage: {
       monitoring: {

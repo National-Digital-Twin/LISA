@@ -1,18 +1,22 @@
 // Local imports
-import { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
+import { Tabs, Tab } from '@mui/material';
+import { Link } from 'react-router-dom';
 import { type ValidationError } from '../../../utils/types';
 import { TABS } from '../constants';
-import Files from '../Files';
-import Form from '../Form';
-import Location from '../Location';
-import Sketch from '../Sketch';
+import { useResponsive } from '../../../hooks/useResponsiveHook';
 
 interface Props {
-  hash: string;
   fileCount: number;
   validationErrors: Array<ValidationError>;
+  showValidationErrors: boolean;
 }
-export default function Tabs({ hash, fileCount, validationErrors }: Readonly<Props>) {
+export default function TabNavigation({
+  fileCount,
+  validationErrors,
+  showValidationErrors
+}: Readonly<Props>) {
+  const { isMobile } = useResponsive();
   const hasLocationError: boolean = useMemo(
     () => !!validationErrors.find((e) => e.fieldId.startsWith('location')),
     [validationErrors]
@@ -21,20 +25,49 @@ export default function Tabs({ hash, fileCount, validationErrors }: Readonly<Pro
     () => !!validationErrors.find((e) => !e.fieldId.startsWith('location')),
     [validationErrors]
   );
+
+  const [active, setActive] = useState(TABS.FORM);
+
+  const handleChange = (_: React.SyntheticEvent, newValue: string) => {
+    setActive(newValue);
+  };
+
+  const tabMeta = [
+    { label: 'Form', value: TABS.FORM, error: hasFormError },
+    { label: 'Location', value: TABS.LOCATION, error: hasLocationError },
+    { label: `Files (${fileCount})`, value: TABS.FILES },
+    { label: 'Sketch', value: TABS.SKETCH }
+  ];
+
   return (
-    <div className="rollup-tabs">
-      <Form.Tab
-        to={TABS.FORM}
-        active={!hash || hash?.includes(TABS.FORM)}
-        inError={hasFormError}
-      />
-      <Location.Tab
-        to={TABS.LOCATION}
-        active={hash.includes(TABS.LOCATION)}
-        inError={hasLocationError}
-      />
-      <Files.Tab to={TABS.FILES} active={hash?.includes(TABS.FILES)} fileCount={fileCount} />
-      <Sketch.Tab to={TABS.SKETCH} active={hash.includes(TABS.SKETCH)} />
-    </div>
+    <Tabs
+      value={active}
+      onChange={handleChange}
+      variant={isMobile ? 'fullWidth' : 'standard'}
+      TabIndicatorProps={{
+        style: { backgroundColor: showValidationErrors ? 'error.main' : 'primary.main' }
+      }}
+      sx={{
+        '& .Mui-selected': {
+          color: showValidationErrors ? 'error.main' : 'primary.main'
+        },
+        '& .MuiTabs-indicator': {
+          backgroundColor: showValidationErrors ? 'error.main' : 'primary.main'
+        }
+      }}
+    >
+      {tabMeta.map(({ label, value, error }) => (
+        <Tab
+          key={value}
+          id={`log-tab-${value}`}
+          aria-controls={`log-tab-${value}`}
+          sx={{ textTransform: 'none', fontWeight: 'bold' }}
+          component={Link}
+          to={value}
+          label={error ? `${label}*` : label}
+          value={value}
+        />
+      ))}
+    </Tabs>
   );
 }

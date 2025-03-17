@@ -1,12 +1,13 @@
 // Global imports
-import { MouseEvent, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { ElementType } from 'react';
+import { Accordion, AccordionDetails, AccordionSummary, Box, Typography } from '@mui/material';
 
 // Local imports
 import { type Field } from 'common/Field';
 import { type FieldGroup } from 'common/FieldGroup';
 import { type LogEntry } from 'common/LogEntry';
-import { bem, Form, Icons } from '../../utils';
+
+import { Form } from '../../utils';
 import { type OnFieldChange } from '../../utils/handlers';
 import { type ValidationError } from '../../utils/types';
 import FormField from './FormField';
@@ -18,6 +19,8 @@ type Props = {
   entries?: Array<Partial<LogEntry>>;
   validationErrors: Array<ValidationError>;
   onFieldChange: OnFieldChange;
+  component?: ElementType;
+  showValidationErrors: boolean;
 };
 
 export default function FormGroup({
@@ -26,51 +29,54 @@ export default function FormGroup({
   entry,
   entries = undefined,
   validationErrors,
-  onFieldChange
+  onFieldChange,
+  component = undefined,
+  showValidationErrors
 }: Readonly<Props>) {
-  const [open, setOpen] = useState<boolean>(group.defaultOpen ?? false);
-
   if (!Form.groupHasFields(group, fields)) {
     return null;
   }
 
-  const onClickLabel = (evt: MouseEvent<HTMLAnchorElement>) => {
-    evt.preventDefault();
-    setOpen((prev) => !prev);
-  };
-
-  const classes = bem('form-group', open ? 'open' : '');
   if (group.label) {
     return (
-      <li className={classes()}>
-        <ul>
-          <li className={classes('label')}>
-            {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-            <Link to="#" onClick={onClickLabel}>
-              <Icons.Chevron />
-              {group.label}
-            </Link>
-          </li>
-          {group.description && (
-            <li className={classes('description', [], 'full-width')}>{group.description}</li>
-          )}
-          {fields
-            .filter((f) => group.fieldIds.includes(f.id))
-            .map((field) => (
-              <FormField
-                key={field.id}
-                field={{
-                  ...field,
-                  value: Form.getFieldValue(field, entry)
-                }}
-                entries={entries}
-                error={Form.getError(field, validationErrors)}
-                onChange={onFieldChange}
-                className={field.className}
-              />
-            ))}
-        </ul>
-      </li>
+      <Accordion defaultExpanded={group.defaultOpen} elevation={0}>
+        <AccordionSummary sx={{ backgroundColor: 'border.default' }}>
+          <Typography>{group.label}</Typography>
+        </AccordionSummary>
+        <AccordionDetails
+          sx={{
+            backgroundColor: 'background.default',
+            borderLeft: '1px solid',
+            borderRight: '1px solid',
+            borderBottom: '1px solid',
+            borderColor: 'border.main'
+          }}
+        >
+          <Box component="ul" display="flex" flexDirection="column" gap={2} padding={1}>
+            {group.description && (
+              <Typography component="li" variant="body1">
+                {group.description}
+              </Typography>
+            )}
+            {fields
+              .filter((f) => group.fieldIds.includes(f.id))
+              .map((field) => (
+                <FormField
+                  component="li"
+                  key={field.id}
+                  field={{
+                    ...field,
+                    value: Form.getFieldValue(field, entry)
+                  }}
+                  entries={entries}
+                  error={showValidationErrors ? Form.getError(field, validationErrors) : undefined}
+                  onChange={onFieldChange}
+                  className={field.className}
+                />
+              ))}
+          </Box>
+        </AccordionDetails>
+      </Accordion>
     );
   }
 
@@ -78,13 +84,14 @@ export default function FormGroup({
     .filter((f) => group.fieldIds.includes(f.id))
     .map((field) => (
       <FormField
+        component={component}
         key={field.id}
         field={{
           ...field,
           value: Form.getFieldValue(field, entry)
         }}
         entries={entries}
-        error={Form.getError(field, validationErrors)}
+        error={showValidationErrors ? Form.getError(field, validationErrors) : undefined}
         onChange={onFieldChange}
         className={field.className}
       />
