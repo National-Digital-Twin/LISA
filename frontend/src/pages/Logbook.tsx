@@ -213,6 +213,7 @@ const Logbook = () => {
                     authors={filterAuthors}
                     onChange={onFilterChange}
                     isMobile={isMobile}
+                    appliedFilters={appliedFilters}
                   />
                 ) : (
                   <>
@@ -253,6 +254,7 @@ const Logbook = () => {
                           authors={filterAuthors}
                           onChange={onFilterChange}
                           isMobile={isMobile}
+                          appliedFilters={appliedFilters}
                         />
                       </Box>
                     </Popover>

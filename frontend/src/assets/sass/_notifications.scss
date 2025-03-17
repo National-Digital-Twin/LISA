@@ -34,8 +34,6 @@
     }
   }
   @media screen and (max-width: 1050px) {
-    min-height: unset;
-    align-items: start;
     .alert-title {
       padding: 10px 0;
     }
@@ -43,8 +41,6 @@
 }
 
 .alerts {
-  position: relative;
-  align-self: stretch;
   &__btn {
     position: relative;
     width: 40px;
@@ -75,7 +71,8 @@
     background-color: white;
     border: 1px solid colors.$grey-mid;
     margin-top: -1px;
-    width: 460px;
+    max-width: 460px;
+    width: 100%;
     max-height: 600px;
     overflow: hidden;
     display: flex;

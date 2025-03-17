@@ -5,8 +5,9 @@ import { useParams } from 'react-router-dom';
 // Local imports
 import { type Incident } from 'common/Incident';
 import { useIncidents } from '../hooks';
-import { Format, Icons } from '../utils';
+import { Format } from '../utils';
 import { NotificationsMenu } from './NotificationsMenu';
+import Stage from './Stage';
 
 function open(incident: Incident) {
   return incident.stage !== 'Closed';
@@ -29,10 +30,12 @@ const NotificationsBanner = () => {
     <div className="notification-container">
       <div className="alert-title">
         {incident && (
-          <span className={`incident-stage ${incident.stage}`}>
-            <Icons.Stage />
-            {Format.incident.stage(incident.stage)}
-          </span>
+          <Stage
+            label={Format.incident.stage(incident.stage)}
+            stage={incident.stage}
+            size="small"
+            width="auto"
+          />
         )}
         {incident ? incidentTitle : countTitle}
       </div>
