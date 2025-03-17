@@ -25,7 +25,11 @@ async function poll(
 
   if (attemptNumber <= 10) {
     if (logEntries.find((logEntry) => logEntry.id === logEntryId)) {
-      queryClient.invalidateQueries({ queryKey: [`incident/${incidentId}/logEntries`] });
+      queryClient
+        .invalidateQueries({ queryKey: [`incident/${incidentId}/logEntries`] })
+        .then(() =>
+          queryClient.invalidateQueries({ queryKey: [`incident/${incidentId}/attachments`] })
+        );
     } else {
       setTimeout(() => poll(incidentId, logEntryId, queryClient, attemptNumber + 1), 10000);
     }
