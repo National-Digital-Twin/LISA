@@ -48,6 +48,7 @@ apiRouter.get('/incident/:incidentId/attachments', incident.getAttachments);
 apiRouter.post('/incident/:incidentId/stage', incident.changeStage);
 
 apiRouter.get('/files/:key/:fileName', storage.streamS3Object);
+apiRouter.get('/files/scan-result/:key', storage.getScanResultExternal);
 
 apiRouter.get('/searchLocation', osMaps.searchLocation);
 

@@ -21,7 +21,7 @@ module.exports = {
     }
   },
   rules: {
-    indent: ['error', 2],
+    indent: ['error', 2, { SwitchCase: 1 }],
     'max-len': ['error', 180],
     'jsx-a11y/label-has-associated-control': [
       'error',

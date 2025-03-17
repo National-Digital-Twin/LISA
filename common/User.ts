@@ -7,8 +7,8 @@ export const User = Record({
 });
 
 export interface UserListItem {
-  username: string,
-  displayName?: string,
+  username: string;
+  displayName?: string;
 }
 
 export type UserList = UserListItem[];

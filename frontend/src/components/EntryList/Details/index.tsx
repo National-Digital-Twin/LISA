@@ -1,4 +1,3 @@
-/* eslint-disable indent */
 import { MouseEvent } from 'react';
 
 import { type LogEntry } from 'common/LogEntry';
