@@ -24,6 +24,7 @@ describe('FormGroup Tests', () => {
         }}
         validationErrors={[]}
         onFieldChange={mockOnFieldChange}
+        showValidationErrors={false}
       />
     );
     expect(screen.getByText('Group Label')).toBeInTheDocument();
@@ -46,6 +47,7 @@ describe('FormGroup Tests', () => {
         }}
         validationErrors={[]}
         onFieldChange={mockOnFieldChange}
+        showValidationErrors={false}
       />
     );
     expect(screen.queryByText('Group Label')).toBeNull();
@@ -67,6 +69,7 @@ describe('FormGroup Tests', () => {
         }}
         validationErrors={[]}
         onFieldChange={mockOnFieldChange}
+        showValidationErrors={false}
       />
     );
     const input = screen.getByLabelText('Field Label');
@@ -91,6 +94,7 @@ describe('FormGroup Tests', () => {
         }}
         validationErrors={[]}
         onFieldChange={mockOnFieldChange}
+        showValidationErrors={false}
       />
     );
     const link = screen.getByRole('link', { name: 'Group Label' });
