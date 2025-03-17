@@ -54,7 +54,9 @@ export async function getScanResultInternal(key: string) {
   }
 
   if (response.TagSet) {
-    return response.TagSet.find((tag) => tag.Key === 'GuardDutyMalwareScanStatus').Value;
+    return (
+      response.TagSet.find((tag) => tag.Key === 'GuardDutyMalwareScanStatus')?.Value ?? 'PENDING'
+    );
   }
   return 'PENDING';
 }
