@@ -86,6 +86,14 @@ export async function streamS3Object(req: Request, res: Response) {
     res.status(400).send('missing mimeType query param');
     return;
   }
+
+  const scanResult = await getScanResultInternal(key);
+
+  if (scanResult && scanResult !== 'NO_THREATS_FOUND') {
+    res.status(400).send('The requested file has been found to be malicious.');
+    return;
+  }
+
   const { disposition, type } = getContentInfo(fileName, String(mimeType));
   const client = new S3Client();
   const ims = req.header('If-Modified-Since');
