@@ -44,39 +44,14 @@
     border-color: colors.$blue;
   }
 }
+
 .selected-file {
   display: flex;
   flex-direction: row;
   align-items: center;
   column-gap: 30px;
+
   .file-size {
     color: colors.$section-light-text;
-  }
-}
-
-.incident-attachments {
-  background-color: colors.$grey-light;
-  margin: 0 auto 20px;
-  padding: 20px;
-  .attachment-row {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 2rem;
-    padding: 8px 0;
-    div {
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-      gap: 0.5rem;
-      &:first-child {
-        flex-grow: 1;
-      }
-    }
-    svg,
-    img {
-      width: 15px;
-      height: auto;
-    }
   }
 }

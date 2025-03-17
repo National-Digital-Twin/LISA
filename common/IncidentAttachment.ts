@@ -6,6 +6,7 @@ export const IncidentAttachment = LogEntryAttachment.extend({
   logEntryId: String,
   author: User,
   uploadedAt: String,
+  scanResult: String
 });
 
 // eslint-disable-next-line no-redeclare

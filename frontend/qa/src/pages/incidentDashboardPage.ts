@@ -21,7 +21,7 @@ export default class IncidentDashboardPage {
     editIncidentOrganisation: '//input[@id="referrer.organisation"]',
     editIncidentTelephoneNo: '//input[@id="referrer.telephone"]',
     editIncidentEmail: '//input[@id="referrer.email"]',
-    chkCloseIncidents: '//input[@id="include-closed"]',
+    chkCloseIncidents: '//input[@id="include-closed"]'
   };
 
   async verifyAddIncidentBtn() {
@@ -90,32 +90,36 @@ export default class IncidentDashboardPage {
   }
 
   async selectIncidentByData(incidentId: string, incidentName: string, incidentStatus: string) {
-    await this.page.locator(this.Elements.selectIncidentByNameStatus
-      .replace('$DATAINCIDENTID$', incidentId)
-      .replace('$DATASTATUS$', incidentStatus)
-      .replace('$DATAINCIDENTNAME$', incidentName)).click();
+    await this.page
+      .locator(
+        this.Elements.selectIncidentByNameStatus
+          .replace('$DATAINCIDENTID$', incidentId)
+          .replace('$DATASTATUS$', incidentStatus)
+          .replace('$DATAINCIDENTNAME$', incidentName)
+      )
+      .click();
   }
 
   async editIncidentByField(fieldName, inputText: string) {
     switch (fieldName) {
-    case 'ReferredBy':
-      await this.page.locator(this.Elements.editIncidentReferredBy).clear();
-      await this.page.locator(this.Elements.editIncidentReferredBy).fill(inputText);
-      break;
-    case 'Organisation':
-      await this.page.locator(this.Elements.editIncidentOrganisation).clear();
-      await this.page.locator(this.Elements.editIncidentOrganisation).fill(inputText);
-      break;
-    case 'TelephoneNo':
-      await this.page.locator(this.Elements.editIncidentTelephoneNo).clear();
-      await this.page.locator(this.Elements.editIncidentTelephoneNo).fill(inputText);
-      break;
-    case 'Email':
-      await this.page.locator(this.Elements.editIncidentEmail).clear();
-      await this.page.locator(this.Elements.editIncidentEmail).fill(inputText);
-      break;
-    default:
-      break;
+      case 'ReferredBy':
+        await this.page.locator(this.Elements.editIncidentReferredBy).clear();
+        await this.page.locator(this.Elements.editIncidentReferredBy).fill(inputText);
+        break;
+      case 'Organisation':
+        await this.page.locator(this.Elements.editIncidentOrganisation).clear();
+        await this.page.locator(this.Elements.editIncidentOrganisation).fill(inputText);
+        break;
+      case 'TelephoneNo':
+        await this.page.locator(this.Elements.editIncidentTelephoneNo).clear();
+        await this.page.locator(this.Elements.editIncidentTelephoneNo).fill(inputText);
+        break;
+      case 'Email':
+        await this.page.locator(this.Elements.editIncidentEmail).clear();
+        await this.page.locator(this.Elements.editIncidentEmail).fill(inputText);
+        break;
+      default:
+        break;
     }
   }
 }

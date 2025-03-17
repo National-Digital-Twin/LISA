@@ -9,12 +9,12 @@ import { literalDate, ns } from '../../rdfutil';
 import { UserMentionInput } from './types';
 import { getCreateData, getFetchOptionals, getTypesList, parseNotification } from './utils';
 
-export async function create(req: Request, input: UserMentionInput) {
+export async function create(input: UserMentionInput) {
   const id = randomUUID();
   const idNode = ns.data(id);
   const additionalData = getCreateData(idNode, input);
 
-  await ia.insertData(req, [
+  await ia.insertData([
     [idNode, ns.rdf.type, ns.lisa(input.type)],
     [idNode, ns.lisa.hasRecipient, ns.data(input.recipient)],
     [idNode, ns.lisa.createdAt, literalDate(new Date())],
@@ -28,7 +28,7 @@ export async function markRead(req: Request, res: Response) {
   const { username } = res.locals.user;
   const idNode = ns.data(id);
 
-  const results = await ia.select(req, {
+  const results = await ia.select({
     clause: [
       ['?id', ns.rdf.type, '?type'],
       ['?id', ns.lisa.hasRecipient, '?recipient'],
@@ -44,7 +44,7 @@ export async function markRead(req: Request, res: Response) {
   });
 
   if (results.length === 1 && !results[0].read?.value) {
-    await ia.insertData(req, [
+    await ia.insertData([
       [idNode, ns.lisa.readAt, literalDate(new Date())]
     ]);
   }
@@ -56,7 +56,7 @@ export async function get(req: Request, res: Response) {
   const { username } = res.locals.user;
   const optionals = getFetchOptionals();
 
-  const results = await ia.select(req, {
+  const results = await ia.select({
     clause: [
       ['?id', ns.rdf.type, '?type'],
       ['?id', ns.lisa.hasRecipient, '?recipient'],

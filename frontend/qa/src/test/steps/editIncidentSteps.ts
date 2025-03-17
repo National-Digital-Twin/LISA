@@ -8,7 +8,7 @@ import LandingPage from '../../pages/landingPage';
 
 let landingPage: LandingPage;
 let dashboardPage: IncidentDashboardPage;
-let incidentEditLogPage : EditIncidentLogPage;
+let incidentEditLogPage: EditIncidentLogPage;
 
 setDefaultTimeout(60 * 1000 * 2);
 
@@ -107,31 +107,35 @@ When('I add the log details', async (dataTable) => {
   await incidentEditLogPage.updateLogTabFormDateTimeNow(await data[2]);
 
   switch (data[1]) {
-  case 'General': {
-    await incidentEditLogPage.updateLogTabFormDesc(data[3] === 'Yes', data[4] === 'Yes');
-    break;
-  }
-  case 'SitRep': {
-    await incidentEditLogPage.updateDropDownById(data[3]);
-    await incidentEditLogPage.updateSitRepTextFields(data[4] === 'Yes');
-    await incidentEditLogPage.setSitRepLocation(data[5]);
-    await incidentEditLogPage.doFileUpload(data[6]);
-    break;
-  }
-  default: {
-    // eslint-disable-next-line no-console
-    console.log('No Matching dropdown types');
-  }
+    case 'General': {
+      await incidentEditLogPage.updateLogTabFormDesc(data[3] === 'Yes', data[4] === 'Yes');
+      break;
+    }
+    case 'SitRep': {
+      await incidentEditLogPage.updateDropDownById(data[3]);
+      await incidentEditLogPage.updateSitRepTextFields(data[4] === 'Yes');
+      await incidentEditLogPage.setSitRepLocation(data[5]);
+      await incidentEditLogPage.doFileUpload(data[6]);
+      break;
+    }
+    default: {
+      // eslint-disable-next-line no-console
+      console.log('No Matching dropdown types');
+    }
   }
 
   await incidentEditLogPage.btnAddLogSave();
 });
 
-Then('I should be able to verify a new log entry is created for the {string} category', async (logType) => {
-  console.warn(`Verify a new entry is included for the log entry :${logType}`);
-  incidentEditLogPage = new EditIncidentLogPage(basePage.page);
-  await incidentEditLogPage.verifyLogStatusByCount(parseInt(process.env.getLogEntriesCount, 10));
-});
+Then(
+  'I should be able to verify a new log entry is created for the {string} category',
+  async (logType) => {
+    /* eslint-disable no-console */
+    console.warn(`Verify a new entry is included for the log entry :${logType}`);
+    incidentEditLogPage = new EditIncidentLogPage(basePage.page);
+    await incidentEditLogPage.verifyLogStatusByCount(parseInt(process.env.getLogEntriesCount, 10));
+  }
+);
 
 When('I update the Incident stage', async (dataTable) => {
   const data = dataTable.rows()[0];
@@ -152,22 +156,25 @@ Then('I should be able to verify the stage details as {string}', async (newStage
   await incidentEditLogPage.verifyUpdatedStage(newStage);
 });
 
-Then('I reset the stage back for the incident name {string} from {string} to {string}', async (incidentName: string, newStage: string, initalStage: string) => {
-  landingPage = new LandingPage(basePage.page);
-  await landingPage.verifyLisaAppPage();
+Then(
+  'I reset the stage back for the incident name {string} from {string} to {string}',
+  async (incidentName: string, newStage: string, initalStage: string) => {
+    landingPage = new LandingPage(basePage.page);
+    await landingPage.verifyLisaAppPage();
 
-  dashboardPage = new IncidentDashboardPage(basePage.page);
-  await basePage.customSleep(5000);
-  await dashboardPage.selectIncidentByNameStatus(incidentName, newStage);
+    dashboardPage = new IncidentDashboardPage(basePage.page);
+    await basePage.customSleep(5000);
+    await dashboardPage.selectIncidentByNameStatus(incidentName, newStage);
 
-  await basePage.navigateMenuByLink('OVERVIEW');
-  await basePage.customSleep(500);
+    await basePage.navigateMenuByLink('OVERVIEW');
+    await basePage.customSleep(500);
 
-  await basePage.navigateMenuByButton('Change stage');
-  await basePage.customSleep(500);
+    await basePage.navigateMenuByButton('Change stage');
+    await basePage.customSleep(500);
 
-  incidentEditLogPage = new EditIncidentLogPage(basePage.page);
-  await incidentEditLogPage.updateDropDownById(initalStage);
+    incidentEditLogPage = new EditIncidentLogPage(basePage.page);
+    await incidentEditLogPage.updateDropDownById(initalStage);
 
-  await incidentEditLogPage.btnAddLogSave();
-});
+    await incidentEditLogPage.btnAddLogSave();
+  }
+);

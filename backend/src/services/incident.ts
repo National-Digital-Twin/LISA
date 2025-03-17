@@ -16,6 +16,7 @@ import { addStageSuffix, IncidentStage, removeStageSuffix } from 'common/Inciden
 import * as ia from '../ia';
 import { literalDate, literalString, ns, nodeValue } from '../rdfutil';
 import { ApplicationError, InvalidValueError } from '../errors';
+import { getScanResultInternal } from './fileStorage';
 
 type Amendments = Record<string, string>;
 
@@ -23,7 +24,10 @@ export async function create(req: Request, res: Response) {
   const incident = Incident.check(req.body);
 
   incident.id = randomUUID();
-  incident.reportedBy = { username: res.locals.user.username, displayName: res.locals.user.displayName };
+  incident.reportedBy = {
+    username: res.locals.user.username,
+    displayName: res.locals.user.displayName
+  };
 
   const incidentBoundingState = randomUUID();
   const incidentState = randomUUID();
@@ -52,7 +56,7 @@ export async function create(req: Request, res: Response) {
   }
   referrerTriples.push([incidentIdNode, ns.lisa.hasReferrer, referrerNode]);
 
-  await ia.insertData(req, [
+  await ia.insertData([
     [incidentIdNode, ns.rdf.type, ns.lisa(addIncidentSuffix(incident.type))],
     [incidentIdNode, ns.ies.hasName, literalString(incident.name)],
     [incidentIdNode, ns.lisa.createdAt, literalDate(new Date())],
@@ -84,7 +88,7 @@ export async function changeStage(req: Request, res: Response) {
 
   const notExistsFilter = new TriplePattern('?x', ns.ies.isEndOf, '?lastStateNodeId');
 
-  const results = await ia.select(req, {
+  const results = await ia.select({
     selection: ['?stage', '?lastStateNodeId'],
     clause: [
       ['?lastStateNodeId', ns.ies.isStateOf, incidentIdNode],
@@ -122,7 +126,7 @@ export async function changeStage(req: Request, res: Response) {
   const incidentStateNode = ns.data(incidentState);
   const startDateNode = literalDate(new Date());
 
-  await ia.insert(req, {
+  await ia.insert({
     triples: [
       // Closing the last state
       [lastStateBoundingStateNode, ns.ies.inPeriod, startDateNode],
@@ -185,7 +189,7 @@ function getName(row: ia.ResultRow, amendments?: Amendments): string {
   return amendments?.name || row.name?.value;
 }
 
-export async function get(req: Request, res: Response) {
+export async function get(_: Request, res: Response) {
   const typeFilters = Object.keys(IncidentTypes).map(
     (value: string) => `<${ns.lisa(addIncidentSuffix(value as IncidentType)).value}>`
   );
@@ -193,7 +197,7 @@ export async function get(req: Request, res: Response) {
   const requests: Promise<ia.ResultRow[]>[] = [];
 
   requests.push(
-    ia.select(req, {
+    ia.select({
       clause: [
         ['?id', ns.lisa.hasLogEntry, '?entryId'],
         ['?entryId', ns.lisa.createdAt, '?createdAt'],
@@ -210,7 +214,7 @@ export async function get(req: Request, res: Response) {
   const valuesMappedtypeFilters = typeFilters.map((typeFilter) => `(${typeFilter})`);
 
   requests.push(
-    ia.select(req, {
+    ia.select({
       clause: [
         ['?id', ns.rdf.type, '?type'],
         ['?isStateOf', ns.ies.isStateOf, '?id'],
@@ -271,7 +275,7 @@ export async function get(req: Request, res: Response) {
 export async function getAttachments(req: Request, res: Response) {
   const { incidentId } = req.params;
 
-  const results = await ia.select(req, {
+  const results = await ia.select({
     clause: [
       [ns.data(incidentId), ns.lisa.hasLogEntry, '?id'],
       ['?id', ns.lisa.createdAt, '?createdAt'],
@@ -286,21 +290,24 @@ export async function getAttachments(req: Request, res: Response) {
     ]
   });
 
-  const attachments = results.map(
-    (row) =>
-      ({
-        logEntryId: nodeValue(row.id.value),
-        author: {
-          username: row.authorName?.value,
-          displayName: row.authorName?.value
-        },
-        uploadedAt: row.createdAt.value,
-        name: row.attachmentName.value,
-        type: row.attachmentType.value as LogEntryAttachmentType,
-        key: row.attachmentKey.value,
-        mimeType: row.attachmentMimeType.value,
-        size: Number(row.attachmentSize.value)
-      }) satisfies IncidentAttachment
+  const attachments = await Promise.all(
+    results.map(
+      async (row) =>
+        ({
+          logEntryId: nodeValue(row.id.value),
+          author: {
+            username: row.authorName?.value,
+            displayName: row.authorName?.value
+          },
+          uploadedAt: row.createdAt.value,
+          name: row.attachmentName.value,
+          type: row.attachmentType.value as LogEntryAttachmentType,
+          key: row.attachmentKey.value,
+          mimeType: row.attachmentMimeType.value,
+          size: Number(row.attachmentSize.value),
+          scanResult: await getScanResultInternal(row.attachmentKey.value)
+        }) satisfies IncidentAttachment
+    )
   );
 
   res.json(attachments);

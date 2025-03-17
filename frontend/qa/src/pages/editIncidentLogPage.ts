@@ -13,7 +13,8 @@ const Elements = {
   isLogTabActive: "//a[contains(@class,'active') and contains(text(),'$LINKNAME$')]",
   linkLogEntryTab: "//h2[@class='rollup-header']//a[starts-with(text(),'$LINKNAME$')]",
   ddCategoryById: "//div[@id='$DROPDOWNBYID$']//div[@data-value]",
-  ddSelectCategory: "//div[starts-with(@id,'react-select-')]//span[contains(text(),'$DropdownOption$') and @class='option-label__label']",
+  ddSelectCategory:
+    "//div[starts-with(@id,'react-select-')]//span[contains(text(),'$DropdownOption$') and @class='option-label__label']",
   btnDateTimeNow: "//a[@class='date-now']",
   inpDescriptionTxt: "//div[@class='editor-input']",
   btnSaveLog: "//button[@class='button submit']",
@@ -23,8 +24,7 @@ const Elements = {
   txtFormTabByID: '//textarea[@id="$TEXTAREABYID$"]',
   inpFormLocationDescription: '//input[@id="location.description"]',
 
-  inpFileUpload: '//input[@id="fileUpload"]',
-
+  inpFileUpload: '//input[@id="fileUpload"]'
 };
 
 export default class EditIncidentLogPage {
@@ -61,8 +61,7 @@ export default class EditIncidentLogPage {
     await basePage.customSleep(10000);
     await this.page.reload();
     await basePage.customSleep(5000);
-    expect(await this.page.locator(Elements.getLogEntryList).count())
-      .toEqual(initalCount + 1);
+    expect(await this.page.locator(Elements.getLogEntryList).count()).toEqual(initalCount + 1);
   }
 
   async btnClickAddLogEntry() {
@@ -70,7 +69,12 @@ export default class EditIncidentLogPage {
   }
 
   async updateLogByTab(tabName: string) {
-    if (!(await this.page.locator(Elements.isLogTabActive.replace('$LINKNAME$', tabName)).count() > 0)) {
+    if (
+      !(
+        (await this.page.locator(Elements.isLogTabActive.replace('$LINKNAME$', tabName)).count()) >
+        0
+      )
+    ) {
       await this.page.locator(Elements.linkLogEntryTab.replace('$LINKNAME$', tabName)).click();
     } else {
       // eslint-disable-next-line no-console
@@ -81,8 +85,13 @@ export default class EditIncidentLogPage {
   async updateDropDownById(logType: string) {
     const logTypeId = await EditIncidentLogPage.getDropdownCategory(logType);
 
-    await this.page.locator(Elements.ddCategoryById.replace('$DROPDOWNBYID$', logTypeId)).first().click();
-    await this.page.locator(Elements.ddSelectCategory.replace('$DropdownOption$', logType.split(',')[0])).click();
+    await this.page
+      .locator(Elements.ddCategoryById.replace('$DROPDOWNBYID$', logTypeId))
+      .first()
+      .click();
+    await this.page
+      .locator(Elements.ddSelectCategory.replace('$DropdownOption$', logType.split(',')[0]))
+      .click();
   }
 
   async updateLogTabFormDateTimeNow(inpString: string) {
@@ -95,7 +104,10 @@ export default class EditIncidentLogPage {
 
       await this.page.locator(Elements.inpDescriptionTxt).type(`@${randomUsername.slice(0, 4)}`);
       await basePage.customSleep(500);
-      await this.page.getByRole('listbox', { name: 'Typeahead menu' }).getByText(randomUsername).click();
+      await this.page
+        .getByRole('listbox', { name: 'Typeahead menu' })
+        .getByText(randomUsername)
+        .click();
     }
 
     if (boolAddDesc) {
@@ -108,49 +120,63 @@ export default class EditIncidentLogPage {
   }
 
   async updateSitRepTextFields(isOptionalFieldNeeded: boolean) {
-    await this.page.locator(Elements.txtFormTabByID.replace('$TEXTAREABYID$', 'Hazards')).type('Some Hazard Related Text');
-    await this.page.locator(Elements.txtFormTabByID.replace('$TEXTAREABYID$', 'Access')).type('Some Access Related Text');
-    await this.page.locator(Elements.txtFormTabByID.replace('$TEXTAREABYID$', 'Casualties')).type('Some Casualties Related Text');
-    await this.page.locator(Elements.txtFormTabByID.replace('$TEXTAREABYID$', 'Emergency')).type('Some Emergency Related Text');
+    await this.page
+      .locator(Elements.txtFormTabByID.replace('$TEXTAREABYID$', 'Hazards'))
+      .type('Some Hazard Related Text');
+    await this.page
+      .locator(Elements.txtFormTabByID.replace('$TEXTAREABYID$', 'Access'))
+      .type('Some Access Related Text');
+    await this.page
+      .locator(Elements.txtFormTabByID.replace('$TEXTAREABYID$', 'Casualties'))
+      .type('Some Casualties Related Text');
+    await this.page
+      .locator(Elements.txtFormTabByID.replace('$TEXTAREABYID$', 'Emergency'))
+      .type('Some Emergency Related Text');
 
-    // eslint-disable-next-line no-console
-    if (isOptionalFieldNeeded) { console.log('Need to implement Optional fields if required'); }
+    if (isOptionalFieldNeeded) {
+      /* eslint-disable no-console */
+      console.log('Need to implement Optional fields if required');
+    }
   }
 
-  async setSitRepLocation(isSitRepLocationReq:string) {
-    if (await this.page.locator(Elements.btnFormExactLocation.replace('$BUTTONSTATE$', 'Set')).count() > 0) {
-      await this.page.locator(Elements.btnFormExactLocation.replace('$BUTTONSTATE$', 'Set')).click();
+  async setSitRepLocation(isSitRepLocationReq: string) {
+    if (
+      (await this.page
+        .locator(Elements.btnFormExactLocation.replace('$BUTTONSTATE$', 'Set'))
+        .count()) > 0
+    ) {
+      await this.page
+        .locator(Elements.btnFormExactLocation.replace('$BUTTONSTATE$', 'Set'))
+        .click();
 
       await this.updateLogByTab('Location');
       await this.updateDropDownById(isSitRepLocationReq);
 
       switch (isSitRepLocationReq) {
-      case 'Description only':
-        await this.page.locator(Elements.inpFormLocationDescription).fill('London');
-        break;
-      case 'Point on a map':
-        await this.page.getByRole('region', { name: 'Map' }).click({
-          position: {
-            x: 792,
-            y: 283
-          }
-        });
-        break;
-      case 'Both a point on a map and a description':
-        await this.page.locator(Elements.inpFormLocationDescription).fill('London');
-        await this.page.getByRole('region', { name: 'Map' }).click({
-          position: {
-            x: 792,
-            y: 283
-          }
-        });
-        break;
-      default:
-        // eslint-disable-next-line no-console
-        console.warn(`Invalid option: ${isSitRepLocationReq}`);
+        case 'Description only':
+          await this.page.locator(Elements.inpFormLocationDescription).fill('London');
+          break;
+        case 'Point on a map':
+          await this.page.getByRole('region', { name: 'Map' }).click({
+            position: {
+              x: 792,
+              y: 283
+            }
+          });
+          break;
+        case 'Both a point on a map and a description':
+          await this.page.locator(Elements.inpFormLocationDescription).fill('London');
+          await this.page.getByRole('region', { name: 'Map' }).click({
+            position: {
+              x: 792,
+              y: 283
+            }
+          });
+          break;
+        default:
+          console.warn(`Invalid option: ${isSitRepLocationReq}`);
       }
     } else {
-      // eslint-disable-next-line no-console
       console.log(this.page.locator(Elements.btnFormExactLocation.replace('$BUTTONSTATE$', 'Set')));
     }
     await this.updateLogByTab('Form');

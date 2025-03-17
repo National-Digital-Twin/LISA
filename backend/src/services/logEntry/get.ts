@@ -24,7 +24,7 @@ export async function get(req: Request, res: Response) {
     mentionsResults,
     mentionsUsersResults,
     attachmentResults
-  ] = await Promise.all(select(req, incidentId));
+  ] = await Promise.all(select(incidentId));
 
   /**
    * Make maps of the repeating rows for each entry id
@@ -33,7 +33,7 @@ export async function get(req: Request, res: Response) {
   const mentionsLogEntriesByEntry = mentions.parse.logEntry(mentionsResults, false);
   const mentionedByLogEntriesByEntry = mentions.parse.logEntry(mentionedByResults, true);
   const mentionedUsersByEntry = mentions.parse.user(mentionsUsersResults);
-  const attachmentsByEntry = attachments.parse(attachmentResults);
+  const attachmentsByEntry = await attachments.parse(attachmentResults);
 
   const entries = logEntryResults.map((row) => {
     const id = nodeValue(row.id.value);
@@ -56,18 +56,20 @@ export async function get(req: Request, res: Response) {
       mentionsUsers: mentionedUsersByEntry[id],
       mentionedByLogEntries: mentionedByLogEntriesByEntry[id],
       mentionsLogEntries: mentionsLogEntriesByEntry[id],
+      /* eslint-disable indent */
       location: row.locationId
-        ? {
-          coordinates: row.latitude
-            ? {
-              latitude: Number(row.latitude.value),
-              longitude: Number(row.longitude.value)
-            }
-            : undefined,
-          description: row.locationDescription?.value
-        } as Location
+        ? ({
+            coordinates: row.latitude
+              ? {
+                  latitude: Number(row.latitude.value),
+                  longitude: Number(row.longitude.value)
+                }
+              : undefined,
+            description: row.locationDescription?.value
+          } as Location)
         : undefined,
-      attachments: attachmentsByEntry[id],
+      /* eslint-enable */
+      attachments: attachmentsByEntry[id]
     } satisfies LogEntry;
   });
 
