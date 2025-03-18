@@ -135,7 +135,12 @@ const FormField = ({
         />
       )}
       {field.type === 'Location' && (
-        <LocationField id={field.id} value={field.value as string} onClick={onClickLocation} />
+        <LocationField
+          id={field.id}
+          value={field.value as string}
+          onClick={onClickLocation}
+          error={error}
+        />
       )}
       {field.type === 'Label' && <LabelField id={field.id} hint={field.hint} />}
     </Box>
