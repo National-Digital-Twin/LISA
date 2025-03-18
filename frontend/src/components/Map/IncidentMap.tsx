@@ -11,12 +11,13 @@ import { type LogEntry } from 'common/LogEntry';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { LogEntryTypes } from 'common/LogEntryTypes';
 import { type MentionableType } from 'common/Mentionable';
-import { IconButton } from '@mui/material';
+import { Box, IconButton } from '@mui/material';
 import { bem, Icons, MapUtils } from '../../utils';
 import { type FullLocationType, type SpanType } from '../../utils/types';
 import EntryItem from '../EntryList/EntryItem';
 import { INITIAL_VIEW_STATE, MAP_BOUNDS, MAP_STYLE } from './config';
 import { useResponsive } from '../../hooks/useResponsiveHook';
+import theme from '../../theme';
 
 type LogEntryMarkerType = {
   id: string;
@@ -49,34 +50,60 @@ interface MapProps {
   logEntries: LogEntry[] | undefined;
   highlightId?: string;
 }
-export default function IncidentMap({
-  logEntries,
-  highlightId = undefined
-}: Readonly<MapProps>) {
+export default function IncidentMap({ logEntries, highlightId = undefined }: Readonly<MapProps>) {
   const { isMobile } = useResponsive();
   const [redrawing, setRedrawing] = useState<boolean>(false);
   const mapRef = useRef<MapRef>(null);
   const navigate = useNavigate();
   const highlighted = logEntries?.find((entry) => entry.id === highlightId);
+  const showLogList = Boolean(logEntries?.length && highlighted);
+
+  const logListRef = useRef<HTMLDivElement>(null);
+
+  const FOOTER_HEIGHT = 50;
+
+  const [mapHeight, setMapHeight] = useState<number>(window.innerHeight - FOOTER_HEIGHT);
+
+  useEffect(() => {
+    const updateMapHeight = () => {
+      let newHeight = window.innerHeight - FOOTER_HEIGHT;
+      if (showLogList && logListRef.current) {
+        // Subtract the log list height from the window height (or any container height)
+        newHeight -= logListRef.current.clientHeight;
+      }
+      setMapHeight(newHeight);
+    };
+
+    updateMapHeight();
+    window.addEventListener('resize', updateMapHeight);
+
+    return () => {
+      window.removeEventListener('resize', updateMapHeight);
+    };
+  }, [showLogList]);
+
   const markers: LogEntryMarkerType[] = useMemo(() => {
     if (!logEntries) return [];
-    return logEntries.map((entry) => {
-      const { coordinates } = (entry.location || {}) as FullLocationType;
-      if (coordinates) {
-        return {
-          id: entry.id,
-          coordinates,
-          highlighted: entry.id === highlightId,
-          colour: LogEntryTypes[entry.type]?.colour
-        };
-      }
-      return null;
-    }).filter((m) => !!m) as LogEntryMarkerType[];
+    return logEntries
+      .map((entry) => {
+        const { coordinates } = (entry.location || {}) as FullLocationType;
+        if (coordinates) {
+          return {
+            id: entry.id,
+            coordinates,
+            highlighted: entry.id === highlightId,
+            colour: LogEntryTypes[entry.type]?.colour
+          };
+        }
+        return null;
+      })
+      .filter((m) => !!m) as LogEntryMarkerType[];
   }, [logEntries, highlightId]);
 
-  const mapBounds: LngLatBoundsLike | undefined = useMemo(() => MapUtils.getBounds(
-    markers.map((m) => m.coordinates)
-  ), [markers]);
+  const mapBounds: LngLatBoundsLike | undefined = useMemo(
+    () => MapUtils.getBounds(markers.map((m) => m.coordinates)),
+    [markers]
+  );
 
   const zoomMap = (bounds: LngLatBoundsLike | undefined, focus?: LogEntry) => {
     if (mapRef.current) {
@@ -102,7 +129,7 @@ export default function IncidentMap({
   }, [mapBounds, highlighted]);
 
   // This is necessary to get the markers to redraw.
-  // Without this the highlight doesn't change.
+  // Without this, the highlight doesn't change.
   const redraw = () => {
     setRedrawing(true);
     setTimeout(() => {
@@ -146,7 +173,10 @@ export default function IncidentMap({
   };
 
   return (
-    <div className="map-container">
+    <Box
+      className="container--location map-container"
+      sx={{ position: 'relative', height: mapHeight }}
+    >
       <Map
         ref={mapRef}
         initialViewState={INITIAL_VIEW_STATE}
@@ -158,16 +188,24 @@ export default function IncidentMap({
         maxBounds={MAP_BOUNDS}
       >
         <NavigationControl position="bottom-right" showCompass={false} />
-        {!redrawing && markers.map((marker) => (
-          <LogEntryMarker
-            key={marker.id}
-            marker={marker}
-            onClick={onClickMarker}
-          />
-        ))}
+        {!redrawing &&
+          markers.map((marker) => (
+            <LogEntryMarker key={marker.id} marker={marker} onClick={onClickMarker} />
+          ))}
       </Map>
       {logEntries && highlighted && (
-        <div className="log-entry-list">
+        <Box
+          ref={logListRef}
+          sx={{
+            position: 'absolute',
+            bottom: 2,
+            left: 5,
+            width: 'calc(100% - 53px)',
+            maxWidth: 1600,
+            p: 1
+          }}
+          className="log-entry-list"
+        >
           <EntryItem
             entries={logEntries}
             entry={highlighted}
@@ -175,14 +213,46 @@ export default function IncidentMap({
             onContentClick={onEntryContentClick}
             onMentionClick={() => {}}
           />
-          {!isMobile && <IconButton className="visit-log" onClick={onVisitLog} title="See in incident log">
-            <Icons.LogBook />
-          </IconButton>}
-          <IconButton className="close-info" onClick={onCloseInfo} title="Close information">
+          {!isMobile && (
+            <IconButton
+              sx={{
+                position: 'absolute',
+                top: 16,
+                right: 40,
+                height: 24,
+                width: 24,
+                padding: 0,
+                cursor: 'pointer',
+                border: 0,
+                color: 'white',
+                backgroundColor: theme.palette.secondary.main,
+                '--IconButton-hoverBg': theme.palette.secondary.main,
+                '& svg': { height: 10, width: 'auto' }
+              }}
+              onClick={onVisitLog}
+              title="See in incident log"
+            >
+              <Icons.LogBook />
+            </IconButton>
+          )}
+          <IconButton
+            sx={{
+              position: 'absolute',
+              top: isMobile ? 22 : 16,
+              right: 5,
+              height: 24,
+              width: 24,
+              padding: 0,
+              cursor: 'pointer',
+              '& svg': { height: 10, width: 'auto' }
+            }}
+            onClick={onCloseInfo}
+            title="Close information"
+          >
             <Icons.Close style={{ fill: 'white' }} />
           </IconButton>
-        </div>
+        </Box>
       )}
-    </div>
+    </Box>
   );
 }

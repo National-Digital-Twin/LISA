@@ -1,17 +1,7 @@
-@use "colors";
+@use 'colors';
 
 .container--location {
-  .map-container {
-    position: relative;
-    height: calc(100vh - 250px);
-    min-height: 500px;
-  }
   .log-entry-list {
-    position: absolute;
-    bottom: 10px;
-    left: 14px;
-    width: calc(100% - 68px);
-    max-width: 960px;
     .item {
       margin-bottom: 0;
       max-height: 240px;
@@ -23,33 +13,8 @@
       }
       &__header {
         padding-right: 60px;
+        background-color: colors.$blue-dark;
       }
-    }
-    .close-info, .visit-log {
-      position: absolute;
-      top: 12px;
-      height: 24px;
-      width: 24px;
-      padding: 0;
-      cursor: pointer;
-
-      svg {
-        height: 10px;
-        width: auto;
-      }
-    }
-    .visit-log {
-      right: 30px;
-      border: solid 1px colors.$black;
-      background-color: colors.$grey-light;
-    }
-    .close-info {
-      right: -2px;
-    }
-
-    @media screen and (max-width: 1240px) {
-      // Reduce so as to not hide the zoom controls
-      width: calc(100% - 68px);
     }
   }
 }

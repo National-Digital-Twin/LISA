@@ -7,7 +7,6 @@ const PageWrapper = ({ children }: { children: ReactNode }) => (
     flexDirection="column"
     gap={4}
     paddingY="1rem"
-    maxWidth="1500px"
     margin="auto"
     sx={{
       '@media print': {
