@@ -3,6 +3,7 @@ resources:
   - deployment.yaml
   - service.yaml
   - istio/allow-ingress-authorization-policy.yaml
+  - istio/allow-backend-proxy-authorization-policy.yaml
 
 
 labels:
