@@ -18,7 +18,7 @@ export const settings = cleanEnv(process.env, {
   IDENTITY_API_URL: str({ default: 'http://localhost:3001' }),
   LANDING_PAGE_URL: str({ default: 'http://localhost:3002' }),
   COGNITO_USER_GROUP_NAME: str(),
-  PROXY_HOST : url({default: 'http://localhost:5013'})
+  OS_MAPS_KEY: str()
 });
 
 const filename = fileURLToPath(import.meta.url); // get the resolved path to the file
