@@ -33,7 +33,6 @@ server {
         location /transparent-proxy/os/ {
 
         set $raster_fetch_with_args "";
-        set $place_fetch_with_args "";
         
         if ($uri ~ ^/transparent-proxy/os/(.*)) {
             set $requested_path $1;
@@ -43,13 +42,8 @@ server {
             set $raster_fetch_with_args  A; 
         } 
 
-        if ($requested_path ~ ^search/places/.*) { 
-            set $place_fetch_with_args  A; 
-        }
- 
         if ($is_args) { 
         set $raster_fetch_with_args  "${raster_fetch_with_args}B"; 
-        set $place_fetch_with_args  "${place_fetch_with_args}B"; 
         } 
     
         if ($raster_fetch_with_args = AB) { 
@@ -58,14 +52,6 @@ server {
 	
         if ($raster_fetch_with_args = A) {
             set $args key=$OS_RASTER_API_KEY;
-        }
-
-        if ($place_fetch_with_args = AB) { 
-        set $args "$args&key=$OS_PLACES_API";
-        }
-	
-        if ($place_fetch_with_args = A) {
-            set $args key=$OS_PLACES_API;
         }
 
         proxy_ssl_server_name on;
