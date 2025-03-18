@@ -21,9 +21,6 @@ spec:
                    name: lisa-transparent-proxy-configs
                - secretRef:
                    name: lisa-transparent-proxy-secrets
-
-
-          image: lisa-transparent-proxy-image
           livenessProbe:
             httpGet:
               path: /transparent-proxy/health
@@ -32,6 +29,14 @@ spec:
             periodSeconds: 30
             timeoutSeconds: 10
           name: lisa-transparent-proxy
+          image: lisa-transparent-proxy-image
+          resources:
+            limits:
+              memory: "2Gi"
+            requests:
+              cpu: 0.5
+              memory: "250Mi"
+              ephemeral-storage: "2Gi"
           ports:
             - containerPort: 80
               protocol: TCP
