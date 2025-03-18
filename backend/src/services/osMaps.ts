@@ -21,8 +21,6 @@ export async function searchLocation(req: Request<object, object, object, Query>
   url.searchParams.set('lr', 'EN'); 
   url.searchParams.set('key', key);
 
-  console.log(`new full url: ${url.toString}`);
-
   const osResp = await fetch(url, {
     method: 'GET'
   });
