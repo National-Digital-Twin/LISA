@@ -1,5 +1,7 @@
 import { type LogEntry } from 'common/LogEntry';
-import { Format, Icons } from '../../../utils';
+import { Typography } from '@mui/material';
+import { Format } from '../../../utils';
+import Stage from '../../Stage';
 
 interface Props {
   entry: LogEntry;
@@ -12,11 +14,10 @@ export default function ChangeStage({ entry }: Readonly<Props>) {
 
   return (
     <>
-      <span>Stage changed to</span>
-      <span className={`incident-stage ${stage}`}>
-        <Icons.Stage />
-        {Format.incident.stage(stage)}
-      </span>
+      <Typography variant="body1" fontWeight="bold" mb={1}>
+        Stage changed to
+      </Typography>
+      <Stage label={Format.incident.stage(stage)} stage={stage} />
     </>
   );
 }
