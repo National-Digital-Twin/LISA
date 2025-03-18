@@ -29,7 +29,7 @@ const EntryItem = ({
   onContentClick,
   onMentionClick
 }: Props) => {
-  const { isMobile } = useResponsive();
+  const { isMobile, isBelowMd } = useResponsive();
   const { hash } = useLocation();
   const divRef = useRef<HTMLDivElement>(null);
   const { id, offline } = entry;
@@ -51,8 +51,8 @@ const EntryItem = ({
 
   return (
     <Box component={Paper} square id={id} ref={divRef} className={classes()}>
-      <div className={classes('header')}>
-        <Meta entry={entry} isMobile={isMobile} />
+      <div className={classes('header')} style={{ paddingRight: isMobile ? 15 : 60 }}>
+        <Meta entry={entry} isMobile={isMobile} isBelowMd={isBelowMd} />
       </div>
       {isMobile && (
         <>
