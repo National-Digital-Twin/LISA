@@ -32,6 +32,13 @@ spec:
               periodSeconds: 30
               timeoutSeconds: 20
           name: lisa
+          resources:
+            limits:
+              memory: "2Gi"
+            requests:
+              cpu: 0.5
+              memory: "250Mi"
+              ephemeral-storage: "2Gi"
           ports:
             - containerPort: 80
               protocol: TCP
