@@ -2,6 +2,10 @@
 
 .map-container {
 
+  width: 100%;
+  height: 500px;
+  position: relative;
+
   .maplibregl-canvas-container.maplibregl-interactive {
     cursor: pointer;
   }
