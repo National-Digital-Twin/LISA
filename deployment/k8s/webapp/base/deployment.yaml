@@ -16,7 +16,7 @@ spec:
     spec:
       serviceAccountName: lisa-sa
       containers:
-        - image: lisa-image
+        - image: lisa-image:template
           livenessProbe:
             httpGet:
               path: /
