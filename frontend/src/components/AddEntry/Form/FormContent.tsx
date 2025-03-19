@@ -1,4 +1,3 @@
-/* eslint-disable no-await-in-loop */
 // Global imports
 import parse from 'html-react-parser';
 import { useEffect, useMemo, useState, useCallback, useRef } from 'react';
@@ -97,32 +96,15 @@ export default function FormContent({
     [processedRecordings, onAddRecording]
   );
 
-  // Function to check if the blob size is stable over time
-  async function isBlobStable(blob: Blob, delay: number) {
-    const initialSize = blob.size;
-    await new Promise((resolve) => { setTimeout(resolve, delay) });
-
-    const response = await fetch(URL.createObjectURL(blob));
-    const newBlob = await response.blob();
-
-    // Blob is stable if size hasn't changed
-    return newBlob.size === initialSize;
-  }
-
-  // Function to wait for a finalised Blob
-  async function fetchFinalisedBlob(blobUrl: string, maxRetries = 5, delay = 1000) {
-    for (let i = 0; i < maxRetries; i += 1) {
+  // Helper to fetch the Blob from the blob URL provided by react-media-recorder
+  const addAudioElementFromUrl = useCallback(
+    async (blobUrl: string) => {
       const response = await fetch(blobUrl);
       const blob = await response.blob();
-
-      if (i === maxRetries - 1 || await isBlobStable(blob, delay)) {
-        return blob;
-      }
-
-      await new Promise((resolve) => { setTimeout(resolve, delay) });
-    }
-    throw new Error("Failed to retrieve complete blob");
-  }
+      await addAudioElement(blob);
+    },
+    [addAudioElement]
+  );
 
   // Set up react-media-recorder hook
   const { startRecording, stopRecording, mediaBlobUrl } = useReactMediaRecorder({
@@ -131,10 +113,7 @@ export default function FormContent({
     onStop: async (blobUrl) => {
       if (!hasStoppedRef.current) {
         hasStoppedRef.current = true;
-
-        // Wait for the browser to finalise the blob before fetching
-        const finalisedBlob = await fetchFinalisedBlob(blobUrl);
-        await addAudioElement(finalisedBlob);
+        await addAudioElementFromUrl(blobUrl);
       }
     }
   });
