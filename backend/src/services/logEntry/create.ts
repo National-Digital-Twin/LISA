@@ -27,18 +27,34 @@ export async function create(req: Request, res: Response) {
     entry.dateTime = now.toISOString();
   }
 
+  const sequenceNumberElements = [
+    String(now.getDay()),
+    String(now.getMonth()),
+    String(now.getHours()),
+    String(now.getMinutes()),
+    String(now.getSeconds())
+  ];
+
   const entryId = randomUUID();
   entry.id = entryId;
+
+  const entrySequenceNumber = sequenceNumberElements
+    .map((element) => element.padStart(2, '0'))
+    .join('');
   const entryIdNode = ns.data(entryId);
   const incidentIdNode = ns.data(incidentId);
   const authorNode = ns.data(res.locals.user.username);
 
-  const { triples: attachmentTriples, names: fileNameMappings } = await attachments.extract(req, entry, entryIdNode);
+  const { triples: attachmentTriples, names: fileNameMappings } = await attachments.extract(
+    req,
+    entry,
+    entryIdNode
+  );
   mentions.reconcile.file(entry, entryId, fileNameMappings);
   const userMentions = mentions.extract.user(entry, entryIdNode);
 
   const type = LogEntryTypes[entry.type];
-  const content = type.noContent ? {} : (entry.content || {}); // should probably be invalid request?
+  const content = type.noContent ? {} : entry.content || {}; // should probably be invalid request?
 
   let triples: unknown[] = [];
   try {
@@ -53,6 +69,7 @@ export async function create(req: Request, res: Response) {
       [authorNode, ns.rdf.type, ns.ies.Creator],
       [authorNode, ns.ies.hasName, literalString(res.locals.user.displayName)],
       [authorNode, ns.ies.isParticipantIn, entryIdNode],
+      [entryIdNode, ns.lisa.hasSequence, entrySequenceNumber],
 
       ...fields.extract(entry, entryIdNode),
       ...mentions.extract.logEntry(entry, entryIdNode),

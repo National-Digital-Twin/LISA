@@ -4,6 +4,7 @@ import { type LogEntry } from 'common/LogEntry';
 const SEARCHABLE_PROPS: Array<string> = [
   'content.text',
   'location.description',
+  'sequence',
   'stage'
 ];
 
@@ -17,7 +18,7 @@ const SEARCHABLE_PROPS: Array<string> = [
 function propMatches(obj: any, text: string, path: string): boolean {
   const parts = path.split('.');
   const prop: string = parts.shift() as string;
-  const val = (obj && Object.hasOwn(obj, prop)) ? obj[prop] : undefined;
+  const val = obj && Object.hasOwn(obj, prop) ? obj[prop] : undefined;
 
   // If this is nested, recurse.
   if (parts.length > 0) {
@@ -40,8 +41,10 @@ function anyFieldValueMatches(e: LogEntry, text: string): boolean {
 export function searchTextMatches(e: LogEntry, searchText: string): boolean {
   const text = searchText.trim().toLowerCase();
   if (text.length > 0) {
-    return anyFieldValueMatches(e, text)
-      || SEARCHABLE_PROPS.some((path: string) => propMatches(e, text, path));
+    return (
+      anyFieldValueMatches(e, text) ||
+      SEARCHABLE_PROPS.some((path: string) => propMatches(e, text, path))
+    );
   }
   return true;
 }
