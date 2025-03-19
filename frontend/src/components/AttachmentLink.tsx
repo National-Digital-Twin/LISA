@@ -11,8 +11,18 @@ interface Props {
 
 export default function AttachmentLink({ attachment, isOnServer = true }: Readonly<Props>) {
   const { scanResult } = useAttachmentScanResult(attachment.scanResult!, attachment.key!);
+  const scanPendingOrQueuedMessage =
+    'Scanning files for security threats. This process may take a few minutes.';
+
   if (!isOnServer) {
-    return <span>{attachment.name}</span>;
+    return (
+      <Box>
+        <Typography variant="body1" fontWeight="bold" color="textDisabled">
+          {attachment.name}
+        </Typography>
+        <Typography component="span">{scanPendingOrQueuedMessage}</Typography>
+      </Box>
+    );
   }
 
   const getUrl = (result: string): string => {
@@ -26,7 +36,7 @@ export default function AttachmentLink({ attachment, isOnServer = true }: Readon
   const getScanStatusDescription = (result: string): string => {
     switch (result) {
       case 'PENDING':
-        return 'Scanning files for security threats. This process may take a few minutes.';
+        return scanPendingOrQueuedMessage;
       case 'THREATS_FOUND':
         return 'This file could not be uploaded due to a security issue. Please try another file.';
       default:
@@ -54,7 +64,7 @@ export default function AttachmentLink({ attachment, isOnServer = true }: Readon
           <span>{` (${Format.fileSize(attachment.size ?? 0)})`}</span>
         </Typography>
       )}
-      <span>{getScanStatusDescription(scanResult)}</span>
+      <Typography component="span">{getScanStatusDescription(scanResult)}</Typography>
     </Box>
   );
 }

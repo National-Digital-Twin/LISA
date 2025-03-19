@@ -104,7 +104,7 @@ const Logbook = () => {
       const [entryId, fileName] = mention.id.split('::');
       const parentEntry = logEntries?.find((ent) => ent.id === entryId);
       const attachment = parentEntry?.attachments?.find((att) => att.name === fileName);
-      if (attachment) {
+      if (attachment && attachment.scanResult === 'NO_THREATS_FOUND') {
         window.open(
           `api/files/${attachment.key}/${attachment.name}?mimeType=${attachment.mimeType}`,
           attachment.key
