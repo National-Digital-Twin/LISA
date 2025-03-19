@@ -147,7 +147,7 @@ const Logbook = () => {
     <PageWrapper>
       <PageTitle title="Incident log">
         <Box display="flex" flexDirection="row" justifyContent="space-between">
-          {isMobile && (
+          {isMobile && !adding && (
             <Button variant="text" onClick={onSort} endIcon={sortIcon()} color="secondary">
               Sort
             </Button>
@@ -213,6 +213,7 @@ const Logbook = () => {
                     authors={filterAuthors}
                     onChange={onFilterChange}
                     isMobile={isMobile}
+                    appliedFilters={appliedFilters}
                   />
                 ) : (
                   <>
@@ -253,6 +254,7 @@ const Logbook = () => {
                           authors={filterAuthors}
                           onChange={onFilterChange}
                           isMobile={isMobile}
+                          appliedFilters={appliedFilters}
                         />
                       </Box>
                     </Popover>

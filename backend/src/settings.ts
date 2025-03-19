@@ -7,7 +7,6 @@ import { fileURLToPath } from 'url';
 export const settings = cleanEnv(process.env, {
   PORT: num({ default: 3000 }),
   HOST: str({ default: 'localhost' }),
-  SERVER_URL: url({ default: 'http://localhost:3000' }),
   SCG_URL: url({ default: 'http://localhost:3030' }),
   COGNITO_USER_POOL_ID: str(),
   S3_BUCKET_ID: str(),
@@ -18,7 +17,8 @@ export const settings = cleanEnv(process.env, {
   }),
   IDENTITY_API_URL: str({ default: 'http://localhost:3001' }),
   LANDING_PAGE_URL: str({ default: 'http://localhost:3002' }),
-  COGNITO_USER_GROUP_NAME: str()
+  COGNITO_USER_GROUP_NAME: str(),
+  OS_MAPS_KEY: str()
 });
 
 const filename = fileURLToPath(import.meta.url); // get the resolved path to the file

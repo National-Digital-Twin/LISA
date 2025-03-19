@@ -1,4 +1,4 @@
-@use "colors";
+@use 'colors';
 
 .modal-dialog {
   padding: 15px;
@@ -11,19 +11,6 @@
   &::backdrop {
     background: colors.$grey-dark;
     opacity: 0.8;
-  }
-  .rollup-container {
-    border: solid 1px colors.$grey-dark;
-    margin: 0;
-    .rollup-header {
-      margin: 10px 20px 0;
-    }
-    .log-form {
-      padding: 10px;
-      &.section {
-        margin: 0;
-      }
-    }
   }
   &__close {
     border: solid 2px colors.$black;

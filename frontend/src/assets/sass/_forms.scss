@@ -35,11 +35,6 @@ li.major-incident-no {
   }
   label,
   .field-label {
-    display: block;
-    font-weight: bold;
-    font-size: 1.15rem;
-    margin-bottom: 10px;
-
     /*
       This isn't going to cut it.
       There are layout issues now with date and time entry
@@ -75,41 +70,6 @@ li.major-incident-no {
         font-size: 1.15rem;
       }
     }
-
-    .location-field {
-      display: flex;
-      flex-direction: row;
-      gap: 10px;
-      margin-top: 5px;
-      padding: 6px 6px 6px 10px;
-      height: 45px;
-      border: solid 1px colors.$grey-mid;
-      background-color: colors.$white;
-      font-weight: 400;
-      &__value {
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-      &__button {
-        margin: -3px;
-        margin-left: auto;
-        height: 39px;
-        width: 82px;
-        max-width: 82px;
-        padding: 6px 12px;
-        border: none;
-        border-left: dotted 2px colors.$blue-dark;
-        font-size: 1.15rem;
-        background: transparent;
-        color: colors.$blue-dark;
-        cursor: pointer;
-        &:hover,
-        &:focus {
-          color: colors.$blue;
-        }
-      }
-    }
   }
   input,
   select,
@@ -118,7 +78,6 @@ li.major-incident-no {
     width: 100%;
     padding: 10px;
     color: colors.$blue-dark;
-    border: 1px solid colors.$grey-mid;
     &.input-calendar {
       background-image: url('/icon-calendar.svg');
       background-repeat: no-repeat;
@@ -422,26 +381,11 @@ li.major-incident-no {
     display: flex;
     gap: 10px;
     border: 0;
-    .pen {
-      width: 30px;
-      height: 30px;
-      cursor: pointer;
-    }
   }
   .clear {
     position: absolute;
     top: 10px;
     left: 10px;
-
-    button {
-      line-height: 1.25rem;
-      background-color: colors.$black;
-      color: colors.$white;
-      cursor: pointer;
-      &:hover {
-        background-color: colors.$red-dark;
-      }
-    }
   }
 }
 

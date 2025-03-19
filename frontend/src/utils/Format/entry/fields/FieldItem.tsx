@@ -22,12 +22,12 @@ export function FieldItem({ field, entry }: Readonly<Props>) {
   return (
     <Grid component="li" container width="100%" columnGap={32}>
       <Grid size={{ xs: 12, md: 'grow' }}>
-        <Typography display="flex" variant="body1" fontWeight="bold">
+        <Typography variant="body1" fontWeight="bold">
           {field.label}
         </Typography>
       </Grid>
-      <Grid size={{ xs: 12, md: 'auto' }}>
-        <Typography display="flex" variant="body1">
+      <Grid size={{ xs: 12, md: 'grow' }}>
+        <Typography variant="body1" sx={{ wordWrap: 'break-word' }}>
           <FieldValue field={field} entry={entry} value={value} />
         </Typography>
       </Grid>

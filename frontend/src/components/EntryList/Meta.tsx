@@ -11,7 +11,7 @@ import WatchLaterIcon from '@mui/icons-material/WatchLater';
 import { type LogEntry } from 'common/LogEntry';
 import { Format } from '../../utils';
 
-const Meta = ({ entry, isMobile }: { entry: LogEntry; isMobile: boolean }) => {
+const Meta = ({ entry, isMobile, isBelowMd }: { entry: LogEntry; isMobile: boolean, isBelowMd: boolean }) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const openUser = Boolean(anchorEl);
 
@@ -84,7 +84,7 @@ const Meta = ({ entry, isMobile }: { entry: LogEntry; isMobile: boolean }) => {
           </>
         )}
       </Grid>
-      {!isMobile && (
+      {!isBelowMd && (
         <>
           <Grid display="flex" flexDirection="row" alignItems="center" gap={1} size="auto">
             <CalendarMonthIcon fontSize="small" />

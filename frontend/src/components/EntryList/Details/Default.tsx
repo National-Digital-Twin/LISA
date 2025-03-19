@@ -22,7 +22,11 @@ export default function Default({ entry }: Readonly<Props>) {
   return (
     <>
       {content}
-      {fields && <Box mt={4}>{fields}</Box>}
+      {fields && (
+        <Box width="100%" mt={4}>
+          {fields}
+        </Box>
+      )}
     </>
   );
 }

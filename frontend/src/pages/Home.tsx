@@ -16,7 +16,7 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Typography,
+  Typography
 } from '@mui/material';
 
 import AddCircleIcon from '@mui/icons-material/AddCircle';
@@ -128,6 +128,7 @@ const Home = () => {
                         to={`/logbook/${id}`}
                         variant="body1"
                         color="primary"
+                        fontWeight="bold"
                       >
                         {name}
                       </Typography>
@@ -152,6 +153,7 @@ const Home = () => {
                       to={`/logbook/${id}`}
                       variant="body1"
                       color="primary"
+                      fontWeight="bold"
                     >
                       {name}
                     </Typography>

@@ -16,7 +16,7 @@ spec:
     spec:
       serviceAccountName: lisa-sa
       containers:
-        - image: lisa-image
+        - image: lisa-image:template
           livenessProbe:
             httpGet:
               path: /
@@ -32,6 +32,13 @@ spec:
               periodSeconds: 30
               timeoutSeconds: 20
           name: lisa
+          resources:
+            limits:
+              memory: "2Gi"
+            requests:
+              cpu: "0.25"
+              memory: "256Mi"
+              ephemeral-storage: "2Gi"
           ports:
             - containerPort: 80
               protocol: TCP

@@ -21,8 +21,7 @@
 }
 
 .editor-container {
-  border: 1px solid colors.$grey-mid;
-  color: #000;
+  color: colors.$black;
   position: relative;
   line-height: 1.4rem;
   font-weight: 400;
@@ -30,17 +29,15 @@
 }
 
 .editor-inner {
-  background: #fff;
   position: relative;
 
   .editor-input {
     min-height: 150px;
     resize: none;
-    font-size: 1.4rem;
+    font-size: 1rem;
     position: relative;
     tab-size: 1;
     outline: 0;
-    padding: 10px;
     caret-color: #444;
   }
 

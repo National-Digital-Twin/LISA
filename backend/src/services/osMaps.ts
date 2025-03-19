@@ -1,4 +1,7 @@
 import { Request, Response } from 'express';
+import { settings } from '../settings';
+
+const key = settings.OS_MAPS_KEY;
 
 interface Query {
   point?: string;
@@ -6,8 +9,7 @@ interface Query {
 }
 export async function searchLocation(req: Request<object, object, object, Query>, res: Response) {
   const type = req.query.point ? 'nearest' : 'find';
-  const baseUrl = `${req.protocol}://${req.get('host')}`;
-  const url = new URL(`${baseUrl}/transparent-proxy/os/search/places/v1/${type}`);
+  const url = new URL(`https://api.os.uk/search/places/v1/${type}`);
 
   if (type === 'nearest') {
     url.searchParams.set('point', req.query.point);
@@ -17,6 +19,7 @@ export async function searchLocation(req: Request<object, object, object, Query>
     url.searchParams.set('output_srs', 'WGS84');
   }
   url.searchParams.set('lr', 'EN'); 
+  url.searchParams.set('key', key);
 
   const osResp = await fetch(url, {
     method: 'GET'

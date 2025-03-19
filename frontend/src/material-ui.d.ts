@@ -7,6 +7,9 @@ declare module '@mui/material/styles/createPalette' {
     accent: {
       main: string;
     };
+    border: {
+      main: string;
+    };
     stage: {
       monitoring: StageType;
       response: StageType;

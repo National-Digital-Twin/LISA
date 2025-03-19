@@ -7,17 +7,17 @@
  * LICENSE file in the root directory of this source tree.
  */
 // Global imports
+import MicNoneOutlinedIcon from '@mui/icons-material/MicNoneOutlined';
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
 import { mergeRegister } from '@lexical/utils';
 import { JSX, MouseEvent, useEffect, useState } from 'react';
 
 // Local imports
-import { Icons } from '../../../utils';
 import { SPEECH_TO_TEXT_COMMAND, SUPPORT_SPEECH_RECOGNITION } from './SpeechToTextPlugin';
 
 type ActionsPluginProps = {
-  speechToTextActive: boolean,
-  onCommand: (command: string | undefined, active: boolean) => void
+  speechToTextActive: boolean;
+  onCommand: (command: string | undefined, active: boolean) => void;
 };
 export default function ActionsPlugin({
   speechToTextActive,
@@ -27,11 +27,15 @@ export default function ActionsPlugin({
   const [isEditable, setIsEditable] = useState(() => editor.isEditable());
   const [isSpeechToText, setIsSpeechToText] = useState(false);
 
-  useEffect(() => mergeRegister(
-    editor.registerEditableListener((editable) => {
-      setIsEditable(editable);
-    })
-  ), [editor]);
+  useEffect(
+    () =>
+      mergeRegister(
+        editor.registerEditableListener((editable) => {
+          setIsEditable(editable);
+        })
+      ),
+    [editor]
+  );
 
   useEffect(() => {
     if (speechToTextActive !== isSpeechToText) {
@@ -65,7 +69,7 @@ export default function ActionsPlugin({
           type="button"
           aria-label={`${isSpeechToText ? 'Enable' : 'Disable'} speech to text`}
         >
-          <Icons.Mic />
+          <MicNoneOutlinedIcon />
         </button>
       )}
     </div>
