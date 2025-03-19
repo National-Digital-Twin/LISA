@@ -36,12 +36,12 @@ spec:
             periodSeconds: 30
             timeoutSeconds: 20
           name: lisa
-          image: lisa-image
+          image: lisa-image:template
           resources:
             limits:
               memory: "2Gi"
             requests:
-              cpu: 0.25
+              cpu: "0.25"
               memory: "256Mi"
               ephemeral-storage: "2Gi"
           ports:

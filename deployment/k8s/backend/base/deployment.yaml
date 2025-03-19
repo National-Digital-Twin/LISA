@@ -36,12 +36,12 @@ spec:
               periodSeconds: 30
               timeoutSeconds: 20
           name: lisa
-          image: lisa-backend-image
+          image: lisa-backend-image:template
           resources:
             limits:
               memory: "2Gi"
             requests:
-              cpu: 0.5
+              cpu: "0.5"
               memory: "1Gi"
               ephemeral-storage: "2Gi"
           ports:
