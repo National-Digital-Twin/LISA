@@ -41,8 +41,8 @@ spec:
             limits:
               memory: "2Gi"
             requests:
-              cpu: 1
-              memory: "2Gi"
+              cpu: 0.25
+              memory: "256Mi"
               ephemeral-storage: "2Gi"
           ports:
             - containerPort: 3000
