@@ -23,7 +23,7 @@ interface Props {
 }
 export default function ChangeStage({ incident, onChangeStage, onCancel }: Readonly<Props>) {
   const [modal] = useState<boolean>(sessionStorage.getItem(MODAL_KEY) === 'yes');
-  const [stage, setStage] = useState<IncidentStage>(incident.stage);
+  const [stage, setStage] = useState<IncidentStage>(incident?.stage);
   const [validationErrors, setValidationErrors] = useState<Array<ValidationError>>([]);
   const [showValidationErrors, setShowValidationErrors] = useState<boolean>(false);
 
@@ -37,7 +37,7 @@ export default function ChangeStage({ incident, onChangeStage, onCancel }: Reado
     } else {
       setValidationErrors([{ fieldId: STAGE_FIELD.id, error: 'Stage required' }]);
     }
-  }, [stage, incident.stage]);
+  }, [stage, incident?.stage]);
 
   if (!incident) {
     return null;
