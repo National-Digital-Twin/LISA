@@ -6,6 +6,30 @@ import FormGroup from '../FormGroup';
 const mockOnFieldChange = jest.fn();
 
 describe('FormGroup Tests', () => {
+  it('Does not render the component.', () => {
+    providersRender(
+      <FormGroup
+        group={{
+          id: 'Group Id',
+          fieldIds: ['Field Id']
+        }}
+        fields={[]}
+        entry={{
+          incidentId: 'Incident Id',
+          dateTime: '',
+          type: 'Action',
+          content: { json: '', text: '' }
+        }}
+        validationErrors={[]}
+        onFieldChange={mockOnFieldChange}
+        showValidationErrors={false}
+      />
+    );
+    expect(screen.queryByText('Group Label')).toBeNull();
+    expect(screen.queryByText('Group Description')).toBeNull();
+    expect(screen.queryByLabelText('Field Label')).toBeNull();
+  });
+
   it('Renders the component.', () => {
     providersRender(
       <FormGroup
