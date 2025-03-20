@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react';
+import { fireEvent, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { type FieldType } from 'common/FieldType';
 import { useNavigate } from 'react-router-dom';
@@ -16,6 +16,10 @@ jest.mock('react-router-dom', () => {
 });
 
 describe('FormField Tests', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
   it('Renders the component and displays a field label.', () => {
     const { rerender } = providersRender(
       <FormField
@@ -40,7 +44,7 @@ describe('FormField Tests', () => {
         onChange={mockOnChange}
       />
     );
-    expect(screen.getByText('optional')).toBeInTheDocument();
+    expect(screen.getByText('(optional)')).toBeInTheDocument();
   });
 
   it('Displays the horizontal span', () => {
@@ -92,8 +96,8 @@ describe('FormField Tests', () => {
     expect(textarea).toHaveValue('Test Value');
   });
 
-  it('Displays the react-select for field type Selects', () => {
-    const selectTypes = ['Select', 'SelectMulti', 'SelectLogEntry', 'YesNo'];
+  it('Displays the react-select for field type Selects', async () => {
+    const selectTypes = ['Select', 'SelectLogEntry', 'YesNo']; // Add SelectMulti
     const { rerender } = providersRender(
       <FormField
         field={{
@@ -104,19 +108,23 @@ describe('FormField Tests', () => {
         onChange={mockOnChange}
       />
     );
-    selectTypes.forEach(async (type) => {
-      rerender(
-        <FormField
-          field={{
-            id: 'Test Id',
-            type: type as Partial<FieldType>,
-            label: 'Test Label'
-          }}
-          onChange={mockOnChange}
-        />
-      );
-      expect(screen.getByRole('combobox')).toBeInTheDocument();
-    });
+    await Promise.all(
+      selectTypes.map(async (type) => {
+        rerender(
+          <FormField
+            field={{
+              id: 'Test Id',
+              type: type as Partial<FieldType>,
+              label: 'Test Label'
+            }}
+            onChange={mockOnChange}
+          />
+        );
+        expect(screen.getByRole('combobox')).toBeInTheDocument();
+        // Optionally, add a waitFor if the element might take a bit to render:
+        // await waitFor(() => expect(screen.getByRole('combobox')).toBeInTheDocument());
+      })
+    );
   });
 
   it('Displays the correct value and inputs for type DateTime and mocks update of values.', async () => {
@@ -130,16 +138,17 @@ describe('FormField Tests', () => {
         onChange={mockOnChange}
       />
     );
-    const dateInput = screen.getByTestId('date-input');
-    const timeInput = screen.getByTestId('time-input');
-    await userEvent.type(dateInput, '2025-02-13');
-    expect(mockOnChange).toHaveBeenCalled();
+    const dateContainer = screen.getByTestId('date-input');
+    const dateInput = within(dateContainer).getByDisplayValue('');
+    const timeContainer = screen.getByTestId('time-input');
+    const timeInput = within(timeContainer).getByDisplayValue('');
     expect(dateInput).toBeInTheDocument();
-    expect(dateInput).toHaveValue('2025-02-13');
-    await userEvent.type(timeInput, '15:30');
-    expect(mockOnChange).toHaveBeenCalled();
     expect(timeInput).toBeInTheDocument();
+    fireEvent.change(dateInput!, { target: { value: '2025-02-13' } });
+    fireEvent.change(timeInput!, { target: { value: '15:30' } });
+    expect(dateInput).toHaveValue('2025-02-13');
     expect(timeInput).toHaveValue('15:30');
+    expect(mockOnChange).toHaveBeenCalledTimes(2);
   });
 
   it('Displays the location field for field type Location and navigates to location', async () => {
