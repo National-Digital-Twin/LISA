@@ -32,7 +32,7 @@ export default class EditIncidentLogPage {
 
   private readonly users: UsernamesData = data;
 
-  private getLogEntriesCount: number = 0; // Declare the variable
+  private readonly getLogEntriesCount: number = 0; // Declare the variable
 
   constructor(private readonly page: Page) {
     this.base = new PlaywrightWrapper(page);
@@ -70,10 +70,7 @@ export default class EditIncidentLogPage {
 
   async updateLogByTab(tabName: string) {
     if (
-      !(
-        (await this.page.locator(Elements.isLogTabActive.replace('$LINKNAME$', tabName)).count()) >
-        0
-      )
+      (await this.page.locator(Elements.isLogTabActive.replace('$LINKNAME$', tabName)).count()) <= 0
     ) {
       await this.page.locator(Elements.linkLogEntryTab.replace('$LINKNAME$', tabName)).click();
     } else {
@@ -83,7 +80,7 @@ export default class EditIncidentLogPage {
   }
 
   async updateDropDownById(logType: string) {
-    const logTypeId = await EditIncidentLogPage.getDropdownCategory(logType);
+    const logTypeId = EditIncidentLogPage.getDropdownCategory(logType);
 
     await this.page
       .locator(Elements.ddCategoryById.replace('$DROPDOWNBYID$', logTypeId))
