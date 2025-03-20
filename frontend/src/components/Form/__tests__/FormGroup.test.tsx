@@ -97,11 +97,16 @@ describe('FormGroup Tests', () => {
         showValidationErrors={false}
       />
     );
-    const link = screen.getByRole('link', { name: 'Group Label' });
-    await userEvent.click(link);
-    const listItem = screen.getAllByRole('listitem');
-    expect(listItem[0]).toHaveClass('form-group form-group--open');
-    await userEvent.click(link);
-    expect(listItem[0]).toHaveClass('form-group');
+    // After rendering
+    const toggleButton = screen.getByRole('button');
+    expect(toggleButton).toHaveAttribute('aria-expanded', 'false');
+
+    // After the first click
+    await userEvent.click(toggleButton);
+    expect(toggleButton).toHaveAttribute('aria-expanded', 'true');
+
+    // After the second click
+    await userEvent.click(toggleButton);
+    expect(toggleButton).toHaveAttribute('aria-expanded', 'false');
   });
 });
