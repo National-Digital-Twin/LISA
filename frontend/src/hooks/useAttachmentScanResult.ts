@@ -12,6 +12,7 @@ export const useAttachmentScanResult = (initialScanResult: string, key: string) 
         setScanResult(initialScanResult);
         return;
       }
+
       try {
         if (attempts <= 10) {
           if (scanResult === 'PENDING') {
@@ -40,5 +41,5 @@ export const useAttachmentScanResult = (initialScanResult: string, key: string) 
     };
   }, [initialScanResult, key, scanResult, attempts]);
 
-  return { scanResult, attempts };
+  return { scanResult };
 };
