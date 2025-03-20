@@ -28,18 +28,18 @@ export async function create(req: Request, res: Response) {
   }
 
   const sequenceNumberElements = [
-    String(now.getDay()),
-    String(now.getMonth()),
-    String(now.getHours()),
-    String(now.getMinutes()),
-    String(now.getSeconds())
+    now.getDate(),
+    now.getMonth() + 1, // to account for zero based indexing on the month
+    now.getHours(),
+    now.getMinutes(),
+    now.getSeconds()
   ];
 
   const entryId = randomUUID();
   entry.id = entryId;
 
   const entrySequenceNumber = sequenceNumberElements
-    .map((element) => element.padStart(2, '0'))
+    .map((element) => String(element).padStart(2, '0'))
     .join('');
   const entryIdNode = ns.data(entryId);
   const incidentIdNode = ns.data(incidentId);
