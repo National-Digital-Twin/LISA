@@ -1,5 +1,6 @@
 # FROM nginx as runner
 FROM nginx:1.27
+USER sub
 
 # Copy the built files from the builder stage to the runner stage
 COPY frontend/dist /usr/share/nginx/html
