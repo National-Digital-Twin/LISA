@@ -28,13 +28,13 @@ export const LogEntry = Record({
   mentionsLogEntries: Optional(Array(Mentionable)),
   mentionedByLogEntries: Optional(Array(Mentionable)),
   // recordings?: Array<string>; // Needs to be linked as multimedia,
-  displaySequence: Optional(String), // System-generated
+  sequence: Optional(String), // System-generated
   stage: Optional(IncidentStage), // Only applicable to type = ChangeStage
   attachments: Optional(Array(LogEntryAttachment)),
 
   // This allows for determining if the Incident has been synced to the server during
   // offline operation.
-  offline: Optional(Boolean),
+  offline: Optional(Boolean)
 });
 
 // eslint-disable-next-line no-redeclare

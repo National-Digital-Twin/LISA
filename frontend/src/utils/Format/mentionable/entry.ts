@@ -9,7 +9,7 @@ import { time } from '../time';
 import { user } from '../user';
 
 function getLabel(logEntry: LogEntry, noType: boolean): string {
-  const index = `#${EntryUtil.index(logEntry)} - `;
+  const index = `#${logEntry.sequence?.toString()} - `;
   if (logEntry.type === 'RiskAssessment' || logEntry.type === 'RiskAssessmentReview') {
     const d = date(logEntry.dateTime);
     const t = time(logEntry.dateTime);
