@@ -35,7 +35,7 @@ const AuthContextProvider = ({ children }: PropsWithChildren) => {
           const logoutLinks = await response.json();
           await clearServiceWorkerCaches();
           clearLocalAndSessionStorage();
-          await fetch(logoutLinks.oAuthLogoutUrl, { method: 'GET', mode: 'no-cors', credentials: 'include' });
+          await fetch(logoutLinks.oAuthLogoutUrl, { method: 'GET', redirect: 'manual', credentials: 'include' });
           document.location = logoutLinks.redirect;
         } else {
           document.location = '/';
