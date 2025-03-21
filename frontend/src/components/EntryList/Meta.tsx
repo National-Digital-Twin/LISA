@@ -53,7 +53,7 @@ const Meta = ({
           sx={{ color: 'white !important' }}
         >
           {prefix}
-          {Format.entry.index(entry)}
+          {entry.sequence?.toString()}
         </Typography>
       </Grid>
       <Grid display="flex" flexDirection="row" alignItems="center" gap={1} size="grow">

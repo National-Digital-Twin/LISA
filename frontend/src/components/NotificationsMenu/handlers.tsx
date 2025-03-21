@@ -10,7 +10,7 @@ type Handler = {
   title: string;
   Content: ReactNode;
   clickHandler: (notification: Notification) => void;
-}
+};
 
 type HandlerFunction = (notification: Notification, navigate: NavigateFunction) => Handler | null;
 
@@ -21,11 +21,11 @@ function userMention(notification: Notification, navigate: NavigateFunction): Ha
 
   const { entry } = notification;
   return {
-    title: 'You\'ve been mentioned in a Log Entry',
+    title: "You've been mentioned in a Log Entry",
     Content: (
       <>
         <span className="user-mention-name">
-          <span>{`#${Format.entry.index(entry as LogEntry)} - `}</span>
+          <span>{`#${(entry as LogEntry).sequence} - `}</span>
           <span>{(entry.content.text ?? '').substring(0, 100)}</span>
         </span>
         <span className="user-mention-info">
@@ -50,25 +50,27 @@ function userMention(notification: Notification, navigate: NavigateFunction): Ha
   };
 }
 
-const handlerFunctions: HandlerFunction[] = [
-  userMention
-];
+const handlerFunctions: HandlerFunction[] = [userMention];
 
 export default function getHandler(
   notification: Notification,
   navigate: NavigateFunction
 ): Handler {
-  const handler: Handler | null = handlerFunctions
-    .reduce((result: Handler| null, fn: HandlerFunction) => {
+  const handler: Handler | null = handlerFunctions.reduce(
+    (result: Handler | null, fn: HandlerFunction) => {
       if (result) {
         return result;
       }
       return fn(notification, navigate);
-    }, null);
+    },
+    null
+  );
 
-  return handler || {
-    title: 'Error: Unhandled notification type',
-    clickHandler: () => {},
-    Content: <span>what</span>,
-  };
+  return (
+    handler || {
+      title: 'Error: Unhandled notification type',
+      clickHandler: () => {},
+      Content: <span>what</span>
+    }
+  );
 }

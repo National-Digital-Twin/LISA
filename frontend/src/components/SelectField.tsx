@@ -89,7 +89,7 @@ const SelectField = ({
       options={flatOptions}
       value={selected}
       readOnly={readonly}
-      groupBy={(option: FlatOptionType) => option.group || ''}
+      groupBy={(option: FlatOptionType) => option.group ?? ''}
       getOptionLabel={(option) => option.label}
       onChange={(_, selection) => handleOnChange(selection)}
       renderOption={(props, option) => (

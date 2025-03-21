@@ -14,7 +14,7 @@ export function getCreateData(idNode: unknown, input: UserMentionInput): unknown
   if (input.type === 'UserMentionNotification') {
     return [
       [idNode, ns.lisa.hasLogEntry, ns.data(input.entryId)],
-      [idNode, ns.lisa.hasIncident, ns.data(input.incidentId)],
+      [idNode, ns.lisa.hasIncident, ns.data(input.incidentId)]
     ];
   }
   return [];
@@ -27,10 +27,11 @@ export function getFetchOptionals(): unknown[] {
       ['?id', ns.lisa.hasLogEntry, '?entryId'],
       ['?id', ns.lisa.hasIncident, '?incidentId'],
       ['?entryId', ns.ies.inPeriod, '?dateTime'],
+      ['?entryId', ns.lisa.hasSequence, '?sequence'],
       ['?entryId', ns.lisa.contentText, '?contentText'],
       ['?author', ns.ies.isParticipantIn, '?entryId'],
-      ['?author', ns.ies.hasName, '?authorName'],
-    ]),
+      ['?author', ns.ies.hasName, '?authorName']
+    ])
   ];
 }
 
@@ -52,8 +53,9 @@ export function parseNotification(row: ResultRow): Notification {
         id: nodeValue(row.entryId.value),
         incidentId: nodeValue(row.incidentId.value),
         dateTime: row.dateTime.value,
+        sequence: row.sequence.value,
         content: {
-          text: row.contentText?.value,
+          text: row.contentText?.value
         },
         author: {
           username: row.authorName?.value,

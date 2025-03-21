@@ -18,7 +18,6 @@ import { bem, Icons, MapUtils } from '../../utils';
 import { type FullLocationType, type SpanType } from '../../utils/types';
 import EntryItem from '../EntryList/EntryItem';
 import { INITIAL_VIEW_STATE, MAP_BOUNDS, MAP_STYLE } from './config';
-import { useResponsive } from '../../hooks/useResponsiveHook';
 
 type LogEntryMarkerType = {
   id: string;

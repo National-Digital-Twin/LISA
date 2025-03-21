@@ -77,7 +77,7 @@ export const useCreateLogEntry = (incidentId?: string) => {
       const newLogEntryOffline = {
         ...newLogEntry,
         id: uuidV4(),
-        displaySequence: `${countOffline + 1}`,
+        sequence: `${countOffline + 1}`,
         offline: true
       };
       queryClient.setQueryData<LogEntry[]>([`incident/${incidentId}/logEntries`], (oldData) =>

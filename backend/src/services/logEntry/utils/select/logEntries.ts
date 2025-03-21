@@ -11,6 +11,7 @@ export function logEntries(incidentId: string) {
       [ns.data(incidentId), ns.lisa.hasLogEntry, '?id'],
       ['?id', ns.rdf.type, '?type'],
       ['?id', ns.ies.inPeriod, '?dateTime'],
+      ['?id', ns.lisa.hasSequence, '?sequence'],
       optional([
         ['?id', ns.lisa.contentText, '?contentText'],
         ['?id', ns.lisa.contentJSON, '?contentJSON'],

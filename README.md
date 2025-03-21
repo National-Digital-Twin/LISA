@@ -2,7 +2,7 @@
 
 1. Install docker and nodejs (version 20+)
 
-2. Make sure you build the docker image for the secure agent graph. This can be done by navigating to the deployment/scg folder and running the following command:
+2. Make sure you build the docker image for the secure agent graph. This can be done by navigating to the deployment/sag folder and running the following command:
 
 Before running the command please login in to the GitHub container registry using the following command:
 ```bash
@@ -10,7 +10,7 @@ echo <my-pat-token> | docker login ghcr.io -u <my-username> --password-stdin
 ```
 
 ```bash
-docker build -t lisa/smart-cache-graph .
+docker build -t lisa/secure-agent-graph .
 ```
 
 3. Ask for the AWS API token. It is required to access the Cognito API.
@@ -26,13 +26,7 @@ docker build -t lisa/smart-cache-graph .
 
 # Running
 
-1. In deployment/scg run
-
-```shell
-docker compose up
-```
-
-2. In the main app folder run:
+1. In the main app folder run:
 
 ```shell
 npm run start
