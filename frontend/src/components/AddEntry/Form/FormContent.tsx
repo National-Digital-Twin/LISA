@@ -49,7 +49,6 @@ export default function FormContent({
   const [descriptionLabel, setDescriptionLabel] = useState<string>('Description');
   const [fields, setFields] = useState<Array<Field>>([]);
   const [groups, setGroups] = useState<Array<FieldGroup>>([]);
-  const [speechToTextActive, setSpeechToTextActive] = useState<boolean>(false);
   const [processedRecordings, setProcessedRecordings] = useState<Array<string>>([]);
   const hasStoppedRef = useRef(false);
 
@@ -80,7 +79,6 @@ export default function FormContent({
   };
 
   const onSpeechToTextChange = (isActive: boolean) => {
-    setSpeechToTextActive(isActive);
     setRecording(isActive);
   };
 
@@ -164,9 +162,9 @@ export default function FormContent({
             json={typeof entry.content === 'object' ? entry.content.json : undefined}
             editable
             mentionables={mentionables}
-            speechToTextActive={speechToTextActive}
+            recordingActive={recording}
             onChange={onContentChange}
-            onSpeechToText={onSpeechToTextChange}
+            onRecording={onSpeechToTextChange}
             error={Boolean(showValidationErrors && contentError)}
           />
           {showValidationErrors && contentError && (

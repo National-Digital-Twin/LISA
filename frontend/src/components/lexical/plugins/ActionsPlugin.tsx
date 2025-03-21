@@ -11,21 +11,19 @@ import MicNoneOutlinedIcon from '@mui/icons-material/MicNoneOutlined';
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
 import { mergeRegister } from '@lexical/utils';
 import { JSX, MouseEvent, useEffect, useState } from 'react';
-
-// Local imports
-import { SPEECH_TO_TEXT_COMMAND, SUPPORT_SPEECH_RECOGNITION } from './SpeechToTextPlugin';
+import { RECORD_COMMAND } from './constants';
 
 type ActionsPluginProps = {
-  speechToTextActive: boolean;
+  recordingActive: boolean;
   onCommand: (command: string | undefined, active: boolean) => void;
 };
 export default function ActionsPlugin({
-  speechToTextActive,
+  recordingActive,
   onCommand
 }: Readonly<ActionsPluginProps>): JSX.Element | null {
   const [editor] = useLexicalComposerContext();
   const [isEditable, setIsEditable] = useState(() => editor.isEditable());
-  const [isSpeechToText, setIsSpeechToText] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
 
   useEffect(
     () =>
@@ -38,40 +36,38 @@ export default function ActionsPlugin({
   );
 
   useEffect(() => {
-    if (speechToTextActive !== isSpeechToText) {
-      editor.dispatchCommand(SPEECH_TO_TEXT_COMMAND, speechToTextActive);
-      setIsSpeechToText(speechToTextActive);
-      onCommand(SPEECH_TO_TEXT_COMMAND.type, speechToTextActive);
+    if (recordingActive !== isRecording) {
+      editor.dispatchCommand(RECORD_COMMAND, recordingActive);
+      setIsRecording(recordingActive);
+      onCommand(RECORD_COMMAND.type, recordingActive);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [editor, speechToTextActive, isSpeechToText, setIsSpeechToText]);
+  }, [editor, recordingActive, isRecording, setIsRecording]);
 
   if (!isEditable) {
     return null;
   }
 
-  const onToggleSpeechRecognition = (evt: MouseEvent<HTMLButtonElement>) => {
+  const onToggleRecording = (evt: MouseEvent<HTMLButtonElement>) => {
     evt.preventDefault();
-    const active = !isSpeechToText;
-    editor.dispatchCommand(SPEECH_TO_TEXT_COMMAND, active);
-    setIsSpeechToText(active);
-    onCommand(SPEECH_TO_TEXT_COMMAND.type, active);
+    const active = !isRecording;
+    editor.dispatchCommand(RECORD_COMMAND, active);
+    setIsRecording(active);
+    onCommand(RECORD_COMMAND.type, active);
   };
 
   return (
     <div className="actions">
-      {SUPPORT_SPEECH_RECOGNITION && (
-        <button
-          onClick={onToggleSpeechRecognition}
-          className={`action-button action-button-mic ${isSpeechToText ? 'active' : ''}`}
-          id="lexicalSpeechToText"
-          title="Speech To Text"
-          type="button"
-          aria-label={`${isSpeechToText ? 'Enable' : 'Disable'} speech to text`}
-        >
-          <MicNoneOutlinedIcon />
-        </button>
-      )}
+      <button
+        onClick={onToggleRecording}
+        className={`action-button action-button-mic ${isRecording ? 'active' : ''}`}
+        id="recordSpeech"
+        title="Record Speech"
+        type="button"
+        aria-label={`${isRecording ? 'Enable' : 'Disable'} recording speech`}
+      >
+        <MicNoneOutlinedIcon />
+      </button>
     </div>
   );
 }
