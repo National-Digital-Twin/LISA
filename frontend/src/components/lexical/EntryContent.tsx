@@ -13,9 +13,8 @@ import { Box, styled } from '@mui/material';
 // Local imports
 import { type Mentionable } from 'common/Mentionable';
 import EntryContentTheme from './EntryContentTheme';
-import { ActionsPlugin, MentionsPlugin, nodes, SpeechToTextPlugin } from './plugins';
-import { SPEECH_TO_TEXT_COMMAND } from './plugins/SpeechToTextPlugin';
-import { useIsMobile } from '../../hooks/useIsMobile';
+import { ActionsPlugin, MentionsPlugin, nodes } from './plugins';
+import { RECORD_COMMAND } from './plugins/constants';
 
 const editorConfig = {
   namespace: 'LISA',
@@ -64,9 +63,9 @@ type EntryContentProps = {
   json?: string;
   editable: boolean;
   mentionables?: Array<Mentionable>;
-  speechToTextActive: boolean;
+  recordingActive: boolean;
   onChange?: (id: string, json: string, text: string) => void;
-  onSpeechToText?: (active: boolean) => void;
+  onRecording?: (active: boolean) => void;
   error: boolean;
 };
 const EntryContent = ({
@@ -74,18 +73,17 @@ const EntryContent = ({
   json: _json = undefined,
   editable,
   mentionables = [],
-  speechToTextActive,
+  recordingActive,
   onChange = undefined,
-  onSpeechToText = undefined,
+  onRecording = undefined,
   error
 }: EntryContentProps) => {
   const [json, setJSON] = useState<string | undefined>(_json);
-  const isMobile = useIsMobile();
 
   const onCommand = (type: string | undefined, active: boolean) => {
-    if (type === SPEECH_TO_TEXT_COMMAND.type) {
-      if (typeof onSpeechToText === 'function') {
-        onSpeechToText(active);
+    if (type === RECORD_COMMAND.type) {
+      if (typeof onRecording === 'function') {
+        onRecording(active);
       }
     }
   };
@@ -118,8 +116,7 @@ const EntryContent = ({
           <HistoryPlugin />
           <AutoFocusPlugin />
           <MentionsPlugin mentionables={mentionables ?? []} />
-          {!isMobile && <SpeechToTextPlugin />}
-          <ActionsPlugin onCommand={onCommand} speechToTextActive={speechToTextActive} />
+          <ActionsPlugin onCommand={onCommand} recordingActive={recordingActive} />
           <OnChangePlugin onChange={onEditorChange} />
         </div>
       </LexicalField>
