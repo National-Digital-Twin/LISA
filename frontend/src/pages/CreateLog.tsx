@@ -62,7 +62,7 @@ const CreateLog = () => {
             <Typography variant="h2" fontSize="1.6rem">
               {section.title}
             </Typography>
-            <Grid component="ul" container spacing={4} bgcolor="background.default" padding={3}>
+            <Grid component="ul" container spacing={4} bgcolor="background.default" padding={2}>
               {section.fields(incident).map((field) => (
                 <Grid component="li" key={field.id} size={{ xs: 12, md: 6 }}>
                   <FormField

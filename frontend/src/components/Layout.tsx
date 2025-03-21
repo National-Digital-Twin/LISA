@@ -4,7 +4,7 @@ import { Outlet } from 'react-router-dom';
 
 // Local imports
 import { PRINTABLE_KEY } from '../utils/constants';
-import Footer from './Footer';
+// import Footer from './Footer';
 import Header from './Header';
 
 export default function Layout() {
@@ -14,7 +14,7 @@ export default function Layout() {
     <div className={`App ${printable ? 'printable' : ''}`}>
       <Header />
       <Outlet />
-      <Footer />
+      {/* <Footer /> */}
     </div>
   );
 }
