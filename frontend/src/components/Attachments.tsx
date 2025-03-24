@@ -20,7 +20,7 @@ function Attachments({ incidentId, attachments, title, emptyMsg }: Readonly<Prop
 
   return (
     <Box>
-      <Typography variant="h4" component="h2" gutterBottom>
+      <Typography variant="h5" component="h2" gutterBottom>
         {title}
       </Typography>
 
@@ -32,7 +32,7 @@ function Attachments({ incidentId, attachments, title, emptyMsg }: Readonly<Prop
             display: 'flex',
             alignItems: 'center',
             backgroundColor: theme.palette.background.default,
-            p: isMobile? 2 : 3
+            p: isMobile ? 2 : 3
           }}
         >
           {emptyMsg}
@@ -46,13 +46,13 @@ function Attachments({ incidentId, attachments, title, emptyMsg }: Readonly<Prop
             <Stack
               key={attachment.key}
               direction={isMobile ? 'column' : 'row'}
-              spacing={isMobile? 0 : 2}
+              spacing={isMobile ? 0 : 2}
               alignItems="flex-start"
               sx={{
                 width: '100%',
                 gap: 2,
                 backgroundColor: theme.palette.background.default,
-                p: isMobile? 2 : 3
+                p: isMobile ? 2 : 3
               }}
             >
               <Box
@@ -67,13 +67,15 @@ function Attachments({ incidentId, attachments, title, emptyMsg }: Readonly<Prop
                 <AttachmentLink attachment={attachment} />
               </Box>
 
-              <Stack direction="row" spacing={1} alignItems="center" >
+              <Stack direction="row" spacing={1} alignItems="center">
                 {!isMobile && <Icons.Person style={iconStyle} />}
                 <Typography variant="body2">{Format.user(attachment.author)}</Typography>
               </Stack>
 
               {isMobile ? (
-                <Typography variant="body2">{Format.dateAndTimeMobile(attachment.uploadedAt)}</Typography>
+                <Typography variant="body2">
+                  {Format.dateAndTimeMobile(attachment.uploadedAt)}
+                </Typography>
               ) : (
                 <>
                   <Stack direction="row" spacing={1} alignItems="center">
