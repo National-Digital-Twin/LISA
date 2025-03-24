@@ -128,7 +128,7 @@ const Overview = () => {
                 <GridListItem title="Telephone number" text={incident.referrer.telephone} />
                 <GridListItem title="Email" text={incident.referrer.email} />
                 <GridListItem
-                  title="Supported requested?"
+                  title="Has the referrer requested support from the local resilience team?"
                   text={incident.referrer.supportRequested}
                 />
                 {incident.referrer.supportRequested === 'Yes' && (
