@@ -24,10 +24,6 @@ export function getFetchOptionals(): unknown[] {
   return [
     // user mention
     sparql.optional([
-      ['?id', ns.lisa.hasLogEntry, '?entryId'],
-      ['?id', ns.lisa.hasIncident, '?incidentId'],
-      ['?entryId', ns.ies.inPeriod, '?dateTime'],
-      ['?entryId', ns.lisa.hasSequence, '?sequence'],
       ['?entryId', ns.lisa.contentText, '?contentText'],
       ['?author', ns.ies.isParticipantIn, '?entryId'],
       ['?author', ns.ies.hasName, '?authorName']
