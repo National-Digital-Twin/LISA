@@ -15,7 +15,7 @@ export const useLogEntries = (incidentId?: string) => {
   return { logEntries: data, isLoading, isError, error };
 };
 
-async function poll(
+export async function poll(
   incidentId: string | undefined,
   logEntryId: string | undefined,
   queryClient: QueryClient,

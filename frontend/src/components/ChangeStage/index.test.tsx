@@ -41,9 +41,15 @@ jest.mock('../Form', () => ({
     onShowValidationErrors: (show: boolean) => void;
   }) => (
     <div>
-      <button onClick={onCancel}>Cancel</button>
-      <button onClick={onSubmit}>Submit</button>
-      <button onClick={() => onShowValidationErrors(true)}>Show Errors</button>
+      <button type="button" onClick={onCancel}>
+        Cancel
+      </button>
+      <button type="button" onClick={onSubmit}>
+        Submit
+      </button>
+      <button type="button" onClick={() => onShowValidationErrors(true)}>
+        Show Errors
+      </button>
     </div>
   )
 }));
