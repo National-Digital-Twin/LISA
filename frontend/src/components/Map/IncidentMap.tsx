@@ -212,10 +212,10 @@ export default function IncidentMap({ logEntries, highlightId = undefined }: Rea
             onContentClick={onEntryContentClick}
             onMentionClick={() => {}}
             metaItems={[
-              <IconButton onClick={onVisitLog} title="See in incident log">
+              <IconButton key="incident-log" onClick={onVisitLog} title="See in incident log">
                 <ImportContactsIcon fontSize="small" />
               </IconButton>,
-              <IconButton onClick={onCloseInfo} title="Close information">
+              <IconButton key="close-info" onClick={onCloseInfo} title="Close information">
                 <CloseIcon fontSize="small" />
               </IconButton>
             ]}

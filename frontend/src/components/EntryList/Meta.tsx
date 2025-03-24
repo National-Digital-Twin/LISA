@@ -120,7 +120,7 @@ const Meta = ({
         </>
       )}
       {metaItems?.map((item) => (
-        <Grid display="flex" alignItems="center" size="auto">
+        <Grid key={item.key} display="flex" alignItems="center" size="auto">
           {item}
         </Grid>
       ))}
