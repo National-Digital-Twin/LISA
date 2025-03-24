@@ -1,5 +1,6 @@
 // eslint-disable-next-line import/no-relative-packages
 import { User } from '../../../common/User';
+import { config } from './config';
 
 export class WebSocketClient {
   private ws: WebSocket | undefined;
@@ -37,8 +38,9 @@ export class WebSocketClient {
 
   private connect(isRestoration: boolean = false) {
     const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
+    const { apiUrl } = config;
     /* eslint-disable-next-line no-restricted-globals */
-    const backendHost = import.meta.env.VITE_BACKEND_HOST || self.window.location.host;
+    const backendHost = apiUrl || self.window.location.host;
     const ws = new WebSocket(`${protocol}://${backendHost}/api/ws`, [protocol, this.user.username]);
     ws.onopen = () => {
       this.handleOpen(isRestoration);
