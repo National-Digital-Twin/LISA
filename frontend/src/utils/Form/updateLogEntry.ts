@@ -5,7 +5,7 @@ import { type LogEntryType } from 'common/LogEntryType';
 import { LogEntryTypes } from 'common/LogEntryTypes';
 import { type FieldValueType } from '../types';
 
-function getUpdatedFields(entry: Partial<LogEntry>, fieldId?: string, fieldValue?: FieldValueType) {
+export function getUpdatedFields(entry: Partial<LogEntry>, fieldId?: string, fieldValue?: FieldValueType) {
   const type = LogEntryTypes[entry.type as LogEntryType];
   let fields = entry.fields ?? [];
   // Update the fields first.
