@@ -5,6 +5,7 @@ import ImportContactsIcon from '@mui/icons-material/ImportContacts';
 
 // Local imports
 import { ValidationError } from '../../utils/types';
+import { useResponsive } from '../../hooks/useResponsiveHook';
 
 interface Props {
   validationErrors: Array<ValidationError>;
@@ -44,11 +45,21 @@ export default function FormFooter({
     });
   };
 
+  const { isMobile } = useResponsive();
+
   return (
-    <Box display="flex" flexDirection="row" justifyContent="flex-end" alignItems="center" gap={1}>
+    <Box
+      display="flex"
+      flexDirection="row"
+      justifyContent="flex-end"
+      alignItems="center"
+      gap={1}
+      width="100%"
+    >
       {validationErrors.length > 0 && (
         <Button
           type="button"
+          size={isMobile ? 'small' : 'medium'}
           variant="text"
           onClick={onToggleShowErrors}
           sx={{ color: 'text.primary' }}

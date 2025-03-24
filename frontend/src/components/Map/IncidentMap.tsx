@@ -4,6 +4,8 @@ import { FitBoundsOptions } from 'maplibre-gl';
 import { MouseEvent, useEffect, useMemo, useRef, useState } from 'react';
 import Map, { Marker, MapRef, NavigationControl, LngLatBoundsLike } from 'react-map-gl/maplibre';
 import { useNavigate } from 'react-router-dom';
+import CloseIcon from '@mui/icons-material/Close';
+import ImportContactsIcon from '@mui/icons-material/ImportContacts';
 
 // Local imports
 import { type Coordinates } from 'common/Location';
@@ -16,8 +18,6 @@ import { bem, Icons, MapUtils } from '../../utils';
 import { type FullLocationType, type SpanType } from '../../utils/types';
 import EntryItem from '../EntryList/EntryItem';
 import { INITIAL_VIEW_STATE, MAP_BOUNDS, MAP_STYLE } from './config';
-import { useResponsive } from '../../hooks/useResponsiveHook';
-import theme from '../../theme';
 
 type LogEntryMarkerType = {
   id: string;
@@ -51,7 +51,6 @@ interface MapProps {
   highlightId?: string;
 }
 export default function IncidentMap({ logEntries, highlightId = undefined }: Readonly<MapProps>) {
-  const { isMobile } = useResponsive();
   const [redrawing, setRedrawing] = useState<boolean>(false);
   const mapRef = useRef<MapRef>(null);
   const navigate = useNavigate();
@@ -212,45 +211,15 @@ export default function IncidentMap({ logEntries, highlightId = undefined }: Rea
             disableScrollTo
             onContentClick={onEntryContentClick}
             onMentionClick={() => {}}
+            metaItems={[
+              <IconButton onClick={onVisitLog} title="See in incident log">
+                <ImportContactsIcon fontSize="small" />
+              </IconButton>,
+              <IconButton onClick={onCloseInfo} title="Close information">
+                <CloseIcon fontSize="small" />
+              </IconButton>
+            ]}
           />
-          {!isMobile && (
-            <IconButton
-              sx={{
-                position: 'absolute',
-                top: 16,
-                right: 40,
-                height: 24,
-                width: 24,
-                padding: 0,
-                cursor: 'pointer',
-                border: 0,
-                color: 'white',
-                backgroundColor: theme.palette.secondary.main,
-                '--IconButton-hoverBg': theme.palette.secondary.main,
-                '& svg': { height: 10, width: 'auto' }
-              }}
-              onClick={onVisitLog}
-              title="See in incident log"
-            >
-              <Icons.LogBook />
-            </IconButton>
-          )}
-          <IconButton
-            sx={{
-              position: 'absolute',
-              top: isMobile ? 22 : 16,
-              right: 5,
-              height: 24,
-              width: 24,
-              padding: 0,
-              cursor: 'pointer',
-              '& svg': { height: 10, width: 'auto' }
-            }}
-            onClick={onCloseInfo}
-            title="Close information"
-          >
-            <Icons.Close style={{ fill: 'white' }} />
-          </IconButton>
         </Box>
       )}
     </Box>

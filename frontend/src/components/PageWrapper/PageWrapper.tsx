@@ -13,8 +13,8 @@ const PageWrapper = ({ children }: { children: ReactNode }) => (
         padding: 0,
         marginTop: '1rem'
       },
-      paddingLeft: { xs: '20px', md: '60px' },
-      paddingRight: { xs: '20px', md: '60px' }
+      paddingLeft: { xs: '1rem', md: '60px' },
+      paddingRight: { xs: '1rem', md: '60px' }
     }}
     minHeight="calc(100vh - 150px)"
   >

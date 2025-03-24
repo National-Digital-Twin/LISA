@@ -185,7 +185,7 @@ const AddEntry = ({
           validationErrors={validationErrors}
           showValidationErrors={showValidationErrors}
         />
-        <Box padding={3} component="form" bgcolor="background.default" id="rollup-log-book-entry">
+        <Box padding={2} component="form" bgcolor="background.default" id="rollup-log-book-entry">
           <TabPanel value={TABS.FORM} hash={hash}>
             <Form.Content
               active={!hash || hash.includes(TABS.FORM)}
