@@ -6,7 +6,6 @@ import AccessTimeFilledIcon from '@mui/icons-material/AccessTimeFilled';
 
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { type Notification, UserMentionNotification } from 'common/Notification';
-import { type LogEntry } from 'common/LogEntry';
 import { Box, Typography } from '@mui/material';
 import { Format } from '../../utils';
 
