@@ -19,7 +19,11 @@ export default function Files() {
 
   return (
     <PageWrapper>
-      <PageTitle title="Incident files" />
+      <PageTitle
+        title={incident?.type ?? ''}
+        subtitle={incident?.name ?? ''}
+        stage={incident.stage}
+      />
       <Attachments
         incidentId={incidentId}
         title="Recordings"
