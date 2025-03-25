@@ -1,4 +1,6 @@
 resources:
+  - vault/vaultAuth.yaml
+  - vault/vaultStaticSecret.yaml
   - service-account.yaml
   - deployment.yaml
   - service.yaml
