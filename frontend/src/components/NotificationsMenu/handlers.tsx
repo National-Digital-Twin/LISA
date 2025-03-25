@@ -29,10 +29,7 @@ function userMention(notification: Notification, navigate: NavigateFunction): Ha
     Content: (
       <>
         <Box>
-          <Typography
-            component="span"
-            variant="body1"
-          >{`#${(entry as LogEntry).sequence} - `}</Typography>
+          <Typography component="span" variant="body1">{`#${entry.sequence} - `}</Typography>
           <Typography component="span" variant="body1">
             {(entry.content.text ?? '').substring(0, 100)}
           </Typography>
