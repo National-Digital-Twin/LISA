@@ -7,6 +7,37 @@ jest.mock('../../api', () => ({
   get: jest.fn()
 }));
 
+/**
+ * Overrides the internal scanResult state for the useAttachmentScanResult hook.
+ * The hook normally initializes its state based on the first call to React.useState.
+ * For tests that require the scanResult to be 'PENDING' internally, this helper forces that.
+ *
+ * @param overrideValue - The value to be used for the initial state.
+ */
+const overrideInitialScanResult = (overrideValue: string) => {
+  let callCount = 0;
+  const originalUseState = React.useState;
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-expect-error
+  jest.spyOn(React, 'useState').mockImplementation((initial) => {
+    callCount += 1;
+    // Use the override value on the first call.
+    if (callCount === 1) {
+      return originalUseState(overrideValue);
+    }
+    return originalUseState(initial);
+  });
+};
+
+/**
+ * Renders the useAttachmentScanResult hook with the provided initial scan result.
+ *
+ * @param initialScan - The initial scan result passed to the hook.
+ * @returns The result of renderHook.
+ */
+const renderUseAttachmentScanResult = (initialScan: string) =>
+  renderHook(() => useAttachmentScanResult(initialScan, 'dummy-key'));
+
 describe('useAttachmentScanResult', () => {
   afterEach(() => {
     jest.clearAllMocks();
@@ -14,124 +45,67 @@ describe('useAttachmentScanResult', () => {
     jest.restoreAllMocks();
   });
 
-  it('returns "THREATS_FOUND" immediately if initialScanResult is "THREATS_FOUND"', async () => {
-    const { result } = renderHook(() => useAttachmentScanResult('THREATS_FOUND', 'dummy-key'));
-
-    await waitFor(() => expect(result.current.scanResult).toBe('THREATS_FOUND'));
+  describe('Immediate ScanResult', () => {
+    // For final statuses, the hook should return the value immediately,
+    // while a non-final value (such as "PENDING") results in an empty string.
+    test.each([
+      ['THREATS_FOUND', 'THREATS_FOUND'],
+      ['NO_THREATS_FOUND', 'NO_THREATS_FOUND'],
+      ['PENDING', '']
+    ])('returns "%s" immediately when initialScanResult is "%s"', async (initialScan, expected) => {
+      const { result } = renderUseAttachmentScanResult(initialScan);
+      await waitFor(() => expect(result.current.scanResult).toBe(expected));
+    });
   });
 
-  it('returns "NO_THREATS_FOUND" immediately if initialScanResult is "NO_THREATS_FOUND"', async () => {
-    const { result } = renderHook(() => useAttachmentScanResult('NO_THREATS_FOUND', 'dummy-key'));
+  describe('Polling Behavior', () => {
+    it('updates scanResult when get returns a non-"PENDING" response', async () => {
+      overrideInitialScanResult('PENDING');
+      (get as jest.Mock).mockResolvedValueOnce('COMPLETED');
 
-    await waitFor(() => expect(result.current.scanResult).toBe('NO_THREATS_FOUND'));
-  });
-
-  it('returns empty string for non-final initialScanResult (e.g. "PENDING") without entering polling branch', async () => {
-    const { result } = renderHook(() => useAttachmentScanResult('PENDING', 'dummy-key'));
-
-    // Since the API branch is only reached if internal scanResult === "PENDING",
-    // and our hook does not update the internal state from its initial value (empty string),
-    // we expect the state to remain as "".
-    await waitFor(() => expect(result.current.scanResult).toBe(''));
-  });
-
-  it('updates scanResult when get returns a non-"PENDING" response (simulate polling branch)', async () => {
-    // Override the initial scanResult state to "PENDING" for the hook.
-    let useStateCallCount = 0;
-    const originalUseState = React.useState;
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-expect-error
-    jest.spyOn(React, 'useState').mockImplementation((initial) => {
-      useStateCallCount += 1;
-      // For the first call (which initializes scanResult), return "PENDING" instead of empty string.
-      if (useStateCallCount === 1) {
-        return originalUseState('PENDING');
-      }
-      return originalUseState(initial);
+      const { result } = renderHook(() => useAttachmentScanResult('PENDING', 'dummy-key'));
+      await waitFor(() => expect(result.current.scanResult).toBe('COMPLETED'));
     });
 
-    // Simulate get resolving with a non-PENDING value.
-    (get as jest.Mock).mockResolvedValueOnce('COMPLETED');
+    it('sets scanResult to "PENDING" when an error occurs during polling', async () => {
+      jest.useFakeTimers();
+      overrideInitialScanResult('PENDING');
+      (get as jest.Mock).mockRejectedValue(new Error('API error'));
 
-    const { result } = renderHook(() => useAttachmentScanResult('PENDING', 'dummy-key'));
+      const { result } = renderHook(() => useAttachmentScanResult('PENDING', 'dummy-key'));
 
-    // Wait for the hook to update scanResult to "COMPLETED" once the get call returns.
-    await waitFor(() => expect(result.current.scanResult).toBe('COMPLETED'));
-  });
+      await act(async () => {
+        jest.advanceTimersByTime(2000);
+        // Allow state updates to flush.
+        await Promise.resolve();
+      });
 
-  it('sets scanResult to "PENDING" when an error occurs during polling', async () => {
-    // Use fake timers.
-    jest.useFakeTimers();
-
-    let useStateCallCount = 0;
-    const originalUseState = React.useState;
-    // Override the internal scanResult to "PENDING" to force entering the polling branch.
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-expect-error
-    jest.spyOn(React, 'useState').mockImplementation((initial) => {
-      useStateCallCount += 1;
-      if (useStateCallCount === 1) {
-        return originalUseState('PENDING');
-      }
-      return originalUseState(initial);
+      await waitFor(() => expect(result.current.scanResult).toBe('PENDING'));
     });
 
-    // Mock get to always throw an error to simulate a failure in the API call.
-    (get as jest.Mock).mockRejectedValue(new Error('API error'));
+    it('handles polling by incrementing attempts and scheduling next polls until non-"PENDING" response is received', async () => {
+      jest.useFakeTimers();
+      overrideInitialScanResult('PENDING');
 
-    const { result } = renderHook(() => useAttachmentScanResult('PENDING', 'dummy-key'));
+      // Simulate get returning "PENDING" twice then "COMPLETED"
+      (get as jest.Mock)
+        .mockResolvedValueOnce('PENDING')
+        .mockResolvedValueOnce('PENDING')
+        .mockResolvedValueOnce('COMPLETED');
 
-    // Advance time to trigger the API call.
-    await act(async () => {
-      jest.advanceTimersByTime(2000);
-      // Allow pending promises and state updates to flush.
-      await Promise.resolve();
+      const { result } = renderHook(() => useAttachmentScanResult('PENDING', 'dummy-key'));
+
+      // Simulate time passing to trigger multiple polling attempts
+      await act(async () => {
+        jest.advanceTimersByTime(2000);
+        await Promise.resolve();
+      });
+      await act(async () => {
+        jest.advanceTimersByTime(2000);
+        await Promise.resolve();
+      });
+
+      await waitFor(() => expect(result.current.scanResult).toBe('COMPLETED'));
     });
-
-    // The hook should catch the error and set the scanResult to "PENDING".
-    await waitFor(() => expect(result.current.scanResult).toBe('PENDING'));
-  });
-
-  it('handles polling by incrementing attempts and scheduling next poll when get returns "PENDING", then updates state when non-"PENDING" response is received', async () => {
-    // Use fake timers.
-    jest.useFakeTimers();
-
-    let useStateCallCount = 0;
-    const originalUseState = React.useState;
-    // Override the initial scanResult so that it starts as "PENDING".
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-expect-error
-    jest.spyOn(React, 'useState').mockImplementation((initial) => {
-      useStateCallCount += 1;
-      if (useStateCallCount === 1) {
-        return originalUseState('PENDING');
-      }
-      return originalUseState(initial);
-    });
-
-    // Simulate get first returning "PENDING", then a final "COMPLETED" response.
-    (get as jest.Mock).mockResolvedValueOnce('PENDING').mockResolvedValueOnce('COMPLETED');
-
-    const { result } = renderHook(() => useAttachmentScanResult('PENDING', 'dummy-key'));
-
-    // Advance timers to trigger the first poll.
-    await act(async () => {
-      jest.advanceTimersByTime(2000);
-      await Promise.resolve();
-    });
-
-    // After the first poll we expect one API call.
-    expect((get as jest.Mock).mock.calls.length).toBe(2);
-
-    // Advance timers to trigger the next poll.
-    await act(async () => {
-      jest.advanceTimersByTime(2000);
-      await Promise.resolve();
-    });
-
-    // At this point, the hook should receive the completed response.
-    await waitFor(() => expect(result.current.scanResult).toBe('COMPLETED'));
-    // Verify that get has been called twice.
-    expect((get as jest.Mock).mock.calls.length).toBe(2);
   });
 });

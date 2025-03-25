@@ -6,16 +6,16 @@ import { get, put } from '../../api';
 
 jest.mock('../../api');
 
+// Create a helper that returns a wrapper and the QueryClient instance.
+const createWrapper = () => {
+  const queryClient = new QueryClient();
+  const wrapper = ({ children }: { children: React.ReactNode }) => (
+    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+  );
+  return { wrapper, queryClient };
+};
+
 describe('useNotifications', () => {
-  let queryClient: QueryClient;
-
-  const createWrapper = () => {
-    queryClient = new QueryClient();
-    return ({ children }: { children: React.ReactNode }) => (
-      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-    );
-  };
-
   beforeEach(() => {
     jest.resetAllMocks();
   });
@@ -23,15 +23,16 @@ describe('useNotifications', () => {
   it('invalidate function calls queryClient.invalidateQueries', async () => {
     (get as jest.Mock).mockResolvedValueOnce([]);
 
-    const wrapper = createWrapper();
+    // Get the wrapper and queryClient from our helper.
+    const { wrapper, queryClient } = createWrapper();
     const { result } = renderHook(() => useNotifications(), {
       wrapper
     });
 
-    // Wait for the query to finish.
+    // Wait for the query to complete.
     await waitFor(() => expect(result.current.isLoading).toBe(false));
 
-    // Spy on invalidateQueries for the current query client.
+    // Spy on the invalidateQueries method of the query client.
     const invalidateSpy = jest.spyOn(queryClient, 'invalidateQueries');
 
     await act(async () => {
@@ -44,15 +45,6 @@ describe('useNotifications', () => {
 });
 
 describe('useReadNotification', () => {
-  let queryClient: QueryClient;
-
-  const createWrapper = () => {
-    queryClient = new QueryClient();
-    return ({ children }: { children: React.ReactNode }) => (
-      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-    );
-  };
-
   beforeEach(() => {
     jest.resetAllMocks();
   });
@@ -61,12 +53,13 @@ describe('useReadNotification', () => {
     const notificationId = '123';
     (put as jest.Mock).mockResolvedValueOnce(undefined);
 
-    const wrapper = createWrapper();
+    // Reuse the helper to obtain the wrapper and queryClient.
+    const { wrapper, queryClient } = createWrapper();
     const { result } = renderHook(() => useReadNotification(), {
       wrapper
     });
 
-    // Spy on invalidateQueries from the query client.
+    // Spy on the invalidateQueries method.
     const invalidateSpy = jest.spyOn(queryClient, 'invalidateQueries');
 
     // Trigger the mutation.

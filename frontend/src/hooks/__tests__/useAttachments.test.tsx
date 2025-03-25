@@ -88,7 +88,7 @@ describe('useAttachments', () => {
     const fakeData: never[] = []; // empty data set for this case
     (get as jest.Mock).mockResolvedValueOnce(fakeData);
 
-    const { result } = renderHook(() => useAttachments(undefined), {
+    const { result } = renderHook(() => useAttachments(), {
       wrapper: createWrapper()
     });
 

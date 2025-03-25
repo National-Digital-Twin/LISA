@@ -4,7 +4,7 @@ import { WebSocketClient } from '../ws';
 
 jest.mock('../config', () => ({
   config: {
-    apiUrl: 'http://localhost:mock'
+    apiUrl: 'https://localhost:mock'
   }
 }));
 
@@ -17,13 +17,13 @@ describe('WebSocketClient', () => {
 
   // A mock WebSocket class to simulate behaviour
   class MockWebSocket {
-    static CONNECTING = 0;
+    static readonly CONNECTING = 0;
 
-    static OPEN = 1;
+    static readonly OPEN = 1;
 
-    static CLOSING = 2;
+    static readonly CLOSING = 2;
 
-    static CLOSED = 3;
+    static readonly CLOSED = 3;
 
     public readyState = MockWebSocket.CONNECTING;
 

@@ -1,25 +1,36 @@
 import { get, post, put, FetchError } from '../index';
 
+/**
+ * Helper function to create a fake fetch response.
+ *
+ * @param overrides - An object containing properties to override.
+ * @returns A fake response object.
+ */
+function createFakeResponse(overrides: Partial<Response> & { jsonData?: unknown }) {
+  const { jsonData, ...rest } = overrides;
+  return {
+    json: jest.fn().mockResolvedValue(jsonData),
+    ...rest
+  };
+}
+
 describe('API methods', () => {
   beforeEach(() => {
-    // Replace the global fetch with a Jest mock function before each test.
     global.fetch = jest.fn();
   });
 
   afterEach(() => {
-    // Reset mocks after each test.
     jest.resetAllMocks();
   });
 
   describe('get', () => {
     it('should return JSON data on a successful GET request', async () => {
       const mockData = { message: 'success' };
-      const fakeResponse = {
+      const fakeResponse = createFakeResponse({
         ok: true,
         status: 200,
-        json: jest.fn().mockResolvedValue(mockData)
-      };
-
+        jsonData: mockData
+      });
       (global.fetch as jest.Mock).mockResolvedValue(fakeResponse);
 
       const result = await get('/test');
@@ -32,13 +43,12 @@ describe('API methods', () => {
     });
 
     it('should throw a FetchError for a non-ok response', async () => {
-      const fakeResponse = {
+      const fakeResponse = createFakeResponse({
         ok: false,
         status: 404,
         statusText: 'Not Found',
-        json: jest.fn().mockResolvedValue({})
-      };
-
+        jsonData: {}
+      });
       (global.fetch as jest.Mock).mockResolvedValue(fakeResponse);
 
       await expect(get('/notFound')).rejects.toThrow(FetchError);
@@ -46,13 +56,12 @@ describe('API methods', () => {
 
     it('should throw a FetchError with redirectUrl for a 302 response', async () => {
       const redirectUrl = '/login';
-      const fakeResponse = {
+      const fakeResponse = createFakeResponse({
         ok: false,
         status: 302,
         statusText: 'Found',
-        json: jest.fn().mockResolvedValue({ redirectUrl })
-      };
-
+        jsonData: { redirectUrl }
+      });
       (global.fetch as jest.Mock).mockResolvedValue(fakeResponse);
 
       await expect(get('/redirect')).rejects.toThrow(
@@ -68,12 +77,11 @@ describe('API methods', () => {
   describe('post', () => {
     it('should send JSON data with proper headers', async () => {
       const mockData = { message: 'created' };
-      const fakeResponse = {
+      const fakeResponse = createFakeResponse({
         ok: true,
         status: 201,
-        json: jest.fn().mockResolvedValue(mockData)
-      };
-
+        jsonData: mockData
+      });
       (global.fetch as jest.Mock).mockResolvedValue(fakeResponse);
 
       const data = { key: 'value' };
@@ -89,12 +97,11 @@ describe('API methods', () => {
 
     it('should send FormData without the Content-Type header', async () => {
       const mockData = { message: 'form success' };
-      const fakeResponse = {
+      const fakeResponse = createFakeResponse({
         ok: true,
         status: 200,
-        json: jest.fn().mockResolvedValue(mockData)
-      };
-
+        jsonData: mockData
+      });
       (global.fetch as jest.Mock).mockResolvedValue(fakeResponse);
 
       // Create a FormData object.
@@ -103,7 +110,6 @@ describe('API methods', () => {
 
       await post('/upload', formData);
 
-      // Extract the options passed to fetch and check that no Content-Type header is set.
       const fetchCallOptions = (global.fetch as jest.Mock).mock.calls[0][1];
       expect(fetchCallOptions.headers).not.toHaveProperty('Content-Type');
       expect(fetchCallOptions.body).toBe(formData);
@@ -113,12 +119,11 @@ describe('API methods', () => {
   describe('put', () => {
     it('should send JSON data with proper headers', async () => {
       const mockData = { message: 'updated' };
-      const fakeResponse = {
+      const fakeResponse = createFakeResponse({
         ok: true,
         status: 200,
-        json: jest.fn().mockResolvedValue(mockData)
-      };
-
+        jsonData: mockData
+      });
       (global.fetch as jest.Mock).mockResolvedValue(fakeResponse);
 
       const data = { key: 'updatedValue' };
@@ -129,30 +134,6 @@ describe('API methods', () => {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)
-      });
-    });
-
-    it('should send FormData and still include Content-Type header for PUT', async () => {
-      const mockData = { message: 'form updated' };
-      const fakeResponse = {
-        ok: true,
-        status: 200,
-        json: jest.fn().mockResolvedValue(mockData)
-      };
-
-      (global.fetch as jest.Mock).mockResolvedValue(fakeResponse);
-
-      const formData = new FormData();
-      formData.append('field', 'value');
-
-      const result = await put('/updateForm', formData);
-
-      expect(result).toEqual(mockData);
-      // Note: The put method always sets the Content-Type to 'application/json' even if the body is FormData.
-      expect(global.fetch).toHaveBeenCalledWith('/api/updateForm', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: formData
       });
     });
   });

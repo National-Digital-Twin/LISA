@@ -144,8 +144,8 @@ describe('FormField Tests', () => {
     const timeInput = within(timeContainer).getByDisplayValue('');
     expect(dateInput).toBeInTheDocument();
     expect(timeInput).toBeInTheDocument();
-    fireEvent.change(dateInput!, { target: { value: '2025-02-13' } });
-    fireEvent.change(timeInput!, { target: { value: '15:30' } });
+    fireEvent.change(dateInput, { target: { value: '2025-02-13' } });
+    fireEvent.change(timeInput, { target: { value: '15:30' } });
     expect(dateInput).toHaveValue('2025-02-13');
     expect(timeInput).toHaveValue('15:30');
     expect(mockOnChange).toHaveBeenCalledTimes(2);
