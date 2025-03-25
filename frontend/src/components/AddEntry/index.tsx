@@ -38,6 +38,17 @@ type AddEntryProps = {
   loading?: boolean;
 };
 
+const createSequenceNumber = (date: Date) =>
+  [
+    date.getDate(),
+    date.getMonth() + 1, // to account for zero based indexing on the month
+    date.getHours(),
+    date.getMinutes(),
+    date.getSeconds()
+  ]
+    .map((element) => String(element).padStart(2, '0'))
+    .join('');
+
 const AddEntry = ({
   incident = undefined,
   entries,
@@ -50,6 +61,7 @@ const AddEntry = ({
   const { users } = useUsers();
   const [entry, setEntry] = useState<Partial<LogEntry>>({
     incidentId: incident?.id,
+    sequence: createSequenceNumber(new Date()),
     type: 'General',
     content: {}
   });
@@ -173,7 +185,7 @@ const AddEntry = ({
           validationErrors={validationErrors}
           showValidationErrors={showValidationErrors}
         />
-        <Box padding={3} component="form" bgcolor="background.default" id="rollup-log-book-entry">
+        <Box padding={2} component="form" bgcolor="background.default" id="rollup-log-book-entry">
           <TabPanel value={TABS.FORM} hash={hash}>
             <Form.Content
               active={!hash || hash.includes(TABS.FORM)}

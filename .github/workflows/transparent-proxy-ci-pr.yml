@@ -4,9 +4,9 @@ on:
   workflow_call:
   pull_request:
     paths:
-      - "transparent-proxy/**"
-      - ".github/workflows/transparent-proxy-ci-pr.yml"
-      - ".github/workflows/transparent-proxy-ci-pr-merge.yml"
+      - 'transparent-proxy/**'
+      - '.github/workflows/transparent-proxy-ci-pr.yml'
+      - '.github/workflows/transparent-proxy-ci-pr-merge.yml'
   workflow_dispatch:
 permissions:
   contents: read
@@ -41,12 +41,12 @@ jobs:
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@0.28.0
         with:
-          scan-type: "fs"
+          scan-type: 'fs'
           scan-ref: transparent-proxy
-          format: "table"
-          exit-code: "1"
+          format: 'table'
+          exit-code: '1'
           ignore-unfixed: true
-          severity: "CRITICAL,HIGH"
+          severity: 'CRITICAL,HIGH'
 
   docker-build-test-scan:
     name: Docker Build, Test & Scan
@@ -67,9 +67,10 @@ jobs:
       - name: Run Trivy Scan on Docker Image
         uses: aquasecurity/trivy-action@0.28.0
         with:
-          image-ref: "lisa/transparent-proxy:latest"
-          format: "table"
-          exit-code: "1"
+          image-ref: 'lisa/transparent-proxy:latest'
+          format: 'table'
+          exit-code: '1'
           ignore-unfixed: true
-          vuln-type: "os,library"
-          severity: "CRITICAL,HIGH"
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
+          trivyignores: 'transparent-proxy/.trivyignore'

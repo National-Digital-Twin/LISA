@@ -1,5 +1,5 @@
 // Global imports
-import { MouseEvent, useEffect, useMemo, useRef } from 'react';
+import { MouseEvent, ReactElement, useEffect, useMemo, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Box, Divider, Paper, Typography } from '@mui/material';
 
@@ -21,13 +21,15 @@ interface Props {
   disableScrollTo?: boolean;
   onContentClick: (evt: MouseEvent<HTMLElement>) => void;
   onMentionClick: (mention: Mentionable) => void;
+  metaItems?: ReactElement[];
 }
 const EntryItem = ({
   entry,
   entries,
   disableScrollTo = false,
   onContentClick,
-  onMentionClick
+  onMentionClick,
+  metaItems = undefined
 }: Props) => {
   const { isMobile, isBelowMd } = useResponsive();
   const { hash } = useLocation();
@@ -51,8 +53,8 @@ const EntryItem = ({
 
   return (
     <Box component={Paper} square id={id} ref={divRef} className={classes()}>
-      <div className={classes('header')} style={{ paddingRight: isMobile ? 15 : 60 }}>
-        <Meta entry={entry} isMobile={isMobile} isBelowMd={isBelowMd} />
+      <div className={classes('header')}>
+        <Meta entry={entry} isMobile={isMobile} isBelowMd={isBelowMd} metaItems={metaItems} />
       </div>
       {isMobile && (
         <>

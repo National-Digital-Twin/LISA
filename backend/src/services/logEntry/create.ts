@@ -29,16 +29,21 @@ export async function create(req: Request, res: Response) {
 
   const entryId = randomUUID();
   entry.id = entryId;
+
   const entryIdNode = ns.data(entryId);
   const incidentIdNode = ns.data(incidentId);
   const authorNode = ns.data(res.locals.user.username);
 
-  const { triples: attachmentTriples, names: fileNameMappings } = await attachments.extract(req, entry, entryIdNode);
+  const { triples: attachmentTriples, names: fileNameMappings } = await attachments.extract(
+    req,
+    entry,
+    entryIdNode
+  );
   mentions.reconcile.file(entry, entryId, fileNameMappings);
   const userMentions = mentions.extract.user(entry, entryIdNode);
 
   const type = LogEntryTypes[entry.type];
-  const content = type.noContent ? {} : (entry.content || {}); // should probably be invalid request?
+  const content = type.noContent ? {} : entry.content || {}; // should probably be invalid request?
 
   let triples: unknown[] = [];
   try {
@@ -53,6 +58,7 @@ export async function create(req: Request, res: Response) {
       [authorNode, ns.rdf.type, ns.ies.Creator],
       [authorNode, ns.ies.hasName, literalString(res.locals.user.displayName)],
       [authorNode, ns.ies.isParticipantIn, entryIdNode],
+      [entryIdNode, ns.lisa.hasSequence, entry.sequence],
 
       ...fields.extract(entry, entryIdNode),
       ...mentions.extract.logEntry(entry, entryIdNode),

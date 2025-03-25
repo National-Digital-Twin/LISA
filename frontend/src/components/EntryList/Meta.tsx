@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { ReactElement, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Grid from '@mui/material/Grid2';
 import { Button, Popover, Typography } from '@mui/material';
@@ -11,7 +11,17 @@ import WatchLaterIcon from '@mui/icons-material/WatchLater';
 import { type LogEntry } from 'common/LogEntry';
 import { Format } from '../../utils';
 
-const Meta = ({ entry, isMobile, isBelowMd }: { entry: LogEntry; isMobile: boolean, isBelowMd: boolean }) => {
+const Meta = ({
+  entry,
+  isMobile,
+  isBelowMd,
+  metaItems = undefined
+}: {
+  entry: LogEntry;
+  isMobile: boolean;
+  isBelowMd: boolean;
+  metaItems?: ReactElement[];
+}) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const openUser = Boolean(anchorEl);
 
@@ -19,12 +29,21 @@ const Meta = ({ entry, isMobile, isBelowMd }: { entry: LogEntry; isMobile: boole
     'This entry is only held offline. It will be synchronised when you connect to a network.';
   const prefix = entry.offline ? 'OFF-' : '#';
 
+  const hasMetaItems = Array.isArray(metaItems) && metaItems.length > 0;
+
   return (
-    <Grid container wrap="nowrap" width="100%" paddingX={2} paddingY={1} gap={4}>
+    <Grid
+      container
+      wrap="nowrap"
+      width="100%"
+      paddingX={hasMetaItems && isMobile ? 1 : 2}
+      paddingY={1}
+      gap={hasMetaItems && isMobile ? 1 : 4}
+    >
       <Grid
         component="div"
         sx={{ display: 'flex', alignItems: 'center' }}
-        size={{ xs: 2, md: 3 }}
+        size="auto"
         title={entry.offline ? OFFLINE_MESSAGE : ''}
       >
         <Typography
@@ -34,7 +53,7 @@ const Meta = ({ entry, isMobile, isBelowMd }: { entry: LogEntry; isMobile: boole
           sx={{ color: 'white !important' }}
         >
           {prefix}
-          {Format.entry.index(entry)}
+          {entry.sequence?.toString()}
         </Typography>
       </Grid>
       <Grid display="flex" flexDirection="row" alignItems="center" gap={1} size="grow">
@@ -100,6 +119,11 @@ const Meta = ({ entry, isMobile, isBelowMd }: { entry: LogEntry; isMobile: boole
           </Grid>
         </>
       )}
+      {metaItems?.map((item) => (
+        <Grid key={item.key} display="flex" alignItems="center" size="auto">
+          {item}
+        </Grid>
+      ))}
     </Grid>
   );
 };

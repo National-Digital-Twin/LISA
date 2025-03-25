@@ -1,0 +1,33 @@
+version: '3'
+services:
+  zookeeper:
+    container_name: lisa-zookeeper
+    image: bitnami/zookeeper:latest
+    ports:
+      - '2181:2181'
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+  kafka:
+    container_name: lisa-kafka
+    image: 'bitnami/kafka:latest'
+    depends_on:
+      - zookeeper
+    ports:
+      - '9092:9092'
+    volumes:
+      - ./kafka/server.properties:/bitnami/kafka/config/server.properties
+    environment:
+      - BITNAMI_DEBUG=true
+  secure-agent-graph:
+    container_name: lisa-sag
+    depends_on:
+      - kafka
+    environment:
+      JAVA_OPTIONS: "-XX:MaxRAMPercentage=40.0"
+      JWKS_URL: "disabled"
+    command:
+      - --config
+      - /fuseki/config/config.ttl
+    image: lisa/secure-agent-graph
+    ports:
+      - 3030:3030
