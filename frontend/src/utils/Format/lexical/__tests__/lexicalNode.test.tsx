@@ -5,7 +5,7 @@ import { Key, Node } from '../types';
 jest.mock('../paragraph', () => ({
   paragraph: (node: Node, key: Key) => (
     <div data-testid="paragraph" key={key}>
-      {node.text || 'Paragraph'}
+      {node.text ?? 'Paragraph'}
     </div>
   )
 }));

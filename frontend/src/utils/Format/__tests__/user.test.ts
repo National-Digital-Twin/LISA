@@ -15,7 +15,7 @@ jest.mock('../pretty', () => ({
 
 describe('user', () => {
   it('should return an empty string when no user object is provided', () => {
-    expect(user(undefined)).toBe('');
+    expect(user()).toBe('');
   });
 
   it('should return displayName when provided on the user object', () => {
@@ -31,7 +31,7 @@ describe('user', () => {
 
 describe('userInitials', () => {
   it('should return an empty string when no user object is provided', () => {
-    expect(userInitials(undefined)).toBe('');
+    expect(userInitials()).toBe('');
   });
 
   it('should return initials based on displayName when provided', () => {
