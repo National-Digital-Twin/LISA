@@ -1,6 +1,6 @@
 # License  
 
-**Repository:** `LISA`
+**Repository:** `LISA`  
 **Description:** `Defines the licensing terms for the source code in this repository.`  
 **SPDX-License-Identifier:** `Apache-2.0`  
 
