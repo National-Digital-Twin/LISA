@@ -1,7 +1,8 @@
 // Global imports
-import { MouseEvent, ReactElement, useEffect, useMemo, useRef } from 'react';
-import { useLocation } from 'react-router-dom';
-import { Box, Divider, Paper, Typography } from '@mui/material';
+import { MouseEvent, ReactElement, useEffect, useMemo, useRef, useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { Box, Button, Divider, Grid2 as Grid, Paper, Popover, Typography } from '@mui/material';
+import PersonIcon from '@mui/icons-material/Person';
 
 // Local imports
 import { type LogEntry } from 'common/LogEntry';
@@ -32,9 +33,12 @@ const EntryItem = ({
   metaItems = undefined
 }: Props) => {
   const { isMobile, isBelowMd } = useResponsive();
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const openUser = Boolean(anchorEl);
   const { hash } = useLocation();
   const divRef = useRef<HTMLDivElement>(null);
   const { id, offline } = entry;
+  const prefix = entry.offline ? 'OFF-' : '#';
   const modifiers = useMemo(() => {
     const arr = [offline ? 'offline' : ''];
     if (hash === `#${id}`) {
@@ -58,10 +62,59 @@ const EntryItem = ({
       </div>
       {isMobile && (
         <>
-          <Box paddingX={2} paddingY={0.5}>
-            <Typography variant="subtitle2" fontStyle="italic">
-              {Format.date(entry.dateTime)} @ {Format.time(entry.dateTime)}
-            </Typography>
+          <Box display="flex" alignItems="center" gap={1}>
+            <Button
+              variant="text"
+              sx={{ color: 'primary.main', fontSize: '0.875rem', textTransform:'none', minWidth: 'unset', '& .MuiButton-startIcon': {
+                marginRight: 0.5,
+                svg: {
+                  fontSize: '1rem',
+                  color: 'primary.main',
+                }
+              }  }}
+              onClick={(event) => setAnchorEl(event.currentTarget)}
+              startIcon={<PersonIcon />}
+            >
+              {Format.user(entry.author)}
+            </Button>
+            <Popover
+              open={openUser}
+              anchorEl={anchorEl}
+              onClose={() => setAnchorEl(null)}
+              anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+              slotProps={{
+                paper: {
+                  sx: { padding: '1rem' }
+                }
+              }}
+            >
+              <Typography fontSize="1.15rem">{Format.user(entry.author)}</Typography>
+            </Popover>
+            <Grid
+              component="div"
+              sx={{ display: 'flex', alignItems: 'center', marginLeft:'auto', pr:1.5 }}
+              size={{ xs: 2, md: 3 }}
+              title={entry.offline ? 'Offline entry' : ''}
+            >
+              <Typography
+                component={Link}
+                to={`/logbook/${entry.incidentId}#${entry.id}`}
+                variant="body2"
+                sx={{
+                  color: 'primary.main',
+                  textDecoration: 'none',
+                  '&:visited': {
+                    color: 'primary.main',
+                  },
+                  '&:hover': {
+                    textDecoration: 'underline',
+                  }
+                }}
+              >
+                {/* SH replace this with prefix */}
+                {prefix}{entry.sequence}
+              </Typography>
+            </Grid>
           </Box>
           <Divider />
         </>
