@@ -1,10 +1,13 @@
 import { ReactNode } from 'react';
 import { NavigateFunction } from 'react-router-dom';
+import PersonIcon from '@mui/icons-material/Person';
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+import AccessTimeFilledIcon from '@mui/icons-material/AccessTimeFilled';
 
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { type Notification, UserMentionNotification } from 'common/Notification';
-import { type LogEntry } from 'common/LogEntry';
-import { Format, Icons } from '../../utils';
+import { Box, Typography } from '@mui/material';
+import { Format } from '../../utils';
 
 type Handler = {
   title: string;
@@ -24,24 +27,32 @@ function userMention(notification: Notification, navigate: NavigateFunction): Ha
     title: "You've been mentioned in a Log Entry",
     Content: (
       <>
-        <span className="user-mention-name">
-          <span>{`#${(entry as LogEntry).sequence} - `}</span>
-          <span>{(entry.content.text ?? '').substring(0, 100)}</span>
-        </span>
-        <span className="user-mention-info">
-          <span>
-            <Icons.Person />
-            {Format.user(entry.author)}
-          </span>
-          <span>
-            <Icons.Calendar />
-            {Format.date(entry.dateTime)}
-          </span>
-          <span>
-            <Icons.Clock />
-            {Format.time(entry.dateTime)}
-          </span>
-        </span>
+        <Box>
+          <Typography component="span" variant="body1">{`#${entry.sequence} - `}</Typography>
+          <Typography component="span" variant="body1">
+            {(entry.content.text ?? '').substring(0, 100)}
+          </Typography>
+        </Box>
+        <Box display="flex" flexDirection="row" gap={2} alignItems="center">
+          <Box display="flex" gap={1} alignItems="center">
+            <PersonIcon fontSize="small" />
+            <Typography fontSize="small" variant="body1">
+              Robert Sinclair{Format.user(entry.author)}
+            </Typography>
+          </Box>
+          <Box display="flex" gap={1} alignItems="center">
+            <CalendarMonthIcon fontSize="small" />
+            <Typography fontSize="small" variant="body1">
+              {Format.date(entry.dateTime)}
+            </Typography>
+          </Box>
+          <Box display="flex" gap={1} alignItems="center">
+            <AccessTimeFilledIcon fontSize="small" />
+            <Typography fontSize="small" variant="body1">
+              {Format.time(entry.dateTime)}
+            </Typography>
+          </Box>
+        </Box>
       </>
     ),
     clickHandler: (item) => {

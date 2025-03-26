@@ -1,24 +1,24 @@
 import { useEffect, useState } from 'react';
 
 import { type Notification } from 'common/Notification';
-import { Badge, IconButton } from '@mui/material';
+import { Badge, Box, IconButton, Popover } from '@mui/material';
+import NotificationsNoneOutlinedIcon from '@mui/icons-material/NotificationsNoneOutlined';
 import NotificationsIcon from '@mui/icons-material/Notifications';
+import CloseIcon from '@mui/icons-material/Close';
 import NotificationItem from './NotificationItem';
-import { Icons, bem } from '../../utils';
-import { useAuth, useNotifications, useOutsideClick, useReadNotification } from '../../hooks';
+import { bem } from '../../utils';
+import { useAuth, useNotifications, useReadNotification } from '../../hooks';
 import useMessaging from '../../hooks/useMessaging';
+import { useResponsive } from '../../hooks/useResponsiveHook';
 
 export default function NotificationsMenu() {
-  const [expanded, setExpanded] = useState<boolean>(false);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const expanded = Boolean(anchorEl);
 
   const { notifications, invalidate } = useNotifications();
   const readNotification = useReadNotification();
   const { user } = useAuth();
   const hasNewNotifications = useMessaging('NewNotification', user?.current?.username);
-
-  const containerRef = useOutsideClick<HTMLDivElement>(() => {
-    setExpanded(false);
-  });
 
   useEffect(() => {
     if (!hasNewNotifications) {
@@ -27,12 +27,8 @@ export default function NotificationsMenu() {
     invalidate();
   }, [hasNewNotifications, invalidate]);
 
-  const onMenuBtnClick = () => {
-    setExpanded((prev) => !prev);
-  };
-
   const onItemClick = (notification: Notification) => {
-    setExpanded(false);
+    setAnchorEl(null);
     if (!notification.read) {
       readNotification.mutate(notification.id);
     }
@@ -41,23 +37,56 @@ export default function NotificationsMenu() {
   const unreadCount = notifications?.filter((n) => !n.read).length ?? 0;
   const classes = bem('alerts');
 
+  const { isMobile } = useResponsive();
+
   return (
-    <div ref={containerRef} className={classes()}>
-      {!expanded && (
-        <IconButton type="button" onClick={onMenuBtnClick} disableFocusRipple disableRipple>
-          <Badge badgeContent={unreadCount} color="error" overlap="circular" max={99}>
-            <NotificationsIcon sx={{ color: 'text.primary' }} />
-          </Badge>
-        </IconButton>
-      )}
-      {expanded && (
-        <div className={classes('menu')}>
-          <div className={classes('menu-title')}>
+    <div className={classes()}>
+      <IconButton type="button" onClick={(event) => setAnchorEl(event.currentTarget)}>
+        <Badge badgeContent={unreadCount} color="error" overlap="circular" max={99}>
+          {!expanded ? (
+            <NotificationsNoneOutlinedIcon sx={{ color: 'white' }} />
+          ) : (
+            <NotificationsIcon sx={{ color: 'accent.main' }} />
+          )}
+        </Badge>
+      </IconButton>
+      <Popover
+        anchorEl={anchorEl}
+        onClose={() => setAnchorEl(null)}
+        open={expanded}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        transformOrigin={{
+          vertical: -1,
+          horizontal: 'right'
+        }}
+        slotProps={{
+          paper: {
+            sx: {
+              minWidth: isMobile ? 'auto' : '480px',
+              maxWidth: isMobile ? 'auto' : '480px',
+              maxHeight: '600px'
+            }
+          }
+        }}
+      >
+        <Box className={classes('menu')}>
+          <Box
+            display="flex"
+            justifyContent="space-between"
+            flexDirection="row"
+            width="100%"
+            alignItems="center"
+            borderBottom="1px solid"
+            paddingX={1}
+            paddingY={1}
+            borderColor="border.main"
+          >
             <span>Notifications</span>
-            <IconButton className={classes('menu-close')} onClick={() => setExpanded(false)}>
-              <Icons.Close />
+            <IconButton onClick={() => setAnchorEl(null)}>
+              <CloseIcon />
             </IconButton>
-          </div>
+          </Box>
+
           <div className={classes('menu-list')}>
             {notifications?.length === 0 && (
               <span className={classes('empty')}>No notifications</span>
@@ -70,8 +99,8 @@ export default function NotificationsMenu() {
               />
             ))}
           </div>
-        </div>
-      )}
+        </Box>
+      </Popover>
     </div>
   );
 }

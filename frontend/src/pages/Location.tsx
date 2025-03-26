@@ -26,7 +26,11 @@ const Location = () => {
 
   return (
     <PageWrapper>
-      <PageTitle title="Incident location" />
+      <PageTitle
+        title={incident?.type ?? ''}
+        subtitle={incident?.name ?? ''}
+        stage={incident.stage}
+      />
       <IncidentMap logEntries={logEntries} highlightId={highlighted?.id} />
     </PageWrapper>
   );

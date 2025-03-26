@@ -57,7 +57,11 @@ const Overview = () => {
   return (
     <PageWrapper>
       <>
-        <PageTitle title="Incident overview">
+        <PageTitle
+          title={incident?.type ?? ''}
+          subtitle={incident?.name ?? ''}
+          stage={incident.stage}
+        >
           <Box display="flex" justifyContent="end" gap={2}>
             <Button
               type="button"

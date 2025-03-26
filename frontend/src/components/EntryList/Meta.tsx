@@ -115,7 +115,7 @@ const Meta = ({
       <Grid
         component="div"
         sx={{ display: 'flex', alignItems: 'center' }}
-        size={{ xs: 2, md: 3 }}
+        size="auto"
         title={entry.offline ? 'Offline entry' : ''}
       >
         <Typography

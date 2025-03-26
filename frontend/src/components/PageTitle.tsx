@@ -1,12 +1,16 @@
 import { Box, Typography } from '@mui/material';
 import { PropsWithChildren } from 'react';
+import { Incident } from 'common/Incident';
+import Stage from './Stage';
+import { Format } from '../utils';
 
 type Props = PropsWithChildren & {
   title: string;
   subtitle?: string;
+  stage?: Incident['stage'];
 };
 
-const PageTitle = ({ title, subtitle = undefined, children }: Props) => (
+const PageTitle = ({ title, subtitle = undefined, stage = undefined, children }: Props) => (
   <Box
     className="page-title"
     style={{ alignItems: 'center' }}
@@ -18,8 +22,8 @@ const PageTitle = ({ title, subtitle = undefined, children }: Props) => (
     gap="1rem"
     width="100%"
   >
-    <Box>
-      <Typography fontSize="2rem" variant="h1" className="title" fontWeight={400}>
+    <Box display="flex" flexDirection="column" gap={1}>
+      <Typography fontSize="1.5rem" variant="h1" className="title" fontWeight={400}>
         {title}
       </Typography>
       {subtitle && (
@@ -27,7 +31,19 @@ const PageTitle = ({ title, subtitle = undefined, children }: Props) => (
           {subtitle}
         </Typography>
       )}
+
+      {stage && (
+        <Box>
+          <Stage
+            label={Format.incident.stage(stage).toUpperCase()}
+            stage={stage}
+            size="medium"
+            width="auto"
+          />
+        </Box>
+      )}
     </Box>
+
     {children && (
       <Box sx={{ width: { xs: '100%', sm: 'auto' } }} displayPrint="none">
         {children}

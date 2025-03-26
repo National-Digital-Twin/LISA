@@ -1,7 +1,9 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  annotations: {}
+  annotations:
+    reloader.stakater.com/auto: "true"
+
   name: lisa-backend
 spec:
   replicas: 1
