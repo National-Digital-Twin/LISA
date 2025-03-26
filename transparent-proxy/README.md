@@ -23,3 +23,6 @@ It can be run for example as:
 ```bash
 docker run -ti -p 5013:80 --env OS_RASTER_API_KEY=... lisa/transparent-proxy:latest
 ```
+
+© Crown Copyright 2025. This work has been developed by the National Digital Twin Programme and is legally attributed to the Department for Business and Trade (UK) as the governing entity.  
+Licensed under the Open Government Licence v3.0.  

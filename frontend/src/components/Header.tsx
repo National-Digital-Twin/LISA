@@ -20,10 +20,10 @@ import AccountBoxOutlinedIcon from '@mui/icons-material/AccountBoxOutlined';
 import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
 
 // Local imports
-// eslint-disable-next-line import/no-unresolved
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { User } from 'common/User';
+// eslint-disable-next-line import/no-webpack-loader-syntax
 import LisaLogo from '../assets/images/L!SA_logo.svg';
-// eslint-disable-next-line import/no-relative-packages
 import { useAuth, useIncidents } from '../hooks';
 import { useResponsive } from '../hooks/useResponsiveHook';
 import { NotificationsMenu } from './NotificationsMenu';
@@ -348,3 +348,7 @@ const Header = () => {
 };
 
 export default Header;
+
+// SPDX-License-Identifier: Apache-2.0
+// © Crown Copyright 2025. This work has been developed by the National Digital Twin Programme
+// and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
