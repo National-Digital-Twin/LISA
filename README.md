@@ -1,3 +1,11 @@
+# Project Overview
+
+LISA (Local Incident Services Application) is a web-based crisis and incident management application designed to support real-time decision-making, structured logging, and cross-agency collaboration during emergency incidents. It allows teams to digitally manage incidents, capture critical information, and securely share updates across stakeholders, improving coordination and response times.
+
+# Repository Description
+
+This repository contains both the frontend and backend of LISA, along with a transparent proxy that will mask sensitive requests.
+
 # Configuring
 
 1. Install docker and nodejs (version 20+)
