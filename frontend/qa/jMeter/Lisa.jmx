@@ -87,8 +87,8 @@
       </CacheManager>
       <hashTree/>
       <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Thread Group" enabled="true">
-        <stringProp name="ThreadGroup.num_threads">10</stringProp>
-        <stringProp name="ThreadGroup.ramp_time">10</stringProp>
+        <stringProp name="ThreadGroup.num_threads">1</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">1</stringProp>
         <stringProp name="ThreadGroup.duration">0</stringProp>
         <stringProp name="ThreadGroup.delay">0</stringProp>
         <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
@@ -283,13 +283,13 @@
             </ResponseAssertion>
             <hashTree/>
           </hashTree>
-          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="POST incident" enabled="true">
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="POST Incident" enabled="true">
             <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
             <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
               <collectionProp name="Arguments.arguments">
                 <elementProp name="" elementType="HTTPArgument">
                   <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                  <stringProp name="Argument.value">{&quot;stage&quot;:&quot;Monitoring&quot;,&quot;referrer&quot;:{&quot;organisation&quot;:&quot;Test organisation&quot;,&quot;email&quot;:&quot;tester@informed.com&quot;,&quot;name&quot;:&quot;Performance Test Incident&quot;,&quot;telephone&quot;:&quot;07645122511&quot;,&quot;supportRequested&quot;:&quot;No&quot;},&quot;startedAt&quot;:&quot;2025-03-24T15:55:00.000Z&quot;,&quot;type&quot;:&quot;HostageTaking&quot;,&quot;name&quot;:&quot;Test User&quot;}</stringProp>
+                  <stringProp name="Argument.value">{&quot;stage&quot;:&quot;Monitoring&quot;,&quot;referrer&quot;:{&quot;name&quot;:&quot;Test Referrer&quot;,&quot;organisation&quot;:&quot;Test Organisation&quot;,&quot;telephone&quot;:&quot;07716661665&quot;,&quot;email&quot;:&quot;test@informed.com&quot;,&quot;supportRequested&quot;:&quot;No&quot;},&quot;type&quot;:&quot;SocialCareFailure&quot;,&quot;startedAt&quot;: &quot;${__time(yyyy-MM-dd&apos;T&apos;HH:mm:ss.SSS&apos;Z&apos;)}&quot;,&quot;name&quot;:&quot;Performance Test Incident&quot;}</stringProp>
                   <stringProp name="Argument.metadata">=</stringProp>
                 </elementProp>
               </collectionProp>
