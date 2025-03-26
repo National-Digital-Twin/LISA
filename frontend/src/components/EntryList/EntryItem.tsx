@@ -111,7 +111,6 @@ const EntryItem = ({
                   }
                 }}
               >
-                {/* SH replace this with prefix */}
                 {prefix}{entry.sequence}
               </Typography>
             </Grid>
