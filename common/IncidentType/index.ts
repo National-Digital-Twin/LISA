@@ -32,3 +32,7 @@ export function addIncidentSuffix(type: IncidentType): string {
 export function removeIncidentSuffix(value: string): IncidentType {
   return value.substring(0, value.indexOf(SUFFIX)) as IncidentType;
 }
+
+// SPDX-License-Identifier: Apache-2.0
+// © Crown Copyright 2025. This work has been developed by the National Digital Twin Programme
+// and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
