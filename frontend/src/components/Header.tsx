@@ -37,11 +37,9 @@ const HEADER_ITEMS = [
       { to: 'logbook', label: 'LOG' },
       { to: 'incident', label: 'OVERVIEW' },
       { to: 'files', label: 'FILES' },
-      { to: 'location', label: 'LOCATION' },
-      { to: 'tasking', label: 'TASKING' }
+      { to: 'location', label: 'LOCATION' }
     ]
-  },
-  { to: 'exercises', label: 'EXERCISES' }
+  }
 ];
 
 type NavigationItemsProps = {
