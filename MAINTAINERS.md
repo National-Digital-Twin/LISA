@@ -1,6 +1,6 @@
 # Maintainers  
  
-**Repository:** `[repository-name]`  
+**Repository:** `LISA`  
 **Description:** `Lists maintainers responsible for reviewing issues, security, and documentation updates.`  
 **SPDX-License-Identifier:** OGL-UK-3.0
  
