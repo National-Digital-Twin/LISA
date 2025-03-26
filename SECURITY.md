@@ -52,7 +52,7 @@ or known security flaws in dependencies), we encourage you to report it.
 Out of scope:  
 - Issues related to third-party services or software **not used within NDTP repositories**.  
 - Vulnerabilities in user environments that are unrelated to this repository.  
-- Unsolicited security testing or penetration testing without NDTP’s explicit permission.  
+- Unsolicited security testing or penetration testing without NDTP’s explicit permission.
 
 ---
 

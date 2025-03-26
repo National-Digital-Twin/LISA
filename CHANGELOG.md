@@ -13,20 +13,7 @@ This project follows **Semantic Versioning (SemVer)** ([semver.org](https://semv
 
  ---
 
- ## [Unreleased]
-
- ### Added
- - Placeholder for upcoming features and enhancements.
-
- ### Fixed
- - Placeholder for bug fixes and security updates.
-
- ### Changed
- - Placeholder for changes to existing functionality.
-
- ---
-
- ## [0.90.0] – YYYY-MM-DD
+ ## [0.90.0] – 2025-03-28
 
  ### Initial Public Release (Pre-Stable)
 
@@ -35,30 +22,10 @@ This project follows **Semantic Versioning (SemVer)** ([semver.org](https://semv
 
  #### Initial Features
  - Key functionality for [feature/module name].
- - Implementation of [API/component name].
- - Documentation and onboarding guidance.
 
  #### Known Limitations
  - Some components are subject to change before `1.0.0`.
  - APIs may evolve based on partner feedback and internal testing.
-
- ---
-
- ## [0.90.1] – YYYY-MM-DD
-
- ### Fixed
- - Security patch addressing [issue].
- - Minor bug fix in [module].
-
- ---
-
- ## [0.91.0] – YYYY-MM-DD
-
- ### Added
- - New feature: [Feature name].
-
- ### Changed
- - Adjusted API contracts for [component].
 
  ---
 
