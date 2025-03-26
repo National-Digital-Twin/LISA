@@ -88,8 +88,8 @@
       </CacheManager>
       <hashTree/>
       <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Thread Group" enabled="true">
-        <stringProp name="ThreadGroup.num_threads">1</stringProp>
-        <stringProp name="ThreadGroup.ramp_time">1</stringProp>
+        <stringProp name="ThreadGroup.num_threads">100</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">10</stringProp>
         <stringProp name="ThreadGroup.duration">0</stringProp>
         <stringProp name="ThreadGroup.delay">0</stringProp>
         <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
@@ -389,7 +389,7 @@
               <collectionProp name="Arguments.arguments">
                 <elementProp name="" elementType="HTTPArgument">
                   <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                  <stringProp name="Argument.value">{&quot;incidentId&quot;:&quot;${INCIDENT_ID}&quot;,&quot;sequence&quot;:&quot;2603084316&quot;,&quot;type&quot;:&quot;General&quot;,&quot;content&quot;:{&quot;json&quot;:&quot;{\&quot;root\&quot;:{\&quot;children\&quot;:[{\&quot;children\&quot;:[{\&quot;detail\&quot;:0,\&quot;format\&quot;:0,\&quot;mode\&quot;:\&quot;normal\&quot;,\&quot;style\&quot;:\&quot;\&quot;,\&quot;text\&quot;:\&quot;Performance test log entry\&quot;,\&quot;type\&quot;:\&quot;text\&quot;,\&quot;version\&quot;:1}],\&quot;direction\&quot;:\&quot;ltr\&quot;,\&quot;format\&quot;:\&quot;\&quot;,\&quot;indent\&quot;:0,\&quot;type\&quot;:\&quot;paragraph\&quot;,\&quot;version\&quot;:1,\&quot;textFormat\&quot;:0,\&quot;textStyle\&quot;:\&quot;\&quot;}],\&quot;direction\&quot;:\&quot;ltr\&quot;,\&quot;format\&quot;:\&quot;\&quot;,\&quot;indent\&quot;:0,\&quot;type\&quot;:\&quot;root\&quot;,\&quot;version\&quot;:1}}&quot;,&quot;text&quot;:&quot;Performance test log entry&quot;},&quot;fields&quot;:[],&quot;dateTime&quot;:&quot;${__time(yyyy-MM-dd&apos;T&apos;HH:mm:ss.SSS&apos;Z&apos;)}&quot;}</stringProp>
+                  <stringProp name="Argument.value">{&quot;incidentId&quot;:&quot;${INCIDENT_ID}&quot;,&quot;sequence&quot;:&quot;${__time(ddMMHHmmss)}&quot;,&quot;type&quot;:&quot;General&quot;,&quot;content&quot;:{&quot;json&quot;:&quot;{\&quot;root\&quot;:{\&quot;children\&quot;:[{\&quot;children\&quot;:[{\&quot;detail\&quot;:0,\&quot;format\&quot;:0,\&quot;mode\&quot;:\&quot;normal\&quot;,\&quot;style\&quot;:\&quot;\&quot;,\&quot;text\&quot;:\&quot;Performance test log entry\&quot;,\&quot;type\&quot;:\&quot;text\&quot;,\&quot;version\&quot;:1}],\&quot;direction\&quot;:\&quot;ltr\&quot;,\&quot;format\&quot;:\&quot;\&quot;,\&quot;indent\&quot;:0,\&quot;type\&quot;:\&quot;paragraph\&quot;,\&quot;version\&quot;:1,\&quot;textFormat\&quot;:0,\&quot;textStyle\&quot;:\&quot;\&quot;}],\&quot;direction\&quot;:\&quot;ltr\&quot;,\&quot;format\&quot;:\&quot;\&quot;,\&quot;indent\&quot;:0,\&quot;type\&quot;:\&quot;root\&quot;,\&quot;version\&quot;:1}}&quot;,&quot;text&quot;:&quot;Performance test log entry&quot;},&quot;fields&quot;:[],&quot;dateTime&quot;:&quot;${__time(yyyy-MM-dd&apos;T&apos;HH:mm:ss.SSS&apos;Z&apos;)}&quot;}</stringProp>
                   <stringProp name="Argument.metadata">=</stringProp>
                 </elementProp>
               </collectionProp>
@@ -511,6 +511,61 @@
             <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion" enabled="true">
               <collectionProp name="Asserion.test_strings">
                 <stringProp name="49586">200</stringProp>
+                <stringProp name="50551">304</stringProp>
+              </collectionProp>
+              <stringProp name="Assertion.custom_message"></stringProp>
+              <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+              <boolProp name="Assertion.assume_success">false</boolProp>
+              <intProp name="Assertion.test_type">33</intProp>
+            </ResponseAssertion>
+            <hashTree/>
+            <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="Constant Timer" enabled="true">
+              <stringProp name="ConstantTimer.delay">5000</stringProp>
+            </ConstantTimer>
+            <hashTree/>
+          </hashTree>
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="POST Second Incident Log Entry" enabled="true">
+            <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+            <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+              <collectionProp name="Arguments.arguments">
+                <elementProp name="" elementType="HTTPArgument">
+                  <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                  <stringProp name="Argument.value">{&quot;incidentId&quot;:&quot;${INCIDENT_ID}&quot;,&quot;sequence&quot;:&quot;${__time(ddMMHHmmss)}&quot;,&quot;type&quot;:&quot;General&quot;,&quot;content&quot;:{&quot;json&quot;:&quot;{\&quot;root\&quot;:{\&quot;children\&quot;:[{\&quot;children\&quot;:[{\&quot;detail\&quot;:0,\&quot;format\&quot;:0,\&quot;mode\&quot;:\&quot;normal\&quot;,\&quot;style\&quot;:\&quot;\&quot;,\&quot;text\&quot;:\&quot;Performance test log entry 2\&quot;,\&quot;type\&quot;:\&quot;text\&quot;,\&quot;version\&quot;:1}],\&quot;direction\&quot;:\&quot;ltr\&quot;,\&quot;format\&quot;:\&quot;\&quot;,\&quot;indent\&quot;:0,\&quot;type\&quot;:\&quot;paragraph\&quot;,\&quot;version\&quot;:1,\&quot;textFormat\&quot;:0,\&quot;textStyle\&quot;:\&quot;\&quot;}],\&quot;direction\&quot;:\&quot;ltr\&quot;,\&quot;format\&quot;:\&quot;\&quot;,\&quot;indent\&quot;:0,\&quot;type\&quot;:\&quot;root\&quot;,\&quot;version\&quot;:1}}&quot;,&quot;text&quot;:&quot;Performance test log entry&quot;},&quot;fields&quot;:[],&quot;dateTime&quot;:&quot;${__time(yyyy-MM-dd&apos;T&apos;HH:mm:ss.SSS&apos;Z&apos;)}&quot;}</stringProp>
+                  <stringProp name="Argument.metadata">=</stringProp>
+                </elementProp>
+              </collectionProp>
+            </elementProp>
+            <stringProp name="HTTPSampler.domain">${BASE_URL}</stringProp>
+            <stringProp name="HTTPSampler.port"></stringProp>
+            <stringProp name="HTTPSampler.protocol">https</stringProp>
+            <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+            <stringProp name="HTTPSampler.path">api/incident/${INCIDENT_ID}/logEntry</stringProp>
+            <stringProp name="HTTPSampler.method">POST</stringProp>
+            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+            <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+            <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+            <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+            <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+            <stringProp name="HTTPSampler.response_timeout"></stringProp>
+          </HTTPSamplerProxy>
+          <hashTree>
+            <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header manager" enabled="true">
+              <collectionProp name="HeaderManager.headers">
+                <elementProp name="Content-Type" elementType="Header">
+                  <stringProp name="Header.name">Content-Type</stringProp>
+                  <stringProp name="Header.value">application/json</stringProp>
+                </elementProp>
+                <elementProp name="Accept" elementType="Header">
+                  <stringProp name="Header.name">Accept</stringProp>
+                  <stringProp name="Header.value">*/*</stringProp>
+                </elementProp>
+              </collectionProp>
+            </HeaderManager>
+            <hashTree/>
+            <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion" enabled="true">
+              <collectionProp name="Asserion.test_strings">
+                <stringProp name="49586">200</stringProp>
               </collectionProp>
               <stringProp name="Assertion.custom_message"></stringProp>
               <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
@@ -518,8 +573,52 @@
               <intProp name="Assertion.test_type">1</intProp>
             </ResponseAssertion>
             <hashTree/>
+          </hashTree>
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="GET Incident Log Entries (following second log entry creation)" enabled="true">
+            <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+              <collectionProp name="Arguments.arguments"/>
+            </elementProp>
+            <stringProp name="HTTPSampler.domain">${BASE_URL}</stringProp>
+            <stringProp name="HTTPSampler.port"></stringProp>
+            <stringProp name="HTTPSampler.protocol">https</stringProp>
+            <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+            <stringProp name="HTTPSampler.path">api/incident/${INCIDENT_ID}/logEntries</stringProp>
+            <stringProp name="HTTPSampler.method">GET</stringProp>
+            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+            <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+            <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+            <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+            <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+            <stringProp name="HTTPSampler.response_timeout"></stringProp>
+          </HTTPSamplerProxy>
+          <hashTree>
+            <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header manager" enabled="true">
+              <collectionProp name="HeaderManager.headers">
+                <elementProp name="Content-Type" elementType="Header">
+                  <stringProp name="Header.name">Content-Type</stringProp>
+                  <stringProp name="Header.value">application/json</stringProp>
+                </elementProp>
+                <elementProp name="Accept" elementType="Header">
+                  <stringProp name="Header.name">Accept</stringProp>
+                  <stringProp name="Header.value">*/*</stringProp>
+                </elementProp>
+              </collectionProp>
+            </HeaderManager>
+            <hashTree/>
+            <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion" enabled="true">
+              <collectionProp name="Asserion.test_strings">
+                <stringProp name="49586">200</stringProp>
+                <stringProp name="50551">304</stringProp>
+              </collectionProp>
+              <stringProp name="Assertion.custom_message"></stringProp>
+              <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+              <boolProp name="Assertion.assume_success">false</boolProp>
+              <intProp name="Assertion.test_type">33</intProp>
+            </ResponseAssertion>
+            <hashTree/>
             <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="Constant Timer" enabled="true">
-              <stringProp name="ConstantTimer.delay">3000</stringProp>
+              <stringProp name="ConstantTimer.delay">5000</stringProp>
             </ConstantTimer>
             <hashTree/>
           </hashTree>
