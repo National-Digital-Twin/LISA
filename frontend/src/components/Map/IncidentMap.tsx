@@ -1,7 +1,7 @@
 // Global imports
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { FitBoundsOptions } from 'maplibre-gl';
-import { MouseEvent, useEffect, useMemo, useRef, useState } from 'react';
+import { MouseEvent, ReactElement, useEffect, useMemo, useRef, useState } from 'react';
 import Map, { Marker, MapRef, NavigationControl, LngLatBoundsLike } from 'react-map-gl/maplibre';
 import { useNavigate } from 'react-router-dom';
 import CloseIcon from '@mui/icons-material/Close';
@@ -18,6 +18,7 @@ import { bem, Icons, MapUtils } from '../../utils';
 import { type FullLocationType, type SpanType } from '../../utils/types';
 import EntryItem from '../EntryList/EntryItem';
 import { INITIAL_VIEW_STATE, MAP_BOUNDS, MAP_STYLE } from './config';
+import { useResponsive } from '../../hooks/useResponsiveHook';
 
 type LogEntryMarkerType = {
   id: string;
@@ -30,6 +31,7 @@ interface Props {
   marker: LogEntryMarkerType;
   onClick: (marker: LogEntryMarkerType) => void;
 }
+
 function LogEntryMarker({ marker, onClick }: Readonly<Props>) {
   const classes = bem('map-marker', marker.highlighted ? 'highlighted' : '', marker.colour);
   return (
@@ -51,6 +53,7 @@ interface MapProps {
   highlightId?: string;
 }
 export default function IncidentMap({ logEntries, highlightId = undefined }: Readonly<MapProps>) {
+  const { isMobile } = useResponsive();
   const [redrawing, setRedrawing] = useState<boolean>(false);
   const mapRef = useRef<MapRef>(null);
   const navigate = useNavigate();
@@ -212,13 +215,15 @@ export default function IncidentMap({ logEntries, highlightId = undefined }: Rea
             onContentClick={onEntryContentClick}
             onMentionClick={() => {}}
             metaItems={[
-              <IconButton key="incident-log" onClick={onVisitLog} title="See in incident log">
-                <ImportContactsIcon fontSize="small" />
-              </IconButton>,
+              !isMobile && (
+                <IconButton key="incident-log" onClick={onVisitLog} title="See in incident log">
+                  <ImportContactsIcon fontSize="small" />
+                </IconButton>
+              ),
               <IconButton key="close-info" onClick={onCloseInfo} title="Close information">
                 <CloseIcon fontSize="small" />
               </IconButton>
-            ]}
+            ].filter(Boolean) as ReactElement[]}
           />
         </Box>
       )}
