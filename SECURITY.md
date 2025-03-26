@@ -1,6 +1,6 @@
 # Security Policy  
 
-**Repository:** `[repository-name]`  
+**Repository:** `LISA`  
 **Description:** `Details the responsible disclosure process for security vulnerabilities.`  
 **SPDX-License-Identifier:** OGL-UK-3.0
 
