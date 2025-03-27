@@ -62,8 +62,8 @@ const Overview = () => {
     <PageWrapper>
       <>
         <PageTitle
-          title={Format.incident.type(incident.type) ?? ''}
-          subtitle={incident?.name ?? ''}
+          title={Format.incident.type(incident.type)}
+          subtitle={incident.name}
           stage={incident.stage}
         >
           <Box display="flex" justifyContent="end" gap={2}>
