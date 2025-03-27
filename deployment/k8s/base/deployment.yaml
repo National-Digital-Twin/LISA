@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations: {}
+  name: lisa-webapp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: lisa
+  template:
+    metadata:
+      annotations: {}
+      labels:
+        io.kompose.service: lisa
+    spec:
+      serviceAccountName: lisa-sa
+      containers:
+        - envFrom:
+               - configMapRef:
+                   name: lisa-configs
+               - secretRef:
+                   name: lisa-secrets
+          livenessProbe:
+           httpGet:
+             port: 3000
+             path: /
+           failureThreshold: 5
+           periodSeconds: 30
+           timeoutSeconds: 20
+          readinessProbe:
+            httpGet:
+              port: 3000
+              path: /
+            failureThreshold: 5
+            periodSeconds: 30
+            timeoutSeconds: 20
+          name: lisa
+          image: lisa-image:template
+          resources:
+            limits:
+              memory: "2Gi"
+            requests:
+              cpu: "0.25"
+              memory: "256Mi"
+              ephemeral-storage: "2Gi"
+          ports:
+            - containerPort: 3000
+              protocol: TCP
+      restartPolicy: Always

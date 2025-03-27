@@ -1,0 +1,488 @@
+// '_FORMS.SCSS' - IMPORTED INTO APP.SCSS
+
+@use 'colors';
+
+li.major-incident-no,
+li.major-incident-yes {
+  margin: 0 !important;
+  padding: 0 !important;
+  a,
+  button {
+    display: block;
+    width: 80% !important;
+    background-color: colors.$green !important;
+    text-align: center;
+    margin: 0 !important;
+  }
+}
+li.major-incident-no {
+  a,
+  button {
+    background-color: colors.$red-dark !important;
+  }
+}
+
+.log-form {
+  position: relative;
+  background-color: colors.$grey-light;
+  padding: 20px;
+  text-align: left;
+  h3 {
+    padding: 10px 0;
+    margin: 0 10px;
+    border-bottom: 1px solid colors.$grey-mid;
+    font-size: 1.25rem;
+  }
+  label,
+  .field-label {
+    /*
+      This isn't going to cut it.
+      There are layout issues now with date and time entry
+    */
+    > input,
+    > select,
+    > textarea,
+    > .react-select {
+      margin-top: 5px;
+      font-weight: 400;
+      font-size: 1.15rem;
+    }
+    > .log-date-time {
+      margin-top: 5px;
+      font-weight: 400;
+      input {
+        font-size: 1.15rem;
+        &::-webkit-datetime-edit-day-field:focus,
+        &::-webkit-datetime-edit-month-field:focus,
+        &::-webkit-datetime-edit-year-field:focus,
+        &::-webkit-datetime-edit-hour-field:focus,
+        &::-webkit-datetime-edit-minute-field:focus {
+          background-color: colors.$blue-dark;
+          color: colors.$white;
+          outline: none;
+        }
+      }
+    }
+    > .editor-container {
+      margin-top: 5px;
+      font-weight: 400;
+      .editor-inner .editor-input {
+        font-size: 1.15rem;
+      }
+    }
+  }
+  input,
+  select,
+  textarea {
+    background-color: colors.$white;
+    width: 100%;
+    padding: 10px;
+    color: colors.$blue-dark;
+    &.input-calendar {
+      background-image: url('/icon-calendar.svg');
+      background-repeat: no-repeat;
+      background-position: center right 15px;
+      background-size: 20px auto;
+    }
+    &.input-search {
+      background-image: url('/icon-search.svg');
+      background-repeat: no-repeat;
+      background-position: center right 5px;
+    }
+  }
+  ul li {
+    box-sizing: border-box;
+    padding: 10px;
+    display: inline-block;
+    position: relative;
+    vertical-align: top;
+    width: 50%;
+    margin-bottom: 5px;
+    margin-top: 0;
+    .optional-field {
+      margin-left: 1rem;
+      font-size: 1rem;
+      color: colors.$grey-dark;
+      &::before {
+        content: '(';
+      }
+      &::after {
+        content: ')';
+      }
+    }
+    &.full-width {
+      width: 100%;
+      padding-top: 0;
+    }
+    &.horizontalYN {
+      margin-top: 5px;
+      label {
+        display: flex;
+        flex-direction: row;
+        gap: 10px;
+        align-items: center;
+        justify-content: space-between;
+        position: relative;
+        .h-sep {
+          flex: 1;
+          height: 1px;
+          border-bottom: dotted 4px colors.$grey-mid;
+        }
+        .react-select {
+          margin-top: 0;
+          min-width: 150px;
+          width: 150px;
+          max-width: 150px;
+        }
+      }
+      .field-error {
+        text-align: right;
+        right: 10px;
+      }
+    }
+    &.indent {
+      margin-top: -30px;
+      padding: 15px 10px 10px 35px;
+      position: relative;
+      &::before {
+        content: '';
+        position: absolute;
+        left: 16px;
+        top: 0;
+        height: 28px; // middle of the label
+        width: 8px;
+        border: dotted 4px colors.$grey-mid;
+        border-width: 0 0 4px 4px;
+      }
+      .field-error {
+        left: 35px;
+      }
+    }
+    &.form-group {
+      width: 100%;
+      padding: 0;
+      border: solid 1px colors.$grey-mid;
+      margin: 10px 0;
+      ul {
+        margin: 0;
+
+        li:last-child {
+          margin-bottom: 0;
+        }
+      }
+
+      &__label {
+        width: 100%;
+        margin: 0;
+        font-weight: 700;
+        background-color: colors.$grey-mid;
+        padding: 10px;
+
+        a {
+          display: inline-block;
+          width: 100%;
+          height: 100%;
+          border-bottom: none;
+          &:hover,
+          &:focus {
+            text-decoration: none;
+            color: colors.$blue-dark;
+            outline-offset: 10px;
+          }
+        }
+
+        svg {
+          width: 12px;
+          height: auto;
+          rotate: 180deg;
+          margin-bottom: 3px;
+          margin-right: 8px;
+        }
+
+        svg.alert-icon {
+          display: none;
+        }
+
+        &:hover,
+        &:focus,
+        &:focus-within {
+          background-color: colors.$blue-light;
+          a {
+            color: colors.$blue-dark;
+          }
+        }
+      }
+
+      &__description {
+        font-style: italic;
+      }
+
+      &:not(&--open) {
+        ul li:not(.form-group__label) {
+          display: none;
+        }
+        .form-group__label {
+          svg {
+            rotate: 90deg;
+          }
+        }
+      }
+    }
+    .field-error {
+      color: colors.$red-dark;
+      position: absolute;
+      bottom: -0.45rem;
+      left: 10px;
+      font-size: 1rem;
+      display: none;
+    }
+    &.field-type--TextArea {
+      .field-error {
+        bottom: 0;
+      }
+    }
+    @media screen and (max-width: 800px) {
+      width: 100%;
+    }
+  }
+  &.login {
+    padding: 20px;
+    background-color: colors.$grey-light;
+    width: 450px;
+    @media screen and (max-width: 800px) {
+      width: 100%;
+    }
+    input {
+      display: block;
+      margin-bottom: 20px;
+    }
+  }
+  &.validation-errors {
+    ul li {
+      .field-error {
+        display: block;
+      }
+
+      &.in-error {
+        input,
+        textarea,
+        .react-select__control,
+        .editor-container,
+        .location-field {
+          border-color: colors.$red-dark;
+        }
+      }
+
+      &.form-group {
+        &:has(ul li.in-error) {
+          .form-group__label {
+            border-color: colors.$red-dark;
+            a {
+              color: colors.$red-dark;
+              &:hover,
+              &:focus {
+                color: colors.$white;
+                outline-color: colors.$red-dark;
+              }
+            }
+
+            .alert-icon {
+              display: inline-block;
+            }
+
+            &:hover,
+            &:focus,
+            &:focus-within {
+              background-color: colors.$red-dark;
+              a {
+                color: colors.$white;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  .field-error {
+    label {
+      color: colors.$red-dark;
+    }
+    input {
+      border: 2px solid colors.$red-dark;
+    }
+  }
+
+  &.readonly {
+    background-color: colors.$grey-light;
+    margin-bottom: 20px;
+    padding-bottom: 4px;
+
+    h2 {
+      padding-left: 10px;
+    }
+    ul li {
+      margin-bottom: 1.5rem;
+    }
+  }
+
+  .incident-stage {
+    min-width: unset;
+    position: absolute;
+    right: 20px;
+    top: 20px;
+  }
+}
+
+.recorder-controls {
+  visibility: hidden;
+  position: absolute;
+}
+
+.login .log-form-buttons {
+  button.button {
+    font-size: 1.6rem;
+  }
+}
+
+.highlight-gold {
+  color: colors.$gold !important;
+}
+
+.highlight-blue-dark {
+  color: colors.$blue-dark !important;
+}
+
+.highlight-blue {
+  color: colors.$blue !important;
+}
+
+.icon {
+  width: 20px;
+  height: auto;
+  margin-right: 10px;
+  position: relative;
+  top: 1px;
+}
+
+.sketch-stage {
+  position: relative;
+  border: 1px solid colors.$grey-mid;
+  background-color: colors.$white;
+  width: 100%;
+  height: 500px;
+  cursor:
+    url('/images/icon-pencil.svg') 10 10,
+    auto;
+
+  .pens {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    display: flex;
+    gap: 10px;
+    border: 0;
+  }
+  .clear {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+  }
+}
+
+.sig-outgoing {
+  background-image: url('/sig-1.svg');
+  background-repeat: no-repeat;
+  background-size: 50% auto;
+  background-position: center center;
+}
+.sig-incoming {
+  background-image: url('/sig-2.svg');
+  background-repeat: no-repeat;
+  background-size: 50% auto;
+  background-position: center center;
+}
+
+.add-entry-tab {
+  display: none;
+  &.active,
+  &--active {
+    display: block;
+  }
+}
+
+div.label-field {
+  font-weight: 400;
+}
+
+ul.label-field {
+  margin: 0;
+  li {
+    padding: 5px 0;
+    font-weight: 400;
+    &::before {
+      content: '\2022';
+      margin-right: 0.5rem;
+    }
+  }
+}
+
+.field-help {
+  display: inline-block;
+  position: relative;
+  &__btn {
+    width: 24px;
+    height: 24px;
+    border: 1px solid colors.$blue;
+    color: colors.$blue;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 1rem;
+    margin: 0 8px;
+  }
+  &__popup {
+    position: fixed;
+    background-color: white;
+    z-index: 2;
+    font-size: 0.875rem;
+    font-weight: normal;
+    padding: 12px 16px;
+    border: 1px solid colors.$blue;
+    width: 400px;
+    max-width: 400px;
+    line-height: 1rem;
+    left: calc(100vw / 2);
+    top: 150px;
+    margin-bottom: 8px;
+    margin-left: -200px;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+  }
+  &__title {
+    font-size: 1rem;
+    font-weight: 700;
+    padding-bottom: 10px;
+    border-bottom: 1px solid colors.$grey-mid;
+  }
+  &__content {
+    overflow-x: auto;
+    max-height: 360px;
+    overscroll-behavior: contain;
+    padding: 8px 0;
+    ul {
+      font-size: inherit;
+      line-height: inherit;
+      list-style-type: disc;
+      display: block;
+      margin: 1rem 0;
+      padding-left: 1.5rem;
+      li {
+        font-size: inherit;
+        line-height: inherit;
+        list-style-type: disc;
+        display: list-item;
+        width: auto;
+        margin-bottom: 5px;
+        padding: 0;
+      }
+    }
+  }
+}

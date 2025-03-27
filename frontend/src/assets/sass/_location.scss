@@ -1,0 +1,20 @@
+@use 'colors';
+
+.container--location {
+  .log-entry-list {
+    .item {
+      margin-bottom: 0;
+      max-height: 240px;
+      overflow-y: scroll;
+      overflow-x: visible;
+      overscroll-behavior: contain;
+      &--highlighted {
+        border: none;
+      }
+      &__header {
+        background-color: colors.$blue-dark;
+        padding-right: 0px;
+      }
+    }
+  }
+}

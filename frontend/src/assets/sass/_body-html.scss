@@ -1,0 +1,11 @@
+// '_BODY/HTML.SCSS' - IMPORTED INTO APP.SCSS
+
+@use 'colors';
+@use 'ndtp';
+
+body {
+  color: colors.$black;
+  font-family: ndtp.$font-family;
+  background-color: colors.$white;
+  text-rendering: optimizeLegibility;
+}

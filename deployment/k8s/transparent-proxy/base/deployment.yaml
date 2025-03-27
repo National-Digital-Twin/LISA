@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    reloader.stakater.com/auto: "true"
+  name: transparent-proxy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: lisa-transparent-proxy
+  template:
+    metadata:
+      annotations: {}
+      labels:
+        io.kompose.service: lisa-transparent-proxy
+    spec:
+      serviceAccountName: lisa-transparent-proxy-sa
+      containers:
+        - envFrom:
+               - configMapRef:
+                   name: lisa-transparent-proxy-configs
+               - secretRef:
+                   name: lisa-transparent-proxy-secrets
+          livenessProbe:
+            httpGet:
+              path: /transparent-proxy/health
+              port: 80
+            failureThreshold: 5
+            periodSeconds: 30
+            timeoutSeconds: 10
+          name: lisa-transparent-proxy
+          image: lisa-transparent-proxy-image:template
+          resources:
+            limits:
+              memory: "2Gi"
+            requests:
+              cpu: "0.25"
+              memory: "256Mi"
+              ephemeral-storage: "2Gi"
+          ports:
+            - containerPort: 80
+              protocol: TCP
+      restartPolicy: Always

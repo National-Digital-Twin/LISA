@@ -1,0 +1,15 @@
+namespace: lisa
+
+resources:
+  - vault/vaultStaticSecret.yaml
+  - vault/vaultAuth.yaml
+  - service-account.yaml
+  - deployment.yaml
+  - service.yaml
+  - istio/authorizationpolicy/allow-ingress-to-lisa-transparent-proxy.yaml
+
+labels:
+  - pairs:
+      app: lisa-transparent-proxy
+      env: ENV_PLACEHOLDER
+      app.kubernetes.io/name: lisa-transparent-proxy

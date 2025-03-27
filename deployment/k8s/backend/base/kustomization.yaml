@@ -1,0 +1,16 @@
+resources:
+  - vault/vaultAuth.yaml
+  - vault/vaultStaticSecret.yaml
+  - service-account.yaml
+  - deployment.yaml
+  - service.yaml
+  - istio/allow-ingress-authorization-policy.yaml
+
+
+labels:
+  - pairs:
+      app: lisa-backend
+      env: ENV_PLACEHOLDER
+      app.kubernetes.io/name: lisa-backend
+
+

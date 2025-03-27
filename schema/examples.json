@@ -1,0 +1,69 @@
+{
+  "incidents": [
+    {
+      "comment": "base json",
+      "id": "8FFB1CF9-A27A-4C74-AEAD-FA1936EAC2A9",
+      "category": "Flood",
+      "location": "Wootton Creek",
+      "dateTime": "2024-06-19T19:43Z",
+      "status": "Recovery"
+    },
+    {
+      "comment": "IES4ish",
+      "id": "8FFB1CF9-A27A-4C74-AEAD-FA1936EAC2A9",
+      "inCategory": {
+        "id": "6E6932DF-31E4-4A37-8E26-A623E79ED229",
+        "label": "Flood",
+        "comments": [
+          "Where are the possible categories defined? Are they simply free text or is 'Flood' in this instance a very specific category value?"
+        ]
+      },
+      "inLocation": {
+        "label": "Wootton Creek",
+        "lat": 50.73080,
+        "long": -1.22180
+      },
+      "inPeriod": "2024-06-19T19:43Z",
+      "status": {
+        "id": "D82448CD-8D93-40BD-9141-E7E43E117345",
+        "label": "Recovery",
+        "comments": [
+          "Is this another inCategory relationship? Can we have multiple?",
+          "Where are the possible categories defined? Are they simply free text?"
+        ]
+      }
+    }
+  ],
+
+  "logEntries": [
+    {
+      "comment": "base json",
+      "id": "E0FFF6AF-E73C-4C7E-B46E-008845938BF5",
+      "type": "Decision",
+      "content": "Release the attack kittens!",
+      "created": "2024-06-19T19:49:12.816Z",
+      "dateTime": "2024-06-19T19:45Z",
+      "incident": "8FFB1CF9-A27A-4C74-AEAD-FA1936EAC2A9"
+    },
+    {
+      "comment": "IES4ish",
+      "id": "E0FFF6AF-E73C-4C7E-B46E-008845938BF5",
+      "inCategory": {
+        "id": "37B56AE3-A0C4-4A52-996E-AF7932276C00",
+        "label": "Decision"
+      },
+      "content": "Release the attack kittens!",
+      "created": "2024-06-19T19:49:12.816Z",
+      "inPeriod": "2024-06-19T19:45Z",
+      "isPartOf": "8FFB1CF9-A27A-4C74-AEAD-FA1936EAC2A9"
+    }
+  ],
+  "comments": [
+    "How do we differentiate between the different types of LogEntry here?",
+    "In schema.ttl, I've done them as sub-classes but is that correct or is it an inCategory thing?",
+    "One thing that may influence the answer here is that different types of LogEntry will have different fields to capture",
+    "created vs inPeriod, where the former is when the event was recorded and the latter is when the event occurred",
+    "What's the best way to handle custom data fields?",
+    "Are these, in fact, Events, Representations of Events, Documents, Digital Objects or something else?"
+  ]
+}

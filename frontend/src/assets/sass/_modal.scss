@@ -1,0 +1,37 @@
+@use 'colors';
+
+.modal-dialog {
+  padding: 15px;
+  width: 100%;
+  max-width: 1070px;
+  min-height: 400px;
+  overscroll-behavior: contain;
+  border: none;
+  background: transparent;
+  &::backdrop {
+    background: colors.$grey-dark;
+    opacity: 0.8;
+  }
+  &__close {
+    border: solid 2px colors.$black;
+    border-radius: 50%;
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 30px;
+    height: 30px;
+    padding: 5px;
+    cursor: pointer;
+    svg {
+      height: 10px;
+      width: auto;
+    }
+  }
+
+  @media screen and (max-width: 1099px) {
+    padding: 0;
+    .modal-dialog__close {
+      display: none;
+    }
+  }
+}

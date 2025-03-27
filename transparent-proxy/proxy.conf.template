@@ -1,0 +1,68 @@
+proxy_cache_path /tmp/nginx_cache levels=1:2 keys_zone=tp_cache:100m max_size=200m inactive=10000s use_temp_path=off;
+
+server {
+    listen 80 default_server;
+    listen [::]:80 default_server;
+
+    resolver kube-dns.kube-system.svc.cluster.local valid=30s;
+
+    # Proxy config
+    proxy_cache_valid any 1d;
+    proxy_cache_use_stale error timeout invalid_header updating http_500 http_502 http_503 http_504;
+    proxy_cache_revalidate on;
+    proxy_cache_background_update on;
+    proxy_http_version 1.1;
+    proxy_cache tp_cache;
+
+    # Don't allow through cookies
+    proxy_hide_header Set-Cookie;
+    proxy_set_header Cookie "";
+
+    # Don't pass on Authorization headers if we receive them
+    proxy_set_header Authorization "";
+
+    location  /transparent-proxy/health {
+                access_log off;
+                add_header 'Content-Type' 'application/json';
+                return 200 '{"status":"UP"}';
+    }
+
+        ## BEGIN UPSTREAM DEFINITIONS
+
+        # OS vector
+        location /transparent-proxy/os/ {
+
+        set $raster_fetch_with_args "";
+        
+        if ($uri ~ ^/transparent-proxy/os/(.*)) {
+            set $requested_path $1;
+        }
+
+        if ($requested_path ~ ^maps/raster/.*) { 
+            set $raster_fetch_with_args  A; 
+        } 
+
+        if ($is_args) { 
+        set $raster_fetch_with_args  "${raster_fetch_with_args}B"; 
+        } 
+    
+        if ($raster_fetch_with_args = AB) { 
+        set $args "$args&key=$OS_RASTER_API_KEY";
+        }
+	
+        if ($raster_fetch_with_args = A) {
+            set $args key=$OS_RASTER_API_KEY;
+        }
+
+        proxy_ssl_server_name on;
+        proxy_ssl_name "api.os.uk";
+        proxy_pass https://api.os.uk/;
+
+        ## END UPSTREAM DEFINITIONS
+
+        if ($upstream_http_content_type ~* "(text/html|application/xhtml+xml|text/javascript|application/javascript)") {
+            # Block upstreams ever serving us "dangerous" content
+            return 502;
+        }   
+    }
+}

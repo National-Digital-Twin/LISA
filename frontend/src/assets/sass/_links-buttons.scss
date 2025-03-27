@@ -1,0 +1,10 @@
+// '_LINKS/BUTTONS.SCSS' - IMPORTED INTO APP.SCSS
+@use 'ndtp';
+
+a:link,
+a:visited,
+a:active,
+a:hover {
+  text-decoration: none;
+  font-family: ndtp.$font-family;
+}

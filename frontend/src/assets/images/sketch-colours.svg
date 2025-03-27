@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="1.30372in" height="0.322157in" version="1.1" style="shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd"
+viewBox="0 0 243.84 60.25">
+ <defs>
+  <style type="text/css">
+   <![CDATA[
+    .fil1 {fill:#004D95}
+    .fil0 {fill:#58822E}
+    .fil5 {fill:#CCCCCC}
+    .fil2 {fill:red}
+    .fil4 {fill:white}
+    .fil3 {fill:#E0AD12}
+   ]]>
+  </style>
+ </defs>
+ <g id="Layer_x0020_1">
+  <polygon class="fil0" points="160.19,29.1 174.3,0 191.34,29.1 191.34,60.25 160.19,60.25 "/>
+  <polygon class="fil1" points="120.3,29.1 134.41,0 151.45,29.1 151.45,60.25 120.3,60.25 "/>
+  <polygon class="fil2" points="79.79,29.1 93.89,0 110.94,29.1 110.94,60.25 79.79,60.25 "/>
+  <polygon class="fil3" points="39.89,29.1 54,0 71.04,29.1 71.04,60.25 39.89,60.25 "/>
+  <polygon class="fil4" points="-0,29.1 14.1,0 31.15,29.1 31.15,60.25 -0,60.25 "/>
+  <path class="fil5" d="M212.69 60.25l31.15 0c-2.05,-78.24 -33.14,-78.38 -31.15,0z"/>
+ </g>
+</svg>

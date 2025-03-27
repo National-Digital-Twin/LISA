@@ -1,0 +1,221 @@
+@prefix ies:   <http://ies.data.gov.uk/ontology/ies4#> .
+@prefix lisa:  <http://ndtp.co.uk/ontology/lisa#> .
+@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix sparx: <http://data.sparxsystems.com#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+
+# Questions:
+#   1. Do we need the sparx:guid? What's it used for?
+#      A: No
+#
+#   2. Where do these schema entries end up?
+#      A: They need to go into the IA so we can reference them in the triples we add.
+#
+#   3. Why is an Actor a subClassOf an ActorState?
+#      A: It's a special type of state - an Actor is a full-life state of ActorState.
+
+
+#####################################################
+# Users                                             #
+#####################################################
+lisa:User a rdfs:Class;
+  rdfs:comment        "A user account";
+  rdfs:subClassOf     ies:Username;
+  rdfs:subClassOf     ies:OnlineAccount .
+
+
+#####################################################
+# Incidents                                         #
+#####################################################
+# Relationships and properties #
+################################
+lisa:Referrer a rdfs:Class;
+  rdfs:comment        "The person or organisation that referred the incident to the resilience team";
+  rdfs:subClassOf     ies:EventParticipant;
+  rdfs:domain         lisa:Incident .
+
+lisa:hasReferrer a owl:DatatypeProperty;
+  rdfs:comment        "Identifies the person or organisation that referred the incident";
+  rdfs:subPropertyOf  ies:documentedBy;
+  rdfs:range          lisa:Referrer;
+  rdfs:domain         lisa:Incident .
+
+lisa:hasContactDetails a owl:DatatypeProperty;
+  rdfs:comment        "Contact details for a referrer";
+  rdfs:subPropertyOf  ies:isRepresentedAs;
+  rdfs:range          ies:CommunicationsIdentifier;
+  rdfs:domain         lisa:Referrer .
+
+###################
+# Incident stages #
+###################
+
+# Instances: Monitoring, Response, Recovery, Closed
+lisa:IncidentStage a rdfs:Class;
+  rdfs:comment        "The stage to which the incident has reached";
+  rdfs:subClassOf     ies:Event;
+  rdfs:domain         lisa:Incident .
+
+lisa:MonitoringStage a rdfs:Class;
+  rdfs:subClassOf     lisa:IncidentStage .
+
+lisa:ResponseStage a rdfs:Class;
+  rdfs:subClassOf     lisa:IncidentStage .
+
+lisa:RecoveryStage a rdfs:Class;
+  rdfs:subClassOf     lisa:IncidentStage .
+
+lisa:ClosedStage a rdfs:Class;
+  rdfs:subClassOf     lisa:IncidentStage .
+
+##################
+# Incident types #
+##################
+lisa:Incident a rdfs:Class;
+  rdfs:comment        "An incident or crisis situation to be dealt with";
+  rdfs:subClassOf     ies:Event .
+
+lisa:FloodIncident a rdfs:Class;
+  rdfs:subClassOf     lisa:Incident .
+
+lisa:EarthquakeIncident a rdfs:Class;
+  rdfs:subClassOf     lisa:Incident .
+
+lisa:LandslipIncident a rdfs:Class;
+  rdfs:subClassOf     lisa:Incident .
+
+lisa:RTAIncident a rdfs:Class;
+  rdfs:subClassOf     lisa:Incident .
+
+lisa:AnimalHealthIncident a rdfs:Class;
+  rdfs:subClassOf     lisa:Incident .
+
+
+#####################################################
+# Example incident triple sequence                  #
+#####################################################
+# Ontology setup #
+##################
+# lisa:IncidentStage          rdf:type            rdfs:Class .
+# lisa:IncidentStage          rdf:subClassOf      ies:Event .
+# lisa:MonitoringStage        rdf:type            rdfs:Class .
+# lisa:MonitoringStage        rdf:subClassOf      lisa:IncidentStage .
+# lisa:ResponseStage          rdf:type            rdfs:Class .
+# lisa:ResponseStage          rdf:subClassOf      lisa:IncidentStage .
+# lisa:RecoveryStage          rdf:type            rdfs:Class .
+# lisa:RecoveryStage          rdf:subClassOf      lisa:IncidentStage .
+# lisa:ClosedStage            rdf:type            rdfs:Class .
+# lisa:ClosedStage            rdf:subClassOf      lisa:IncidentStage .
+
+# lisa:Incident               rdf:type            rdfs:Class .
+# lisa:Incident               rdf:subClassOf      ies:Event .
+# lisa:FloodIncident          rdf:type            rdfs:Class .
+# lisa:FloodIncident          rdf:subClassOf      lisa:Incident .
+# lisa:EarthquakeIncident     rdf:type            rdfs:Class .
+# lisa:EarthquakeIncident     rdf:subClassOf      lisa:Incident .
+# lisa:LandslipIncident       rdf:type            rdfs:Class .
+# lisa:LandslipIncident       rdf:subClassOf      lisa:Incident .
+# lisa:RTAIncident            rdf:type            rdfs:Class .
+# lisa:RTAIncident            rdf:subClassOf      lisa:Incident .
+
+#####################
+# Incident creation #
+#####################
+# data:FloodIncident#761      rdf:type            lisa:FloodIncident .
+# data:BoundingState#616515   ies:inPeriod        iso8601:2024-07-02T14:02Z .
+# data:BoundingState#616515   ies:isStartOf       data:FloodIncident#761 .
+# data:IncidentState#122      rdf:type            lisa:MonitoringStage .
+# data:IncidentState#122      ies:isStateOf       data:FloodIncident#761 .
+# data:BoundingState#616516   ies:inPeriod        iso8601:2024-07-02T14:02Z .
+# data:BoundingState#616516   ies:isStartOf       data:IncidentState#122 .
+
+########################################
+# Incident stage changes to "Response" #
+########################################
+# data:BoundingState#716111   ies:inPeriod        iso8601:2024-07-02T14:29:02.513Z .
+# data:BoundingState#716111   ies:isEndOf         lisa:IncidentState#122 .
+# data:IncidentState#123      rdf:type            lisa:ResponseStage .
+# data:IncidentState#123      ies:isStateOf       lisa:Incident#761 .
+# data:BoundingState#716112   ies:inPeriod        iso8601:2024-07-02T14:29:02.513Z .
+# data:BoundingState#716111   ies:isStartOf       lisa:IncidentState#123 .
+
+
+#####################################################
+# Log entries                                       #
+#####################################################
+# Relationships and properties #
+################################
+lisa:hasLogEntry a owl:ObjectProperty;
+  rdfs:comment        "Used to indicate to which incident a log entry belongs";
+  rdfs:subPropertyOf  ies:documentedBy;
+  rdfs:range          lisa:LogEntry;
+  rdfs:domain         lisa:Incident .
+
+# Plain text version of what the user typed in
+lisa:contentText a owl:DatatypeProperty;
+  rdfs:comment        "The plain text version of log entry content, as typed in by a user, to facilitate full-text indexing";
+  rdfs:subClassOf     rdfs:comment;
+  rdfs:domain         lisa:LogEntry .
+
+# Structured version of what the user typed in
+lisa:contentJSON a owl:DatatypeProperty;
+  rdfs:comment        "The structured text version of log entry content, which can be used to identify mentions and otherwise display in a formatted fashion";
+  rdfs:subClassOf     rdfs:comment;
+  rdfs:domain         lisa:LogEntry .
+
+# Pull out mentioned users from structure.
+lisa:mentions a owl:DatatypeProperty;
+  rdfs:comment        "Identifies which users are mentioned in a log entry";
+  rdfs:subPropertyOf  ies:documentedBy;
+  rdfs:range          lisa:User;
+  rdfs:domain         lisa:LogEntry .
+
+# Data fields
+lisa:DataField a rdfs:Class;
+  rdfs:comment        "An additional data field on a log entry";
+  rdfs:subClassOf     ies:Entity .
+
+# A data field linked to a log entry.
+lisa:hasField a owl:ObjectProperty;
+  rdfs:comment        "A data field that builds upon a log entry";
+  rdfs:subPropertyOf  ies:documentedBy;
+  rdfs:range          lisa:DataField;
+  rdfs:domain         lisa:LogEntry .
+
+###################
+# Log entry types #
+###################
+lisa:LogEntry a ies:IndividualDocument;
+  rdfs:comment        "A log entry on an Incident";
+  rdfs:subClassOf     ies:Event .
+
+lisa:Action a rdfs:Class;
+  rdfs:comment        "An action for someone to take on an Incident";
+  rdfs:subClassOf     lisa:LogEntry .
+
+lisa:Communication a rdfs:Class;
+  rdfs:comment        "A record of communication received on an Incident";
+  rdfs:subClassOf     lisa:LogEntry .
+
+lisa:Debrief a rdfs:Class;
+  rdfs:comment        "A debrief on an Incident";
+  rdfs:subClassOf     lisa:LogEntry .
+
+lisa:Decision a rdfs:Class;
+  rdfs:comment        "A decision on an Incident";
+  rdfs:subClassOf     lisa:LogEntry .
+
+lisa:Handover a rdfs:Class;
+  rdfs:comment        "A handover from person to another on an Incident";
+  rdfs:subClassOf     lisa:LogEntry .
+
+lisa:RiskAssessment a rdfs:Class;
+  rdfs:comment        "A risk assessment on an Incident";
+  rdfs:subClassOf     lisa:LogEntry .
+
+lisa:SituationReport a rdfs:Class;
+  rdfs:comment        "A situation report on an Incident";
+  rdfs:subClassOf     lisa:LogEntry .
+
+# Additional properties yet to be added to the various types of log entry.

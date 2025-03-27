@@ -1,0 +1,154 @@
+// '_NOTIFICATIONS.SCSS' - IMPORTED INTO APP.SCSS
+
+@use 'colors';
+@use 'ndtp';
+
+.notification-container {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
+  z-index: 2;
+  background-color: colors.$grey-light;
+  min-height: 40px;
+  color: colors.$black;
+  font-size: 1rem;
+  padding: 0 10px;
+  .alert-title {
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    .incident-overview {
+      margin-left: 0.5rem;
+      padding-left: 0.5rem;
+      border-left: solid 1px colors.$black;
+    }
+    .incident-stage {
+      margin-left: -4px;
+      min-width: unset;
+      svg {
+        width: 16px;
+      }
+    }
+  }
+  @media screen and (max-width: 1050px) {
+    .alert-title {
+      padding: 10px 0;
+    }
+  }
+}
+
+.alerts {
+  &__menu {
+    &-close {
+      display: flex;
+      cursor: pointer;
+      width: 30px;
+      height: 24px;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      border: none;
+      border-radius: 4px;
+      background-color: white;
+      transition: background-color 0.5s;
+      &:hover {
+        background-color: colors.$blue-light;
+      }
+      svg {
+        height: auto;
+        width: 13px;
+        fill: colors.$blue;
+      }
+    }
+    &-list {
+      flex-grow: 1;
+      overflow: hidden;
+      overflow-y: auto;
+      overscroll-behavior-y: contain;
+    }
+  }
+  &__empty {
+    display: block;
+    font-family: ndtp.$font-family;
+    text-align: center;
+    padding: 40px 0;
+    color: colors.$section-light-text;
+  }
+  &__item {
+    background-color: colors.$white;
+    display: block;
+    border: none;
+    border-bottom: 1px solid colors.$grey-light;
+    cursor: pointer;
+    width: 100%;
+    text-align: left;
+    border-radius: 0;
+    padding: 20px 16px 16px 16px;
+    font-size: 1rem;
+    & * {
+      font-family: inherit;
+    }
+    &:hover {
+      background-color: colors.$grey-light;
+    }
+    &--read {
+      font-family: ndtp.$font-family;
+      background-color: colors.$grey-light;
+      border-bottom-color: colors.$grey-mid;
+      &:hover {
+        opacity: 0.8;
+      }
+    }
+    &-title {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      padding-bottom: 4px;
+      padding-right: 6px;
+      font-size: 1rem;
+      span:first-of-type {
+        display: inline-block;
+        flex-grow: 1;
+      }
+    }
+    &-unread {
+      display: block;
+      width: 10px;
+      height: 10px;
+      border-radius: 5px;
+      background-color: colors.$blue;
+    }
+    &-content {
+      display: block;
+      font-family: ndtp.$font-family;
+      padding: 10px 8px;
+    }
+  }
+  .user-mention-name {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .user-mention-info {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 1rem;
+    padding-top: 14px;
+    span {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    img,
+    svg {
+      color: colors.$grey-dark;
+      height: 15px;
+      width: auto;
+    }
+  }
+}

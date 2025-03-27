@@ -1,0 +1,64 @@
+@use "colors";
+
+// '_PRINT.SCSS' - IMPORTED INTO APP.SCSS
+
+// Style overrides for printing / pdf creation
+@media print {
+  .App:not(.printable) {
+    display: none !important;
+  }
+
+  // Hide elements
+  header,
+  footer,
+  .rollup-container,
+  .search-container,
+  .tsqd-parent-container,
+  .log-entry-attachments {
+    display: none !important;
+  }
+
+  // Adjust elements
+  .title:before {
+    content: 'L.I.S.A';
+    margin-right: 10px;
+  }
+
+  .container {
+    padding: 20px 0 0 0;
+  }
+
+  .item__header,
+  .log-entry-list {
+    width: 100%;
+    display: block;
+    .log-entry-fields {
+      &__group-label {
+        border-top: solid 1px colors.$grey-mid;
+        border-bottom: solid 1px colors.$grey-mid;
+      }
+      &__label {
+        &--indent::before {
+          content: '\203A';
+          padding: 0 4px;
+        }
+      }
+    }
+  }
+
+  .item__header {
+    print-color-adjust: exact;
+    background-color: colors.$blue-dark !important;
+    color: colors.$white !important;
+    margin: 0;
+
+    .log-entry-meta {
+      white-space: nowrap;
+    }
+  }
+
+  .log-entry-details,
+  .log-entry-location {
+    padding: 0 !important;
+  }
+}

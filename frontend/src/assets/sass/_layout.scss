@@ -1,0 +1,188 @@
+// '_LAYOUT.SCSS' - IMPORTED INTO APP.SCSS
+
+@use 'colors';
+@use 'ndtp';
+
+body,
+p,
+a,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+td,
+tr,
+ul,
+ol,
+li,
+hr,
+div,
+span,
+img,
+label {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  list-style: none;
+}
+
+input,
+textarea,
+select {
+  box-sizing: border-box;
+  padding: 0.25rem;
+}
+
+img,
+svg {
+  width: 100%;
+  height: auto;
+  &.photo-simon {
+    max-width: 300px;
+  }
+}
+
+.container {
+  width: 100%;
+  max-width: 1500px;
+  margin: 0 auto 0 auto;
+  min-height: calc(100vh - 150px);
+  background-color: colors.$white;
+  padding: 130px 60px;
+  &.login-screen {
+    background-color: colors.$blue;
+  }
+  .page-title {
+    font-size: 2rem;
+    font-family: ndtp.$font-family;
+    color: colors.$black;
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: end;
+    justify-content: space-between;
+    @media screen and (max-width: 600px) {
+      font-size: 1.15rem;
+    }
+    img,
+    svg {
+      width: 22px;
+      position: relative;
+      top: 0;
+      height: auto;
+      margin-right: 10px;
+    }
+  }
+  p,
+  div,
+  ul,
+  li,
+  ol,
+  span,
+  input,
+  select,
+  textarea {
+    font-family: ndtp.$font-family;
+  }
+
+  h2 {
+    font-size: 1.6rem;
+    margin-bottom: 20px;
+    @media screen and (max-width: 600px) {
+      font-size: 1.3rem;
+    }
+  }
+  .rollup-container {
+    margin: 0 0 20px 0;
+    padding: 10px 0;
+    background-color: colors.$grey-light;
+  }
+
+  @media screen and (max-width: 800px) {
+    padding: 130px 20px;
+  }
+}
+
+.section {
+  box-sizing: border-box;
+  margin: 0 auto 20px auto;
+  margin-bottom: 20px;
+  padding: 20px;
+  display: block;
+  width: 100%;
+
+  &.dark {
+    background-color: rgba(43, 52, 64, 0.5);
+    color: colors.$section-dark-text;
+    .text-highlight {
+      color: colors.$gold;
+    }
+  }
+  &.light {
+    background-color: rgba(204, 204, 204, 0.5);
+    color: colors.$section-light-text;
+    .text-highlight {
+      color: colors.$blue;
+    }
+  }
+  &.white {
+    background-color: rgba(255, 255, 255, 0.5);
+    color: colors.$section-light-text;
+    .text-highlight {
+      color: colors.$blue;
+    }
+  }
+  hr {
+    color: colors.$grey-mid;
+    margin: 20px 0;
+  }
+  h2,
+  p,
+  ul,
+  li {
+    margin-bottom: 10px;
+    margin-top: 10px;
+  }
+  p,
+  ul,
+  li {
+    font-size: 1.15rem;
+    line-height: 30px;
+  }
+}
+.col1 {
+  width: 650px;
+  margin-right: auto;
+  margin-left: auto;
+  @media screen and (max-width: 800px) {
+    width: 100%;
+    display: block;
+  }
+}
+.col2 {
+  padding: 10px;
+  width: 45%;
+  display: inline-block;
+  vertical-align: top;
+  @media screen and (max-width: 800px) {
+    width: 100%;
+    display: block;
+  }
+}
+
+.col3 {
+  padding: 10px;
+  width: 30%;
+  display: inline-block;
+  vertical-align: top;
+  @media screen and (max-width: 800px) {
+    width: 100%;
+    display: block;
+  }
+}

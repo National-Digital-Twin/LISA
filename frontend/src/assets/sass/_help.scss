@@ -1,0 +1,45 @@
+// 'HELP.SCSS' - IMPORTED INTO APP.SCSS
+
+@use 'colors';
+@use 'ndtp';
+
+.help-guidance-container {
+  display: block;
+  background-color: colors.$white;
+  padding: 40px;
+  color: colors.$black;
+  width: 400px;
+  z-index: 3;
+  position: absolute;
+  right: 4px;
+  top: 1px;
+  font-size: 0.9rem;
+  font-weight: normal;
+  box-shadow: -4px 6px 15px rgba(1, 1, 1, 0.3);
+  ul {
+    margin-top: 30px;
+    li {
+      list-style-type: square;
+      margin-bottom: 5px;
+      &::marker {
+        color: colors.$gold;
+      }
+    }
+  }
+  h3.help-title {
+    position: absolute;
+    left: 0;
+    top: 0;
+    background-color: colors.$gold;
+    font-family: ndtp.$font-family;
+    width: 100%;
+    padding: 19px;
+    color: colors.$black;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    span {
+      flex-grow: 1;
+    }
+  }
+}

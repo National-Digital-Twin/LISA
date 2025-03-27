@@ -1,0 +1,109 @@
+@use 'colors';
+
+.incident-stage {
+  display: flex;
+  flex-direction: row;
+  gap: 4px;
+  align-items: center;
+  text-align: left;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #111;
+  min-width: 180px;
+  svg {
+    width: 35px;
+    height: auto;
+  }
+
+  .str1 {
+    stroke: #666666;
+    stroke-width: 13.1;
+    stroke-miterlimit: 2.61313;
+    stroke-opacity: 0.129412;
+  }
+  .str0 {
+    stroke: #666666;
+    stroke-width: 13.1;
+    stroke-miterlimit: 2.61313;
+  }
+  .fil10 {
+    fill: none;
+  }
+  .fil0 {
+    fill: #666666;
+  }
+  .fil4 {
+    fill: black;
+    fill-opacity: 0.129412;
+  }
+  .fil11 {
+    fill: white;
+    fill-opacity: 0.141176;
+  }
+  .fil7 {
+    fill: #1a1a1a;
+    fill-opacity: 0.2;
+  }
+  .fil8 {
+    fill: white;
+    fill-opacity: 0.2;
+  }
+  .fil3 {
+    fill: white;
+    fill-rule: nonzero;
+    fill-opacity: 0.258824;
+  }
+  .fil6 {
+    fill: white;
+    fill-opacity: 0.301961;
+  }
+  .fil9 {
+    fill: white;
+    fill-opacity: 0.521569;
+  }
+  .fil12 {
+    fill: white;
+    fill-opacity: 0.811765;
+  }
+  .fil1 {
+    fill: url(#id3);
+  }
+  .fil16 {
+    fill: url(#id4);
+  }
+  .fil5 {
+    fill: url(#id5);
+  }
+  .fil14 {
+    fill: url(#id6);
+    fill-opacity: 0.2;
+  }
+  .fil15 {
+    fill: url(#id7);
+    fill-opacity: 0.2;
+  }
+  .fil13 {
+    fill: url(#id8);
+    fill-opacity: 0.2;
+  }
+
+  // Default = Closed
+  .stageColour {
+    fill: colors.$grey-incident-stage;
+  }
+
+  &.Closed .stageColour {
+    fill: colors.$grey-incident-stage;
+  }
+
+  &.Monitoring .stageColour {
+    fill: colors.$orange-incident-stage;
+  }
+  &.Response .stageColour {
+    fill: colors.$red-incident-stage;
+  }
+  &.Recovery .stageColour {
+    fill: colors.$purple-incident-stage;
+  }
+}

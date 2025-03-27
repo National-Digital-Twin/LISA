@@ -1,0 +1,57 @@
+@use 'colors';
+
+.files-selector {
+  padding: 24px 0;
+  border: 2px dashed colors.$grey-mid;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  background: none;
+
+  label {
+    cursor: pointer;
+    margin: 0;
+
+    .prompt {
+      color: colors.$blue;
+      padding: 2px 4px;
+
+      &:hover {
+        color: colors.$blue-dark;
+        text-decoration: underline;
+      }
+
+      &__focused {
+        outline: -webkit-focus-ring-color auto 1px;
+      }
+    }
+  }
+
+  input {
+    width: 0.1px;
+    height: 0.1px;
+    opacity: 0;
+    overflow: hidden;
+    z-index: -1;
+    padding: 0;
+    position: absolute;
+  }
+
+  &__dragging {
+    background-color: colors.$blue-light;
+    border-color: colors.$blue;
+  }
+}
+
+.selected-file {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  column-gap: 30px;
+
+  .file-size {
+    color: colors.$section-light-text;
+  }
+}

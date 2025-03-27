@@ -1,0 +1,68 @@
+// '_FOOTER.SCSS' - IMPORTED INTO APP.SCSS
+
+@use 'colors';
+
+footer {
+  height: 150px;
+  padding-top: 5px;
+  background-color: colors.$grey-footer;
+  border-top: 5px solid colors.$blue-header;
+  color: colors.$black;
+  position: relative;
+  box-sizing: border-box;
+  width: 100%;
+  bottom: 0;
+  font-size: 0.9rem;
+  text-align: right;
+  .footer-irc, .footer-logo {
+    position: absolute;
+    bottom: 60px;
+  }
+  .footer-irc {
+    left: 20px;
+    color: colors.$white;
+  }
+  .footer-logo {
+    left: 20px;
+    bottom: 70px;
+    svg, img {
+      width: 70px;
+      height: auto;
+    }
+  }
+  .feedback {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    background-color: colors.$blue;
+    padding: 10px 8px 8px 38px;
+    text-align: center;
+    a:link, a:visited, a:active {
+      color: colors.$white;
+    }
+    a:hover {
+      color: colors.$gold;
+    }   
+    svg {
+      position: relative;
+      width: 18px;
+      height: auto;
+      color: colors.$white;
+      margin-right: 10px;
+    }
+  }
+  @media screen and (max-width: 600px) {
+    .footer-irc, .footer-logo {
+      left: 20px;
+      right: unset;
+    }
+    .footer-logo {
+      bottom: unset;
+      top: 30px;
+    }
+    .footer-irc {
+      bottom: unset;
+      top: 40px;
+    }
+  }
+}

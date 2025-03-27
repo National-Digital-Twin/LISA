@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="0.131622in" height="0.0739528in" version="1.1" style="shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd"
+viewBox="0 0 2.02 1.14" fill="currentColor">
+ <defs>
+  <style type="text/css">
+   <![CDATA[
+    .fil0 {fill:#002D5B;fill-rule:nonzero}
+   ]]>
+  </style>
+ </defs>
+ <g id="Layer_x0020_1">
+
+  <path class="fil0" d="M0.15 -0c-0.06,0 -0.1,0.03 -0.12,0.09 -0.02,0.06 -0.01,0.1 0.03,0.14l0.87 0.87c0.03,0.03 0.06,0.04 0.1,0.04 0.03,0 0.07,-0.01 0.09,-0.04l0.87 -0.87c0.04,-0.04 0.05,-0.09 0.03,-0.14 -0.02,-0.06 -0.07,-0.09 -0.12,-0.09l-1.73 0z"/>
+ </g>
+</svg>

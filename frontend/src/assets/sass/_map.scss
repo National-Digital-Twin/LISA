@@ -1,0 +1,46 @@
+@use "colors";
+
+.map-container {
+
+  width: 100%;
+  height: 500px;
+  position: relative;
+
+  .maplibregl-canvas-container.maplibregl-interactive {
+    cursor: pointer;
+  }
+
+  .maplibregl-marker {
+    cursor: grab;
+    color: colors.$red-pin;
+    opacity: 0.98823529;
+    &.blue {
+      color: colors.$blue;
+    }
+    &.map-marker--highlighted {
+      color: colors.$black;
+    }
+    svg {
+      height: 40px;
+      width: auto;
+    }
+  }
+
+  .maplibregl-ctrl-group {
+    border-radius: 0;
+  }
+
+  .map-select-location {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    width: calc(30% - 0.5rem - 10px);
+    min-width: calc(360px - 1rem);
+    .react-select__indicators {
+      svg {
+        height: 19px;
+        width: auto;
+      }
+    }
+  }
+}

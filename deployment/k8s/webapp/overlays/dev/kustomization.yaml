@@ -1,0 +1,22 @@
+resources:
+  - ../../base
+
+namespace: lisa
+
+patches:
+  - path: patches/service-account.yaml
+    target:
+      kind: ServiceAccount
+      name: lisa-sa
+
+
+labels:
+  - pairs:
+      env: dev
+
+images:
+  - name: lisa-image:template
+    newName: 537124944113.dkr.ecr.eu-west-2.amazonaws.com/lisa/webapp
+    newTag: '1739959086'
+
+
