@@ -21,7 +21,6 @@
   ],
   "author": "",
   "private": true,
-  "license": "ISC",
   "devDependencies": {
     "concurrently": "^7.0.0",
     "eslint-plugin-import": "^2.31.0",
