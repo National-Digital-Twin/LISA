@@ -1,5 +1,9 @@
+// SPDX-License-Identifier: Apache-2.0
+// © Crown Copyright 2025. This work has been developed by the National Digital Twin Programme
+// and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
+
 import { MouseEvent, useEffect, useState } from 'react';
-import { Box, Divider, Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid2';
 
 import { type Field } from 'common/Field';
@@ -62,17 +66,11 @@ export default function SetInformation({ incident, onSetInformation, onCancel }:
 
   return (
     <Modal modal={modal} onClose={onCancel}>
-      <Box display="flex" flexDirection="column" gap={2}>
-        <Typography variant="h2" fontSize="1.6rem">
+      <Box display="flex" flexDirection="column" gap={2} id="rollup-log-book-entry">
+        <Typography variant="h5" component="h2">
           Set Incident Information
         </Typography>
-        <Box
-          component="form"
-          display="flex"
-          flexDirection="column"
-          gap={2}
-          id="rollup-log-book-entry"
-        >
+        <Box component="form" display="flex" flexDirection="column" gap={2}>
           <Grid component="ul" container spacing={4} bgcolor="background.default" padding={3}>
             <Grid component="li" size={{ xs: 12, md: 6 }}>
               <FormField
@@ -84,29 +82,32 @@ export default function SetInformation({ incident, onSetInformation, onCancel }:
                 }
               />
             </Grid>
-            <Grid component="li" size={12}>
-              <Typography variant="h3" fontSize="1rem" fontWeight="bold">
-                Referral information
-              </Typography>
-              <Divider sx={{ marginY: '1rem' }} />
-            </Grid>
-            {referrerFields.map((field) => (
-              <Grid component="li" key={field.id} size={{ xs: 12, md: 6 }}>
-                <FormField
-                  onChange={onFieldChange}
-                  key={field.id}
-                  field={{ ...field, value: Form.getFieldValue(field, entry) }}
-                  error={showValidationErrors ? Form.getError(field, validationErrors) : undefined}
-                />
-              </Grid>
-            ))}
           </Grid>
-          <FormFooter
-            validationErrors={validationErrors}
-            onCancel={onCancel}
-            onSubmit={onSubmit}
-            onShowValidationErrors={setShowValidationErrors}
-          />
+          <Box component="form" display="flex" flexDirection="column" gap={2}>
+            <Typography variant="h5" component="h2">
+              Referral information
+            </Typography>
+            <Grid component="ul" container spacing={4} bgcolor="background.default" padding={3}>
+              {referrerFields.map((field) => (
+                <Grid component="li" key={field.id} size={{ xs: 12, md: 6 }}>
+                  <FormField
+                    onChange={onFieldChange}
+                    key={field.id}
+                    field={{ ...field, value: Form.getFieldValue(field, entry) }}
+                    error={
+                      showValidationErrors ? Form.getError(field, validationErrors) : undefined
+                    }
+                  />
+                </Grid>
+              ))}
+              <FormFooter
+                validationErrors={validationErrors}
+                onCancel={onCancel}
+                onSubmit={onSubmit}
+                onShowValidationErrors={setShowValidationErrors}
+              />
+            </Grid>
+          </Box>
         </Box>
       </Box>
     </Modal>

@@ -1,3 +1,7 @@
+// SPDX-License-Identifier: Apache-2.0
+// © Crown Copyright 2025. This work has been developed by the National Digital Twin Programme
+// and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
+
 import * as sparql from 'rdf-sparql-builder';
 
 import { NotificationType, UserMentionNotification, type Notification } from 'common/Notification';
@@ -14,7 +18,7 @@ export function getCreateData(idNode: unknown, input: UserMentionInput): unknown
   if (input.type === 'UserMentionNotification') {
     return [
       [idNode, ns.lisa.hasLogEntry, ns.data(input.entryId)],
-      [idNode, ns.lisa.hasIncident, ns.data(input.incidentId)],
+      [idNode, ns.lisa.hasIncident, ns.data(input.incidentId)]
     ];
   }
   return [];
@@ -24,13 +28,10 @@ export function getFetchOptionals(): unknown[] {
   return [
     // user mention
     sparql.optional([
-      ['?id', ns.lisa.hasLogEntry, '?entryId'],
-      ['?id', ns.lisa.hasIncident, '?incidentId'],
-      ['?entryId', ns.ies.inPeriod, '?dateTime'],
       ['?entryId', ns.lisa.contentText, '?contentText'],
       ['?author', ns.ies.isParticipantIn, '?entryId'],
-      ['?author', ns.ies.hasName, '?authorName'],
-    ]),
+      ['?author', ns.ies.hasName, '?authorName']
+    ])
   ];
 }
 
@@ -52,11 +53,13 @@ export function parseNotification(row: ResultRow): Notification {
         id: nodeValue(row.entryId.value),
         incidentId: nodeValue(row.incidentId.value),
         dateTime: row.dateTime.value,
+        sequence: row.sequence.value,
         content: {
-          text: row.contentText?.value,
+          text: row.contentText?.value
         },
         author: {
-          username: row.authorName?.value
+          username: row.authorName?.value,
+          displayName: row.authorName?.value
         }
       }
     } as UserMentionNotification;

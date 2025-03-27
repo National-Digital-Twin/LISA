@@ -1,3 +1,7 @@
+// SPDX-License-Identifier: Apache-2.0
+// © Crown Copyright 2025. This work has been developed by the National Digital Twin Programme
+// and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
+
 // Global imports
 import { Request, Response } from 'express';
 
@@ -33,7 +37,7 @@ export async function get(req: Request, res: Response) {
   const mentionsLogEntriesByEntry = mentions.parse.logEntry(mentionsResults, false);
   const mentionedByLogEntriesByEntry = mentions.parse.logEntry(mentionedByResults, true);
   const mentionedUsersByEntry = mentions.parse.user(mentionsUsersResults);
-  const attachmentsByEntry = attachments.parse(attachmentResults);
+  const attachmentsByEntry = await attachments.parse(attachmentResults);
 
   const entries = logEntryResults.map((row) => {
     const id = nodeValue(row.id.value);
@@ -48,25 +52,29 @@ export async function get(req: Request, res: Response) {
       stage: (row.stage?.value ?? undefined) as IncidentStage,
       dateTime: row.dateTime.value,
       createdAt: row.createdAt?.value,
+      sequence: row.sequence.value,
       author: {
-        username: row.authorName?.value ?? undefined
+        username: row.authorName?.value ?? undefined,
+        displayName: row.authorName?.value ?? undefined
       },
       fields: fieldResultsByEntry[id],
       mentionsUsers: mentionedUsersByEntry[id],
       mentionedByLogEntries: mentionedByLogEntriesByEntry[id],
       mentionsLogEntries: mentionsLogEntriesByEntry[id],
+      /* eslint-disable indent */
       location: row.locationId
-        ? {
-          coordinates: row.latitude
-            ? {
-              latitude: Number(row.latitude.value),
-              longitude: Number(row.longitude.value)
-            }
-            : undefined,
-          description: row.locationDescription?.value
-        } as Location
+        ? ({
+            coordinates: row.latitude
+              ? {
+                  latitude: Number(row.latitude.value),
+                  longitude: Number(row.longitude.value)
+                }
+              : undefined,
+            description: row.locationDescription?.value
+          } as Location)
         : undefined,
-      attachments: attachmentsByEntry[id],
+      /* eslint-enable */
+      attachments: attachmentsByEntry[id]
     } satisfies LogEntry;
   });
 

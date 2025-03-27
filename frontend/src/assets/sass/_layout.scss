@@ -59,7 +59,6 @@ svg {
   .page-title {
     font-size: 2rem;
     font-family: ndtp.$font-family;
-    margin-bottom: 30px;
     color: colors.$black;
     position: relative;
     display: flex;
@@ -92,9 +91,6 @@ svg {
     font-family: ndtp.$font-family;
   }
 
-  hr {
-    margin: 20px 0;
-  }
   h2 {
     font-size: 1.6rem;
     margin-bottom: 20px;
@@ -106,62 +102,6 @@ svg {
     margin: 0 0 20px 0;
     padding: 10px 0;
     background-color: colors.$grey-light;
-
-    .rollup-header {
-      margin: 10px 30px 0 30px;
-      padding-bottom: 10px;
-      border-bottom: solid 1px colors.$grey-mid;
-      display: flex;
-      flex-direction: row;
-      gap: 10px;
-      justify-content: space-between;
-      align-items: end;
-
-      .rollup-tabs {
-        margin-left: auto;
-        margin-bottom: -11px;
-        font-size: 1.15rem;
-        display: flex;
-        flex-direction: row;
-        gap: 10px;
-
-        a {
-          border: solid 1px colors.$grey-mid;
-          border-bottom: none;
-          padding: 8px 12px 11px 12px;
-          background: colors.$grey-mid;
-          &.in-error {
-            position: relative;
-            &::after {
-              content: '*';
-              position: absolute;
-              right: 4px;
-              top: 4px;
-            }
-          }
-          &.active {
-            background-color: colors.$grey-light;
-            border-bottom: solid 1px colors.$grey-light;
-          }
-        }
-      }
-
-      &.validation-errors {
-        .rollup-tabs {
-          a {
-            &.in-error {
-              border-color: colors.$red-dark;
-              border-bottom-color: colors.$grey-mid;
-              outline: solid 1px colors.$red-dark;
-              color: colors.$red-dark;
-              &.active {
-                border-bottom-color: colors.$grey-light;
-              }
-            }
-          }
-        }
-      }
-    }
   }
 
   @media screen and (max-width: 800px) {

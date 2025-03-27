@@ -1,12 +1,16 @@
+// SPDX-License-Identifier: Apache-2.0
+// © Crown Copyright 2025. This work has been developed by the National Digital Twin Programme
+// and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
+
 // Global imports
-import { ChangeEvent, useMemo } from 'react';
+import { ChangeEvent, ElementType, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 // Local imports
 import { type Field } from 'common/Field';
 import { type FieldType } from 'common/FieldType';
 import { type LogEntry } from 'common/LogEntry';
-import { Box, InputLabel, TextField } from '@mui/material';
+import { Box, InputLabel, TextField, Typography } from '@mui/material';
 import { Form } from '../../utils';
 import { type OnFieldChange } from '../../utils/handlers';
 import { type FieldValueType, type Linkable, type ValidationError } from '../../utils/types';
@@ -22,6 +26,7 @@ type Props = {
   error?: ValidationError;
   onChange: OnFieldChange;
   className?: string;
+  component?: ElementType;
 };
 
 const YesNoOptions = [
@@ -36,7 +41,8 @@ const FormField = ({
   entries = undefined,
   error = undefined,
   onChange,
-  className = undefined
+  className = undefined,
+  component = undefined
 }: Props) => {
   const navigate = useNavigate();
   const onClickLocation = () => {
@@ -66,11 +72,24 @@ const FormField = ({
   const isSelect = useMemo(() => ARE_SELECTS.includes(field.type), [field.type]);
 
   return (
-    <Box className={`${className ?? ''}`} display="flex" flexDirection="column" gap={1}>
-      <InputLabel htmlFor={field.id} sx={{ color: 'text.primary', fontWeight: 600 }}>
-        {field.label}
+    <Box
+      component={component ?? 'div'}
+      className={`${className ?? ''}`}
+      display="flex"
+      flexDirection="column"
+      gap={1}
+    >
+      <InputLabel
+        htmlFor={field.id}
+        sx={{ color: 'text.primary', fontWeight: 'bold', whiteSpace: 'normal' }}
+      >
+        {field.label}{' '}
+        {field.optional && (
+          <Typography component="span" className="optional-field">
+            (optional)
+          </Typography>
+        )}
       </InputLabel>
-      {field.optional && <span className="optional-field">optional</span>}
       <FormHelpButton field={field} />
       {field.className?.includes('horizontalYN') && (
         <span data-testid="horizontal-span" className="h-sep" />
@@ -108,6 +127,7 @@ const FormField = ({
           value={field.value}
           placeholder="Select"
           onChange={onSelectionChange}
+          error={error}
         />
       )}
       {field.type === 'DateTime' && (
@@ -119,7 +139,12 @@ const FormField = ({
         />
       )}
       {field.type === 'Location' && (
-        <LocationField id={field.id} value={field.value as string} onClick={onClickLocation} />
+        <LocationField
+          id={field.id}
+          value={field.value as string}
+          onClick={onClickLocation}
+          error={error}
+        />
       )}
       {field.type === 'Label' && <LabelField id={field.id} hint={field.hint} />}
     </Box>

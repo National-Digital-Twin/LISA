@@ -1,17 +1,22 @@
+// SPDX-License-Identifier: Apache-2.0
+// © Crown Copyright 2025. This work has been developed by the National Digital Twin Programme
+// and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
+
 // Global imports
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 // Local imports
 import { type Referrer, type Incident } from 'common/Incident';
-import { Box, Typography } from '@mui/material';
+import { Box, Typography, useMediaQuery } from '@mui/material';
 import Grid from '@mui/material/Grid2';
 import { FormField, FormFooter } from '../components/Form';
-import { useCreateIncident } from '../hooks/useIncidents';
+import { useCreateIncident } from '../hooks';
 import { Form, Incident as IncidentUtil, Validate } from '../utils';
 import { type FieldValueType, type ValidationError } from '../utils/types';
 import { PageTitle } from '../components';
 import PageWrapper from '../components/PageWrapper';
+import theme from '../theme';
 
 const CreateLog = () => {
   const [incident, setIncident] = useState<Partial<Incident>>({
@@ -21,17 +26,25 @@ const CreateLog = () => {
   const [validationErrors, setValidationErrors] = useState<Array<ValidationError>>([]);
   const [showValidationErrors, setShowValidationErrors] = useState<boolean>(false);
 
-  const { createIncident, isLoading } = useCreateIncident();
+  const { createIncident } = useCreateIncident();
   const navigate = useNavigate();
 
   // Go back to where we've just come from.
   const onCancel = () => navigate(-1);
 
   const onSubmit = () => {
-    createIncident(incident as Incident);
-    setTimeout(() => {
-      navigate('/');
-    }, 1000);
+    createIncident(incident as Incident, {
+      onSuccess: (newIncident) => {
+        setTimeout(() => {
+          navigate(`/logbook/${newIncident.id}`);
+        }, 1000);
+      },
+      onError: () => {
+        setTimeout(() => {
+          navigate('/');
+        }, 1000);
+      }
+    });
   };
 
   const onFieldChange = (id: string, value: FieldValueType) => {
@@ -42,6 +55,8 @@ const CreateLog = () => {
     setValidationErrors(Validate.incident(incident));
   }, [incident]);
 
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
   return (
     <PageWrapper>
       <PageTitle title="New Incident Log" />
@@ -51,7 +66,7 @@ const CreateLog = () => {
             <Typography variant="h2" fontSize="1.6rem">
               {section.title}
             </Typography>
-            <Grid component="ul" container spacing={4} bgcolor="background.default" padding={3}>
+            <Grid component="ul" container spacing={4} bgcolor="background.default" padding={2}>
               {section.fields(incident).map((field) => (
                 <Grid component="li" key={field.id} size={{ xs: 12, md: 6 }}>
                   <FormField
@@ -72,9 +87,8 @@ const CreateLog = () => {
           validationErrors={validationErrors}
           onCancel={onCancel}
           onSubmit={onSubmit}
-          submitLabel="Create"
+          submitLabel={isMobile ? 'Create' : 'Create Incident Log'}
           onShowValidationErrors={setShowValidationErrors}
-          loading={isLoading}
         />
       </Box>
     </PageWrapper>

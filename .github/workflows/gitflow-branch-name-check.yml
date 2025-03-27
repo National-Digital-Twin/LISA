@@ -15,7 +15,7 @@ jobs:
         run: |
           BRANCH_NAME="${{ github.ref_name }}"
 
-          if [[ "$BRANCH_NAME" =~ ^(feature/|hotfix/|fix/|release/) ]]; then
+          if [[ "$BRANCH_NAME" =~ ^(feature/|hotfix/|bugfix/|release/) ]]; then
             echo "✅ Valid branch name: $BRANCH_NAME"
             exit 0
           else

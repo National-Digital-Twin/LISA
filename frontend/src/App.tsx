@@ -1,14 +1,14 @@
+// SPDX-License-Identifier: Apache-2.0
+// © Crown Copyright 2025. This work has been developed by the National Digital Twin Programme
+// and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
+
 // Global imports
-import { createSyncStoragePersister } from '@tanstack/query-sync-storage-persister';
-import { MutationCache, QueryCache, QueryClient, onlineManager } from '@tanstack/react-query';
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client';
 import { useEffect } from 'react';
 // eslint-disable-next-line import/no-unresolved
 import { useRegisterSW } from 'virtual:pwa-register/react';
+import { onlineManager, useQueryClient } from '@tanstack/react-query';
 
 // Local imports
-import { FetchError, post } from './api';
 import AppWrapper from './components/AppWrapper';
 import Toasts from './components/Toasts';
 
@@ -18,38 +18,12 @@ import MessagingProvider from './providers/MessagingProvider';
 import ToastProvider from './providers/ToastProvider';
 import AuthContextProvider from './providers/AuthContextProvider';
 
-const persister = createSyncStoragePersister({
-  storage: window.localStorage
-});
-
-const queryClient = new QueryClient({
-  queryCache: new QueryCache({
-    onError: (error: FetchError) => {
-      if (error.status === 302) {
-        document.location = error.redirectUrl!;
-      }
-    }
-  }),
-  mutationCache: new MutationCache({
-    onError: (error: FetchError) => {
-      if (error.status === 302) {
-        document.location = error.redirectUrl!;
-      }
-    }
-  })
-});
-
-queryClient.setMutationDefaults(['createIncident'], {
-  mutationFn: async (incident: object | FormData) => {
-    await queryClient.cancelQueries({ queryKey: ['incidents'] });
-    return post('/incident', incident);
-  }
-});
-
 const App = () => {
   useRegisterSW({
     immediate: true
   });
+
+  const queryClient = useQueryClient();
 
   useEffect(
     () =>
@@ -60,20 +34,18 @@ const App = () => {
           });
         }
       }),
-    []
+    [queryClient]
   );
+
   return (
-    <PersistQueryClientProvider client={queryClient} persistOptions={{ persister }}>
-      <AuthContextProvider>
-        <MessagingProvider>
-          <ToastProvider>
-            <Toasts />
-            <AppWrapper />
-          </ToastProvider>
-        </MessagingProvider>
-      </AuthContextProvider>
-      <ReactQueryDevtools />
-    </PersistQueryClientProvider>
+    <AuthContextProvider>
+      <MessagingProvider>
+        <ToastProvider>
+          <Toasts />
+          <AppWrapper />
+        </ToastProvider>
+      </MessagingProvider>
+    </AuthContextProvider>
   );
 };
 

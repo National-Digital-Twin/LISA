@@ -9,9 +9,7 @@ configMapGenerator:
       - params.env
 
 patches:
-  - path: patches/virtualService.yaml
-    target:
-      kind: VirtualService
+
   - path: patches/service-account.yaml
     target:
       kind: ServiceAccount
@@ -21,7 +19,7 @@ labels:
       env: demo
 
 images:
-  - name: lisa-transparent-proxy-image
+  - name: lisa-transparent-proxy-image:template
     newName: 503561419905.dkr.ecr.eu-west-2.amazonaws.com/lisa/transparent-proxy
     newTag: "1736292556"
 

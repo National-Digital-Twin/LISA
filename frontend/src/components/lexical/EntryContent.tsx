@@ -1,4 +1,9 @@
+// SPDX-License-Identifier: Apache-2.0
+// © Crown Copyright 2025. This work has been developed by the National Digital Twin Programme
+// and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
+
 // Global imports
+import { useState } from 'react';
 import { AutoFocusPlugin } from '@lexical/react/LexicalAutoFocusPlugin';
 import { LexicalComposer } from '@lexical/react/LexicalComposer';
 import { ContentEditable } from '@lexical/react/LexicalContentEditable';
@@ -7,14 +12,13 @@ import { HistoryPlugin } from '@lexical/react/LexicalHistoryPlugin';
 import { OnChangePlugin } from '@lexical/react/LexicalOnChangePlugin';
 import { PlainTextPlugin } from '@lexical/react/LexicalPlainTextPlugin';
 import { $getRoot, type EditorState, type LexicalEditor } from 'lexical';
-import { useState } from 'react';
+import { Box, styled } from '@mui/material';
 
 // Local imports
 import { type Mentionable } from 'common/Mentionable';
 import EntryContentTheme from './EntryContentTheme';
-import { ActionsPlugin, MentionsPlugin, nodes, SpeechToTextPlugin } from './plugins';
-import { SPEECH_TO_TEXT_COMMAND } from './plugins/SpeechToTextPlugin';
-import { useIsMobile } from '../../hooks/useIsMobile';
+import { ActionsPlugin, MentionsPlugin, nodes } from './plugins';
+import { RECORD_COMMAND } from './plugins/constants';
 
 const editorConfig = {
   namespace: 'LISA',
@@ -27,31 +31,63 @@ const editorConfig = {
   theme: EntryContentTheme
 };
 
+const LexicalField = styled(Box, { shouldForwardProp: (prop) => prop !== 'error' })<{
+  error: boolean;
+}>(({ theme, error }) => ({
+  backgroundColor: 'white',
+  borderRadius: theme.shape.borderRadius,
+  padding: theme.spacing(2),
+  '&:before': {
+    content: '""',
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    borderBottom: `1px solid ${error ? theme.palette.error.main : theme.palette.divider}`,
+    transition: theme.transitions.create('border-bottom-color', {
+      duration: theme.transitions.duration.short,
+      easing: theme.transitions.easing.easeOut
+    })
+  },
+  '&:hover': {
+    backgroundColor: 'rgba(0, 0, 0, 0.13)'
+  },
+  '&:focus-within': {
+    backgroundColor: 'rgba(0, 0, 0, 0.13)'
+  },
+  '&:focus-within:before': {
+    borderBottomColor: error ? theme.palette.error.main : theme.palette.primary.main,
+    borderBottomWidth: 2
+  },
+  outline: 'none'
+}));
+
 type EntryContentProps = {
-  id: string,
-  json?: string,
-  editable: boolean,
-  mentionables?: Array<Mentionable>,
-  speechToTextActive: boolean,
-  onChange?: (id: string, json: string, text: string) => void,
-  onSpeechToText?: (active: boolean) => void
+  id: string;
+  json?: string;
+  editable: boolean;
+  mentionables?: Array<Mentionable>;
+  recordingActive: boolean;
+  onChange?: (id: string, json: string, text: string) => void;
+  onRecording?: (active: boolean) => void;
+  error: boolean;
 };
 const EntryContent = ({
   id,
   json: _json = undefined,
   editable,
   mentionables = [],
-  speechToTextActive,
+  recordingActive,
   onChange = undefined,
-  onSpeechToText = undefined
+  onRecording = undefined,
+  error
 }: EntryContentProps) => {
   const [json, setJSON] = useState<string | undefined>(_json);
-  const isMobile = useIsMobile();
 
   const onCommand = (type: string | undefined, active: boolean) => {
-    if (type === SPEECH_TO_TEXT_COMMAND.type) {
-      if (typeof onSpeechToText === 'function') {
-        onSpeechToText(active);
+    if (type === RECORD_COMMAND.type) {
+      if (typeof onRecording === 'function') {
+        onRecording(active);
       }
     }
   };
@@ -74,7 +110,7 @@ const EntryContent = ({
         editorState: json
       }}
     >
-      <div className="editor-container">
+      <LexicalField error={error} className="editor-container">
         <div className="editor-inner">
           <PlainTextPlugin
             contentEditable={<ContentEditable className="editor-input" />}
@@ -84,11 +120,10 @@ const EntryContent = ({
           <HistoryPlugin />
           <AutoFocusPlugin />
           <MentionsPlugin mentionables={mentionables ?? []} />
-          {!isMobile && <SpeechToTextPlugin /> }
-          <ActionsPlugin onCommand={onCommand} speechToTextActive={speechToTextActive} />
+          <ActionsPlugin onCommand={onCommand} recordingActive={recordingActive} />
           <OnChangePlugin onChange={onEditorChange} />
         </div>
-      </div>
+      </LexicalField>
     </LexicalComposer>
   );
 };

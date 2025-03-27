@@ -3,17 +3,7 @@ resources:
 
 namespace: lisa
 
-
-configMapGenerator:
-  - name: lisa-configs
-    envs:
-      - params.env
-
-
 patches:
-  - path: patches/virtualService.yaml
-    target:
-      kind: VirtualService
   - path: patches/service-account.yaml
     target:
       kind: ServiceAccount
@@ -25,7 +15,7 @@ labels:
       env: dev
 
 images:
-  - name: lisa-image
+  - name: lisa-image:template
     newName: 537124944113.dkr.ecr.eu-west-2.amazonaws.com/lisa/webapp
     newTag: '1739959086'
 

@@ -1,3 +1,7 @@
+// SPDX-License-Identifier: Apache-2.0
+// © Crown Copyright 2025. This work has been developed by the National Digital Twin Programme
+// and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
+
 // Global imports
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
@@ -16,9 +20,7 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Typography,
-  useMediaQuery,
-  useTheme
+  Typography
 } from '@mui/material';
 
 import AddCircleIcon from '@mui/icons-material/AddCircle';
@@ -27,19 +29,21 @@ import { Format } from '../utils';
 import { PageTitle } from '../components';
 import Stage from '../components/Stage';
 import PageWrapper from '../components/PageWrapper';
+import { useResponsive } from '../hooks/useResponsiveHook';
 
 function open(incident: Incident) {
   return incident.stage !== 'Closed';
 }
 
 const Home = () => {
-  const theme = useTheme();
-  const { incidents } = useIncidents();
+  const { isMobile } = useResponsive();
+  const query = useIncidents();
   const [includeClosed, setIncludeClosed] = useState<boolean>(false);
   const navigate = useNavigate();
 
   const show = (incident: Incident): boolean => includeClosed || open(incident);
 
+  const incidents = query.data;
   const openCount = incidents?.filter(open)?.length ?? 0;
   const openCountName = openCount === 0 ? 'No' : openCount.toString();
   const closedCount = (incidents?.length ?? 0) - openCount;
@@ -54,8 +58,6 @@ const Home = () => {
   const onAddIncident = () => {
     navigate('/createlog');
   };
-
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   const tableHeaders = isMobile ? ['Incident'] : ['Incident name', 'Reported by', 'Date', 'Stage'];
 
@@ -130,6 +132,7 @@ const Home = () => {
                         to={`/logbook/${id}`}
                         variant="body1"
                         color="primary"
+                        fontWeight="bold"
                       >
                         {name}
                       </Typography>
@@ -154,6 +157,7 @@ const Home = () => {
                       to={`/logbook/${id}`}
                       variant="body1"
                       color="primary"
+                      fontWeight="bold"
                     >
                       {name}
                     </Typography>

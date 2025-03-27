@@ -6,6 +6,30 @@ import FormGroup from '../FormGroup';
 const mockOnFieldChange = jest.fn();
 
 describe('FormGroup Tests', () => {
+  it('Does not render the component.', () => {
+    providersRender(
+      <FormGroup
+        group={{
+          id: 'Group Id',
+          fieldIds: ['Field Id']
+        }}
+        fields={[]}
+        entry={{
+          incidentId: 'Incident Id',
+          dateTime: '',
+          type: 'Action',
+          content: { json: '', text: '' }
+        }}
+        validationErrors={[]}
+        onFieldChange={mockOnFieldChange}
+        showValidationErrors={false}
+      />
+    );
+    expect(screen.queryByText('Group Label')).toBeNull();
+    expect(screen.queryByText('Group Description')).toBeNull();
+    expect(screen.queryByLabelText('Field Label')).toBeNull();
+  });
+
   it('Renders the component.', () => {
     providersRender(
       <FormGroup
@@ -24,6 +48,7 @@ describe('FormGroup Tests', () => {
         }}
         validationErrors={[]}
         onFieldChange={mockOnFieldChange}
+        showValidationErrors={false}
       />
     );
     expect(screen.getByText('Group Label')).toBeInTheDocument();
@@ -46,6 +71,7 @@ describe('FormGroup Tests', () => {
         }}
         validationErrors={[]}
         onFieldChange={mockOnFieldChange}
+        showValidationErrors={false}
       />
     );
     expect(screen.queryByText('Group Label')).toBeNull();
@@ -67,6 +93,7 @@ describe('FormGroup Tests', () => {
         }}
         validationErrors={[]}
         onFieldChange={mockOnFieldChange}
+        showValidationErrors={false}
       />
     );
     const input = screen.getByLabelText('Field Label');
@@ -91,13 +118,19 @@ describe('FormGroup Tests', () => {
         }}
         validationErrors={[]}
         onFieldChange={mockOnFieldChange}
+        showValidationErrors={false}
       />
     );
-    const link = screen.getByRole('link', { name: 'Group Label' });
-    await userEvent.click(link);
-    const listItem = screen.getAllByRole('listitem');
-    expect(listItem[0]).toHaveClass('form-group form-group--open');
-    await userEvent.click(link);
-    expect(listItem[0]).toHaveClass('form-group');
+    // After rendering
+    const toggleButton = screen.getByRole('button');
+    expect(toggleButton).toHaveAttribute('aria-expanded', 'false');
+
+    // After the first click
+    await userEvent.click(toggleButton);
+    expect(toggleButton).toHaveAttribute('aria-expanded', 'true');
+
+    // After the second click
+    await userEvent.click(toggleButton);
+    expect(toggleButton).toHaveAttribute('aria-expanded', 'false');
   });
 });

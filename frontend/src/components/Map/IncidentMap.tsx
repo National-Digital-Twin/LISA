@@ -1,9 +1,15 @@
+// SPDX-License-Identifier: Apache-2.0
+// © Crown Copyright 2025. This work has been developed by the National Digital Twin Programme
+// and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
+
 // Global imports
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { FitBoundsOptions } from 'maplibre-gl';
-import { MouseEvent, useEffect, useMemo, useRef, useState } from 'react';
+import { MouseEvent, ReactElement, useEffect, useMemo, useRef, useState } from 'react';
 import Map, { Marker, MapRef, NavigationControl, LngLatBoundsLike } from 'react-map-gl/maplibre';
 import { useNavigate } from 'react-router-dom';
+import CloseIcon from '@mui/icons-material/Close';
+import ImportContactsIcon from '@mui/icons-material/ImportContacts';
 
 // Local imports
 import { type Coordinates } from 'common/Location';
@@ -11,11 +17,12 @@ import { type LogEntry } from 'common/LogEntry';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { LogEntryTypes } from 'common/LogEntryTypes';
 import { type MentionableType } from 'common/Mentionable';
-import { IconButton } from '@mui/material';
+import { Box, IconButton } from '@mui/material';
 import { bem, Icons, MapUtils } from '../../utils';
 import { type FullLocationType, type SpanType } from '../../utils/types';
 import EntryItem from '../EntryList/EntryItem';
 import { INITIAL_VIEW_STATE, MAP_BOUNDS, MAP_STYLE } from './config';
+import { useResponsive } from '../../hooks/useResponsiveHook';
 
 type LogEntryMarkerType = {
   id: string;
@@ -28,6 +35,7 @@ interface Props {
   marker: LogEntryMarkerType;
   onClick: (marker: LogEntryMarkerType) => void;
 }
+
 function LogEntryMarker({ marker, onClick }: Readonly<Props>) {
   const classes = bem('map-marker', marker.highlighted ? 'highlighted' : '', marker.colour);
   return (
@@ -48,33 +56,60 @@ interface MapProps {
   logEntries: LogEntry[] | undefined;
   highlightId?: string;
 }
-export default function IncidentMap({
-  logEntries,
-  highlightId = undefined
-}: Readonly<MapProps>) {
+export default function IncidentMap({ logEntries, highlightId = undefined }: Readonly<MapProps>) {
+  const { isMobile } = useResponsive();
   const [redrawing, setRedrawing] = useState<boolean>(false);
   const mapRef = useRef<MapRef>(null);
   const navigate = useNavigate();
   const highlighted = logEntries?.find((entry) => entry.id === highlightId);
+  const showLogList = Boolean(logEntries?.length && highlighted);
+
+  const logListRef = useRef<HTMLDivElement>(null);
+
+  const FOOTER_HEIGHT = 50;
+
+  const [mapHeight, setMapHeight] = useState<number>(window.innerHeight - FOOTER_HEIGHT);
+
+  useEffect(() => {
+    const updateMapHeight = () => {
+      let newHeight = window.innerHeight - FOOTER_HEIGHT;
+      if (showLogList && logListRef.current) {
+        // Subtract the log list height from the window height (or any container height)
+        newHeight -= logListRef.current.clientHeight;
+      }
+      setMapHeight(newHeight);
+    };
+
+    updateMapHeight();
+    window.addEventListener('resize', updateMapHeight);
+
+    return () => {
+      window.removeEventListener('resize', updateMapHeight);
+    };
+  }, [showLogList]);
+
   const markers: LogEntryMarkerType[] = useMemo(() => {
     if (!logEntries) return [];
-    return logEntries.map((entry) => {
-      const { coordinates } = (entry.location || {}) as FullLocationType;
-      if (coordinates) {
-        return {
-          id: entry.id,
-          coordinates,
-          highlighted: entry.id === highlightId,
-          colour: LogEntryTypes[entry.type]?.colour
-        };
-      }
-      return null;
-    }).filter((m) => !!m) as LogEntryMarkerType[];
+    return logEntries
+      .map((entry) => {
+        const { coordinates } = (entry.location || {}) as FullLocationType;
+        if (coordinates) {
+          return {
+            id: entry.id,
+            coordinates,
+            highlighted: entry.id === highlightId,
+            colour: LogEntryTypes[entry.type]?.colour
+          };
+        }
+        return null;
+      })
+      .filter((m) => !!m) as LogEntryMarkerType[];
   }, [logEntries, highlightId]);
 
-  const mapBounds: LngLatBoundsLike | undefined = useMemo(() => MapUtils.getBounds(
-    markers.map((m) => m.coordinates)
-  ), [markers]);
+  const mapBounds: LngLatBoundsLike | undefined = useMemo(
+    () => MapUtils.getBounds(markers.map((m) => m.coordinates)),
+    [markers]
+  );
 
   const zoomMap = (bounds: LngLatBoundsLike | undefined, focus?: LogEntry) => {
     if (mapRef.current) {
@@ -100,7 +135,7 @@ export default function IncidentMap({
   }, [mapBounds, highlighted]);
 
   // This is necessary to get the markers to redraw.
-  // Without this the highlight doesn't change.
+  // Without this, the highlight doesn't change.
   const redraw = () => {
     setRedrawing(true);
     setTimeout(() => {
@@ -144,7 +179,10 @@ export default function IncidentMap({
   };
 
   return (
-    <div className="map-container">
+    <Box
+      className="container--location map-container"
+      sx={{ position: 'relative', height: mapHeight }}
+    >
       <Map
         ref={mapRef}
         initialViewState={INITIAL_VIEW_STATE}
@@ -156,31 +194,43 @@ export default function IncidentMap({
         maxBounds={MAP_BOUNDS}
       >
         <NavigationControl position="bottom-right" showCompass={false} />
-        {!redrawing && markers.map((marker) => (
-          <LogEntryMarker
-            key={marker.id}
-            marker={marker}
-            onClick={onClickMarker}
-          />
-        ))}
+        {!redrawing &&
+          markers.map((marker) => (
+            <LogEntryMarker key={marker.id} marker={marker} onClick={onClickMarker} />
+          ))}
       </Map>
       {logEntries && highlighted && (
-        <div className="log-entry-list">
+        <Box
+          ref={logListRef}
+          sx={{
+            position: 'absolute',
+            bottom: 2,
+            left: 5,
+            width: 'calc(100% - 53px)',
+            maxWidth: 1600,
+            p: 1
+          }}
+          className="log-entry-list"
+        >
           <EntryItem
             entries={logEntries}
             entry={highlighted}
             disableScrollTo
             onContentClick={onEntryContentClick}
             onMentionClick={() => {}}
+            metaItems={[
+              !isMobile && (
+                <IconButton key="incident-log" onClick={onVisitLog} title="See in incident log">
+                  <ImportContactsIcon fontSize="small" />
+                </IconButton>
+              ),
+              <IconButton key="close-info" onClick={onCloseInfo} title="Close information">
+                <CloseIcon fontSize="small" />
+              </IconButton>
+            ].filter(Boolean) as ReactElement[]}
           />
-          <IconButton className="visit-log" onClick={onVisitLog} title="See in incident log">
-            <Icons.LogBook />
-          </IconButton>
-          <IconButton className="close-info" onClick={onCloseInfo} title="Close information">
-            <Icons.Close />
-          </IconButton>
-        </div>
+        </Box>
       )}
-    </div>
+    </Box>
   );
 }

@@ -21,6 +21,7 @@ describe('FormFields Tests', () => {
           content: { json: '', text: '' }
         }}
         validationErrors={[]}
+        showValidationErrors={false}
       />
     );
     expect(screen.getByLabelText('Field Label')).toBeInTheDocument();
@@ -39,6 +40,7 @@ describe('FormFields Tests', () => {
           content: { json: '', text: '' }
         }}
         validationErrors={[]}
+        showValidationErrors={false}
       />
     );
     expect(screen.queryByText('Test Label')).toBeNull();
@@ -59,6 +61,7 @@ describe('FormFields Tests', () => {
           content: { json: '', text: '' }
         }}
         validationErrors={[]}
+        showValidationErrors={false}
       />
     );
     expect(screen.getByText('Group Label')).toBeInTheDocument();

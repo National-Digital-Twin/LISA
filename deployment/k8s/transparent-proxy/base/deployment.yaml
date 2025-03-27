@@ -1,7 +1,8 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  annotations: {}
+  annotations:
+    reloader.stakater.com/auto: "true"
   name: transparent-proxy
 spec:
   replicas: 1
@@ -21,9 +22,6 @@ spec:
                    name: lisa-transparent-proxy-configs
                - secretRef:
                    name: lisa-transparent-proxy-secrets
-
-
-          image: lisa-transparent-proxy-image
           livenessProbe:
             httpGet:
               path: /transparent-proxy/health
@@ -32,6 +30,14 @@ spec:
             periodSeconds: 30
             timeoutSeconds: 10
           name: lisa-transparent-proxy
+          image: lisa-transparent-proxy-image:template
+          resources:
+            limits:
+              memory: "2Gi"
+            requests:
+              cpu: "0.25"
+              memory: "256Mi"
+              ephemeral-storage: "2Gi"
           ports:
             - containerPort: 80
               protocol: TCP

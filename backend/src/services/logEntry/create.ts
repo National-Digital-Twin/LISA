@@ -1,3 +1,7 @@
+// SPDX-License-Identifier: Apache-2.0
+// © Crown Copyright 2025. This work has been developed by the National Digital Twin Programme
+// and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
+
 // Global imports
 import { randomUUID } from 'crypto';
 import { Request, Response } from 'express';
@@ -29,16 +33,21 @@ export async function create(req: Request, res: Response) {
 
   const entryId = randomUUID();
   entry.id = entryId;
+
   const entryIdNode = ns.data(entryId);
   const incidentIdNode = ns.data(incidentId);
   const authorNode = ns.data(res.locals.user.username);
 
-  const { triples: attachmentTriples, names: fileNameMappings } = await attachments.extract(req, entry, entryIdNode);
+  const { triples: attachmentTriples, names: fileNameMappings } = await attachments.extract(
+    req,
+    entry,
+    entryIdNode
+  );
   mentions.reconcile.file(entry, entryId, fileNameMappings);
   const userMentions = mentions.extract.user(entry, entryIdNode);
 
   const type = LogEntryTypes[entry.type];
-  const content = type.noContent ? {} : (entry.content || {}); // should probably be invalid request?
+  const content = type.noContent ? {} : entry.content || {}; // should probably be invalid request?
 
   let triples: unknown[] = [];
   try {
@@ -51,8 +60,9 @@ export async function create(req: Request, res: Response) {
       [entryIdNode, ns.ies.inPeriod, literalDate(new Date(entry.dateTime))],
 
       [authorNode, ns.rdf.type, ns.ies.Creator],
-      [authorNode, ns.ies.hasName, literalString(res.locals.user.username)],
+      [authorNode, ns.ies.hasName, literalString(res.locals.user.displayName)],
       [authorNode, ns.ies.isParticipantIn, entryIdNode],
+      [entryIdNode, ns.lisa.hasSequence, entry.sequence],
 
       ...fields.extract(entry, entryIdNode),
       ...mentions.extract.logEntry(entry, entryIdNode),

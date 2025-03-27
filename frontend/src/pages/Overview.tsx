@@ -1,3 +1,7 @@
+// SPDX-License-Identifier: Apache-2.0
+// © Crown Copyright 2025. This work has been developed by the National Digital Twin Programme
+// and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
+
 // Global imports
 import { useState } from 'react';
 import { useParams } from 'react-router-dom';
@@ -18,13 +22,13 @@ import { GridListItem } from '../components/GridListItem';
 
 const Overview = () => {
   const { incidentId } = useParams();
-  const { incidents } = useIncidents();
+  const query = useIncidents();
   const changeIncidentStage = useChangeIncidentStage();
   const { createLogEntry } = useCreateLogEntry(incidentId);
   const [changingStage, setChangingStage] = useState<boolean>();
   const [settingInformation, setSettingInformation] = useState<boolean>();
 
-  const incident = incidents?.find((inc) => inc.id === incidentId);
+  const incident = query.data?.find((inc) => inc.id === incidentId);
   if (!incident) {
     return null;
   }
@@ -57,7 +61,11 @@ const Overview = () => {
   return (
     <PageWrapper>
       <>
-        <PageTitle title="Incident overview">
+        <PageTitle
+          title={Format.incident.type(incident.type)}
+          subtitle={incident.name}
+          stage={incident.stage}
+        >
           <Box display="flex" justifyContent="end" gap={2}>
             <Button
               type="button"
@@ -128,7 +136,7 @@ const Overview = () => {
                 <GridListItem title="Telephone number" text={incident.referrer.telephone} />
                 <GridListItem title="Email" text={incident.referrer.email} />
                 <GridListItem
-                  title="Supported requested?"
+                  title="Has the referrer requested support from the local resilience team?"
                   text={incident.referrer.supportRequested}
                 />
                 {incident.referrer.supportRequested === 'Yes' && (

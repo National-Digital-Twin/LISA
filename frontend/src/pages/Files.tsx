@@ -1,47 +1,52 @@
-import { useMemo } from 'react';
+// SPDX-License-Identifier: Apache-2.0
+// © Crown Copyright 2025. This work has been developed by the National Digital Twin Programme
+// and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
+
 import { useParams } from 'react-router-dom';
 
 import { useIncidents, useLogEntriesUpdates } from '../hooks';
-import { Format } from '../utils';
 import { PageTitle } from '../components';
 import { useAttachments } from '../hooks/useAttachments';
 import Attachments from '../components/Attachments';
+import PageWrapper from '../components/PageWrapper';
+import { Format } from '../utils';
 
 export default function Files() {
   const { incidentId } = useParams();
-  const { incidents } = useIncidents();
+  const query = useIncidents();
   const { attachments } = useAttachments(incidentId);
   useLogEntriesUpdates(incidentId ?? '');
 
-  const incident = incidents?.find((inc) => inc.id === incidentId);
-  const subtitle = useMemo(() => Format.incident.name(incident), [incident]);
+  const incident = query.data?.find((inc) => inc.id === incidentId);
   if (!incident || !incidentId) {
     return null;
   }
 
   return (
-    <div className="wrapper">
-      <div className="container">
-        <PageTitle title="Incident files" subtitle={subtitle} />
-        <Attachments
-          incidentId={incidentId}
-          title="Recordings"
-          emptyMsg="No recordings"
-          attachments={attachments?.filter((att) => att.type === 'Recording') || []}
-        />
-        <Attachments
-          incidentId={incidentId}
-          title="Attachments"
-          emptyMsg="No attachments"
-          attachments={attachments?.filter((att) => att.type === 'File') || []}
-        />
-        <Attachments
-          incidentId={incidentId}
-          title="Sketches"
-          emptyMsg="No sketches"
-          attachments={attachments?.filter((att) => att.type === 'Sketch') || []}
-        />
-      </div>
-    </div>
+    <PageWrapper>
+      <PageTitle
+        title={Format.incident.type(incident.type)}
+        subtitle={incident?.name ?? ''}
+        stage={incident.stage}
+      />
+      <Attachments
+        incidentId={incidentId}
+        title="Recordings"
+        emptyMsg="No recordings"
+        attachments={attachments?.filter((att) => att.type === 'Recording') || []}
+      />
+      <Attachments
+        incidentId={incidentId}
+        title="Attachments"
+        emptyMsg="No attachments"
+        attachments={attachments?.filter((att) => att.type === 'File') || []}
+      />
+      <Attachments
+        incidentId={incidentId}
+        title="Sketches"
+        emptyMsg="No sketches"
+        attachments={attachments?.filter((att) => att.type === 'Sketch') || []}
+      />
+    </PageWrapper>
   );
 }

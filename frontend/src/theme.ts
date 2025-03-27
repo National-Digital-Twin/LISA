@@ -1,3 +1,7 @@
+// SPDX-License-Identifier: Apache-2.0
+// © Crown Copyright 2025. This work has been developed by the National Digital Twin Programme
+// and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
+
 import { createTheme } from '@mui/material';
 
 const theme = createTheme({
@@ -6,6 +10,15 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           backgroundColor: 'white'
+        }
+      }
+    },
+    MuiTab: {
+      styleOverrides: {
+        root: {
+          '&.Mui-selected': {
+            backgroundColor: '#f0f2f2'
+          }
         }
       }
     }
@@ -40,6 +53,9 @@ const theme = createTheme({
     },
     accent: {
       main: '#ffcf06'
+    },
+    border: {
+      main: '#c2c2c2'
     },
     stage: {
       monitoring: {

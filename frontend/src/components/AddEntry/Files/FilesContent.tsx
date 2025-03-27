@@ -1,13 +1,19 @@
+// SPDX-License-Identifier: Apache-2.0
+// © Crown Copyright 2025. This work has been developed by the National Digital Twin Programme
+// and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
+
 // Global imports
 import { useMemo } from 'react';
+import { Box, IconButton, Typography } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
 
 // Local imports
-import { bem, Format, Icons } from '../../../utils';
+import { bem, Format } from '../../../utils';
 import FilesSelector from '../../FilesSelector';
 
 interface Props {
   active: boolean;
-  selectedFiles: File[],
+  selectedFiles: File[];
   recordings: File[];
   onFilesSelected: (files: File[]) => void;
   removeSelectedFile: (name: string) => void;
@@ -39,48 +45,57 @@ export default function FilesContent({
     }
     return 'No selected files or recordings';
   }, [recordings, totalLength]);
+
   return (
-    <ul className={classes()}>
-      <li className="full-width field-label">{title}</li>
-      {selectedFiles.map((file) => (
-        <li key={file.name} className="full-width selected-file">
-          <span>
-            {file.name}
-            <span className="file-size">
-              {` (${Format.fileSize(file.size)})`}
-            </span>
-          </span>
-          <button
-            type="button"
-            onClick={() => removeSelectedFile(file.name)}
-            className="remove-button"
-            title="Remove file"
-          >
-            <Icons.Close />
-          </button>
-        </li>
-      ))}
+    <Box display="flex" flexDirection="column" gap={4} component="ul" className={classes()}>
+      <Typography component="li" variant="body1">
+        {title}
+      </Typography>
+      <Box component="li">
+        {selectedFiles.map((file) => (
+          <Box key={file.name} display="flex" flexDirection="row" alignItems="center" gap={1}>
+            <Typography variant="body1" color="textSecondary">
+              {file.name}
+              <Typography
+                variant="body1"
+                component="span"
+              >{` (${Format.fileSize(file.size)})`}</Typography>
+            </Typography>
+            <IconButton
+              size="small"
+              type="button"
+              onClick={() => removeSelectedFile(file.name)}
+              color="primary"
+              title="Remove file"
+            >
+              <CloseIcon />
+            </IconButton>
+          </Box>
+        ))}
+      </Box>
       {recordings.map((recording) => (
-        <li key={recording.name} className="full-width selected-file">
-          <span>
+        <Box key={recording.name} display="flex" flexDirection="row" alignItems="center" gap={1}>
+          <Typography variant="body1" color="textSecondary">
             {recording.name}
-            <span className="file-size">
-              {` (${Format.fileSize(recording.size)})`}
-            </span>
-          </span>
-          <button
+            <Typography
+              variant="body1"
+              component="span"
+            >{` (${Format.fileSize(recording.size)})`}</Typography>
+          </Typography>
+          <IconButton
+            size="small"
             type="button"
             onClick={() => removeRecording(recording.name)}
-            className="remove-button"
-            title="Remove recording"
+            color="primary"
+            title="Remove file"
           >
-            <Icons.Close />
-          </button>
-        </li>
+            <CloseIcon />
+          </IconButton>
+        </Box>
       ))}
-      <li className="full-width">
+      <li>
         <FilesSelector onSelect={onFilesSelected} />
       </li>
-    </ul>
+    </Box>
   );
 }

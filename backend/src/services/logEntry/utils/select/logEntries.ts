@@ -1,3 +1,7 @@
+// SPDX-License-Identifier: Apache-2.0
+// © Crown Copyright 2025. This work has been developed by the National Digital Twin Programme
+// and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
+
 // Global imports
 import { optional } from 'rdf-sparql-builder';
 
@@ -11,6 +15,7 @@ export function logEntries(incidentId: string) {
       [ns.data(incidentId), ns.lisa.hasLogEntry, '?id'],
       ['?id', ns.rdf.type, '?type'],
       ['?id', ns.ies.inPeriod, '?dateTime'],
+      ['?id', ns.lisa.hasSequence, '?sequence'],
       optional([
         ['?id', ns.lisa.contentText, '?contentText'],
         ['?id', ns.lisa.contentJSON, '?contentJSON'],

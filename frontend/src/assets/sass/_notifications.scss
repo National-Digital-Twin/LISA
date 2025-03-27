@@ -34,8 +34,6 @@
     }
   }
   @media screen and (max-width: 1050px) {
-    min-height: unset;
-    align-items: start;
     .alert-title {
       padding: 10px 0;
     }
@@ -43,56 +41,7 @@
 }
 
 .alerts {
-  position: relative;
-  align-self: stretch;
-  &__btn {
-    position: relative;
-    width: 40px;
-    height: 40px;
-    border: 1px solid transparent;
-    cursor: pointer;
-    svg,
-    img {
-      height: 28px;
-      width: auto;
-    }
-  }
-  &__badge {
-    position: absolute;
-    display: block;
-    background-color: colors.$red;
-    color: white;
-    padding: 2px 6px;
-    border-radius: 0.75rem;
-    top: 3px;
-    right: 3px;
-    font-size: 0.75rem;
-  }
   &__menu {
-    position: absolute;
-    top: 0;
-    right: 0;
-    background-color: white;
-    border: 1px solid colors.$grey-mid;
-    margin-top: -1px;
-    width: 460px;
-    max-height: 600px;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    &-title {
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-      height: 44px;
-      min-height: 44px;
-      padding: 0 8px 0 16px;
-      border-bottom: 1px solid colors.$grey-mid;
-      span:first-of-type {
-        display: inline-block;
-        flex-grow: 1;
-      }
-    }
     &-close {
       display: flex;
       cursor: pointer;

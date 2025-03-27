@@ -1,6 +1,11 @@
+// SPDX-License-Identifier: Apache-2.0
+// © Crown Copyright 2025. This work has been developed by the National Digital Twin Programme
+// and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
+
 import { useNavigate } from 'react-router-dom';
 
 import { type Notification } from 'common/Notification';
+import { Box, Typography } from '@mui/material';
 import getHandler from './handlers';
 import { bem } from '../../utils';
 
@@ -22,20 +27,23 @@ export default function NotificationItem({ notification, onClick }: Readonly<Pro
   const classes = bem('alerts');
 
   return (
-    <button
+    <Box
+      width="100%"
+      display="flex"
+      flexDirection="column"
+      component="button"
       type="button"
+      padding={2}
       onClick={onItemClick}
       className={classes('item', read ? 'read' : undefined)}
     >
-      <span className={classes('item-title')}>
-        <span>{title}</span>
-        {!read && (
-          <span className={classes('item-unread')} />
-        )}
-      </span>
-      <span className={classes('item-content')}>
+      <Box display="flex" width="100%" justifyContent="space-between" alignItems="center">
+        <Typography>{title}</Typography>
+        {!read && <span className={classes('item-unread')} />}
+      </Box>
+      <Box display="flex" flexDirection="column" width="100%" gap={1}>
         {Content}
-      </span>
-    </button>
+      </Box>
+    </Box>
   );
 }

@@ -1,4 +1,9 @@
+// SPDX-License-Identifier: Apache-2.0
+// © Crown Copyright 2025. This work has been developed by the National Digital Twin Programme
+// and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
+
 import { ReactNode } from 'react';
+import { Box } from '@mui/material';
 
 import { type LogEntry } from 'common/LogEntry';
 import { Format } from '../../../utils';
@@ -21,8 +26,11 @@ export default function Default({ entry }: Readonly<Props>) {
   return (
     <>
       {content}
-      {content && fields && <hr />}
-      {fields}
+      {fields && (
+        <Box width="100%" mt={4}>
+          {fields}
+        </Box>
+      )}
     </>
   );
 }

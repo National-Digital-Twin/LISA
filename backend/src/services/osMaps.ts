@@ -1,3 +1,7 @@
+// SPDX-License-Identifier: Apache-2.0
+// © Crown Copyright 2025. This work has been developed by the National Digital Twin Programme
+// and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
+
 import { Request, Response } from 'express';
 import { settings } from '../settings';
 
@@ -18,14 +22,13 @@ export async function searchLocation(req: Request<object, object, object, Query>
     url.searchParams.set('query', req.query.searchTerm);
     url.searchParams.set('output_srs', 'WGS84');
   }
-  url.searchParams.set('lr', 'EN');
+  url.searchParams.set('lr', 'EN'); 
+  url.searchParams.set('key', key);
 
   const osResp = await fetch(url, {
-    method: 'GET',
-    headers: {
-      key,
-    },
+    method: 'GET'
   });
+
   if (osResp.status !== 200) {
     res.sendStatus(osResp.status);
     console.log(`OS request has failed with status ${osResp.status}, body: ${await osResp.text()}`);

@@ -1,3 +1,7 @@
+// SPDX-License-Identifier: Apache-2.0
+// © Crown Copyright 2025. This work has been developed by the National Digital Twin Programme
+// and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
+
 // Global imports
 import 'dotenv/config';
 import { cleanEnv, num, str, url } from 'envalid';
@@ -7,7 +11,6 @@ import { fileURLToPath } from 'url';
 export const settings = cleanEnv(process.env, {
   PORT: num({ default: 3000 }),
   HOST: str({ default: 'localhost' }),
-  SERVER_URL: url({ default: 'http://localhost:3000' }),
   SCG_URL: url({ default: 'http://localhost:3030' }),
   COGNITO_USER_POOL_ID: str(),
   S3_BUCKET_ID: str(),

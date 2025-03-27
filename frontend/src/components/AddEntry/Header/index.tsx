@@ -1,25 +1,9 @@
-// Local imports
-import { bem } from '../../../utils';
-import { type ValidationError } from '../../../utils/types';
-import Tabs from './Tabs';
+// SPDX-License-Identifier: Apache-2.0
+// © Crown Copyright 2025. This work has been developed by the National Digital Twin Programme
+// and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
-interface Props {
-  hash: string;
-  fileCount: number;
-  validationErrors: Array<ValidationError>;
-  showValidationErrors: boolean;
-}
-export default function Header({
-  hash,
-  fileCount,
-  validationErrors,
-  showValidationErrors
-}: Readonly<Props>) {
-  const classes = bem('rollup-header', [], showValidationErrors ? 'validation-errors' : '');
-  return (
-    <h2 className={classes()}>
-      Create new log entry
-      <Tabs hash={hash} fileCount={fileCount} validationErrors={validationErrors} />
-    </h2>
-  );
-}
+import Header from './Header';
+import Tabs from './Tabs';
+import TabPanel from './TabPanel';
+
+export { Header, Tabs, TabPanel };
