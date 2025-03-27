@@ -6,8 +6,8 @@ Feature: Edit Incident Page
     @DPAV-562 @functional
     Scenario: Verify active and closed title are displayed on the l!sa dashboard
       And I select the Incident from the incident list
-          |incidentId|incidentName|incidentStatus|
-          |38fe39ff-1625-4115-bd76-1464770eb803|Rob|MONITORING|
+          |incidentName|incidentStatus|
+          |Playwright TEST Script001|MONITORING|
       And I click the "Edit" menu in the "OVERVIEW" menu
       When I edit the Incident with below details
             | Field        | Value         |

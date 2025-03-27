@@ -28,7 +28,7 @@ When('I select the Incident from the incident list', async (dataTable) => {
   const data = dataTable.rows()[0];
 
   dashboardPage = new IncidentDashboardPage(basePage.page);
-  await dashboardPage.selectIncidentByData(await data[0], await data[1], await data[2]);
+  await dashboardPage.selectIncidentByData(await data[0], await data[1]);
 });
 
 Given('I click the {string} menu in the {string} menu', async (menuName, navMenu) => {

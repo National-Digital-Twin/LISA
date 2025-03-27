@@ -15,7 +15,7 @@ export default class IncidentDashboardPage {
     incidentH1: '.title',
     closedIncident: '.subtitle',
     selectIncidentByNameStatus:
-      "//tr[td[contains(text(),'$DATAINCIDENTID$')] and td[5]//span[contains(text(),'$DATASTATUS$')]]//a[@data-discover='true' and contains(text(),'$DATAINCIDENTNAME$')]",
+      "//tr[td[1]/a[text()='$DATAINCIDENTNAME$']  and td[last()]//span[contains(text(),'$DATASTATUS$')]]/td[1]",
 
     editIncidentReferredBy: '//input[@id="referrer.name"]',
     editIncidentOrganisation: '//input[@id="referrer.organisation"]',
@@ -89,9 +89,8 @@ export default class IncidentDashboardPage {
     await this.page.getByRole('link', { name: `${incidentName} ${incidentStatus}` }).click();
   }
 
-  async selectIncidentByData(incidentId: string, incidentName: string, incidentStatus: string) {
+  async selectIncidentByData(incidentName: string, incidentStatus: string) {
     await this.page.locator(this.Elements.selectIncidentByNameStatus
-      .replace('$DATAINCIDENTID$', incidentId)
       .replace('$DATASTATUS$', incidentStatus)
       .replace('$DATAINCIDENTNAME$', incidentName)).click();
   }
