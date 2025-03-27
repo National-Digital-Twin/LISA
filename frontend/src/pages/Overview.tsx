@@ -62,7 +62,7 @@ const Overview = () => {
     <PageWrapper>
       <>
         <PageTitle
-          title={incident?.type ?? ''}
+          title={Format.incident.type(incident.type)}
           subtitle={incident?.name ?? ''}
           stage={incident.stage}
         >
