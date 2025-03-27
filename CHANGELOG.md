@@ -21,7 +21,14 @@ This project follows **Semantic Versioning (SemVer)** ([semver.org](https://semv
  Since this release is **pre-1.0.0**, changes may still occur that are **not fully backward-compatible**.
 
  #### Initial Features
- - Key functionality for [feature/module name].
+ - Recording and managing incidents, including updating the current stage
+ - Viewing incident details, including the incident overview, logbook, files, and locations
+ - Searching and filtering the logbook within an incident
+ - Capturing log entries within an incident, with the ability to tag other users, logs and files
+ - Uploading files and audio recordings within a log entry, where they can then be viewed as an attachment to a log entry
+ - Adding a sketch to a log entry, using the sketch tool, where they can then be viewed as an attachment to a log entry
+ - Capturing location details within a log entry
+ - Receiving in-system notifications when tagged within a log description
 
  #### Known Limitations
  - Some components are subject to change before `1.0.0`.
