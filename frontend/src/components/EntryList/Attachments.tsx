@@ -1,3 +1,7 @@
+// SPDX-License-Identifier: Apache-2.0
+// © Crown Copyright 2025. This work has been developed by the National Digital Twin Programme
+// and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
+
 import { type LogEntry } from 'common/LogEntry';
 import { Box, Typography } from '@mui/material';
 import AttachmentLink from '../AttachmentLink';
@@ -25,7 +29,3 @@ export default function Attachments({ entry }: Readonly<Props>) {
     </Box>
   );
 }
-
-// SPDX-License-Identifier: Apache-2.0
-// © Crown Copyright 2025. This work has been developed by the National Digital Twin Programme
-// and is legally attributed to the Department for Business and Trade (UK) as the governing entity.

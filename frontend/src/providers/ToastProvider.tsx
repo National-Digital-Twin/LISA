@@ -1,3 +1,7 @@
+// SPDX-License-Identifier: Apache-2.0
+// © Crown Copyright 2025. This work has been developed by the National Digital Twin Programme
+// and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
+
 import { PropsWithChildren, useCallback, useMemo, useState } from 'react';
 import { ToastContextType, ToastEntry } from '../utils/types';
 import { ToastContext } from '../context/ToastContext';
@@ -29,7 +33,3 @@ export default function ToastProvider({ children }: Readonly<PropsWithChildren>)
 
   return <ToastContext.Provider value={value}>{children}</ToastContext.Provider>;
 }
-
-// SPDX-License-Identifier: Apache-2.0
-// © Crown Copyright 2025. This work has been developed by the National Digital Twin Programme
-// and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
