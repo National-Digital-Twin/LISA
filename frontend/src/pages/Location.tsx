@@ -6,6 +6,7 @@ import { useLocation, useParams } from 'react-router-dom';
 import { IncidentMap, PageTitle } from '../components';
 import { useIncidents, useLogEntries, useLogEntriesUpdates } from '../hooks';
 import PageWrapper from '../components/PageWrapper';
+import { Format } from '../utils';
 
 const Location = () => {
   const { hash } = useLocation();
@@ -27,7 +28,7 @@ const Location = () => {
   return (
     <PageWrapper>
       <PageTitle
-        title={incident?.type ?? ''}
+        title={Format.incident.type(incident.type)}
         subtitle={incident?.name ?? ''}
         stage={incident.stage}
       />

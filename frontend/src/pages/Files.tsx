@@ -5,6 +5,7 @@ import { PageTitle } from '../components';
 import { useAttachments } from '../hooks/useAttachments';
 import Attachments from '../components/Attachments';
 import PageWrapper from '../components/PageWrapper';
+import { Format } from '../utils';
 
 export default function Files() {
   const { incidentId } = useParams();
@@ -20,7 +21,7 @@ export default function Files() {
   return (
     <PageWrapper>
       <PageTitle
-        title={incident?.type ?? ''}
+        title={Format.incident.type(incident.type)}
         subtitle={incident?.name ?? ''}
         stage={incident.stage}
       />
