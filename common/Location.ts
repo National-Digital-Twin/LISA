@@ -8,7 +8,7 @@ const LocationType = Union(
   Literal('both')
 );
 
-const Coordinates = Record({
+export const Coordinates = Record({
   latitude: Number,
   longitude: Number
 });

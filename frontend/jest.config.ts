@@ -9,5 +9,7 @@ export default {
     '^common/(.*)$': '<rootDir>/../common/$1',
     '^(.*).svg\\?react$': '$1.svg'
   },
-  setupFilesAfterEnv: ['<rootDir>/src/setupTests.ts']
+  setupFilesAfterEnv: ['<rootDir>/src/setupTests.ts'],
+  coveragePathIgnorePatterns: ['/node_modules/', '\\.svg$'],
+  coverageReporters: ['text', 'text-summary', 'lcov', 'json']
 };
