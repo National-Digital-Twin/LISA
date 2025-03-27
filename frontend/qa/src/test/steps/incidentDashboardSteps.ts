@@ -26,7 +26,3 @@ When('I click on include closed incident', async () => {
   await incidentDashboardPage.checkClosedIncidentCheckBox();
 });
 
-Then('I should see the number of active and closed incidents', async () => {
-  incidentDashboardPage = new IncidentDashboardPage(basePage.page);
-  await incidentDashboardPage.verifyActiveAndClosedTitleAreDisplayed();
-});

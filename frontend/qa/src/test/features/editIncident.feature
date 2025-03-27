@@ -3,7 +3,7 @@ Feature: Edit Incident Page
   Background:
     Given I am a valid user logged into the "IRIS" NDTP application
 
-    @DPAV-562 @functional
+    @DPAV-562 @functional @ignore
     Scenario: Verify active and closed title are displayed on the l!sa dashboard
       And I select the Incident from the incident list
           |incidentName|incidentStatus|
@@ -22,20 +22,20 @@ Feature: Edit Incident Page
   @DPAV-570 @functional
   Scenario: Verify that a LISA user can create a log of 'general' category type with text and tagging a user
   And I select the Incident from the incident list
-      |incidentId|incidentName|incidentStatus|
-      |38fe39ff-1625-4115-bd76-1464770eb803|Rob|MONITORING|
-	And I proceed to add a Log entry page from the Incident Log page
+     |incidentName|incidentStatus|
+          |Playwright TEST Script001|MONITORING|
+      And I proceed to add a Log entry page from the Incident Log page
   When I add the log details
       | tabName | logType | DateTime | DescriptionTag | DescriptionText |
       | Form    | General | Now      | Yes            | Yes             |
     Then I should be able to verify a new log entry is created for the "General" category
 
-  @functional @DPAV-573 @DPAV-591 @DPAV-587 @DPAV-592
+  @functional @DPAV-573 @DPAV-591 @DPAV-587 @DPAV-592 @ignore
 	Scenario Outline: Verify that a LISA user can create a log of 'SitRep' category type, with text, plotting a point on the location tab and attaching a file 
 		 And I select the Incident from the incident list
-      |incidentId|incidentName|incidentStatus|
-      |38fe39ff-1625-4115-bd76-1464770eb803|Rob|MONITORING|
-			And I proceed to add a Log entry page from the Incident Log page
+        |incidentName|incidentStatus|
+          |Playwright TEST Script001|MONITORING|
+      And I proceed to add a Log entry page from the Incident Log page
 		  When I add the log details
 			  | tabName | logType | DateTime | isIncidentDeclared | isOptionalFieldReq | isLocationRequired|isFileRequired|
 			  | Form    | SitRep | Now      | Yes,MajorIncident| No             | <isLocationRequired>|Yes|

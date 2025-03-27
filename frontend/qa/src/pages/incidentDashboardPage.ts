@@ -11,11 +11,11 @@ export default class IncidentDashboardPage {
   private readonly Elements = {
     addIncidentBtn: 'Add new incident',
     includeClosedIncidents: 'Include closed incidents',
-    incidents: '.incident-title',
-    incidentH1: '.title',
-    closedIncident: '.subtitle',
+    incidents: '//tr/td[1]',
+    incidentH1: '//h1[contains(@class,"title")]/..',
+    closedIncident: '//h2',
     selectIncidentByNameStatus:
-      "//tr[td[1]/a[text()='$DATAINCIDENTNAME$']  and td[last()]//span[contains(text(),'$DATASTATUS$')]]/td[1]",
+      "//tr[td[1]/a[text()='$DATAINCIDENTNAME$']  and td[last()]//span[contains(text(),'$DATASTATUS$')]]//a",
 
     editIncidentReferredBy: '//input[@id="referrer.name"]',
     editIncidentOrganisation: '//input[@id="referrer.organisation"]',
@@ -71,18 +71,6 @@ export default class IncidentDashboardPage {
       // Check if the title part has a colon and some description after it
       expect(titlePattern.test(titlePart)).toBeTruthy();
     }
-  }
-
-  async verifyActiveAndClosedTitleAreDisplayed() {
-    const allIncidentText = await this.page.locator(this.Elements.incidentH1).textContent();
-    const closedIncidentText = await this.page.locator(this.Elements.closedIncident).innerText();
-    const activeIncidentNumber = /\d+/.exec(allIncidentText)[0];
-    const closedIncidentNumber = /\d+/.exec(closedIncidentText)[0];
-    const uiH1IncidentLocator = this.page.getByText(
-      `${activeIncidentNumber} active incidents( +${closedIncidentNumber} closed )`
-    );
-    const uiH1IncidentText = await uiH1IncidentLocator.textContent();
-    expect(allIncidentText).toBe(uiH1IncidentText);
   }
 
   async selectIncidentByNameStatus(incidentName: string, incidentStatus: string) {

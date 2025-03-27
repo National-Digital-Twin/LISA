@@ -10,20 +10,22 @@ import { basePage } from '../hooks/basePage';
 const Elements = {
   txtPageName: "//div[contains(@class,'page-title')]//h1",
   btnAddLogEntry: "//button[contains(text(),'Add log entry')]",
-  isLogTabActive: "//a[contains(@class,'active') and contains(text(),'$LINKNAME$')]",
+  isLogTabActive: "//a[@aria-selected='true' and contains(@id,'$LINKNAME$')]",
   linkLogEntryTab: "//h2[@class='rollup-header']//a[starts-with(text(),'$LINKNAME$')]",
-  ddCategoryById: "//div[@id='$DROPDOWNBYID$']//div[@data-value]",
-  ddSelectCategory: "//div[starts-with(@id,'react-select-')]//span[contains(text(),'$DropdownOption$') and @class='option-label__label']",
+  ddCategoryById: "//label[@for='$DROPDOWNBYID$']/..//input",
+  ddSelectCategory: "//li[contains(text(),'$DropdownOption$')]",
   btnDateTimeNow: "//a[@class='date-now']",
   inpDescriptionTxt: "//div[@class='editor-input']",
-  btnSaveLog: "//button[@class='button submit']",
+  btnSaveLog: "//button[.='Save']",
   getLogEntryList: '//div[@class="log-entry-list"]//div[@class="item__header"]',
-
+  DateTimeAsNow: "//button[.='< Now']",
+  
   btnFormExactLocation: '//div[@id="ExactLocation"]//button[.="$BUTTONSTATE$"]',
   txtFormTabByID: '//textarea[@id="$TEXTAREABYID$"]',
   inpFormLocationDescription: '//input[@id="location.description"]',
 
   inpFileUpload: '//input[@id="fileUpload"]',
+  taggedUserPopup: '//div[@id="typeahead-menu"]//span',
 
 };
 
@@ -86,7 +88,7 @@ export default class EditIncidentLogPage {
   }
 
   async updateLogTabFormDateTimeNow(inpString: string) {
-    if (inpString === 'Now') await this.page.getByRole('link', { name: '< Now' }).click();
+    if (inpString === 'Now') await this.page.locator(Elements.DateTimeAsNow).click();
   }
 
   async updateLogTabFormDesc(boolTagUser: boolean, boolAddDesc: boolean) {
@@ -95,7 +97,7 @@ export default class EditIncidentLogPage {
 
       await this.page.locator(Elements.inpDescriptionTxt).type(`@${randomUsername.slice(0, 4)}`);
       await basePage.customSleep(500);
-      await this.page.getByRole('listbox', { name: 'Typeahead menu' }).getByText(randomUsername).click();
+      await this.page.locator(Elements.taggedUserPopup).getByText(randomUsername).click();
     }
 
     if (boolAddDesc) {

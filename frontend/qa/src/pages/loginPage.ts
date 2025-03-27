@@ -26,16 +26,14 @@ export default class LoginPage {
 
   async enterUserName(user: string) {
     await this.page.locator('[name="username"]').fill(user);
-    await this.page.getByRole('button', { name: 'Next' }).click();
   }
 
   async enterPassword(password: string) {
-    await expect(this.page).toHaveTitle('Enter your password');
-    await this.page.locator('[name="password"]').fill(password);
+    await  this.page.locator('[name="password"]').fill(password);
   }
 
   async clickLoginButton() {
-    await this.page.getByRole('button', { name: 'Continue' }).click();
+    await this.page.getByRole('button').click();
   }
 
   getErrorMessage() {

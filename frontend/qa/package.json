@@ -4,7 +4,7 @@
   "description": "BoilerPlate for the National Digital Twin Project",
   "main": "index.js",
   "scripts": {
-    "debug": "cross-env ENV=demo PWDEBUG=1 DEBUG=pw:api cucumber-js --config=config/cucumber.js",
+    "debug": "cross-env PWDEBUG=1 DEBUG=pw:api cucumber-js --config=config/cucumber.js",
     "pretest": "npx ts-node src/helper/report/init.ts",
     "test": "cross-env FORCE_COLOR=0 cucumber-js --config=config/cucumber.js || true",
     "posttest": "npx ts-node src/helper/report/report.ts",

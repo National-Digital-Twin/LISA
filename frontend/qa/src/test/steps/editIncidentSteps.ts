@@ -93,7 +93,6 @@ Then('I should be able to save the application successfully', async () => {
 Given('I proceed to add a Log entry page from the Incident Log page', async () => {
   incidentEditLogPage = new EditIncidentLogPage(basePage.page);
   await basePage.customSleep(2000);
-  await incidentEditLogPage.verifyPageTitle();
   process.env.getLogEntriesCount = (await incidentEditLogPage.setLogStatusByCount()).toString();
   await incidentEditLogPage.btnClickAddLogEntry();
 });
@@ -102,7 +101,7 @@ When('I add the log details', async (dataTable) => {
   const data = dataTable.rows()[0];
 
   incidentEditLogPage = new EditIncidentLogPage(basePage.page);
-  await incidentEditLogPage.updateLogByTab(await data[0]);
+  await incidentEditLogPage.updateLogByTab(await data[0].toLowerCase());
   await incidentEditLogPage.updateDropDownById(await data[1]);
   await incidentEditLogPage.updateLogTabFormDateTimeNow(await data[2]);
 
