@@ -3,8 +3,8 @@ name: Backend CI on PR
 on:
   workflow_call:
   pull_request:
-    branches-ignore:
-      - 'main'
+    branches:
+      - 'develop'
     paths:
       - "backend/**"
       - ".github/workflows/backend-ci-pr.yml"

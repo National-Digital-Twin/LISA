@@ -7,6 +7,10 @@ import { type IncidentType } from 'common/IncidentType';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { IncidentTypes } from 'common/IncidentTypes';
 
-export function type(incidentType: IncidentType): string {
+export function type(incidentType: IncidentType | undefined): string {
+  if(!incidentType) {
+    return '';
+  }
+  
   return IncidentTypes[incidentType].label;
 }
