@@ -29,11 +29,11 @@ describe('FormFooter Tests', () => {
       />
     );
 
-    const button = screen.getByRole('link', { name: 'Show' });
+    const button = screen.getByRole('button', { name: 'Show error' });
     expect(button).toBeInTheDocument();
     await userEvent.click(button);
     expect(mockOnShowValidationErrors).toHaveBeenCalledTimes(1);
-    expect(screen.getByRole('link', { name: 'Hide' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Hide error' })).toBeInTheDocument();
   });
   it('handles onCancel', async () => {
     providersRender(
@@ -44,7 +44,7 @@ describe('FormFooter Tests', () => {
         onShowValidationErrors={mockOnShowValidationErrors}
       />
     );
-    const button = screen.getByRole('link', { name: 'Cancel' });
+    const button = screen.getByRole('button', { name: 'Cancel' });
     expect(button).toBeInTheDocument();
     await userEvent.click(button);
     expect(mockOnCancel).toHaveBeenCalledTimes(1);

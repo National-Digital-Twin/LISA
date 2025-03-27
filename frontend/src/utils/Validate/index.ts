@@ -139,6 +139,8 @@ const Validate = {
   }
 };
 
+export { getErrorText, extractErrors, hasValue };
+
 export default Validate;
 
 // SPDX-License-Identifier: Apache-2.0
