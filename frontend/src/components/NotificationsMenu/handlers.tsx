@@ -41,7 +41,7 @@ function userMention(notification: Notification, navigate: NavigateFunction): Ha
           <Box display="flex" gap={1} alignItems="center">
             <PersonIcon fontSize="small" />
             <Typography fontSize="small" variant="body1">
-              Robert Sinclair{Format.user(entry.author)}
+              {Format.user(entry.author)}
             </Typography>
           </Box>
           <Box display="flex" gap={1} alignItems="center">
