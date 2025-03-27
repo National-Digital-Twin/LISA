@@ -1,79 +1,93 @@
-# Project Overview
+# README  
 
-LISA (Local Incident Services Application) is a web-based crisis and incident management application designed to support real-time decision-making, structured logging, and cross-agency collaboration during emergency incidents. It allows teams to digitally manage incidents, capture critical information, and securely share updates across stakeholders, improving coordination and response times.
+**Repository:** `LISA`  
+**Description:** `This repository contains both the frontend and backend of LISA, along with a transparent proxy that will mask sensitive requests. LISA (Local Incident Services Application) is a web-based crisis and incident management application designed to support real-time decision-making, structured logging, and cross-agency collaboration during emergency incidents.`  
+**SPDX-License-Identifier:** `Apache-2.0 AND OGL-UK-3.0 `  
 
-# Repository Description
+## Overview  
+This repository contributes to the development of **secure, scalable, and interoperable data-sharing infrastructure**. It supports NDTP’s mission to enable **trusted, federated, and decentralised** data-sharing across organisations.  
 
-This repository contains both the frontend and backend of LISA, along with a transparent proxy that will mask sensitive requests.
+This repository is one of several open-source components that underpin NDTP’s **Integration Architecture (IA)**—a framework designed to allow organisations to manage and exchange data securely while maintaining control over their own information. The IA is actively deployed and tested across multiple sectors, ensuring its adaptability and alignment with real-world needs.  
 
-# Configuring
+## Prerequisites  
+Before using this repository, ensure you have the following dependencies installed:  
+- **Required Tooling:** Docker, NodeJS (20+), NPM  
+- **System Requirements:** Dual-Core CPU (Intel i5 or AMD Ryzen 3 equivalent), 8GB RAM, SSD/HDD with 10GB free space
 
-1. Install docker and nodejs (version 20+)
+## Quick Start  
+Follow these steps to get started quickly with this repository. For detailed installation, configuration, and deployment, refer to the relevant MD files.  
 
-2. Make sure you build the docker image for the secure agent graph. This can be done by navigating to the deployment/sag folder and running the following command:
+### 1. Download and Build  
 
-Before running the command please login in to the GitHub container registry using the following command:
+Clone and download the repository:
+```sh  
+git clone https://github.com/National-Digital-Twin/LISA.git  
+cd LISA  
+```
+
+Before building the Secure Agent Graph, login in to the GitHub container registry using the following command:
+
 ```bash
 echo <my-pat-token> | docker login ghcr.io -u <my-username> --password-stdin
 ```
+
+Build the docker image for the Secure Agent Graph. This can be done by navigating to the deployment/sag folder and running the following command:
 
 ```bash
 docker build -t lisa/secure-agent-graph .
 ```
 
-3. Ask for the AWS API token. It is required to access the Cognito API.
-4. Copy backend/.env-iam-template to backend/.env-iam replacing the AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY.
+Run the following command to start the frontend:
 
-# Github Access Token
-
-1. Create a personal access token on GitHub - https://github.com/settings/tokens - create a classic token with read:packages permission store this safely and make sure to add as an environment variable;
-2. Create a environment variable to store and persist this token. In your terminal run: vim or nano ~/.bashrc
-3. In the file place export GITHUB_ACCESS_TOKEN=ghp_xxxxx
-4. Restart your bash session source ~/.bashrc. Then run echo $GITHUB_ACCESS_TOKEN to confirm it's worked.
-5. run the usual npm install.
-
-# Running
-
-1. In the main app folder run:
-
-```shell
-npm run start
+```bash
+npm run dev:frontend
 ```
 
-This will start watchers for both the frontend and the backend.
+Run the following command to start the backend:
 
-# Docker build configuration
-
-### Backend
-
-Ensure the backend layer has been bundled and then run the following command from the root directory.
-```shell
-docker build -t lisa/backend -f Dockerfile.backend .
+```bash
+npm run dev:backend
 ```
-The built image can then be run, but requires the appropriate env vars to be passed in on start.
 
-### Frontend
-
-Run the following command from the root directory.
-```shell
-docker build \
-  --build-arg BACKEND_URL="http://localhost:3000" \
-  --build-arg BACKEND_HOST="localhost:3000" \
-  --build-arg NPM_TOKEN="<GithubAccessToken>" \
-  -t lisa/frontend \
-  -f Dockerfile.frontend \
-  .
+### 2. Run Build Version  
+```sh  
+npm build --version  
 ```
-The built image can then be run.
 
-## Running local code development tools
+### 3. Full Installation  
+Refer to [INSTALLATION.md](INSTALLATION.md) for detailed installation steps, including required dependencies and setup configurations.  
 
-See [RUNNING_CODE_DEV_TOOLS.md](./developer_docs/RUN_CODE_DEV_TOOLS.md) for more information.
+### 4. Uninstallation  
+For steps to remove this repository and its dependencies, see [UNINSTALL.md](UNINSTALL.md).  
 
-## Contributors
+## Features  
+Include a brief list of key features provided by this repository. These should highlight what makes the project valuable to users and contributors. Examples of features might include:  
+- **Core functionality** LISA (Local Incident Services Application) is a web-based crisis and incident management application designed to support real-time decision-making, structured logging, and cross-agency collaboration during emergency incidents. It allows teams to digitally manage incidents, capture critical information, and securely share updates across stakeholders, improving coordination and response times. 
+- **Key integrations** Provides REST API endpoints for integration with the IA node.
+- **Scalability & performance** Optimised for high performance under significant load.
 
-The development of these works has been made possible with thanks to our [contributors](https://github.com/National-Digital-Twin/LISA/graphs/contributors).
+## Public Funding Acknowledgment  
+This repository has been developed with public funding as part of the National Digital Twin Programme (NDTP), a UK Government initiative. NDTP, alongside its partners, has invested in this work to advance open, secure, and reusable digital twin technologies for any organisation, whether from the public or private sector, irrespective of size.  
 
+## License  
+This repository contains both source code and documentation, which are covered by different licenses:  
+- **Code:** Originally developed by [Original Developer, if applicable], now maintained by National Digital Twin Programme. Licensed under the Apache License 2.0.  
+- **Documentation:** Licensed under the Open Government Licence v3.0.  
 
-© Crown Copyright 2025. This work has been developed by the National Digital Twin Programme and is legally attributed to the Department for Business and Trade (UK) as the governing entity.  
-Licensed under the Open Government Licence v3.0.  
+See `LICENSE.md`, `OGL_LICENCE.md`, and `NOTICE.md` for details.  
+
+## Security and Responsible Disclosure  
+We take security seriously. If you believe you have found a security vulnerability in this repository, please follow our responsible disclosure process outlined in `SECURITY.md`.  
+
+## Contributing  
+We welcome contributions that align with the Programme’s objectives. Please read our `CONTRIBUTING.md` guidelines before submitting pull requests.  
+
+## Acknowledgements  
+This repository has benefited from collaboration with various organisations. For a list of acknowledgments, see `ACKNOWLEDGEMENTS.md`.  
+
+## Support and Contact  
+For questions or support, check our Issues or contact the NDTP team on ndtp@businessandtrade.gov.uk.
+
+**Maintained by the National Digital Twin Programme (NDTP).**  
+
+© Crown Copyright 2025. This work has been developed by the National Digital Twin Programme and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
