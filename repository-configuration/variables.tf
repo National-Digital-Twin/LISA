@@ -13,7 +13,7 @@ variable "organisation" {
 variable "repository_description" {
   description = "GitHub repository description."
   type        = string
-  default     = ""
+  default     = "LISA is a web-based tool for crisis and incident management. It helps teams log events, share updates securely, and work together during emergencies, improving coordination and response times."
 }
 
 variable "requirement_tracking_url_base" {
