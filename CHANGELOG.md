@@ -15,6 +15,13 @@ This project follows **Semantic Versioning (SemVer)** ([semver.org](https://semv
 
  ---
 
+ ## [0.90.1] – 2025-03-28
+
+ ### Documentation
+
+ - Updated User Guide
+
+
  ## [0.90.0] – 2025-03-28
 
  ### Initial Public Release (Pre-Stable)

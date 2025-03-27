@@ -5,9 +5,9 @@
 **SPDX-License-Identifier:** `Apache-2.0 AND OGL-UK-3.0 `  
 
 ## Overview  
-This repository contributes to the development of **secure, scalable, and interoperable data-sharing infrastructure**. It supports NDTP’s mission to enable **trusted, federated, and decentralised** data-sharing across organisations.  
-
-This repository is one of several open-source components that underpin NDTP’s **Integration Architecture (IA)**—a framework designed to allow organisations to manage and exchange data securely while maintaining control over their own information. The IA is actively deployed and tested across multiple sectors, ensuring its adaptability and alignment with real-world needs.  
+LISA (Local Incident Services Application) is a web-based crisis and incident management application designed to support real-time decision-making, structured logging, and cross-agency collaboration during emergency incidents. It allows teams to digitally manage incidents, capture critical information, and securely share updates across stakeholders, improving coordination and response times. L!SA is part of the NDTP Demonstrator Programme.
+ 
+This repository functions as the frontend and backend of LISA. It provides the necessary REST styled endpoints to serve and route data from the IA (Integration Architecture) to the frontend and provides the necessary UI components to allow users to add and view incidents and log entries.
 
 ## Prerequisites  
 Before using this repository, ensure you have the following dependencies installed:  
