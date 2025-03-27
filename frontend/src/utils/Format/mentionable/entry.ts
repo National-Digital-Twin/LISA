@@ -1,3 +1,7 @@
+// SPDX-License-Identifier: Apache-2.0
+// © Crown Copyright 2025. This work has been developed by the National Digital Twin Programme
+// and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
+
 // Local imports
 import { type LogEntry } from 'common/LogEntry';
 // eslint-disable-next-line import/no-extraneous-dependencies
@@ -32,7 +36,3 @@ export function entry(logEntry: LogEntry, noType = false): Mentionable {
   const id = logEntry.id ?? '';
   return { id, label: getLabel(logEntry, noType), type: 'LogEntry' };
 }
-
-// SPDX-License-Identifier: Apache-2.0
-// © Crown Copyright 2025. This work has been developed by the National Digital Twin Programme
-// and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
