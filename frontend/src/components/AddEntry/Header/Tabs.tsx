@@ -3,7 +3,7 @@
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
 // Local imports
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Tabs, Tab, Box } from '@mui/material';
 import { Link } from 'react-router-dom';
 import { type ValidationError } from '../../../utils/types';
@@ -14,11 +14,13 @@ interface Props {
   fileCount: number;
   validationErrors: Array<ValidationError>;
   showValidationErrors: boolean;
+  hash: string;
 }
 export default function TabNavigation({
   fileCount,
   validationErrors,
-  showValidationErrors
+  showValidationErrors,
+  hash
 }: Readonly<Props>) {
   const { isMobile } = useResponsive();
   const hasLocationError: boolean = useMemo(
@@ -35,6 +37,10 @@ export default function TabNavigation({
   const handleChange = (_: React.SyntheticEvent, newValue: string) => {
     setActive(newValue);
   };
+
+  useEffect(() => {
+    if (hash !== active) setActive(hash);
+  }, [hash, active]);
 
   const tabMeta = [
     { label: 'Form', value: TABS.FORM, error: hasFormError },

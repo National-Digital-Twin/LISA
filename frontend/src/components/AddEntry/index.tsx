@@ -188,6 +188,7 @@ const AddEntry = ({
           fileCount={selectedFiles.length + recordings.length}
           validationErrors={validationErrors}
           showValidationErrors={showValidationErrors}
+          hash={hash}
         />
         <Box padding={2} component="form" bgcolor="background.default" id="rollup-log-book-entry">
           <TabPanel value={TABS.FORM} hash={hash}>

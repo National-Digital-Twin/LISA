@@ -15,7 +15,8 @@ import {
   Button,
   Divider,
   Tabs,
-  Tab
+  Tab,
+  Modal
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
@@ -118,6 +119,7 @@ const Header = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [accountAnchorEl, setAccountAnchorEl] = useState<null | HTMLElement>(null);
   const [active, setActive] = useState('');
+  const [openGuide, setOpenGuide] = useState(false);
   const openNav = Boolean(anchorEl);
   const openAccount = Boolean(accountAnchorEl);
 
@@ -132,7 +134,7 @@ const Header = () => {
       if (selected) setActive(`${selected.to}/${incident.id}`);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [hasSubItems, cPage]);
+  }, [hasSubItems, cPage, pathname]);
 
   const handleChange = (_: React.SyntheticEvent, newValue: string) => {
     setActive(newValue);
@@ -257,7 +259,7 @@ const Header = () => {
                     <Button
                       variant="text"
                       color="secondary"
-                      onClick={() => null}
+                      onClick={() => setOpenGuide(!openGuide)}
                       startIcon={<AccountBoxOutlinedIcon />}
                       sx={{ textTransform: 'none' }}
                     >
@@ -345,6 +347,57 @@ const Header = () => {
           </Tabs>
         </Box>
       )}
+      <Modal open={openGuide} onClose={() => setOpenGuide(!openGuide)}>
+        <Box
+          display="flex"
+          flexDirection="column"
+          gap={2}
+          position="absolute"
+          top={isBelowMd ? 0 : '50%'}
+          left={isBelowMd ? 0 : '50%'}
+          bgcolor="background.paper"
+          sx={{
+            transform: isBelowMd ? 'translate(0, 0)' : 'translate(-50%, -50%)',
+            borderRadius: 1
+          }}
+          height={isBelowMd ? '100%' : 'auto'}
+          justifyContent={isBelowMd ? 'center' : 'none'}
+          maxWidth={600}
+          padding={4}
+          border={0}
+        >
+          <Typography variant="h5" component="h2">
+            Download L!SA user guide
+          </Typography>
+          <Typography variant="body1" color="textSecondary">
+            The user guide contains information on the different features and functionality of the
+            L!SA tool, as well as a troubleshooting guide. The troubleshooting guide is there to
+            help with any issues you might encounter when using the tool.
+          </Typography>
+          <Box
+            display="flex"
+            justifyContent="flex-end"
+            flexDirection="row"
+            flexWrap="wrap"
+            gap={1}
+            mt={2}
+          >
+            <Button variant="text" onClick={() => setOpenGuide(!openGuide)}>
+              Cancel
+            </Button>
+            <Button
+              type="button"
+              variant="contained"
+              href="/documents/NDTP_L!SA User Guide.pdf"
+              download="/documents/NDTP_L!SA User Guide.pdf"
+              target="_blank"
+              rel="noopender noreferrer"
+            >
+              Download user guide
+            </Button>
+          </Box>
+        </Box>
+      </Modal>
     </Box>
   );
 };

@@ -11,11 +11,13 @@ interface Props {
   fileCount: number;
   validationErrors: Array<ValidationError>;
   showValidationErrors: boolean;
+  hash: string;
 }
 export default function Header({
   fileCount,
   validationErrors,
-  showValidationErrors
+  showValidationErrors,
+  hash
 }: Readonly<Props>) {
   return (
     <Box>
@@ -26,6 +28,7 @@ export default function Header({
         fileCount={fileCount}
         validationErrors={validationErrors}
         showValidationErrors={showValidationErrors}
+        hash={hash}
       />
     </Box>
   );
