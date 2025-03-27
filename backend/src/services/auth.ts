@@ -1,3 +1,7 @@
+// SPDX-License-Identifier: Apache-2.0
+// © Crown Copyright 2025. This work has been developed by the National Digital Twin Programme
+// and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
+
 import { Request, Response } from 'express';
 
 import { getUsers } from '../auth/cognito';
@@ -70,7 +74,3 @@ export async function logoutLinks(_req: Request, res: Response) {
 export async function users(_req: Request, res: Response) {
   res.json(await getUsers());
 }
-
-// SPDX-License-Identifier: Apache-2.0
-// © Crown Copyright 2025. This work has been developed by the National Digital Twin Programme
-// and is legally attributed to the Department for Business and Trade (UK) as the governing entity.

@@ -1,3 +1,7 @@
+// SPDX-License-Identifier: Apache-2.0
+// © Crown Copyright 2025. This work has been developed by the National Digital Twin Programme
+// and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
+
 // Global imports
 import 'dotenv/config';
 import { cleanEnv, num, str, url } from 'envalid';
@@ -25,7 +29,3 @@ const filename = fileURLToPath(import.meta.url); // get the resolved path to the
 const dirname = path.dirname(filename); // get the name of the directory
 
 export const baseDir = `${dirname}/../dist`;
-
-// SPDX-License-Identifier: Apache-2.0
-// © Crown Copyright 2025. This work has been developed by the National Digital Twin Programme
-// and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
