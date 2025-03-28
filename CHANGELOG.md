@@ -15,6 +15,12 @@ This project follows **Semantic Versioning (SemVer)** ([semver.org](https://semv
 
  ---
 
+ ## [0.90.2] – 2025-03-28
+
+ ### Bugfix
+
+ - Fixed issue with editing incident (500 reported from logEntry endpoint)
+
  ## [0.90.1] – 2025-03-28
 
  ### Documentation
