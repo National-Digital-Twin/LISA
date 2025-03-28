@@ -33,6 +33,7 @@ import Sketch from './Sketch';
 import { type OnCreateEntry } from '../../utils/handlers';
 import { useAttachments } from '../../hooks/useAttachments';
 import { getSortedEntriesWithDisplaySequence } from '../../utils/sortEntries';
+import { createSequenceNumber } from '../../utils/Form/sequence';
 
 type AddEntryProps = {
   incident?: Incident;
@@ -41,17 +42,6 @@ type AddEntryProps = {
   onCancel: () => void;
   loading?: boolean;
 };
-
-const createSequenceNumber = (date: Date) =>
-  [
-    date.getDate(),
-    date.getMonth() + 1, // to account for zero based indexing on the month
-    date.getHours(),
-    date.getMinutes(),
-    date.getSeconds()
-  ]
-    .map((element) => String(element).padStart(2, '0'))
-    .join('');
 
 const AddEntry = ({
   incident = undefined,

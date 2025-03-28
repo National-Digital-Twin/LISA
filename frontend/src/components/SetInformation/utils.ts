@@ -9,6 +9,7 @@ import { type LogEntry } from 'common/LogEntry';
 import { LogEntryTypes } from 'common/LogEntryTypes';
 import { type ValidationError } from '../../utils/types';
 import { Validate } from '../../utils';
+import { createSequenceNumber } from '../../utils/Form/sequence';
 
 function getIncidentValue(incident: Incident, field: Field): string | undefined {
   const { id } = field;
@@ -31,7 +32,8 @@ function makeEntryFromIncident(incident: Incident, entry?: Partial<LogEntry>): P
     incidentId: incident.id,
     dateTime: '',
     content: {},
-    fields: []
+    fields: [],
+    sequence: createSequenceNumber(new Date())
   };
   const type = LogEntryTypes.SetIncidentInformation;
   type?.fields(logEntry).forEach((field) => {
