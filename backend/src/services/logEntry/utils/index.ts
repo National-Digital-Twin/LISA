@@ -8,4 +8,5 @@ import { selectAll } from './select';
 export * as attachments from './attachments';
 export * as fields from './fields';
 export * as mentions from './mentions';
+export * as tasks from './tasks';
 export const select = selectAll;

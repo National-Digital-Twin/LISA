@@ -11,7 +11,7 @@ import { type Location } from 'common/Location';
 import { LogEntry } from 'common/LogEntry';
 import { type LogEntryType } from 'common/LogEntryType';
 import { nodeValue } from '../../rdfutil';
-import { attachments, fields, mentions, select } from './utils';
+import { attachments, fields, mentions, select, tasks } from './utils';
 
 export async function get(req: Request, res: Response) {
   const { incidentId } = req.params;
@@ -27,7 +27,8 @@ export async function get(req: Request, res: Response) {
     mentionedByResults,
     mentionsResults,
     mentionsUsersResults,
-    attachmentResults
+    attachmentResults,
+    taskResults
   ] = await Promise.all(select(incidentId));
 
   /**
@@ -39,8 +40,11 @@ export async function get(req: Request, res: Response) {
   const mentionedUsersByEntry = mentions.parse.user(mentionsUsersResults);
   const attachmentsByEntry = await attachments.parse(attachmentResults);
 
+  const tasksByEntry = await tasks.parse(taskResults);
+
   const entries = logEntryResults.map((row) => {
     const id = nodeValue(row.id.value);
+
     return {
       incidentId,
       id,
@@ -74,7 +78,8 @@ export async function get(req: Request, res: Response) {
           } as Location)
         : undefined,
       /* eslint-enable */
-      attachments: attachmentsByEntry[id]
+      attachments: attachmentsByEntry[id],
+      task: tasksByEntry.get(id)
     } satisfies LogEntry;
   });
 

@@ -12,14 +12,14 @@ import { type LogEntryType } from 'common/LogEntryType';
 import { type MessagingTopicType } from 'common/Messaging';
 import { type User } from 'common/User';
 
-export type ContentType = { json: string, text: string };
-export type FieldValueType = string | Array<string> | File | ContentType | undefined;
-export type OptionType = { value: string, label: string };
-export type FilterType = { author: Array<string>, category: Array<string> };
+export type ContentType = { json: string; text: string };
+export type FieldValueType = string | Array<string> | File | ContentType | User | undefined;
+export type OptionType = { value: string; label: string };
+export type FilterType = { author: Array<string>; category: Array<string> };
 export type SpanType = {
-  getAttribute: (name: string) => unknown,
-  tagName?: string,
-  textContent: string | undefined | null
+  getAttribute: (name: string) => unknown;
+  tagName?: string;
+  textContent: string | undefined | null;
 };
 
 export type AuthContextType = {
@@ -42,18 +42,18 @@ export type ToastEntry = {
   type: 'Success' | 'Info' | 'Error';
   content: ReactNode;
   isDismissable?: boolean;
-}
+};
 
 export type ToastContextType = {
   toasts: ToastEntry[];
   postToast: (toast: ToastEntry) => void;
   removeToast: (id: string) => void;
-}
+};
 
 export type IncidentSection = {
   id: string;
   title: string;
-  fields: (incident: Partial<Incident>) => Array<Field>
+  fields: (incident: Partial<Incident>) => Array<Field>;
 };
 
 export type FullLocationType = {
@@ -62,7 +62,7 @@ export type FullLocationType = {
   coordinates?: {
     latitude: number;
     longitude: number;
-  }
+  };
 };
 
 export type LocationResult = {

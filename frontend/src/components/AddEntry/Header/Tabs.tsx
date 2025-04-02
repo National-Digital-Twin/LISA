@@ -3,7 +3,7 @@
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
 // Local imports
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Tabs, Tab, Box } from '@mui/material';
 import { Link } from 'react-router-dom';
 import { type ValidationError } from '../../../utils/types';
@@ -14,13 +14,11 @@ interface Props {
   fileCount: number;
   validationErrors: Array<ValidationError>;
   showValidationErrors: boolean;
-  hash: string;
 }
 export default function TabNavigation({
   fileCount,
   validationErrors,
-  showValidationErrors,
-  hash
+  showValidationErrors
 }: Readonly<Props>) {
   const { isMobile } = useResponsive();
   const hasLocationError: boolean = useMemo(
@@ -38,15 +36,15 @@ export default function TabNavigation({
     setActive(newValue);
   };
 
-  useEffect(() => {
-    if (hash !== active) setActive(hash);
-  }, [hash, active]);
-
   const tabMeta = [
     { label: 'Form', value: TABS.FORM, error: hasFormError },
     { label: 'Location', value: TABS.LOCATION, error: hasLocationError },
     { label: `Files (${fileCount})`, value: TABS.FILES },
-    { label: 'Sketch', value: TABS.SKETCH }
+    { label: 'Sketch', value: TABS.SKETCH },
+    {
+      label: 'Task',
+      value: TABS.TASK
+    }
   ];
 
   return (

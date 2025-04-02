@@ -6,17 +6,19 @@
 import { attachments } from './attachments';
 import { fields } from './fields';
 import { logEntries } from './logEntries';
-import { mentionedByLogEntry } from './mentionedByLogEntry';
-import { mentionsLogEntry } from './mentionsLogEntry';
-import { mentionsUser } from './mentionsUser';
+import { mentionedByLogEntryInLogContent } from './mentionedByLogEntry';
+import { mentionsLogEntryInLogContent } from './mentionsLogEntry';
+import { mentionsUserInLogContent } from './mentionsUser';
+import { tasks } from './tasks';
 
 export function selectAll(incidentId: string) {
   return [
     logEntries(incidentId),
     fields(incidentId),
-    mentionedByLogEntry(incidentId),
-    mentionsLogEntry(incidentId),
-    mentionsUser(incidentId),
-    attachments(incidentId)
+    mentionedByLogEntryInLogContent(incidentId),
+    mentionsLogEntryInLogContent(incidentId),
+    mentionsUserInLogContent(incidentId),
+    attachments(incidentId),
+    tasks(incidentId)
   ];
 }

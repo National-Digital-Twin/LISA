@@ -16,6 +16,7 @@ import { LogEntryType } from './LogEntryType';
 import { User } from './User';
 import { Mentionable } from './Mentionable';
 import { FieldGroup } from './FieldGroup';
+import { Task } from './Task';
 
 export const LogEntry = Record({
   id: Optional(String), // System-generated
@@ -35,7 +36,7 @@ export const LogEntry = Record({
   sequence: Optional(String), // System-generated
   stage: Optional(IncidentStage), // Only applicable to type = ChangeStage
   attachments: Optional(Array(LogEntryAttachment)),
-
+  task: Optional(Task),
   // This allows for determining if the Incident has been synced to the server during
   // offline operation.
   offline: Optional(Boolean)

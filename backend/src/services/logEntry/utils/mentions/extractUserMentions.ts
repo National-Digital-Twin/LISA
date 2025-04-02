@@ -4,11 +4,13 @@
 
 // Local imports
 import { type LogEntry } from 'common/LogEntry';
+import { LogEntryContent } from 'common/LogEntryContent';
 import { ns } from '../../../../rdfutil';
 import { getMentionsOfType } from './utils';
 
-export function extractUserMentions(entry: LogEntry, entryIdNode: unknown): Array<{ username: string; triple: unknown}> {
-  const userMentions = getMentionsOfType(entry, 'User');
+
+function getMentions(content: LogEntryContent, entryIdNode) : Array<{ username: string; triple: unknown}> {
+  const userMentions = getMentionsOfType(content, 'User');
   const mentionedUsers = new Set<string>(userMentions.map((u) => u.id));
   const userNames = Array.from(mentionedUsers);
   return userNames.reduce((list, userName) => {
@@ -18,4 +20,8 @@ export function extractUserMentions(entry: LogEntry, entryIdNode: unknown): Arra
     });
     return list;
   }, []);
+}
+
+export function extractUserMentionsFromLogContent(entry: LogEntry, entryIdNode: unknown): Array<{ username: string; triple: unknown}> {
+  return getMentions(entry.content, entryIdNode);
 }

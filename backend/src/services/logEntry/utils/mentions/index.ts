@@ -2,15 +2,15 @@
 // © Crown Copyright 2025. This work has been developed by the National Digital Twin Programme
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
-import { extractLogEntryMentions } from './extractLogEntryMentions';
-import { extractUserMentions } from './extractUserMentions';
+import { extractLogEntryMentionsFromLogContent } from './extractLogEntryMentions';
+import { extractUserMentionsFromLogContent } from './extractUserMentions';
 import { parseLogEntryMentions } from './parseLogEntryMentions';
 import { parseUserMentions } from './parseUserMentions';
-import { reconcileFileMentions } from './reconcileFileMentions';
+import { reconcileFileMentionsFromLogContent } from './reconcileFileMentions';
 
-export const extract = {
-  logEntry: extractLogEntryMentions,
-  user: extractUserMentions
+export const extractLogContent = {
+  logEntry: extractLogEntryMentionsFromLogContent,
+  user: extractUserMentionsFromLogContent
 };
 
 export const parse = {
@@ -18,6 +18,6 @@ export const parse = {
   user: parseUserMentions
 };
 
-export const reconcile = {
-  file: reconcileFileMentions
+export const reconcileLogFiles = {
+  file: reconcileFileMentionsFromLogContent
 };

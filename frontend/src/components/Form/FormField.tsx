@@ -117,6 +117,7 @@ const FormField = ({
           onChange={onTextChange}
           error={Boolean(error)}
           helperText={error?.error}
+          rows={field.rows ?? 1}
         />
       )}
       {isSelect && (

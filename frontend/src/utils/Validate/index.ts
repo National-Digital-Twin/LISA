@@ -9,6 +9,7 @@ import { Incident, ReferralWithSupport, ReferralWithoutSupport } from 'common/In
 import { Location } from 'common/Location';
 import { LogEntry } from 'common/LogEntry';
 import { LogEntryTypes } from 'common/LogEntryTypes';
+import { Task } from 'common/Task'
 /* eslint-enable import/no-extraneous-dependencies */
 import { type ValidationError } from '../types';
 import Format from '../Format';
@@ -105,6 +106,9 @@ const Validate = {
 
       // Validate the location.
       errors.push(...Validate.location(entry.location, !requireLocation));
+
+      // Validate task entry.
+      errors.push(...Validate.task(entry.task));
     }
 
     return errors;
@@ -140,6 +144,27 @@ const Validate = {
       return [{ fieldId: 'content', error: 'One or more mentioned files are missing' }];
     }
     return [];
+  },
+  task: (task: Task | undefined): Array<ValidationError> => {
+    const taskValidationErrors: ValidationError[] = [];
+    
+    if (task?.include !== "Yes") {
+      return taskValidationErrors;
+    }
+
+    if (!task.name) {
+      taskValidationErrors.push({ fieldId: 'name', error: 'Name required' });
+    }
+
+    if (!task.assignee) {
+      taskValidationErrors.push({ fieldId: 'assignee', error: 'Assignee required' });
+    }
+
+    if (!task.description) {
+      taskValidationErrors.push({ fieldId: 'description', error: 'Description required' });
+    }
+
+    return taskValidationErrors;
   }
 };
 

@@ -10,6 +10,7 @@ export const FieldType = Union(
   Literal('SelectMulti'),
   Literal('SelectLogEntry'),
   Literal('YesNo'),
+  Literal('YesNo_Boolean'),
   Literal('Input'),
   Literal('TextArea'),
   Literal('Location'),

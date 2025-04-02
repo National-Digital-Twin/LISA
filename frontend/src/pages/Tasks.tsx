@@ -1,0 +1,323 @@
+import { useState } from 'react';
+import { Link, useParams } from 'react-router-dom';
+import { Box, Button, Typography } from '@mui/material';
+import { type TaskStatus, type Task } from 'common/Task';
+import { type User } from 'common/User';
+import { FormField, PageTitle } from '../components';
+import PageWrapper from '../components/PageWrapper';
+import { useIncidents, useLogEntries, useUsers } from '../hooks';
+import Status from '../components/Status';
+import { Format } from '../utils';
+import { useResponsive } from '../hooks/useResponsiveHook';
+import { FieldValueType, ValidationError } from '../utils/types';
+import { FormFooter } from '../components/Form';
+import { useUpdateTaskAssignee, useUpdateTaskStatus } from '../hooks/useTasks';
+
+const Tasks = () => {
+  const { incidentId } = useParams();
+  const query = useIncidents();
+  const { users } = useUsers();
+  const { logEntries } = useLogEntries(incidentId);
+  const { isBelowMd } = useResponsive();
+  const updateTaskStatus = useUpdateTaskStatus(incidentId);
+  const updateTaskAssignee = useUpdateTaskAssignee(incidentId);
+
+  const defaultUpdateTask = {
+    id: undefined,
+    loading: false,
+    status: { edit: false, value: undefined, error: undefined },
+    assignee: { edit: false, value: undefined, error: undefined }
+  };
+
+  const [updateTask, setUpdateTask] = useState<{
+    id: string | undefined;
+    loading: boolean;
+    status: { edit: boolean; value: TaskStatus | undefined; error: ValidationError | undefined };
+    assignee: { edit: boolean; value: User | undefined; error: ValidationError | undefined };
+  }>(defaultUpdateTask);
+  const [displayErrors, setDisplayErrors] = useState(false);
+
+  const taskEntries = logEntries?.filter((entry) => entry.task);
+  const hasTasks = Array.isArray(taskEntries) && taskEntries.length > 0;
+  const incident = query?.data?.find((inc) => inc.id === incidentId);
+  const resetUpdateTask = () => setUpdateTask(defaultUpdateTask);
+  const assignees = users?.map(Format.mentionable.user).map(({ id, label }) => ({
+    value: id,
+    label
+  }));
+
+  if (!incident) return null;
+
+  const handleOnClickStatus = (task: Task) => {
+    if (task.id === updateTask.id) return setUpdateTask(defaultUpdateTask);
+    return setUpdateTask({
+      ...updateTask,
+      id: task.id,
+      status: {
+        ...updateTask.status,
+        edit: true,
+        value: task.status,
+        error: { fieldId: 'name', error: 'Please select a new status.' }
+      }
+    });
+  };
+  const handleOnClickAssignee = (task: Task) => {
+    if (task.id === updateTask.id) return setUpdateTask(defaultUpdateTask);
+    return setUpdateTask({
+      ...updateTask,
+      id: task.id,
+      assignee: {
+        ...updateTask.assignee,
+        edit: true,
+        error: { fieldId: 'assignee', error: 'Please select a new user.' }
+      }
+    });
+  };
+
+  const handleUpdateStatus = (task: Task, value: FieldValueType) => {
+    if (value) {
+      const error =
+        task.status === value
+          ? { fieldId: 'name', error: 'Please select a new status' }
+          : undefined;
+      setUpdateTask({
+        ...updateTask,
+        status: { ...updateTask.status, value: value as TaskStatus, error }
+      });
+    }
+  };
+
+  const handleUpdateAssignee = (task: Task, value: FieldValueType) => {
+    const findAssignee = assignees?.find((user) => user.value === value);
+    if (findAssignee) {
+      const error =
+        findAssignee.value === task.assignee?.username.replace(/\s+/g, '.').toLowerCase()
+          ? { fieldId: 'assignee', error: 'Please select a new user' }
+          : undefined;
+      setUpdateTask({
+        ...updateTask,
+        assignee: {
+          ...updateTask.assignee,
+          value: { username: findAssignee.value, displayName: findAssignee.label },
+          error
+        }
+      });
+    }
+  };
+
+  const handlOnCancel = () => {
+    setUpdateTask(defaultUpdateTask);
+  };
+
+  const handleOnSubmit = (task: Task) => {
+    if (updateTask.status.edit && updateTask.status.value) {
+      updateTaskStatus.mutate({ task: { ...task, status: updateTask.status.value } },
+        { onSettled: resetUpdateTask }
+      );
+    }
+    if (updateTask.assignee.edit && updateTask.assignee.value) {
+      updateTaskAssignee.mutate({ task: { ...task, assignee: updateTask.assignee.value } },
+        { onSettled: resetUpdateTask }
+      );
+    }
+  };
+
+  return (
+    <PageWrapper>
+      <PageTitle
+        title={Format.incident.type(incident.type)}
+        subtitle={incident.name}
+        stage={incident.stage}
+      />
+      <Box display="flex" flexDirection="column" gap={2}>
+        {hasTasks ? (
+          taskEntries.map((entry) => {
+            const { task } = entry;
+
+            if (!task)
+              return (
+                <Box>
+                  <Typography variant="h5" component="h2" color="error">
+                    Error: Unable to display task information.
+                  </Typography>
+                </Box>
+              );
+
+            const formatDefaultAssignee =
+              task.assignee?.username.replace(/\s+/g, '.').toLowerCase() ?? '';
+            const isTaskUpdating = updateTask.id === task.id;
+            const isStatusUpdating = isTaskUpdating && updateTask.status.edit;
+            const isAssigneeUpdating = isTaskUpdating && updateTask.assignee.edit;
+            const validationErrors = () => {
+              if (isStatusUpdating) {
+                return updateTask.status.error ? [updateTask.status.error] : [];
+              }
+              if (isAssigneeUpdating) {
+                return updateTask.assignee.error ? [updateTask.assignee.error] : [];
+              }
+              return [];
+            };
+
+            const statusValue = () => {
+              if (isStatusUpdating) return updateTask.status.value ?? 'Open';
+              return task.status ?? 'Open';
+            };
+
+            return (
+              <Box key={task.id} display="flex" flexDirection="column" gap={1}>
+                <Typography variant="h5" component="h2" fontWeight="bold">
+                  {task.name}
+                </Typography>
+                <Box
+                  display="flex"
+                  flexDirection="column"
+                  bgcolor="background.default"
+                  padding={2}
+                  gap={2}
+                >
+                  <Box display="flex" flexDirection={isBelowMd ? 'column' : 'row-reverse'} gap={2}>
+                    <Box
+                      display="flex"
+                      flexDirection="row"
+                      justifyContent={isBelowMd ? 'flex-start' : 'flex-end'}
+                      gap={2}
+                      flexGrow={0.5}
+                    >
+                      <Button
+                        type="button"
+                        size="small"
+                        variant="contained"
+                        onClick={() => handleOnClickStatus(task)}
+                        disabled={isAssigneeUpdating}
+                        fullWidth={isBelowMd}
+                        sx={{ maxHeight: 50 }}
+                      >
+                        Change Status
+                      </Button>
+                      <Button
+                        type="button"
+                        size="small"
+                        variant="contained"
+                        onClick={() => handleOnClickAssignee(task)}
+                        fullWidth={isBelowMd}
+                        disabled={isStatusUpdating}
+                        sx={{ maxHeight: 50 }}
+                      >
+                        Change Assignee
+                      </Button>
+                    </Box>
+                    <Box
+                      display="flex"
+                      flexDirection={isBelowMd ? 'column' : 'row'}
+                      justifyContent="space-between"
+                      gap={2}
+                      flexGrow={1}
+                    >
+                      <Box display="flex" flexDirection="column" gap={1} flexGrow={1}>
+                        <Typography variant="body1" fontWeight="bold">
+                          Current Status
+                        </Typography>
+                        <Status width="fit-content" status={statusValue()} />
+                        {isStatusUpdating && (
+                          <Box component="ul" width="100%">
+                            <FormField
+                              component="li"
+                              field={{
+                                id: 'name',
+                                type: 'Select',
+                                label: 'New Status',
+                                value: task.status,
+                                options: [
+                                  { value: 'Open', label: 'Open' },
+                                  { value: 'InProgress', label: 'In Progress' },
+                                  { value: 'Closed', label: 'Closed' }
+                                ]
+                              }}
+                              error={displayErrors ? (updateTask.status.error as ValidationError) : undefined}
+                              onChange={(_, value) => handleUpdateStatus(task, value)}
+                            />
+                          </Box>
+                        )}
+                      </Box>
+                      <Box display="flex" flexDirection="column" gap={1} flexGrow={1}>
+                        <Typography variant="body1" fontWeight="bold">
+                          Assigned to
+                        </Typography>
+                        <Typography component={Link} to="/" color="primary" fontWeight="bold">
+                          {Format.user(task.assignee)}
+                        </Typography>
+                        {isAssigneeUpdating && (
+                          <Box component="ul" width="100%">
+                            <FormField
+                              component="li"
+                              field={{
+                                id: 'assignee',
+                                type: 'Select',
+                                label: 'Assign to',
+                                value: formatDefaultAssignee,
+                                options: assignees ?? []
+                              }}
+                              error={
+                                displayErrors ? (updateTask.assignee.error as ValidationError) : undefined
+                              }
+                              onChange={(_, value) => handleUpdateAssignee(task, value)}
+                            />
+                          </Box>
+                        )}
+                      </Box>
+                    </Box>
+                  </Box>
+                  <Box display="flex" flexDirection="column" gap={1}>
+                    <Typography variant="body1" fontWeight="bold">
+                      Task description
+                    </Typography>
+                    <Typography variant="body1">{task.description}</Typography>
+                  </Box>
+                  <Box display="flex" flexDirection={isBelowMd ? 'column' : 'row'} gap={2}>
+                    <Box display="flex" flexDirection="column" gap={1} flexGrow={1}>
+                      <Typography variant="body1" fontWeight="bold">
+                        Assigned by
+                      </Typography>
+                      <Typography variant="body1">{Format.user(entry.author)}</Typography>
+                    </Box>
+                    <Box display="flex" flexDirection="column" gap={1} flexGrow={1}>
+                      <Typography variant="body1" fontWeight="bold">
+                        Date and time recorded
+                      </Typography>
+                      <Typography variant="body1">
+                        {Format.dateAndTimeMobile(entry.dateTime)}
+                      </Typography>
+                    </Box>
+                  </Box>
+                  <Typography
+                    variant="body1"
+                    component={Link}
+                    color="primary"
+                    sx={{ textDecoration: 'underline !important' }}
+                    to={`/logbook/${incidentId}#${entry.id}`}
+                  >
+                    View log entry
+                  </Typography>
+                  <Box />
+                  {Boolean(isStatusUpdating || isAssigneeUpdating) && (
+                    <FormFooter
+                      validationErrors={validationErrors()}
+                      onShowValidationErrors={() => setDisplayErrors(!displayErrors)}
+                      onCancel={handlOnCancel}
+                      onSubmit={() => handleOnSubmit(task)}
+                      loading={updateTask.loading}
+                    />
+                  )}
+                </Box>
+              </Box>
+            );
+          })
+        ) : (
+          <div>no tasks</div>
+        )}
+      </Box>
+    </PageWrapper>
+  );
+};
+
+export default Tasks;
