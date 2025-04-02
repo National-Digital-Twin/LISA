@@ -194,7 +194,7 @@ const Tasks = () => {
                         onClick={() => handleOnClickStatus(task)}
                         disabled={isAssigneeUpdating}
                         fullWidth={isBelowMd}
-                        sx={{ maxHeight: 50 }}
+                        sx={{ maxHeight: 40 }}
                       >
                         Change Status
                       </Button>
@@ -205,7 +205,7 @@ const Tasks = () => {
                         onClick={() => handleOnClickAssignee(task)}
                         fullWidth={isBelowMd}
                         disabled={isStatusUpdating}
-                        sx={{ maxHeight: 50 }}
+                        sx={{ maxHeight: 40 }}
                       >
                         Change Assignee
                       </Button>
