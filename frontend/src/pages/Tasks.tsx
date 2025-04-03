@@ -158,7 +158,7 @@ const Tasks = () => {
 
             if (!task)
               return (
-                <Box>
+                <Box key={entry.id}>
                   <Typography variant="h5" component="h2" color="error">
                     Error: Unable to display task information.
                   </Typography>
@@ -340,7 +340,7 @@ const Tasks = () => {
                     View log entry
                   </Typography>
                   <Box />
-                  {Boolean(isStatusUpdating || isAssigneeUpdating) && (
+                  {(isStatusUpdating || isAssigneeUpdating) && (
                     <FormFooter
                       validationErrors={validationErrors()}
                       onShowValidationErrors={() => setDisplayErrors(!displayErrors)}

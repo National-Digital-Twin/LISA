@@ -101,6 +101,7 @@ function assignedTask(notification: Notification, navigate: NavigateFunction): H
       </>
     ),
     clickHandler: (item) => {
+      // NOSONAR - TypeScript type assertion is required for access
       const taskAssignedNotif = item as TaskAssignedNotification;
       navigate(`logbook/${item.entry.incidentId}/tasks#${taskAssignedNotif.entry.task.id}`);
     }

@@ -8,7 +8,7 @@ import { LogEntry } from "common/LogEntry";
 import { createSequenceNumber } from "../Form/sequence";
 
 export function createLogEntryFromTaskStatusUpdate(taskId : string, status : TaskStatus, incidentId : string, entry? : Partial<LogEntry>): Partial<LogEntry> {
-  const logEntry: Partial<LogEntry> = entry || {
+  const logEntry: Partial<LogEntry> = entry ?? {
     type: 'ChangeTaskStatus',
     incidentId,
     dateTime: new Date().toISOString(),
@@ -25,7 +25,7 @@ export function createLogEntryFromTaskStatusUpdate(taskId : string, status : Tas
 }
 
 export function createLogEntryFromTaskAssigneeUpdate(taskId : string, assigneeName : string, incidentId : string, entry? : Partial<LogEntry>): Partial<LogEntry> {
-  const logEntry: Partial<LogEntry> = entry || {
+  const logEntry: Partial<LogEntry> = entry ?? {
     type: 'ChangeTaskAssignee',
     incidentId,
     dateTime: new Date().toISOString(),

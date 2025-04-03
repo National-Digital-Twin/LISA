@@ -24,7 +24,7 @@ export function extractTasks(entry: LogEntry, entryIdNode: unknown, taskNode: un
   triples.push(
     [entryIdNode, ns.lisa.hasTask, taskNode],
     [taskNode, ns.ies.hasName, literalString(entry.task.name)],
-    [taskNode, ns.lisa.hasDescription, literalString(entry.task.description || '')],
+    [taskNode, ns.lisa.hasDescription, literalString(entry.task.description ?? '')],
 
     // Insert user info (stable)
     [taskUserNode, ns.ies.hasName, literalString(entry.task.assignee.displayName)],
