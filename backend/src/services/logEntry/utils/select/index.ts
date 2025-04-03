@@ -4,6 +4,7 @@
 
 // Local imports
 import { attachments } from './attachments';
+import { details } from './details';
 import { fields } from './fields';
 import { logEntries } from './logEntries';
 import { mentionedByLogEntryInLogContent } from './mentionedByLogEntry';
@@ -19,6 +20,7 @@ export function selectAll(incidentId: string) {
     mentionsLogEntryInLogContent(incidentId),
     mentionsUserInLogContent(incidentId),
     attachments(incidentId),
-    tasks(incidentId)
+    tasks(incidentId),
+    details(incidentId)
   ];
 }

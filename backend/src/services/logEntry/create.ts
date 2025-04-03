@@ -14,7 +14,7 @@ import PubSubManager from '../../pubSub/manager';
 import * as ia from '../../ia';
 import { literalDate, literalDecimal, literalString, ns } from '../../rdfutil';
 import { create as createNotification } from '../notifications';
-import { attachments, fields, mentions, tasks } from './utils'; 
+import { attachments, details, fields, mentions, tasks } from './utils'; 
 
 export async function create(req: Request, res: Response) {
   const { incidentId } = req.params;
@@ -70,7 +70,8 @@ export async function create(req: Request, res: Response) {
       ...mentions.extractLogContent.logEntry(entry, entryIdNode),
       ...userLogMentions.map((mention) => mention.triple),
       ...attachmentTriples,
-      ...tasks.extract(entry, entryIdNode, taskNode)
+      ...tasks.extract(entry, entryIdNode, taskNode),
+      ...details.extract(entry, entryIdNode)
     ];
   } catch (err) {
     throw new Error('Error creating log entry', err);

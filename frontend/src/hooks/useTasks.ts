@@ -7,9 +7,12 @@ import { type Task } from 'common/Task';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { LogEntry } from 'common/LogEntry';
 import { patch } from '../api';
+import { useCreateLogEntry } from './useLogEntries';
+import { createLogEntryFromTaskStatusUpdate, createLogEntryFromTaskAssigneeUpdate } from "../utils/Task/updateLogEntries"
 
 export const useUpdateTaskStatus = (incidentId?: string) => {
   const queryClient = useQueryClient();
+  const { createLogEntry } = useCreateLogEntry(incidentId);
 
   return useMutation<
     Task,
@@ -57,7 +60,17 @@ export const useUpdateTaskStatus = (incidentId?: string) => {
       }
     },
 
-    onSuccess: () => {
+    onSuccess: (_data, variables) => {
+      const taskId = variables.task.id;
+      const taskStatus = variables.task.status;
+      
+      if (!incidentId || !taskId || !taskStatus) return;
+
+      const logEntry = {
+        ...createLogEntryFromTaskStatusUpdate(taskId, taskStatus, incidentId)
+      } as Omit<LogEntry, 'id' | 'author'>;
+      createLogEntry({ newLogEntry: logEntry });
+
       queryClient.invalidateQueries({
         queryKey: [`incident/${incidentId}/logEntries`],
       });
@@ -67,6 +80,7 @@ export const useUpdateTaskStatus = (incidentId?: string) => {
 
 export const useUpdateTaskAssignee = (incidentId?: string) => {
   const queryClient = useQueryClient();
+  const { createLogEntry } = useCreateLogEntry(incidentId);
 
   return useMutation<
     Task,
@@ -114,7 +128,17 @@ export const useUpdateTaskAssignee = (incidentId?: string) => {
       }
     },
 
-    onSuccess: () => {
+    onSuccess: (_data, variables) => {
+      const taskId = variables.task.id;
+      const taskAssignee = variables.task.assignee?.displayName;
+
+      if (!incidentId || !taskId || !taskAssignee) return;
+
+      const logEntry = {
+        ...createLogEntryFromTaskAssigneeUpdate(taskId, taskAssignee, incidentId)
+      } as Omit<LogEntry, 'id' | 'author'>;
+      createLogEntry({ newLogEntry: logEntry });
+
       queryClient.invalidateQueries({
         queryKey: [`incident/${incidentId}/logEntries`],
       });

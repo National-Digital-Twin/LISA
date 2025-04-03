@@ -2,8 +2,8 @@
 // © Crown Copyright 2025. This work has been developed by the National Digital Twin Programme
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
-import { useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Link, useLocation, useParams } from 'react-router-dom';
 import { Box, Button, Typography } from '@mui/material';
 import { type TaskStatus, type Task } from 'common/Task';
 import { type User } from 'common/User';
@@ -25,6 +25,7 @@ const Tasks = () => {
   const { isBelowMd } = useResponsive();
   const updateTaskStatus = useUpdateTaskStatus(incidentId);
   const updateTaskAssignee = useUpdateTaskAssignee(incidentId);
+  const location = useLocation();
 
   const defaultUpdateTask = {
     id: undefined,
@@ -40,6 +41,22 @@ const Tasks = () => {
     assignee: { edit: boolean; value: User | undefined; error: ValidationError | undefined };
   }>(defaultUpdateTask);
   const [displayErrors, setDisplayErrors] = useState(false);
+  const [highlightedTaskId, setHighlightedTaskId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (location.hash) {
+      const elementId = location.hash.replace('#', '');
+      const element = document.getElementById(elementId);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        setHighlightedTaskId(elementId);
+
+        setTimeout(() => {
+          setHighlightedTaskId(null);
+        }, 2000); 
+      }
+    }
+  }, [location]);
 
   const taskEntries = logEntries?.filter((entry) => entry.task);
   const hasTasks = Array.isArray(taskEntries) && taskEntries.length > 0;
@@ -51,6 +68,7 @@ const Tasks = () => {
   }));
 
   if (!incident) return null;
+
 
   const handleOnClickStatus = (task: Task) => {
     if (task.id === updateTask.id) return setUpdateTask(defaultUpdateTask);
@@ -168,7 +186,26 @@ const Tasks = () => {
             };
 
             return (
-              <Box key={task.id} display="flex" flexDirection="column" gap={1}>
+              <Box 
+                key={task.id} 
+                id={task.id} 
+                display="flex" 
+                flexDirection="column" 
+                gap={1}
+                sx={(theme) => ({
+                  backgroundColor:
+                    highlightedTaskId === task.id
+                      ? `${theme.palette.primary.main}20`
+                      : 'transparent',
+                  border:
+                    highlightedTaskId === task.id
+                      ? `1px solid ${theme.palette.primary.main}`
+                      : '1px solid transparent',
+                  borderRadius: 2,
+                  transition: 'background-color 0.4s ease, border 0.4s ease',
+                  padding: 2,
+                })}
+              >
                 <Typography variant="h5" component="h2" fontWeight="bold">
                   {task.name}
                 </Typography>

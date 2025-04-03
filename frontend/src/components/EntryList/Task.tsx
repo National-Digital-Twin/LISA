@@ -38,7 +38,7 @@ const Task = ({ entry }: { entry: LogEntry }) => {
         <Typography variant="body1" fontWeight="bold">
           Task name
         </Typography>
-        <Typography component={Link} to="/" color="primary" fontWeight="bold">
+        <Typography component={Link} to={`/tasks/${entry.incidentId}#${entry.task.id}`} color="primary" fontWeight="bold">
           {entry.task.name}
         </Typography>
       </TaskEntry>
@@ -46,7 +46,7 @@ const Task = ({ entry }: { entry: LogEntry }) => {
         <Typography variant="body1" fontWeight="bold">
           Assigned to
         </Typography>
-        <Typography component={Link} to="/" color="primary" fontWeight="bold">
+        <Typography variant="body1">
           {entry.task.assignee?.username}
         </Typography>
       </TaskEntry>

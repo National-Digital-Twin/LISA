@@ -16,6 +16,8 @@ import { SituationReport } from './SituationReport';
 import { ShiftHandover } from './ShiftHandover';
 import { LogEntryTypesDict } from './types';
 import { SetIncidentInformation } from './SetIncidentInformation';
+import { ChangeTaskStatus } from './ChangeTaskStatus';
+import { ChangeTaskAssignee } from './ChangeTaskAssignee';
 
 export const LogEntryTypes: LogEntryTypesDict = {
   AvianFlu,
@@ -31,5 +33,7 @@ export const LogEntryTypes: LogEntryTypesDict = {
   ShiftHandover,
   SituationReport,
   ChangeStage,
-  SetIncidentInformation
+  SetIncidentInformation,
+  ChangeTaskStatus,
+  ChangeTaskAssignee
 };
