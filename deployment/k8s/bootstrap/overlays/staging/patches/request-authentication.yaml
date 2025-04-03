@@ -5,5 +5,5 @@ metadata:
 
 spec:
   jwtRules:
-    - issuer: "https://cognito-idp.eu-west-2.amazonaws.com/eu-west-2_24fOCjndV"
-      jwksUri: "https://cognito-idp.eu-west-2.amazonaws.com/eu-west-2_24fOCjndV/.well-known/jwks.json"
+    - issuer: "https://cognito-idp.eu-west-2.amazonaws.com/eu-west-2_39B58ozgo"
+      jwksUri: "https://cognito-idp.eu-west-2.amazonaws.com/eu-west-2_39B58ozgo/.well-known/jwks.json"
