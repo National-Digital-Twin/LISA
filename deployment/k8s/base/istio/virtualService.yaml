@@ -19,7 +19,7 @@ metadata:
 
 spec:
   hosts:
-    - lisa.demo.ndtp.co.uk
+    - lisa.staging.ndtp.co.uk
   gateways:
     - lisa/lisa-ingress-gateway
   http:
