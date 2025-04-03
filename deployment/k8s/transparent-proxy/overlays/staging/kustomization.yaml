@@ -16,7 +16,7 @@ patches:
 
 labels:
   - pairs:
-      env: demo
+      env: staging
 
 images:
   - name: lisa-transparent-proxy-image:template
