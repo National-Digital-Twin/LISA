@@ -8,6 +8,9 @@ import { Link, useNavigate } from 'react-router-dom';
 
 // Local imports
 import { type Incident } from 'common/Incident';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { IncidentStages } from 'common/IncidentStage';
+import type { FieldOption } from 'common/Field';
 import {
   Box,
   Button,
@@ -24,6 +27,8 @@ import {
 } from '@mui/material';
 
 import AddCircleIcon from '@mui/icons-material/AddCircle';
+import Filter from '../components/Filter/Filter';
+import type { FieldValueType } from '../utils/types';
 import { useIncidents } from '../hooks';
 import { Format } from '../utils';
 import { PageTitle } from '../components';
@@ -50,6 +55,67 @@ const Home = () => {
   const closedCountName = closedCount === 0 ? 'None' : `+${closedCount.toString()}`;
   const title = `${openCountName} active incident${openCount === 1 ? '' : 's'}`;
   const subtitle = `(${closedCountName} closed)`;
+
+  const [incidentFilters, setIncidentFilters] = useState<Record<string, FieldValueType>>({
+    name: '',
+    author: [],
+    type: [],
+    stage: ''
+  });
+  
+  const onFilterChange = (id: string, value: FieldValueType) => {
+    setIncidentFilters((prev) => ({ ...prev, [id]: value }));
+  };
+  
+  const buildFilterOptions = (field: 'reportedBy' | 'type') => {
+    const values = (incidents ?? [])
+      .map((i) => (field === 'reportedBy' ? i.reportedBy?.username : i.type))
+      .filter(Boolean);
+    return Array.from(new Set(values)).map((v) => ({
+      value: v ?? '',
+      label: v ?? ''
+    })) as FieldOption[];
+  };
+  
+  const stageOptions: FieldOption[] = [
+    { value: 'Active', label: 'Active' },
+    ...Object.entries(IncidentStages).map(([stageKey, { label }]) => ({
+      value: stageKey,
+      label
+    }))
+  ];
+  
+  const matchesFilters = (incident: Incident): boolean => {
+    const { name, author, type, stage } = incidentFilters;
+  
+    if (name && !incident.name.toLowerCase().includes((name as string).toLowerCase())) {
+      return false;
+    }
+  
+    if (Array.isArray(author) && author.length > 0) {
+      if (!author.includes(incident.reportedBy?.username ?? '')) {
+        return false;
+      }
+    }
+    
+    if (Array.isArray(type) && type.length > 0) {
+      if (!type.includes(incident.type)) {
+        return false;
+      }
+    }
+  
+    if (stage) {
+      if (stage === 'Active') {
+        if (incident.stage === 'Closed') {
+          return false;
+        }
+      } else if (incident.stage !== stage) {
+        return false;
+      }
+    }
+  
+    return true;
+  };
 
   const onIncludeClosedChange = () => {
     setIncludeClosed((prev) => !prev);
@@ -107,6 +173,44 @@ const Home = () => {
         </Box>
       </PageTitle>
 
+      <Box mb={3}
+        display="flex"
+        flexDirection="row"
+        flexWrap="wrap"
+        alignItems="center"
+        gap={2}>
+        <Filter
+          isMobile={isMobile}
+          appliedFilters={incidentFilters}
+          onChange={onFilterChange}
+          filters={[
+            {
+              id: 'name',
+              label: 'Incident Name',
+              type: 'text'
+            },
+            {
+              id: 'author',
+              label: 'Author',
+              type: 'multiselect',
+              options: buildFilterOptions('reportedBy')
+            },
+            {
+              id: 'type',
+              label: 'Incident Type',
+              type: 'multiselect',
+              options: buildFilterOptions('type')
+            },
+            {
+              id: 'stage',
+              label: 'Stage',
+              type: 'chip-group',
+              options: stageOptions
+            }
+          ]}
+        />
+      </Box>
+
       <TableContainer sx={{ boxShadow: 0 }} component={Paper}>
         <Table>
           <TableHead sx={{ backgroundColor: 'background.default' }}>
@@ -121,7 +225,7 @@ const Home = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {incidents?.filter(show)?.map((incident) => {
+            {incidents?.filter((i) => show(i) && matchesFilters(i))?.map((incident) => {
               const { id, name, reportedBy, startedAt } = incident;
               return isMobile ? (
                 <TableRow key={id}>

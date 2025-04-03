@@ -132,7 +132,7 @@ const Logbook = () => {
     }
   };
 
-  const onFilterChange = (id: keyof FilterType, value: FieldValueType) => {
+  const onFilterChange = (id: string, value: FieldValueType) => {
     setAppliedFilters((prev) => ({ ...prev, [id]: value }));
   };
 
@@ -217,11 +217,23 @@ const Logbook = () => {
                 />
                 {!isMobile ? (
                   <Filter
-                    categories={filterCategories}
-                    authors={filterAuthors}
-                    onChange={onFilterChange}
                     isMobile={isMobile}
                     appliedFilters={appliedFilters}
+                    onChange={onFilterChange}
+                    filters={[
+                      {
+                        id: 'author',
+                        label: 'Author',
+                        type: 'multiselect',
+                        options: filterAuthors
+                      },
+                      {
+                        id: 'category',
+                        label: 'Category',
+                        type: 'multiselect',
+                        options: filterCategories
+                      }
+                    ]}
                   />
                 ) : (
                   <>
@@ -258,11 +270,23 @@ const Logbook = () => {
                     >
                       <Box display="flex" flexDirection="column" gap={1} width="100%">
                         <Filter
-                          categories={filterCategories}
-                          authors={filterAuthors}
-                          onChange={onFilterChange}
                           isMobile={isMobile}
                           appliedFilters={appliedFilters}
+                          onChange={onFilterChange}
+                          filters={[
+                            {
+                              id: 'author',
+                              label: 'Author',
+                              type: 'multiselect',
+                              options: filterAuthors
+                            },
+                            {
+                              id: 'category',
+                              label: 'Category',
+                              type: 'multiselect',
+                              options: filterCategories
+                            }
+                          ]}
                         />
                       </Box>
                     </Popover>
