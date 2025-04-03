@@ -49,7 +49,7 @@ export async function create(req: Request, res: Response) {
   const userLogMentions = mentions.extractLogContent.user(entry, entryIdNode);
 
   const type = LogEntryTypes[entry.type];
-  const content = type.noContent ? {} : entry.content || {}; // should probably be invalid request?
+  const content = type.noContent ? {} : entry.content ?? {}; // should probably be invalid request?
 
   let triples: unknown[] = [];
   try {
@@ -57,8 +57,8 @@ export async function create(req: Request, res: Response) {
       [incidentIdNode, ns.lisa.hasLogEntry, entryIdNode],
       [entryIdNode, ns.lisa.createdAt, literalDate(now)],
       [entryIdNode, ns.rdf.type, ns.lisa(entry.type)],
-      [entryIdNode, ns.lisa.contentText, literalString(content.text || '')],
-      [entryIdNode, ns.lisa.contentJSON, literalString(content.json || '{}')],
+      [entryIdNode, ns.lisa.contentText, literalString(content.text ?? '')],
+      [entryIdNode, ns.lisa.contentJSON, literalString(content.json ?? '{}')],
       [entryIdNode, ns.ies.inPeriod, literalDate(new Date(entry.dateTime))],
 
       [authorNode, ns.rdf.type, ns.ies.Creator],
