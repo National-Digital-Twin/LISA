@@ -66,7 +66,7 @@ jobs:
     needs: [backend-ci, versioning]
     uses: ./.github/workflows/backend-cd-push-to-ECR.yml
     with:
-      aws_account_number: "${{ vars.DEMO_AWS_ACCOUNT_ID }}"
+      aws_account_number: "${{ vars.STAGING_AWS_ACCOUNT_ID }}"
       repo_name: "lisa/api"
       app_name: "lisa/api"
       version: ${{ needs.versioning.outputs.version }}
@@ -75,7 +75,7 @@ jobs:
     needs: [frontend-ci, versioning]
     uses: ./.github/workflows/frontend-cd-push-to-ECR.yml
     with:
-      aws_account_number: "${{ vars.DEMO_AWS_ACCOUNT_ID }}"
+      aws_account_number: "${{ vars.STAGING_AWS_ACCOUNT_ID }}"
       repo_name: "lisa/webapp"
       app_name: "lisa/webapp"
       version: ${{ needs.versioning.outputs.version }}
@@ -84,7 +84,7 @@ jobs:
     needs: [proxy-ci, versioning]
     uses: ./.github/workflows/transparent-proxy-cd-push-to-ECR.yml
     with:
-      aws_account_number: "${{ vars.DEMO_AWS_ACCOUNT_ID }}"
+      aws_account_number: "${{ vars.STAGING_AWS_ACCOUNT_ID }}"
       repo_name: "lisa/transparent-proxy"
       app_name: "transparent-proxy"
       version: ${{ needs.versioning.outputs.version }}
