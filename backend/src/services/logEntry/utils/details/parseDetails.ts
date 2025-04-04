@@ -19,16 +19,14 @@ export async function parseDetails(
     const changedTaskId = result?.changedTaskId?.value ? nodeValue(result?.changedTaskId?.value) : undefined;
     const changedTaskName = result?.changedTaskName?.value;
     const changedAssignee = result?.changedAssignee?.value;
-    const rawStatus = result?.changedStatus?.value;
-
-    const changedStatus = TaskStatus.guard(rawStatus) ? rawStatus as TaskStatus : undefined;
+    const changedStatus = result?.changedStatus?.value as TaskStatus;
 
     if (!detailsByEntry.has(entryId)) {
       const details: LogEntryChangeDetails = {
         changedTaskId,
         changedTaskName,
         changedAssignee,
-        ...(changedStatus && { changedStatus })
+        changedStatus
       };
 
       detailsByEntry.set(entryId, details);

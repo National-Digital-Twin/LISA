@@ -32,10 +32,7 @@ export async function changeStatus(req: Request, res: Response) {
   const status = TaskStatus.check(rawStatus);
   const now = new Date();
 
-  const taskStatusValues = TaskStatus.alternatives.map((literal) => literal.value);
-  const allowedStatusTypes = taskStatusValues
-    .map((s) => `<${ns.lisa(s).value}>`)
-    .join(', ');
+  const taskStatusValues = TaskStatus.alternatives.map((literal) => `<${ns.lisa(literal.value).value}>`).join(' ');
 
   const taskIdNode = ns.data(taskId);
   const statusNodeType = ns.lisa(status);
@@ -51,7 +48,7 @@ export async function changeStatus(req: Request, res: Response) {
       ['?bounding', ns.ies.isStartOf, '?currentStatus'],
       ['?bounding', ns.ies.inPeriod, '?start'],
       `FILTER NOT EXISTS {${notExistsFilter}}`,
-      `FILTER(?statusType IN (${allowedStatusTypes}))`
+      `VALUES ?statusType { ${taskStatusValues} }`
     ]
   });
 

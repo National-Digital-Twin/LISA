@@ -15,8 +15,7 @@ export function tasks(incidentId: string) {
   const statusNotExistsFilter = new TriplePattern('?x', ns.ies.isEndOf, '?statusNode');
   const assigneeNotExistsFilter = new TriplePattern('?x', ns.ies.isEndOf, '?assigneeNode');
 
-  const taskStatusValues = TaskStatus.alternatives.map((literal) => literal.value);
-  const allowedStatusTypes = taskStatusValues.map((s) => `<${ns.lisa(s).value}>`).join(', ');
+  const taskStatusValues = TaskStatus.alternatives.map((literal) => `<${ns.lisa(literal.value).value}>`).join(' ');
 
   return select({
     clause: [
@@ -34,7 +33,7 @@ export function tasks(incidentId: string) {
         ['?statusBounding', ns.ies.isStartOf, '?statusNode'],
         ['?statusBounding', ns.ies.inPeriod, '?statusStart'],
         `FILTER NOT EXISTS {${statusNotExistsFilter}}`,
-        `FILTER(?taskStatus IN (${allowedStatusTypes}))`
+        `VALUES ?taskStatus { ${taskStatusValues} }`
       ]),
 
       // Latest Assignee

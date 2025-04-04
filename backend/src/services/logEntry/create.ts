@@ -14,7 +14,7 @@ import PubSubManager from '../../pubSub/manager';
 import * as ia from '../../ia';
 import { literalDate, literalDecimal, literalString, ns } from '../../rdfutil';
 import { create as createNotification } from '../notifications';
-import { attachments, details, fields, mentions, tasks } from './utils'; 
+import { attachments, details, fields, mentions, tasks } from './utils';
 
 export async function create(req: Request, res: Response) {
   const { incidentId } = req.params;
