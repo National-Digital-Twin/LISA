@@ -2,10 +2,16 @@
 // © Crown Copyright 2025. This work has been developed by the National Digital Twin Programme
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
+/* eslint-disable no-redeclare */
+
 import { Boolean, Literal, Record, Static, String, Union } from 'runtypes';
 import { LogEntry } from './LogEntry';
+import { Task } from './Task';
 
-export const NotificationType = Union(Literal('UserMentionNotification'));
+export const NotificationType = Union(
+  Literal('UserMentionNotification'),
+  Literal('TaskAssignedNotification')
+);
 
 export const BaseNotification = Record({
   id: String,
@@ -18,11 +24,15 @@ export const UserMentionNotification = BaseNotification.extend({
   entry: LogEntry.pick('id', 'incidentId', 'author', 'dateTime', 'sequence', 'content')
 });
 
-export const Notification = Union(UserMentionNotification);
+export const TaskAssignedNotification = BaseNotification.extend({
+  entry: LogEntry.pick('id', 'incidentId', 'author', 'dateTime', 'sequence').extend({
+    task: Task.pick('id', 'name')
+  })
+});
 
-// eslint-disable-next-line no-redeclare
+export const Notification = Union(UserMentionNotification, TaskAssignedNotification);
+
 export type NotificationType = Static<typeof NotificationType>;
-// eslint-disable-next-line no-redeclare
 export type Notification = Static<typeof Notification>;
-// eslint-disable-next-line no-redeclare
 export type UserMentionNotification = Static<typeof UserMentionNotification>;
+export type TaskAssignedNotification = Static<typeof TaskAssignedNotification>;

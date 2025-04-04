@@ -15,6 +15,12 @@ This project follows **Semantic Versioning (SemVer)** ([semver.org](https://semv
 
  ---
 
+ ## Unreleased
+
+ ### Features
+ 
+ - Added Tasking workflow to allow Tasks to be created, assigned and updated
+
  ## [0.90.2] – 2025-03-28
 
  ### Bugfix

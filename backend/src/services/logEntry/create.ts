@@ -14,7 +14,7 @@ import PubSubManager from '../../pubSub/manager';
 import * as ia from '../../ia';
 import { literalDate, literalDecimal, literalString, ns } from '../../rdfutil';
 import { create as createNotification } from '../notifications';
-import { attachments, fields, mentions } from './utils';
+import { attachments, details, fields, mentions, tasks } from './utils';
 
 export async function create(req: Request, res: Response) {
   const { incidentId } = req.params;
@@ -37,17 +37,19 @@ export async function create(req: Request, res: Response) {
   const entryIdNode = ns.data(entryId);
   const incidentIdNode = ns.data(incidentId);
   const authorNode = ns.data(res.locals.user.username);
+  const taskId = `${entryId}-Task`;
+  const taskNode = ns.data(taskId);
 
   const { triples: attachmentTriples, names: fileNameMappings } = await attachments.extract(
     req,
     entry,
     entryIdNode
   );
-  mentions.reconcile.file(entry, entryId, fileNameMappings);
-  const userMentions = mentions.extract.user(entry, entryIdNode);
+  mentions.reconcileLogFiles.file(entry, entryId, fileNameMappings);
+  const userLogMentions = mentions.extractLogContent.user(entry, entryIdNode);
 
   const type = LogEntryTypes[entry.type];
-  const content = type.noContent ? {} : entry.content || {}; // should probably be invalid request?
+  const content = type.noContent ? {} : entry.content ?? {}; // should probably be invalid request?
 
   let triples: unknown[] = [];
   try {
@@ -55,8 +57,8 @@ export async function create(req: Request, res: Response) {
       [incidentIdNode, ns.lisa.hasLogEntry, entryIdNode],
       [entryIdNode, ns.lisa.createdAt, literalDate(now)],
       [entryIdNode, ns.rdf.type, ns.lisa(entry.type)],
-      [entryIdNode, ns.lisa.contentText, literalString(content.text || '')],
-      [entryIdNode, ns.lisa.contentJSON, literalString(content.json || '{}')],
+      [entryIdNode, ns.lisa.contentText, literalString(content.text ?? '')],
+      [entryIdNode, ns.lisa.contentJSON, literalString(content.json ?? '{}')],
       [entryIdNode, ns.ies.inPeriod, literalDate(new Date(entry.dateTime))],
 
       [authorNode, ns.rdf.type, ns.ies.Creator],
@@ -65,9 +67,11 @@ export async function create(req: Request, res: Response) {
       [entryIdNode, ns.lisa.hasSequence, entry.sequence],
 
       ...fields.extract(entry, entryIdNode),
-      ...mentions.extract.logEntry(entry, entryIdNode),
-      ...userMentions.map((mention) => mention.triple),
-      ...attachmentTriples
+      ...mentions.extractLogContent.logEntry(entry, entryIdNode),
+      ...userLogMentions.map((mention) => mention.triple),
+      ...attachmentTriples,
+      ...tasks.extract(entry, entryIdNode, taskNode),
+      ...details.extract(entry, entryIdNode)
     ];
   } catch (err) {
     throw new Error('Error creating log entry', err);
@@ -96,14 +100,24 @@ export async function create(req: Request, res: Response) {
 
   await ia.insertData(triples);
 
-  userMentions.forEach((mention) => {
+  userLogMentions.forEach((mention) => {
     createNotification({
       recipient: mention.username,
       type: 'UserMentionNotification',
       entryId: entry.id,
       incidentId: entry.incidentId
     });
-  });
+  }); 
+  
+  if(entry.task?.assignee) {
+    createNotification({
+      recipient: entry.task.assignee.username,
+      type: 'TaskAssignedNotification',
+      entryId: entry.id,
+      incidentId: entry.incidentId,
+      taskId
+    })
+  }
 
   PubSubManager.getInstance().publish('NewLogEntries', entry.incidentId, res.locals.user.username);
   res.json({ id: entryId });

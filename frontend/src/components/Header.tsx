@@ -42,7 +42,8 @@ const HEADER_ITEMS = [
       { to: 'logbook', label: 'LOG' },
       { to: 'incident', label: 'OVERVIEW' },
       { to: 'files', label: 'FILES' },
-      { to: 'location', label: 'LOCATION' }
+      { to: 'location', label: 'LOCATION' },
+      { to: 'tasks', label: 'TASKS' }
     ]
   }
 ];

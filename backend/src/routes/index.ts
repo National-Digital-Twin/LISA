@@ -13,6 +13,7 @@ import * as logEntry from '../services/logEntry';
 import * as notifications from '../services/notifications';
 import * as storage from '../services/fileStorage';
 import * as osMaps from '../services/osMaps';
+import * as task from '../services/task';
 import * as scg from '../services/scg_demo';
 import { settings } from '../settings';
 import { authenticate } from '../auth/middleware';
@@ -58,6 +59,9 @@ apiRouter.get('/searchLocation', osMaps.searchLocation);
 
 apiRouter.get('/notifications', notifications.get);
 apiRouter.put('/notifications/:id', notifications.markRead);
+
+apiRouter.patch('/task/:taskId/status', task.changeStatus)
+apiRouter.patch('/task/:taskId/assignee', task.changeAssignee)
 
 apiRouter.use(errorsMiddleware);
 

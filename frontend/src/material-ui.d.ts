@@ -14,6 +14,11 @@ declare module '@mui/material/styles/createPalette' {
     border: {
       main: string;
     };
+    status: {
+      open: StageType;
+      closed: StageType;
+      inprogress: StageType;
+    };
     stage: {
       monitoring: StageType;
       response: StageType;

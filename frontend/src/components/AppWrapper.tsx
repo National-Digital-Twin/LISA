@@ -14,6 +14,7 @@ import Location from '../pages/Location';
 import Logbook from '../pages/Logbook';
 import Overview from '../pages/Overview';
 import Layout from './Layout';
+import Tasks from '../pages/Tasks';
 
 const AppWrapper = () => {
   const router = createBrowserRouter([
@@ -25,6 +26,7 @@ const AppWrapper = () => {
         { path: 'createlog', element: <CreateLog /> },
         { path: 'incident/:incidentId', element: <Overview /> },
         { path: 'logbook/:incidentId', element: <Logbook /> },
+        { path: 'tasks/:incidentId', element: <Tasks /> },
         // { path: 'methane/:incidentId', element: <Methane /> },
         // { path: 'handover/:incidentId', element: <Handover /> },
         // { path: 'hazards/:incidentId', element: <Hazards /> },
