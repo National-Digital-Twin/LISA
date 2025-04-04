@@ -3,20 +3,21 @@
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
 // Global imports
-import { useState } from 'react';
+
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 // Local imports
 import { type Incident } from 'common/Incident';
+import FilterAltIcon from '@mui/icons-material/FilterAlt';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { IncidentStages } from 'common/IncidentStage';
 import type { FieldOption } from 'common/Field';
 import {
   Box,
   Button,
-  Checkbox,
-  FormControlLabel,
   Paper,
+  Popover,
   Table,
   TableBody,
   TableCell,
@@ -40,13 +41,11 @@ function open(incident: Incident) {
   return incident.stage !== 'Closed';
 }
 
+
 const Home = () => {
   const { isMobile } = useResponsive();
   const query = useIncidents();
-  const [includeClosed, setIncludeClosed] = useState<boolean>(false);
   const navigate = useNavigate();
-
-  const show = (incident: Incident): boolean => includeClosed || open(incident);
 
   const incidents = query.data;
   const openCount = incidents?.filter(open)?.length ?? 0;
@@ -62,6 +61,14 @@ const Home = () => {
     type: [],
     stage: ''
   });
+
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const openFilters = Boolean(anchorEl);
+
+  const handleOpenFilters = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(anchorEl ? null : event.currentTarget);
+  };
+
   
   const onFilterChange = (id: string, value: FieldValueType) => {
     setIncidentFilters((prev) => ({ ...prev, [id]: value }));
@@ -70,10 +77,16 @@ const Home = () => {
   const buildFilterOptions = (field: 'reportedBy' | 'type') => {
     const values = (incidents ?? [])
       .map((i) => (field === 'reportedBy' ? i.reportedBy?.username : i.type))
-      .filter(Boolean);
-    return Array.from(new Set(values)).map((v) => ({
-      value: v ?? '',
-      label: v ?? ''
+      .filter(Boolean) as string[];
+  
+    const counts = values.reduce<Record<string, number>>((acc, val) => {
+      acc[val] = (acc[val] || 0) + 1;
+      return acc;
+    }, {});
+  
+    return Object.entries(counts).map(([value, count]) => ({
+      value,
+      label: `${value} (${count})`
     })) as FieldOption[];
   };
   
@@ -117,10 +130,6 @@ const Home = () => {
     return true;
   };
 
-  const onIncludeClosedChange = () => {
-    setIncludeClosed((prev) => !prev);
-  };
-
   const onAddIncident = () => {
     navigate('/createlog');
   };
@@ -138,17 +147,6 @@ const Home = () => {
             gap: '0.5rem'
           }}
         >
-          <FormControlLabel
-            label="Include closed incidents"
-            htmlFor="include-closed"
-            control={
-              <Checkbox
-                id="include-closed"
-                value={includeClosed}
-                onChange={onIncludeClosedChange}
-              />
-            }
-          />
           <Box
             display="flex"
             justifyContent="end"
@@ -173,43 +171,171 @@ const Home = () => {
         </Box>
       </PageTitle>
 
-      <Box mb={3}
-        display="flex"
-        flexDirection="row"
-        flexWrap="wrap"
-        alignItems="center"
-        gap={2}>
-        <Filter
-          isMobile={isMobile}
-          appliedFilters={incidentFilters}
-          onChange={onFilterChange}
-          filters={[
-            {
-              id: 'name',
-              label: 'Incident Name',
-              type: 'text'
-            },
-            {
-              id: 'author',
-              label: 'Author',
-              type: 'multiselect',
-              options: buildFilterOptions('reportedBy')
-            },
-            {
-              id: 'type',
-              label: 'Incident Type',
-              type: 'multiselect',
-              options: buildFilterOptions('type')
-            },
-            {
-              id: 'stage',
-              label: 'Stage',
-              type: 'chip-group',
-              options: stageOptions
-            }
-          ]}
-        />
+      <Box mb={3} display="flex" flexDirection="column" gap={2}>
+        {/* Top row: Search + Filter (mobile) OR all filters (desktop) */}
+        {isMobile ? (
+          <Box
+            display="flex"
+            flexDirection="row"
+            alignItems="stretch"
+            gap={1}
+            width="100%"
+          >
+            {/* Search input */}
+            <Box flexGrow={1} minWidth={0}>
+              <Filter
+                isMobile
+                appliedFilters={incidentFilters}
+                onChange={onFilterChange}
+                filters={[
+                  {
+                    id: 'name',
+                    label: 'Search',
+                    hintText: 'Search...',
+                    type: 'text'
+                  }
+                ]}
+              />
+            </Box>
+
+            {/* Filter button */}
+            <Button
+              variant="outlined"
+              color="secondary"
+              endIcon={<FilterAltIcon color={anchorEl ? 'primary' : 'secondary'} />}
+              onClick={handleOpenFilters}
+              sx={{
+                flexShrink: 0,
+                whiteSpace: 'nowrap'
+              }}
+            >
+        Filter
+            </Button>
+
+            {/* Popover for mobile filters */}
+            <Popover
+              open={openFilters}
+              anchorEl={anchorEl}
+              onClose={() => setAnchorEl(null)}
+              anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+              transformOrigin={{ vertical: -10, horizontal: 'left' }}
+              PaperProps={{
+                sx: {
+                  width: '100vw',
+                  maxWidth: '100vw',
+                  left: 0,
+                  ml: 0,
+                  p: 2,
+                  borderRadius: 0
+                }
+              }}
+            >
+              <Box display="flex" flexDirection="column" gap={2}>
+                <Filter
+                  isMobile
+                  appliedFilters={incidentFilters}
+                  onChange={onFilterChange}
+                  filters={[
+                    {
+                      id: 'author',
+                      label: 'Author',
+                      hintText: 'Everyone',
+                      type: 'multiselect',
+                      options: buildFilterOptions('reportedBy')
+                    },
+                    {
+                      id: 'type',
+                      label: 'Incident type',
+                      hintText: 'Any',
+                      type: 'multiselect',
+                      options: buildFilterOptions('type')
+                    }
+                  ]}
+                />
+              </Box>
+            </Popover>
+          </Box>
+        ) : (
+        // Desktop: All filters inline
+          <Box
+            display="flex"
+            flexDirection="row"
+            alignItems="flex-start"
+            flexWrap="wrap"
+            gap={2}
+          >
+            <Filter
+              isMobile={false}
+              appliedFilters={incidentFilters}
+              onChange={onFilterChange}
+              filters={[
+                {
+                  id: 'name',
+                  label: 'Search',
+                  hintText: 'Search...',
+                  type: 'text'
+                },
+                {
+                  id: 'author',
+                  label: 'Author',
+                  hintText: 'Everyone',
+                  type: 'multiselect',
+                  options: buildFilterOptions('reportedBy')
+                },
+                {
+                  id: 'type',
+                  label: 'Incident type',
+                  hintText: 'Any',
+                  type: 'multiselect',
+                  options: buildFilterOptions('type')
+                }
+              ]}
+            />
+          </Box>
+        )}
+
+        {/* Stage chips always visible below, scrollable on mobile */}
+        <Box
+          mt={1}
+          sx={{
+            overflowX: isMobile ? 'auto' : 'visible',
+            overflowY: 'hidden',
+            WebkitOverflowScrolling: 'touch',
+            scrollbarWidth: 'none',
+            '&::-webkit-scrollbar': { display: 'none' }
+          }}
+        >
+          <Box
+            display="flex"
+            flexDirection="row"
+            flexWrap={isMobile ? 'nowrap' : 'wrap'}
+            gap={1}
+            sx={{
+              px: 1,
+              '& > *': {
+                flexShrink: 0
+              }
+            }}
+          >
+            <Filter
+              isMobile={isMobile}
+              appliedFilters={incidentFilters}
+              onChange={onFilterChange}
+              filters={[
+                {
+                  id: 'stage',
+                  label: '',
+                  type: 'chip-group',
+                  options: stageOptions
+                }
+              ]}
+            />
+          </Box>
+        </Box>
       </Box>
+
+
+
 
       <TableContainer sx={{ boxShadow: 0 }} component={Paper}>
         <Table>
@@ -225,7 +351,7 @@ const Home = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {incidents?.filter((i) => show(i) && matchesFilters(i))?.map((incident) => {
+            {incidents?.filter((i) => matchesFilters(i))?.map((incident) => {
               const { id, name, reportedBy, startedAt } = incident;
               return isMobile ? (
                 <TableRow key={id}>

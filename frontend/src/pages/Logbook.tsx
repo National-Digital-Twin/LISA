@@ -224,6 +224,7 @@ const Logbook = () => {
                       {
                         id: 'author',
                         label: 'Author',
+                        hintText: 'Everyone',
                         type: 'multiselect',
                         options: filterAuthors
                       },
@@ -277,12 +278,14 @@ const Logbook = () => {
                             {
                               id: 'author',
                               label: 'Author',
+                              hintText: 'Everyone',
                               type: 'multiselect',
                               options: filterAuthors
                             },
                             {
                               id: 'category',
                               label: 'Category',
+                              hintText: 'Any',
                               type: 'multiselect',
                               options: filterCategories
                             }
