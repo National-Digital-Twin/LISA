@@ -134,10 +134,6 @@ export const useUpdateTaskAssignee = (incidentId?: string) => {
         ...createLogEntryFromTaskAssigneeUpdate(taskId, taskAssignee, incidentId)
       } as Omit<LogEntry, 'id' | 'author'>;
       createLogEntry({ newLogEntry: logEntry });
-
-      queryClient.invalidateQueries({
-        queryKey: [`incident/${incidentId}/logEntries`],
-      });
     },
   });
 };
