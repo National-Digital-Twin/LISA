@@ -57,6 +57,21 @@ const theme = createTheme({
     border: {
       main: '#c2c2c2'
     },
+    status: {
+      open: {
+        primary: '#2640EB',
+        secondary: '#9DD4F6'
+      },
+
+      inprogress: {
+        primary: '#FF6D24',
+        secondary: '#F5CF9D'
+      },
+      closed: {
+        primary: '#239932',
+        secondary: '#9DF5A8'
+      }
+    },
     stage: {
       monitoring: {
         primary: '#ffd324',

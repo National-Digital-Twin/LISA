@@ -33,6 +33,7 @@ import Sketch from './Sketch';
 import { type OnCreateEntry } from '../../utils/handlers';
 import { useAttachments } from '../../hooks/useAttachments';
 import { getSortedEntriesWithDisplaySequence } from '../../utils/sortEntries';
+import Task from './Task';
 import { createSequenceNumber } from '../../utils/Form/sequence';
 
 type AddEntryProps = {
@@ -126,7 +127,13 @@ const AddEntry = ({
     }
     const attachments = [...fileAttachments, ...recordingAttachments, ...sketchAttachments];
     entry.attachments = attachments.length > 0 ? attachments : undefined;
-    onCreateEntry({ ...entry, dateTime } as LogEntry, [
+
+    let mutatedEntry = entry;
+    if (entry.task?.include === 'Yes') {
+      mutatedEntry = { ...entry, task: { ...entry.task, status: 'Open' } };
+    }
+
+    onCreateEntry({ ...mutatedEntry, dateTime } as LogEntry, [
       ...selectedFiles,
       ...recordings,
       ...sketches
@@ -171,6 +178,10 @@ const AddEntry = ({
     setEntry((prev) => ({ ...prev, location }) as LogEntry);
   };
 
+  const onTaskChange = (id: string, value: FieldValueType) => {
+    setEntry((prev) => ({ ...prev, task: { ...prev.task, [id]: value } }));
+  };
+
   return (
     <Modal modal={modal} onClose={onCancel}>
       <Box display="flex" flexDirection="column" displayPrint="none">
@@ -178,7 +189,6 @@ const AddEntry = ({
           fileCount={selectedFiles.length + recordings.length}
           validationErrors={validationErrors}
           showValidationErrors={showValidationErrors}
-          hash={hash}
         />
         <Box padding={2} component="form" bgcolor="background.default" id="rollup-log-book-entry">
           <TabPanel value={TABS.FORM} hash={hash}>
@@ -194,7 +204,6 @@ const AddEntry = ({
               showValidationErrors={showValidationErrors}
             />
           </TabPanel>
-
           <TabPanel value={TABS.LOCATION} hash={hash}>
             <Location.Content
               active={hash?.includes(TABS.LOCATION)}
@@ -223,6 +232,17 @@ const AddEntry = ({
               onChangeLines={setSketchLines}
             />
           </TabPanel>
+          <TabPanel value={TABS.TASK} hash={hash}>
+            <Task.Content
+              task={entry.task}
+              entries={entries}
+              onFieldChange={onTaskChange}
+              users={users}
+              validationErrors={validationErrors}
+              showValidationErrors={showValidationErrors}
+            />
+          </TabPanel>
+
           <Box mt={2}>
             <FormFooter
               validationErrors={validationErrors}

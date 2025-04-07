@@ -2,18 +2,22 @@
 // © Crown Copyright 2025. This work has been developed by the National Digital Twin Programme
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
-import { type LogEntry } from 'common/LogEntry';
-import { LogEntryTypes } from 'common/LogEntryTypes';
+import { LogEntryContent } from 'common/LogEntryContent';
 import { MentionableType, type Mentionable } from 'common/Mentionable';
 
-export function getMentions(entry: LogEntry): Mentionable[] {
-  const type = LogEntryTypes[entry.type];
-  if (type.noContent || !entry.content.json) {
+export function getMentions(content: LogEntryContent): Mentionable[] {
+  if (!content?.json) {
     return [];
   }
 
   const mentions: Mentionable[] = [];
-  function findMentions(node: { type?: string; mentionType?: MentionableType; mentionName?: string, text: string, children?: Array<unknown>}) {
+  function findMentions(node: {
+    type?: string;
+    mentionType?: MentionableType;
+    mentionName?: string;
+    text: string;
+    children?: Array<unknown>;
+  }) {
     if (node.type === 'mention') {
       mentions.push({
         id: node.mentionName,
@@ -26,12 +30,12 @@ export function getMentions(entry: LogEntry): Mentionable[] {
       node.children.forEach(findMentions);
     }
   }
-  const parsedContent = JSON.parse(entry.content.json);
+  const parsedContent = JSON.parse(content.json);
   findMentions(parsedContent.root);
   return mentions;
 }
 
-export function getMentionsOfType(entry: LogEntry, type: MentionableType): Mentionable[] {
-  const allMentions = getMentions(entry);
+export function getMentionsOfType(content: LogEntryContent, type: MentionableType): Mentionable[] {
+  const allMentions = getMentions(content);
   return allMentions.filter((m) => m.type === type);
 }
