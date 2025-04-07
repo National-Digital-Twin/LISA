@@ -1,17 +1,19 @@
+
 // SPDX-License-Identifier: Apache-2.0
 // © Crown Copyright 2025. This work has been developed by the National Digital Twin Programme
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
 // Global imports
-
+/* eslint-disable import/no-extraneous-dependencies */
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 // Local imports
 import { type Incident } from 'common/Incident';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
-// eslint-disable-next-line import/no-extraneous-dependencies
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { IncidentStages } from 'common/IncidentStage';
+import { IncidentTypes } from 'common/IncidentTypes';
 import type { FieldOption } from 'common/Field';
 import {
   Box,
@@ -59,8 +61,9 @@ const Home = () => {
     name: '',
     author: [],
     type: [],
-    stage: ''
+    stage: 'Active'
   });
+
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const openFilters = Boolean(anchorEl);
@@ -74,7 +77,8 @@ const Home = () => {
     setIncidentFilters((prev) => ({ ...prev, [id]: value }));
   };
   
-  const buildFilterOptions = (field: 'reportedBy' | 'type') => {
+  
+  const buildFilterOptions = (field: 'reportedBy') => {
     const values = (incidents ?? [])
       .map((i) => (field === 'reportedBy' ? i.reportedBy?.username : i.type))
       .filter(Boolean) as string[];
@@ -88,6 +92,30 @@ const Home = () => {
       value,
       label: `${value} (${count})`
     })) as FieldOption[];
+  };
+
+  const buildTypeFilterOptions = (): FieldOption[] => {
+    if(!incidents) return [];
+
+    const typeCounts = incidents.reduce<Record<string, number>>((acc, incident) => {
+      const typeKey = incident.type;
+      if (typeKey) {
+        acc[typeKey] = (acc[typeKey] || 0) + 1;
+      }
+      return acc;
+    }, {});
+  
+    return Object.entries(typeCounts)
+      .map(([key, count]) => {
+        const typeDef = IncidentTypes[key as keyof typeof IncidentTypes];
+        if (!typeDef || typeDef.legacy) return null;
+  
+        return {
+          value: key,
+          label: `${typeDef.label} (${count})`
+        };
+      })
+      .filter((item): item is FieldOption => item !== null);
   };
   
   const stageOptions: FieldOption[] = [
@@ -134,6 +162,31 @@ const Home = () => {
     navigate('/createlog');
   };
 
+  const [sortAsc, setSortAsc] = useState(false);
+
+  const onSortClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    setSortAsc((prev) => !prev);
+  };
+
+  const sortIcon = (
+    <KeyboardArrowUpIcon
+      sx={{
+        transform: sortAsc ? 'rotate(180deg)' : 'rotate(0deg)',
+        transition: 'transform 0.2s ease-in-out'
+      }}
+    />
+  );
+
+  const sortedIncidents = [...(incidents ?? [])]
+    .filter((i) => matchesFilters(i))
+    .sort((a, b) => {
+      const dateA = new Date(a.createdAt ?? a.startedAt).getTime();
+      const dateB = new Date(b.createdAt ?? b.startedAt).getTime();
+      return sortAsc ? dateA - dateB : dateB - dateA;
+    });
+
+
   const tableHeaders = isMobile ? ['Incident'] : ['Incident name', 'Reported by', 'Date', 'Stage'];
 
   return (
@@ -147,29 +200,55 @@ const Home = () => {
             gap: '0.5rem'
           }}
         >
-          <Box
-            display="flex"
-            justifyContent="end"
-            sx={{
-              width: {
-                xs: '100%',
-                sm: 'auto'
-              }
-            }}
-          >
-            <Button
-              type="button"
-              variant="contained"
-              size={isMobile ? 'medium' : 'large'}
-              startIcon={<AddCircleIcon />}
-              onClick={onAddIncident}
-              color="primary"
+          {/* Sort (left) only on mobile */}
+          {isMobile ? (
+            <Box display="flex" justifyContent="space-between" width="100%">
+              <Button
+                variant="text"
+                onClick={onSortClick}
+                endIcon={sortIcon}
+                color="secondary"
+              >
+          Sort
+              </Button>
+              <Button
+                type="button"
+                variant="contained"
+                size="medium"
+                startIcon={<AddCircleIcon />}
+                onClick={onAddIncident}
+                color="primary"
+              >
+          Add New Incident
+              </Button>
+            </Box>
+          ) : (
+          // Desktop: Only show Add button aligned right
+            <Box
+              display="flex"
+              justifyContent="end"
+              sx={{
+                width: {
+                  xs: '100%',
+                  sm: 'auto'
+                }
+              }}
             >
-              Add New Incident
-            </Button>
-          </Box>
+              <Button
+                type="button"
+                variant="contained"
+                size="large"
+                startIcon={<AddCircleIcon />}
+                onClick={onAddIncident}
+                color="primary"
+              >
+          Add New Incident
+              </Button>
+            </Box>
+          )}
         </Box>
       </PageTitle>
+
 
       <Box mb={3} display="flex" flexDirection="column" gap={2}>
         {/* Top row: Search + Filter (mobile) OR all filters (desktop) */}
@@ -224,7 +303,7 @@ const Home = () => {
                   width: '100vw',
                   maxWidth: '100vw',
                   left: 0,
-                  ml: 0,
+                  ml: 2,
                   p: 2,
                   borderRadius: 0
                 }
@@ -248,7 +327,7 @@ const Home = () => {
                       label: 'Incident type',
                       hintText: 'Any',
                       type: 'multiselect',
-                      options: buildFilterOptions('type')
+                      options: buildTypeFilterOptions()
                     }
                   ]}
                 />
@@ -256,14 +335,14 @@ const Home = () => {
             </Popover>
           </Box>
         ) : (
-        // Desktop: All filters inline
           <Box
             display="flex"
-            flexDirection="row"
             alignItems="flex-start"
             flexWrap="wrap"
             gap={2}
+            width="100%"
           >
+            {/* Each filter rendered individually to stay in one row */}
             <Filter
               isMobile={false}
               appliedFilters={incidentFilters}
@@ -274,24 +353,49 @@ const Home = () => {
                   label: 'Search',
                   hintText: 'Search...',
                   type: 'text'
-                },
+                }
+              ]}
+            />
+        
+            <Filter
+              isMobile={false}
+              appliedFilters={incidentFilters}
+              onChange={onFilterChange}
+              filters={[
                 {
                   id: 'author',
                   label: 'Author',
                   hintText: 'Everyone',
                   type: 'multiselect',
                   options: buildFilterOptions('reportedBy')
-                },
+                }
+              ]}
+            />
+        
+            <Filter
+              isMobile={false}
+              appliedFilters={incidentFilters}
+              onChange={onFilterChange}
+              filters={[
                 {
                   id: 'type',
                   label: 'Incident type',
                   hintText: 'Any',
                   type: 'multiselect',
-                  options: buildFilterOptions('type')
+                  options: buildTypeFilterOptions(),
+                  maxWidth: 350
                 }
               ]}
             />
+        
+            {/* Sort button aligned right */}
+            <Box sx={{ marginLeft: 'auto' }}>
+              <Button variant="text" onClick={onSortClick} endIcon={sortIcon} color="secondary">
+              Sort
+              </Button>
+            </Box>
           </Box>
+        
         )}
 
         {/* Stage chips always visible below, scrollable on mobile */}
@@ -351,7 +455,7 @@ const Home = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {incidents?.filter((i) => matchesFilters(i))?.map((incident) => {
+            {sortedIncidents.map((incident) => {
               const { id, name, reportedBy, startedAt } = incident;
               return isMobile ? (
                 <TableRow key={id}>

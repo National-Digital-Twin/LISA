@@ -15,6 +15,7 @@ type FilterFieldConfig = {
   hintText?: string | undefined;
   type: 'text' | 'multiselect' | 'chip-group';
   options?: FieldOption[];
+  maxWidth?: number;
 };
 
 type Props = {
@@ -26,7 +27,7 @@ type Props = {
 
 const Filter = ({ filters, appliedFilters, onChange, isMobile }: Props) => (
   <>
-    {filters.map(({ id, label, hintText, type, options = [] }) => {
+    {filters.map(({ id, label, hintText, type, options = [], maxWidth }) => {
       const currentValue = appliedFilters[id];
 
       if (type === 'text') {
@@ -84,7 +85,7 @@ const Filter = ({ filters, appliedFilters, onChange, isMobile }: Props) => (
                 }}
               />
             )}
-            sx={{ maxWidth: isMobile ? 'none' : 200 }}
+            sx={{ maxWidth: isMobile ? 'none' : maxWidth ?? 200 }}
           />
         );
       }
