@@ -20,6 +20,7 @@ This project follows **Semantic Versioning (SemVer)** ([semver.org](https://semv
  ### Features
  
  - Added Tasking workflow to allow Tasks to be created, assigned and updated
+ - Added Incident sorting and filtering
 
  ## [0.90.2] – 2025-03-28
 
