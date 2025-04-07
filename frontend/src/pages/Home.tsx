@@ -76,8 +76,22 @@ const Home = () => {
   const onFilterChange = (id: string, value: FieldValueType) => {
     setIncidentFilters((prev) => ({ ...prev, [id]: value }));
   };
+
+  function checkStageAgainstFilter(incident : Incident, stage : FieldValueType) : boolean {
+    if (stage) {
+      if (stage === 'Active') {
+        if (incident.stage === 'Closed') {
+          return false;
+        }
+      } else if (incident.stage !== stage) {
+        return false;
+      }
+    }
+
+    return true;
+  }
   
-  
+
   const buildFilterOptions = (field: 'reportedBy') => {
     const values = (incidents ?? [])
       .map((i) => (field === 'reportedBy' ? i.reportedBy?.username : i.type))
@@ -145,17 +159,7 @@ const Home = () => {
       }
     }
   
-    if (stage) {
-      if (stage === 'Active') {
-        if (incident.stage === 'Closed') {
-          return false;
-        }
-      } else if (incident.stage !== stage) {
-        return false;
-      }
-    }
-  
-    return true;
+    return checkStageAgainstFilter(incident, stage);
   };
 
   const onAddIncident = () => {

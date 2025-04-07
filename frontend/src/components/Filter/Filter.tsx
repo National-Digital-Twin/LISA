@@ -12,7 +12,7 @@ import { type FieldValueType } from '../../utils/types';
 type FilterFieldConfig = {
   id: string;
   label: string;
-  hintText?: string | undefined;
+  hintText?: string;
   type: 'text' | 'multiselect' | 'chip-group';
   options?: FieldOption[];
   maxWidth?: number;
