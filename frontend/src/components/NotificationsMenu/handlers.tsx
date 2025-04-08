@@ -102,7 +102,7 @@ function assignedTask(notification: Notification, navigate: NavigateFunction): H
     ),
     clickHandler: (item) => {
       const taskAssignedNotif = item as TaskAssignedNotification;
-      navigate(`logbook/${item.entry.incidentId}/tasks#${taskAssignedNotif.entry.task.id}`);
+      navigate(`tasks/${item.entry.incidentId}#${taskAssignedNotif.entry.task.id}`);
     }
   };
 }

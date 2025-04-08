@@ -1,5 +1,5 @@
 import { screen, fireEvent } from '@testing-library/react';
-import Search from '../Search';
+import Search from '../../Filter/Search';
 import { providersRender } from '../../../test-utils';
 
 describe('Search Component', () => {
