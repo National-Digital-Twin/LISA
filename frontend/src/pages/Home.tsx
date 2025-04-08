@@ -305,11 +305,7 @@ const Home = () => {
               PaperProps={{
                 sx: {
                   width: '100vw',
-                  maxWidth: '100vw',
-                  left: 0,
-                  ml: 2,
-                  p: 2,
-                  borderRadius: 0
+                  p: 2
                 }
               }}
             >
