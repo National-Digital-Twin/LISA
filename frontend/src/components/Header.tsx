@@ -45,6 +45,11 @@ const HEADER_ITEMS = [
       { to: 'location', label: 'LOCATION' },
       { to: 'tasks', label: 'TASKS' }
     ]
+  },
+  {
+    to: '/forms',
+    label: 'FORMS',
+    subItems: []
   }
 ];
 

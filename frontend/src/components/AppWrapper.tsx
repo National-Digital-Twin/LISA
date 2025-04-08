@@ -15,6 +15,8 @@ import Logbook from '../pages/Logbook';
 import Overview from '../pages/Overview';
 import Layout from './Layout';
 import Tasks from '../pages/Tasks';
+import Forms from '../pages/Forms';
+import CreateForms from '../pages/CreateForms';
 
 const AppWrapper = () => {
   const router = createBrowserRouter([
@@ -22,6 +24,8 @@ const AppWrapper = () => {
       element: <Layout />,
       children: [
         { path: '', element: <Home /> },
+        { path: 'forms', element: <Forms/>},
+        { path: 'forms/create', element: <CreateForms/>},
         // { path: 'login', element: <Login /> },
         { path: 'createlog', element: <CreateLog /> },
         { path: 'incident/:incidentId', element: <Overview /> },
