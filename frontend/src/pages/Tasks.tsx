@@ -315,7 +315,7 @@ const Tasks = () => {
                     <Typography variant="body1">{task.description}</Typography>
                   </Box>
                   <Box display="flex" flexDirection={isBelowMd ? 'column' : 'row'} gap={2}>
-                    <Box display="flex" flexDirection="column" gap={1} flexGrow={1}>
+                    <Box display="flex" flexDirection="column" gap={1} flexGrow={0.33}>
                       <Typography variant="body1" fontWeight="bold">
                         Assigned by
                       </Typography>
@@ -354,7 +354,10 @@ const Tasks = () => {
             );
           })
         ) : (
-          <div>no tasks</div>
+          <>
+            <h3>There are currently no tasks.</h3>
+            <hr />
+          </>
         )}
       </Box>
     </PageWrapper>

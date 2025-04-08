@@ -9,25 +9,25 @@ import { Field } from "common/Field";
 export const INCLUDE_FIELD: Field = {
   id: 'include',
   type: 'YesNo',
-  label: 'Add Task?'
+  label: 'Add task?'
 };
 
 export const NAME_FIELD: Field = {
   id: 'name',
   type: 'Input',
-  label: 'Name'
+  label: 'Task name'
 };
 
 export const ASSIGNEE_FIELD: Field = {
   id: 'assignee',
   type: 'Select',
-  label: 'Assign To'
+  label: 'Assign to'
 };
 
 export const DESC_FIELD: Field = {
   id: 'description',
   type: 'TextArea',
-  label: 'Description',
+  label: 'Task description',
   multiline: true,
   rows: 6
 };
