@@ -10,7 +10,9 @@ export const LogEntryChangeDetails = Record({
   changedAssignee: Optional(String), // Only applicable to type ChangeTaskAssignee
   changedStatus: Optional(TaskStatus), // Only applicable to type ChangeTaskStatus
   changedTaskName: Optional(String), // Only applicable to type ChangeTaskStatus/ChangeTaskAssignee
-  changedTaskId: Optional(String) // Only applicable to type ChangeTaskStatus/ChangeTaskAssignee
+  changedTaskId: Optional(String), // Only applicable to type ChangeTaskStatus/ChangeTaskAssignee
+  submittedFormId: Optional(String), // Only applicable to type FormSubmitted
+  submittedFormTitle: Optional(String) // Only applicable to type FormSubmitted
 });
 
 export type LogEntryChangeDetails = Static<typeof LogEntryChangeDetails>;

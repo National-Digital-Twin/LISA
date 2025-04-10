@@ -145,6 +145,7 @@ const FormBuilder = ({ onSchemaChange }: Props) => {
     const schema = generateSchema();
 
     createForm({ title: formTitle, formData: schema });
+    handleCancel();
   };
   
 

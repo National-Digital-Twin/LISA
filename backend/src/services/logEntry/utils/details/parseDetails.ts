@@ -20,13 +20,17 @@ export async function parseDetails(
     const changedTaskName = result?.changedTaskName?.value;
     const changedAssignee = result?.changedAssignee?.value;
     const changedStatus = result?.changedStatus?.value as TaskStatus;
+    const submittedFormId = result?.submittedFormId?.value ? nodeValue(result?.submittedFormId?.value) : undefined;
+    const submittedFormTitle = result?.submittedFormTitle?.value;
 
     if (!detailsByEntry.has(entryId)) {
       const details: LogEntryChangeDetails = {
         changedTaskId,
         changedTaskName,
         changedAssignee,
-        changedStatus
+        changedStatus,
+        submittedFormId,
+        submittedFormTitle
       };
 
       detailsByEntry.set(entryId, details);

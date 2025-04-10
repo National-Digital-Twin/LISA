@@ -33,7 +33,7 @@ export async function create(req: Request, res: Response) {
       [formNode, ns.lisa.hasData, jsonLiteral]
     ]);
 
-    res.status(200).json({ message: "Form successfully saved" });
+    res.status(200).json({ id: formId });
 
   } catch (error) {
     console.error('Error saving form:', error);
@@ -54,6 +54,9 @@ export async function get(req: Request, res: Response) {
         ['?formId', ns.lisa.hasData, '?formData'],
         ['?author', ns.ies.isParticipantIn, '?formId'],
         ['?author', ns.ies.hasName, '?authorName']
+      ],
+      orderBy: [
+        ['?createdAt', 'DESC']
       ]
     });
 

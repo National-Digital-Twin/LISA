@@ -1,7 +1,23 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { QueryClient, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { FetchError, get, post } from '../../api';
 import { Form } from '../../components/CustomForms/FormTemplates/types';
 import { CreateFormTemplatePayload, CreateFormContext } from "./types";
+
+export async function poll(
+  formTemplateId: string | undefined,
+  queryClient: QueryClient,
+  attemptNumber: number
+) {
+  const forms = await get<Form[]>('/form');
+
+  if (attemptNumber <= 10) {
+    if (forms.find((form) => form.id === formTemplateId)) {
+      queryClient.invalidateQueries({ queryKey: [`forms`] })
+    } else {
+      setTimeout(() => poll(formTemplateId, queryClient, attemptNumber + 1), 10000);
+    }
+  }
+}
 
 export const useCreateFormTemplate = () => {
   const queryClient = useQueryClient();
@@ -37,8 +53,8 @@ export const useCreateFormTemplate = () => {
       }
     },
 
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['forms'] });
+    onSuccess: async (response) => {
+      setTimeout(() => poll(response.id, queryClient, 1), 1000);
     }
   });
 };

@@ -51,9 +51,13 @@ const AddFormInstance = ({ onCancel }: AddFormProps) => {
   const formRef = useRef<any>(null);
 
   useEffect(() => {
-    if (invalidFormDataAttempted && formRef.current) {
-      formRef.current.validateForm();
-    }
+    if (!invalidFormDataAttempted) return undefined;
+  
+    const timeout = setTimeout(() => {
+      formRef.current?.validateForm();
+    }, 0);
+  
+    return () => clearTimeout(timeout);
   }, [invalidFormDataAttempted]);
 
   const getLabelMap = (schema: JSONSchema7): Record<string, string> => {

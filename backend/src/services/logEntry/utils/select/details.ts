@@ -23,6 +23,11 @@ export function details(incidentId: string) {
       optional([
         ['?entryId', ns.lisa.assignee, '?changedAssignee'],
       ]),
+      optional([
+        ['?entryId', ns.lisa.hasCompletedForm, '?submittedFormId'],
+        ['?submittedFormId', ns.rdf.type, '?parentForm'],
+        ['?parentForm', ns.ies.hasName, '?submittedFormTitle'],
+      ]),
     ]
   });
 }

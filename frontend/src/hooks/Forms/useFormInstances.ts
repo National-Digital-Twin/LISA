@@ -1,12 +1,34 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { QueryClient, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { LogEntry } from "common/LogEntry";
 import { FetchError, get, post } from "../../api";
 import { FormInstance } from "../../components/CustomForms/FormTemplates/types";
 import { CreateFormContext, CreateFormInstancePayload } from "./types";
+import { createLogEntryFromSubmittedForm } from "./utils";
+import { useCreateLogEntry } from "../useLogEntries";
+
+export async function poll(
+  incidentId: string | undefined,
+  formId: string | undefined,
+  queryClient: QueryClient,
+  attemptNumber: number
+) {
+  const forms = await get<FormInstance[]>(`/incident/${incidentId}/form`);
+
+  if (attemptNumber <= 10) {
+    if (forms.find((form) => form.id === formId)) {
+      queryClient.invalidateQueries({ queryKey: [`incident/${incidentId}/form`] })
+    } else {
+      setTimeout(() => poll(incidentId, formId, queryClient, attemptNumber + 1), 10000);
+    }
+  }
+}
 
 export const useCreateFormInstance = (incidentId? : string) => {
   const queryClient = useQueryClient();
+  const { createLogEntry } = useCreateLogEntry(incidentId);
 
-  return useMutation<FormInstance, Error, CreateFormInstancePayload, CreateFormContext>({
+  return useMutation<{ id: string }, Error, CreateFormInstancePayload, CreateFormContext>({
     mutationFn: ({ formTemplateId, formData }) =>
       post(`/incident/${incidentId}/form`, { formTemplateId, formData }),
 
@@ -38,8 +60,17 @@ export const useCreateFormInstance = (incidentId? : string) => {
       }
     },
 
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [`incident/${incidentId}/form`] });
+    onSuccess: async (response, variables) => {
+      setTimeout(() => poll(incidentId, response.id, queryClient, 1), 1000);
+      const formTitle = variables.title;
+      const formId = response.id;
+            
+      if (!incidentId || !formTitle || !formId) return;
+      
+      const logEntry = {
+        ...createLogEntryFromSubmittedForm(formTitle, formId, incidentId)
+      } as Omit<LogEntry, 'id' | 'author'>;
+      createLogEntry({ newLogEntry: logEntry });
     }
   });
 };
