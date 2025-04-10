@@ -43,12 +43,13 @@ const HEADER_ITEMS = [
       { to: 'incident', label: 'OVERVIEW' },
       { to: 'files', label: 'FILES' },
       { to: 'location', label: 'LOCATION' },
-      { to: 'tasks', label: 'TASKS' }
+      { to: 'tasks', label: 'TASKS' },
+      { to: 'forms', label: 'FORMS'}
     ]
   },
   {
     to: '/forms',
-    label: 'FORMS',
+    label: 'FORM TEMPLATES',
     subItems: []
   }
 ];
@@ -88,7 +89,7 @@ const NavigationItems = ({ isBelowMd = false, pathname, handleLink }: Navigation
           />
         </IconButton>
         {HEADER_ITEMS.map(({ to, label }) => {
-          const selected = pathname.includes(to);
+          const selected = pathname === to;
           return (
             <Box component="li" key={to} className={`${selected ? 'selected' : ''}`}>
               <Typography

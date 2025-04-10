@@ -3,6 +3,8 @@ import React, { useState } from 'react';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ListIcon from '@mui/icons-material/List';
+import EmergencyIcon from '@mui/icons-material/Emergency';
+import EmergencyOutlinedIcon from '@mui/icons-material/EmergencyOutlined';
 import {
   Grid2 as Grid,
   IconButton,
@@ -27,6 +29,7 @@ interface SortableFieldRowProps {
   id: string;
   field: Field;
   index: number;
+  error?: string;
   onChange:  <K extends keyof Field>(index: number, key: K, value: Field[K]) => void;
   onDelete: (index: number) => void;
 }
@@ -35,6 +38,7 @@ const SortableFieldRow: React.FC<SortableFieldRowProps> = ({
   id,
   field,
   index,
+  error = '',
   onChange,
   onDelete
 }) => {
@@ -84,7 +88,7 @@ const SortableFieldRow: React.FC<SortableFieldRowProps> = ({
       <Grid
         container
         spacing={2}
-        alignItems="center"
+        alignItems="flex-start"
         ref={setNodeRef}
         style={style}
       >
@@ -94,7 +98,14 @@ const SortableFieldRow: React.FC<SortableFieldRowProps> = ({
             fullWidth
             size="small"
             value={field.label}
+            error={!!error}
+            helperText={error}
             onChange={(e) => onChange(index, 'label', e.target.value)}
+            sx={{
+              '& .MuiInputBase-input': {
+                backgroundColor: 'white',
+              }
+            }}
           />
         </Grid>
 
@@ -104,6 +115,11 @@ const SortableFieldRow: React.FC<SortableFieldRowProps> = ({
             size="small"
             value={field.type}
             onChange={(e) => onChange(index, 'type', e.target.value as Field['type'])}
+            sx={{
+              '& .MuiInputBase-input': {
+                backgroundColor: 'white',
+              }
+            }}
           >
             <MenuItem value="string">Text</MenuItem>
             <MenuItem value="number">Number</MenuItem>
@@ -119,7 +135,16 @@ const SortableFieldRow: React.FC<SortableFieldRowProps> = ({
             </IconButton>
           </Grid>
         )}
-
+        {field.type !== 'boolean' && (
+          <Grid>
+            <IconButton
+              onClick={() => onChange(index, 'required', !field.required)}
+              title={field.required ? 'Mark as optional' : 'Mark as required'}
+            >
+              {field.required ? <EmergencyIcon color="error" /> : <EmergencyOutlinedIcon />}
+            </IconButton>
+          </Grid>
+        )}
         <Grid>
           {/* SH Revert this if possible */}
           {/* eslint-disable-next-line react/jsx-props-no-spreading */}

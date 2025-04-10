@@ -14,6 +14,8 @@ import * as notifications from '../services/notifications';
 import * as storage from '../services/fileStorage';
 import * as osMaps from '../services/osMaps';
 import * as task from '../services/task';
+import * as customForm from '../services/customForm';
+import * as formInstance from '../services/formInstance';
 import * as scg from '../services/scg_demo';
 import { settings } from '../settings';
 import { authenticate } from '../auth/middleware';
@@ -62,6 +64,12 @@ apiRouter.put('/notifications/:id', notifications.markRead);
 
 apiRouter.patch('/task/:taskId/status', task.changeStatus)
 apiRouter.patch('/task/:taskId/assignee', task.changeAssignee)
+
+apiRouter.post('/form', customForm.create);
+apiRouter.get('/form', customForm.get);
+
+apiRouter.post('/incident/:incidentId/form', formInstance.create);
+apiRouter.get('/incident/:incidentId/form', formInstance.get);
 
 apiRouter.use(errorsMiddleware);
 
