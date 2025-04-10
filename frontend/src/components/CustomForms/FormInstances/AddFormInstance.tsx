@@ -1,4 +1,7 @@
-/* eslint-disable import/no-extraneous-dependencies */
+// SPDX-License-Identifier: Apache-2.0
+// © Crown Copyright 2025. This work has been developed by the National Digital Twin Programme
+// and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
+
 import { Box, Button, FormControl, InputLabel, MenuItem, Select, SelectChangeEvent, Typography } from "@mui/material";
 import ImportContactsIcon from '@mui/icons-material/ImportContacts';
 import { Theme as Mui5Theme } from '@rjsf/mui';
@@ -110,16 +113,16 @@ const AddFormInstance = ({ onCancel }: AddFormProps) => {
   
     const formData = Object.entries(rawData).map(([fieldId, value]) => {
       const property = schema.properties?.[fieldId];
-      let normalizedValue = value;
+      let normalisedValue = value;
   
       if (typeof property === 'object' && 'type' in property && property.type === 'boolean') {
-        normalizedValue = value === true ? 'Yes' : 'No';
+        normalisedValue = value === true ? 'Yes' : 'No';
       }
   
       return {
         fieldId,
         label: labelMap[fieldId] ?? fieldId,
-        value: normalizedValue
+        value: normalisedValue
       };
     });
   
