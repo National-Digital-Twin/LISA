@@ -22,5 +22,9 @@ export function extractDetails(entry: LogEntry, entryIdNode: unknown): Array<unk
     triples.push([entryIdNode, ns.lisa.assignee, literalString(entry.details.changedAssignee)])
   }
 
+  if(entry.details.submittedFormId) {
+    triples.push([entryIdNode, ns.lisa.hasCompletedForm, ns.data(entry.details.submittedFormId)])
+  }
+
   return triples;
 }

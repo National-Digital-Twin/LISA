@@ -43,8 +43,14 @@ const HEADER_ITEMS = [
       { to: 'incident', label: 'OVERVIEW' },
       { to: 'files', label: 'FILES' },
       { to: 'location', label: 'LOCATION' },
-      { to: 'tasks', label: 'TASKS' }
+      { to: 'tasks', label: 'TASKS' },
+      { to: 'forms', label: 'FORMS'}
     ]
+  },
+  {
+    to: '/forms',
+    label: 'FORM TEMPLATES',
+    subItems: []
   }
 ];
 
@@ -83,7 +89,7 @@ const NavigationItems = ({ isBelowMd = false, pathname, handleLink }: Navigation
           />
         </IconButton>
         {HEADER_ITEMS.map(({ to, label }) => {
-          const selected = pathname.includes(to);
+          const selected = pathname === to;
           return (
             <Box component="li" key={to} className={`${selected ? 'selected' : ''}`}>
               <Typography
@@ -117,9 +123,18 @@ const Header = () => {
   const { user } = useAuth();
   const query = useIncidents();
   const headerRef = useRef<null | HTMLElement>(null);
+
+  const getInitialActive = () => {
+    const matched = HEADER_ITEMS.flatMap(item =>
+      item.subItems?.map(sub => `${sub.to}/${incidentId}`) || []
+    ).find(route => pathname.includes(route));
+  
+    return matched ?? '';
+  };
+
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [accountAnchorEl, setAccountAnchorEl] = useState<null | HTMLElement>(null);
-  const [active, setActive] = useState('');
+  const [active, setActive] = useState(getInitialActive);
   const [openGuide, setOpenGuide] = useState(false);
   const openNav = Boolean(anchorEl);
   const openAccount = Boolean(accountAnchorEl);

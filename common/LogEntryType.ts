@@ -21,7 +21,8 @@ export const LogEntryType = Union(
   Literal('ChangeStage'),
   Literal('SetIncidentInformation'),
   Literal('ChangeTaskAssignee'),
-  Literal('ChangeTaskStatus')
+  Literal('ChangeTaskStatus'),
+  Literal('FormSubmitted')
 );
 
 // eslint-disable-next-line no-redeclare
