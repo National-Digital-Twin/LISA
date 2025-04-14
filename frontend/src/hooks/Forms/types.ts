@@ -11,7 +11,7 @@ export type CreateFormTemplatePayload = {
   };
 
 export type CreateFormTemplateContext = {
-    previousForms?: Form[];
+    previousFormTemplates?: Form[];
   };
 
 // Create Form Incident types
@@ -22,5 +22,5 @@ export type CreateFormInstancePayload = {
 };
 
 export type CreateFormInstanceContext = {
-  previousForms?: FormInstance[];
+  previousFormInstances?: FormInstance[];
 };

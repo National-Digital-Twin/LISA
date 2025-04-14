@@ -28,17 +28,12 @@ const AppWrapper = () => {
         { path: 'forms', element: <Forms/>},
         { path: 'forms/create', element: <CreateForms/>},
         { path: 'forms/preview', element: <CreateForms/>},
-        // { path: 'login', element: <Login /> },
         { path: 'createlog', element: <CreateLog /> },
         { path: 'incident/:incidentId', element: <Overview /> },
         { path: 'logbook/:incidentId', element: <Logbook /> },
         { path: 'tasks/:incidentId', element: <Tasks /> },
         { path: 'forms/:incidentId', element: <LogForms/>},
-        // { path: 'methane/:incidentId', element: <Methane /> },
-        // { path: 'handover/:incidentId', element: <Handover /> },
-        // { path: 'hazards/:incidentId', element: <Hazards /> },
         { path: 'location/:incidentId', element: <Location /> },
-        // { path: 'riskassessment/:incidentId', element: <RiskAssessment /> },
         { path: 'files/:incidentId', element: <Files /> },
         { path: '*', element: <Error404 /> }
       ]

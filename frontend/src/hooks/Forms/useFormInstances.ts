@@ -39,7 +39,7 @@ export const useCreateFormInstance = (incidentId? : string) => {
     onMutate: async ({ formTemplateId, formData, title }) => {
       await queryClient.cancelQueries({ queryKey: [`incident/${incidentId}/form`] });
 
-      const previousForms = queryClient.getQueryData<FormInstance[]>([`incident/${incidentId}/form`]);
+      const previousFormInstances = queryClient.getQueryData<FormInstance[]>([`incident/${incidentId}/form`]);
 
       const optimisticForm: FormInstance = {
         id: `temp-${Date.now()}`,
@@ -55,12 +55,12 @@ export const useCreateFormInstance = (incidentId? : string) => {
         ...(old ?? []),
       ]);
 
-      return { previousForms };
+      return { previousFormInstances };
     },
 
     onError: (_err, _vars, context) => {
-      if (context?.previousForms) {
-        queryClient.setQueryData([`incident/${incidentId}/form`], context.previousForms);
+      if (context?.previousFormInstances) {
+        queryClient.setQueryData([`incident/${incidentId}/form`], context.previousFormInstances);
       }
     },
 

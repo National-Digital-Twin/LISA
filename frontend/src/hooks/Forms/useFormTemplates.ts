@@ -33,7 +33,7 @@ export const useCreateFormTemplate = () => {
     onMutate: async ({ title, formData }) => {
       await queryClient.cancelQueries({ queryKey: ['forms'] });
 
-      const previousForms = queryClient.getQueryData<Form[]>(['forms']);
+      const previousFormTemplates = queryClient.getQueryData<Form[]>(['forms']);
 
       const optimisticForm: Form = {
         id: `temp-${Date.now()}`,
@@ -48,12 +48,12 @@ export const useCreateFormTemplate = () => {
         ...(old ?? []),
       ]);
 
-      return { previousForms };
+      return { previousFormTemplates };
     },
 
     onError: (_err, _vars, context) => {
-      if (context?.previousForms) {
-        queryClient.setQueryData(['forms'], context.previousForms);
+      if (context?.previousFormTemplates) {
+        queryClient.setQueryData(['forms'], context.previousFormTemplates);
       }
     },
 

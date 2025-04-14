@@ -2,7 +2,7 @@
 // © Crown Copyright 2025. This work has been developed by the National Digital Twin Programme
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
   Box,
   Button,
@@ -53,7 +53,7 @@ const FormBuilder = ({ onSchemaChange }: Props) => {
   const { mutate: createForm } = useCreateFormTemplate();
   const navigate = useNavigate();
 
-  function generateSchema() {
+  const generateSchema = useCallback(() => {
     const requiredFields = fields
       .filter((f) => f.required)
       .map((f) => generateFieldKey(f.label));
@@ -85,15 +85,14 @@ const FormBuilder = ({ onSchemaChange }: Props) => {
       required: requiredFields,
       properties
     } as JSONSchema7;
-  }
+  }, [fields, formTitle]);
   
-  function generateUiSchema() {
+  const generateUiSchema = useCallback(() => {
     const uiSchema: UiSchema = {
       'ui:order': fields.map((f) => generateFieldKey(f.label)),
       'ui:submitButtonOptions': { norender: true }
     };
   
-    // Add widget config for text areas
     fields.forEach((f) => {
       if (f.type === 'textarea') {
         uiSchema[generateFieldKey(f.label)] = {
@@ -104,16 +103,17 @@ const FormBuilder = ({ onSchemaChange }: Props) => {
         };
       }
     });
-
+  
     return uiSchema;
-  }
+  }, [fields]);
+  
 
   useEffect(() => {
     const schema = generateSchema();
     const uiSchema = generateUiSchema();
   
     onSchemaChange(schema, uiSchema);
-  }, [fields, formTitle, onSchemaChange]);
+  }, [fields, formTitle, onSchemaChange, generateSchema, generateUiSchema]);
 
   useEffect(() => {
     const errors: Record<string, string> = {};
