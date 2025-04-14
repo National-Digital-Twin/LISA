@@ -74,7 +74,6 @@ export default function TabNavigation({
 
   return (
     <Box sx={{ position: 'relative', width: '100%' }}>
-      {/* Scrollable Tabs */}
       <Box
         ref={scrollRef}
         sx={{
