@@ -26,6 +26,7 @@ export interface Form {
     authorName?: string;
   }
 
-export interface FormInstance extends Form {
+export interface FormInstance extends Omit<Form, 'formData'> {
+    formData: object;
     formTemplateId: string;
   }

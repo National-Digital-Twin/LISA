@@ -2,12 +2,16 @@
 // © Crown Copyright 2025. This work has been developed by the National Digital Twin Programme
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
-import { Form } from "../../components/CustomForms/FormTemplates/types";
+import { Form, FormData, FormInstance } from "../../components/CustomForms/FormTemplates/types";
 
 // Create Form Template types
 export type CreateFormTemplatePayload = {
     title: string;
-    formData: object;
+    formData: FormData;
+  };
+
+export type CreateFormTemplateContext = {
+    previousForms?: Form[];
   };
 
 // Create Form Incident types
@@ -17,7 +21,6 @@ export type CreateFormInstancePayload = {
   formData: object;
 };
 
-// Common to both
-export type CreateFormContext = {
-  previousForms?: Form[];
+export type CreateFormInstanceContext = {
+  previousForms?: FormInstance[];
 };

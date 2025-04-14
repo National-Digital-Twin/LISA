@@ -5,7 +5,7 @@
 import { QueryClient, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { FetchError, get, post } from '../../api';
 import { Form } from '../../components/CustomForms/FormTemplates/types';
-import { CreateFormTemplatePayload, CreateFormContext } from "./types";
+import { CreateFormTemplatePayload, CreateFormTemplateContext } from "./types";
 
 export async function poll(
   formTemplateId: string | undefined,
@@ -26,7 +26,7 @@ export async function poll(
 export const useCreateFormTemplate = () => {
   const queryClient = useQueryClient();
 
-  return useMutation<Form, Error, CreateFormTemplatePayload, CreateFormContext>({
+  return useMutation<Form, Error, CreateFormTemplatePayload, CreateFormTemplateContext>({
     mutationFn: ({ title, formData }) =>
       post('/form', { title, formData }),
 

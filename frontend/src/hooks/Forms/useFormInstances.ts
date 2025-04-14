@@ -7,7 +7,7 @@ import { QueryClient, useMutation, useQuery, useQueryClient } from "@tanstack/re
 import { LogEntry } from "common/LogEntry";
 import { FetchError, get, post } from "../../api";
 import { FormInstance } from "../../components/CustomForms/FormTemplates/types";
-import { CreateFormContext, CreateFormInstancePayload } from "./types";
+import { CreateFormInstanceContext, CreateFormInstancePayload } from "./types";
 import { createLogEntryFromSubmittedForm } from "./utils";
 import { useCreateLogEntry } from "../useLogEntries";
 
@@ -32,7 +32,7 @@ export const useCreateFormInstance = (incidentId? : string) => {
   const queryClient = useQueryClient();
   const { createLogEntry } = useCreateLogEntry(incidentId);
 
-  return useMutation<{ id: string }, Error, CreateFormInstancePayload, CreateFormContext>({
+  return useMutation<{ id: string }, Error, CreateFormInstancePayload, CreateFormInstanceContext>({
     mutationFn: ({ formTemplateId, formData }) =>
       post(`/incident/${incidentId}/form`, { formTemplateId, formData }),
 
