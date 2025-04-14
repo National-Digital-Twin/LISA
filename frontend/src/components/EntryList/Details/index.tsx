@@ -11,6 +11,7 @@ import Default from './Default';
 import SetInformation from './SetInformation';
 import ChangeTaskStatus from './ChangeTaskStatus';
 import ChangeTaskAssignee from './ChangeTaskAssignee';
+import FormSubmitted from './FormSubmitted';
 
 interface Props {
   entry: LogEntry;
@@ -31,6 +32,9 @@ export default function Details({ entry, onContentClick }: Readonly<Props>) {
       break;
     case 'ChangeTaskAssignee':
       detail = <ChangeTaskAssignee entry={entry} />;
+      break;
+    case 'FormSubmitted':
+      detail = <FormSubmitted entry={entry} />;
       break;
     default:
       detail = <Default entry={entry} />;

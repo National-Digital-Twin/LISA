@@ -20,7 +20,7 @@ const TaskEntry = ({
   <Box
     display="flex"
     flexDirection={(direction ?? isBelowMd) ? 'column' : 'row'}
-    justifyContent="space-between"
+    justifyContent="left"
     component="li"
     gap={0.5}
   >
@@ -36,7 +36,7 @@ const Task = ({ entry }: { entry: LogEntry }) => {
     <Box display="flex" flexDirection="column" component="ul" gap={2}>
       <TaskEntry isBelowMd={isBelowMd}>
         <Typography variant="body1" fontWeight="bold">
-          Task name
+          Task name:
         </Typography>
         <Typography component={Link} to={`/tasks/${entry.incidentId}#${entry.task.id}`} color="primary" fontWeight="bold">
           {entry.task.name}
@@ -44,7 +44,7 @@ const Task = ({ entry }: { entry: LogEntry }) => {
       </TaskEntry>
       <TaskEntry isBelowMd={isBelowMd}>
         <Typography variant="body1" fontWeight="bold">
-          Assigned to
+          Assigned to:
         </Typography>
         <Typography variant="body1">
           {entry.task.assignee?.username}

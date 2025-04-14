@@ -14,6 +14,9 @@ declare module '@mui/material/styles/createPalette' {
     border: {
       main: string;
     };
+    chip: {
+      main: string;
+    }
     status: {
       open: StageType;
       closed: StageType;

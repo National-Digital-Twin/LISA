@@ -25,7 +25,7 @@ export default function ChangeTaskStatus({ entry }: Readonly<Props>) {
 
   return (
     <>
-      <Box display="flex" flexDirection="row" justifyContent="space-between" alignItems="center" component="ul" gap={2} sx={{ width: '100%', mb: 2}}>
+      <Box display="flex" flexDirection="row" justifyContent="left" alignItems="center" component="ul" gap={2} sx={{ width: '100%', mb: 2}}>
         <Typography variant="body1" fontWeight="bold">
           Task name
         </Typography>
