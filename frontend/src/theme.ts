@@ -58,16 +58,15 @@ const theme = createTheme({
       main: '#c2c2c2'
     },
     status: {
-      open: {
+      todo: {
         primary: '#2640EB',
         secondary: '#9DD4F6'
       },
-
       inprogress: {
         primary: '#FF6D24',
         secondary: '#F5CF9D'
       },
-      closed: {
+      done: {
         primary: '#239932',
         secondary: '#9DF5A8'
       }

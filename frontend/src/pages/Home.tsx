@@ -254,7 +254,7 @@ const Home = () => {
       </PageTitle>
 
 
-      <Box mb={3} display="flex" flexDirection="column" gap={2}>
+      <Box display="flex" flexDirection="column" gap={2}>
         {/* Top row: Search + Filter (mobile) OR all filters (desktop) */}
         {isMobile ? (
           <Box
@@ -400,7 +400,6 @@ const Home = () => {
 
         {/* Stage chips always visible below, scrollable on mobile */}
         <Box
-          mt={1}
           sx={{
             overflowX: isMobile ? 'auto' : 'visible',
             overflowY: 'hidden',
@@ -437,9 +436,6 @@ const Home = () => {
           </Box>
         </Box>
       </Box>
-
-
-
 
       <TableContainer sx={{ boxShadow: 0 }} component={Paper}>
         <Table>

@@ -113,10 +113,10 @@ const Filter = ({ filters, appliedFilters, onChange, isMobile }: Props) => (
           >
             {options.map((opt) => {
               const isActive = currentValue === opt.value;
-      
+
               return (
                 <Chip
-                  key={opt.value}
+                  key={`${opt.value}-${isActive}`}
                   icon={
                     isActive ? (
                       <CheckIcon
@@ -137,8 +137,11 @@ const Filter = ({ filters, appliedFilters, onChange, isMobile }: Props) => (
                       {opt.label}
                     </Typography>
                   }
-                  onClick={() => onChange(id, isActive ? '' : opt.value)}
-                  size={isMobile ? 'small' : 'medium'}
+                  onClick={() => {
+                    const newValue = isActive ? '' : opt.value;
+                    onChange(id, newValue);
+                  }}
+                  size="medium"
                   variant="outlined"
                   sx={{
                     flexShrink: 0,
@@ -146,16 +149,17 @@ const Filter = ({ filters, appliedFilters, onChange, isMobile }: Props) => (
                     px: 1.5,
                     py: 0.5,
                     fontWeight: 'bold',
-                    backgroundColor: isActive ? 'primary.light' : 'transparent',
+                    backgroundColor: isActive ? '#D4E3FF' : 'transparent',
                     borderColor: isActive ? 'primary.main' : 'grey.400',
+                    transition: 'all 0.2s ease-in-out',
                     '&:hover': {
                       backgroundColor: isActive ? 'primary.light' : 'grey.100',
-                    },
-                    transition: 'all 0.2s ease-in-out',
+                    }
                   }}
                 />
               );
             })}
+
           </Box>
         );
       }        

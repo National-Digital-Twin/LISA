@@ -292,60 +292,86 @@ const Header = () => {
           paddingLeft={isBelowMd ? 2 : '140px'}
           paddingRight={2}
         >
-          <Tabs
-            value={active}
-            onChange={handleChange}
-            variant="scrollable"
-            TabIndicatorProps={{
-              style: { display: 'none' }
+          <Box
+            sx={{
+              position: 'relative',
+              overflowX: 'auto',
+              '&::after': isBelowMd
+                ? {
+                  content: '""',
+                  position: 'absolute',
+                  top: 0,
+                  right: 0,
+                  height: '100%',
+                  width: '30px',
+                  background: (theme) =>
+                    `linear-gradient(to left, ${theme.palette.background.default}, transparent)`,
+                  pointerEvents: 'none',
+                  zIndex: 1,
+                }
+                : undefined,
             }}
-            color="text.primary"
           >
-            {cPage.subItems.map(({ to, label }, index) => {
-              const isLastItem = index === cPage.subItems.length - 1;
-              const value = `${to}/${incident.id}`;
-              const selected = value === active;
-              return (
-                <Tab
-                  key={value}
-                  aria-controls={`log-tab-${label}`}
-                  label={
-                    <Box display="flex" gap={2}>
-                      <Typography
-                        variant="body1"
-                        fontWeight="bold"
-                        sx={{
-                          color: selected ? 'primary.main' : 'text.primary',
-                          textDecorationLine: selected ? 'underline !important' : '',
-                          textDecorationThickness: selected ? '2px !important' : 0,
-                          textUnderlineOffset: '0.5rem',
-                          transition: 'color 0.3s',
-                          '&:hover': { color: 'primary.main' }
-                        }}
-                        component={Link}
-                        onClick={handleLink}
-                        to={`${to}/${incident.id}`}
-                      >
-                        {label}
-                      </Typography>
-                      {!isLastItem && (
-                        <Divider
-                          orientation="vertical"
-                          flexItem
-                          sx={{ borderColor: 'text.primary' }}
-                        />
-                      )}
-                    </Box>
-                  }
-                  component={Link}
-                  to={value}
-                  value={value}
-                  sx={{ minWidth: 0, padding: 1 }}
-                  color="text.primary"
-                />
-              );
-            })}
-          </Tabs>
+            <Tabs
+              value={active}
+              onChange={handleChange}
+              variant="scrollable"
+              TabIndicatorProps={{
+                style: { display: 'none' }
+              }}
+              color="text.primary"
+              sx={{
+                overflowX: 'auto',
+                scrollBehavior: 'smooth',
+              }}
+            >
+              {cPage.subItems.map(({ to, label }, index) => {
+                const isLastItem = index === cPage.subItems.length - 1;
+                const value = `${to}/${incident.id}`;
+                const selected = value === active;
+                return (
+                  <Tab
+                    key={value}
+                    aria-controls={`log-tab-${label}`}
+                    label={
+                      <Box display="flex" gap={2}>
+                        <Typography
+                          variant="body1"
+                          fontWeight="bold"
+                          sx={{
+                            color: selected ? 'primary.main' : 'text.primary',
+                            textDecorationLine: selected ? 'underline !important' : '',
+                            textDecorationThickness: selected ? '2px !important' : 0,
+                            textUnderlineOffset: '0.5rem',
+                            transition: 'color 0.3s',
+                            '&:hover': { color: 'primary.main' }
+                          }}
+                          component={Link}
+                          onClick={handleLink}
+                          to={`${to}/${incident.id}`}
+                        >
+                          {label}
+                        </Typography>
+                        {!isLastItem && (
+                          <Divider
+                            orientation="vertical"
+                            flexItem
+                            sx={{ borderColor: 'text.primary' }}
+                          />
+                        )}
+                      </Box>
+                    }
+                    component={Link}
+                    to={value}
+                    value={value}
+                    sx={{ minWidth: 0, padding: 1 }}
+                    color="text.primary"
+                  />
+                );
+              })}
+            </Tabs>
+          </Box>
+
         </Box>
       )}
       <Modal open={openGuide} onClose={() => setOpenGuide(!openGuide)}>

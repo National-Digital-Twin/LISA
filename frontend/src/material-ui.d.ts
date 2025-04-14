@@ -15,8 +15,8 @@ declare module '@mui/material/styles/createPalette' {
       main: string;
     };
     status: {
-      open: StageType;
-      closed: StageType;
+      todo: StageType;
+      done: StageType;
       inprogress: StageType;
     };
     stage: {
