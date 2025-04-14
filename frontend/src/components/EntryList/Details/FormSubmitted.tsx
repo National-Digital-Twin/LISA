@@ -18,9 +18,9 @@ export default function FormSubmitted({ entry }: Readonly<Props>) {
   const formId = entry.details?.submittedFormId;
 
   return (
-    <Box display="flex" flexDirection="row" justifyContent="space-between" alignItems="center" component="ul" gap={2} sx={{ width: '100%', mb: 2}}>
+    <Box display="flex" flexDirection="row" justifyContent="left" alignItems="center" component="ul" gap={1} sx={{ width: '100%', mb: 2}}>
       <Typography variant="body1" fontWeight="bold">
-          Form Name
+          Form Name:
       </Typography>
       <Typography component={Link} to={`/forms/${entry.incidentId}#${formId}`} color="primary" fontWeight="bold">
         {formName}

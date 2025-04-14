@@ -9,7 +9,7 @@ import validator from '@rjsf/validator-ajv8';
 import { JSONSchema7 } from 'json-schema';
 import { useEffect, useRef, useState } from "react";
 import { IChangeEvent, withTheme } from "@rjsf/core";
-import { RJSFValidationError, UiSchema } from '@rjsf/utils';
+import { RJSFValidationError } from '@rjsf/utils';
 import { useParams } from "react-router-dom";
 import Modal from '../../Modal';
 import { MODAL_KEY } from "../../../utils/constants";
@@ -23,32 +23,12 @@ type AddFormProps = {
 
 const RJSFForm = withTheme(Mui5Theme);
 
-const generateUiSchema = (schema: JSONSchema7): UiSchema => {
-  const uiSchema: UiSchema = {
-    "ui:submitButtonOptions": { norender: true }
-  };
-  
-  if (schema.properties) {
-    Object.keys(schema.properties || {}).forEach((key) => {
-      uiSchema[key] = {
-        'ui:options': {
-          variant: 'filled',
-          size: 'small'
-        }
-      };
-    });
-  }
-  
-  return uiSchema;
-};
-
 const AddFormInstance = ({ onCancel }: AddFormProps) => {
   const { forms } = useFormTemplates();
   const { incidentId } = useParams();
   const { mutate: createForm } = useCreateFormInstance(incidentId);
   const [modal] = useState<boolean>(sessionStorage.getItem(MODAL_KEY) === 'yes');
   const [selectedForm, setSelectedForm] = useState<Form | null>(null);
-  const [uiSchema, setUiSchema] = useState<UiSchema>({});
   const [invalidFormDataAttempted, setInvalidFormDataAttempted] = useState(false);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const formRef = useRef<any>(null);
@@ -75,7 +55,7 @@ const AddFormInstance = ({ onCancel }: AddFormProps) => {
 
   const transformErrors = (errors: RJSFValidationError[]) => {
     if (!selectedForm?.formData) return errors;
-    const labelMap = getLabelMap(selectedForm.formData as JSONSchema7);
+    const labelMap = getLabelMap(selectedForm.formData.schema);
   
     return errors.map((error) => {
       if (error.name === 'required' && error.params?.missingProperty) {
@@ -94,8 +74,6 @@ const AddFormInstance = ({ onCancel }: AddFormProps) => {
   const handleChange = (event: SelectChangeEvent<string>) => {
     const selected = forms?.find((form) => form.id === event.target.value) ?? null;
     setSelectedForm(selected);
-    const generatedUiSchema = generateUiSchema(selected?.formData as JSONSchema7);
-    setUiSchema(generatedUiSchema);
   };
 
   const handleSave = () => {
@@ -108,7 +86,7 @@ const AddFormInstance = ({ onCancel }: AddFormProps) => {
     if (!selectedForm) return;
   
     const rawData = event.formData;
-    const schema = selectedForm.formData as JSONSchema7;
+    const {schema} = selectedForm.formData;
     const labelMap = getLabelMap(schema);
   
     const formData = Object.entries(rawData).map(([fieldId, value]) => {
@@ -162,9 +140,9 @@ const AddFormInstance = ({ onCancel }: AddFormProps) => {
                 showErrorList={false}
                 noHtml5Validate
                 transformErrors={transformErrors}
-                schema={selectedForm.formData as JSONSchema7}
+                schema={selectedForm.formData.schema}
                 validator={validator}
-                uiSchema={uiSchema}
+                uiSchema={selectedForm.formData.uiSchema}
                 onSubmit={handleFormSubmit}
                 onError={() => setInvalidFormDataAttempted(true)}
                 liveValidate={invalidFormDataAttempted}

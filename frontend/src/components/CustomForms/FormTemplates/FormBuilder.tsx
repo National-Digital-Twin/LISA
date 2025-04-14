@@ -57,32 +57,60 @@ const FormBuilder = ({ onSchemaChange }: Props) => {
     const requiredFields = fields
       .filter((f) => f.required)
       .map((f) => generateFieldKey(f.label));
-
+  
+    const properties = Object.fromEntries(
+      fields.map((f) => {
+        let fieldType: JSONSchema7['type'];
+  
+        if (f.type === 'select' || f.type === 'textarea') {
+          fieldType = 'string';
+        } else {
+          fieldType = f.type;
+        }
+  
+        return [
+          generateFieldKey(f.label),
+          {
+            type: fieldType,
+            title: f.label,
+            enum: f.type === 'select' ? f.options ?? [] : undefined
+          }
+        ];
+      })
+    );
+  
     return {
       title: formTitle,
       type: 'object',
       required: requiredFields,
-      properties: Object.fromEntries(
-        fields.map((f) => [
-          generateFieldKey(f.label),
-          {
-            type: f.type === 'select' ? 'string' : f.type,
-            title: f.label,
-            enum: f.type === 'select' ? f.options ?? [] : undefined
-          }
-        ])
-      )
+      properties
     } as JSONSchema7;
+  }
+  
+  function generateUiSchema() {
+    const uiSchema: UiSchema = {
+      'ui:order': fields.map((f) => generateFieldKey(f.label)),
+      'ui:submitButtonOptions': { norender: true }
+    };
+  
+    // Add widget config for text areas
+    fields.forEach((f) => {
+      if (f.type === 'textarea') {
+        uiSchema[generateFieldKey(f.label)] = {
+          'ui:widget': 'textarea',
+          'ui:options': {
+            rows: 4
+          }
+        };
+      }
+    });
+
+    return uiSchema;
   }
 
   useEffect(() => {
     const schema = generateSchema();
-  
-    const uiSchema = {
-      'ui:order': fields.map((f) => generateFieldKey(f.label)),
-      // force hiding of submit button that RJSF displays by default - this should be handled by FormBuilder
-      "ui:submitButtonOptions": { norender: true }
-    };
+    const uiSchema = generateUiSchema();
   
     onSchemaChange(schema, uiSchema);
   }, [fields, formTitle, onSchemaChange]);
@@ -98,6 +126,12 @@ const FormBuilder = ({ onSchemaChange }: Props) => {
         errors[field.id] = 'Label is required.';
       } else {
         labelCount[label] = (labelCount[label] || 0) + 1;
+      }
+
+      if (field.type === 'select') {
+        if (!field.options || field.options.length === 0) {
+          errors[field.id] = 'Dropdown must have at least one option.';
+        }
       }
     });
   
@@ -146,8 +180,14 @@ const FormBuilder = ({ onSchemaChange }: Props) => {
 
   const handleSave = () => {
     const schema = generateSchema();
+    const uiSchema = generateUiSchema();
+    
+    const formData = {
+      schema,
+      uiSchema
+    };
 
-    createForm({ title: formTitle, formData: schema });
+    createForm({ title: formTitle, formData });
     handleCancel();
   };
   

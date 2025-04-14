@@ -20,17 +20,17 @@ export default function ChangeTaskAssignee({ entry }: Readonly<Props>) {
 
   return (
     <>
-      <Box display="flex" flexDirection="row" justifyContent="space-between" alignItems="center" component="ul" gap={2} sx={{ width: '100%', mb: 2}}>
+      <Box display="flex" flexDirection="row" justifyContent="left" alignItems="center" component="ul" gap={1} sx={{ width: '100%', mb: 2}}>
         <Typography variant="body1" fontWeight="bold">
-          Task name
+          Task name:
         </Typography>
         <Typography component={Link} to={`/tasks/${entry.incidentId}#${taskId}`} color="primary" fontWeight="bold">
           {taskName}
         </Typography>
       </Box>
-      <Box display="flex" flexDirection="row" justifyContent="space-between" alignItems="center" component="ul" gap={2} sx={{ width: '100%' }}>
+      <Box display="flex" flexDirection="row" justifyContent="left" alignItems="center" component="ul" gap={1} sx={{ width: '100%' }}>
         <Typography variant="body1" fontWeight="bold">
-          Assignee changed to
+          Assignee changed to:
         </Typography>
         <Typography variant="body1">
           {newAssignee}

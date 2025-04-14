@@ -7,6 +7,7 @@ import { Box, Button } from "@mui/material";
 import { useLocation, useNavigate } from "react-router-dom";
 import { UiSchema } from '@rjsf/utils';
 import { JSONSchema7 } from "json-schema";
+import { FormData } from "../../components/CustomForms/FormTemplates/types";
 import FormBuilder from "../../components/CustomForms/FormTemplates/FormBuilder";
 import FormPreview from "../../components/CustomForms/FormTemplates/FormPreview";
 
@@ -16,18 +17,18 @@ const CreateFormTemplates = () => {
   const form = location.state?.form;
   const isViewMode = !!form;
 
-  const [schema, setSchema] = useState({});
-  const [uiSchema, setUiSchema] = useState({});
+  const [formData, setFormData] = useState<FormData>({
+    schema: {},
+    uiSchema: {}
+  });
 
-  const handleSchemaChange = useCallback((jSchema : JSONSchema7, jUiSchema : UiSchema) => {
-    setSchema(jSchema);
-    setUiSchema(jUiSchema);
+  const handleSchemaChange = useCallback((schema: JSONSchema7, uiSchema: UiSchema) => {
+    setFormData({ schema, uiSchema });
   }, []);
 
   useEffect(() => {
-    if (form) {
-      setSchema(form.formData as JSONSchema7);
-      setUiSchema({"ui:submitButtonOptions": { norender: true }})
+    if (form?.formData) {
+      setFormData(form.formData);
     }
   }, [form]);
 
@@ -46,7 +47,7 @@ const CreateFormTemplates = () => {
           </Box>
         )}
         <Box flex={1}>
-          <FormPreview schema={schema} uiSchema={uiSchema} />
+          <FormPreview schema={formData.schema} uiSchema={formData.uiSchema} />
         </Box>
       </Box>
   

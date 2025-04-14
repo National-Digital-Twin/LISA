@@ -123,9 +123,18 @@ const Header = () => {
   const { user } = useAuth();
   const query = useIncidents();
   const headerRef = useRef<null | HTMLElement>(null);
+
+  const getInitialActive = () => {
+    const matched = HEADER_ITEMS.flatMap(item =>
+      item.subItems?.map(sub => `${sub.to}/${incidentId}`) || []
+    ).find(route => pathname.includes(route));
+  
+    return matched ?? '';
+  };
+
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [accountAnchorEl, setAccountAnchorEl] = useState<null | HTMLElement>(null);
-  const [active, setActive] = useState('');
+  const [active, setActive] = useState(getInitialActive);
   const [openGuide, setOpenGuide] = useState(false);
   const openNav = Boolean(anchorEl);
   const openAccount = Boolean(accountAnchorEl);

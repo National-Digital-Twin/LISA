@@ -57,6 +57,9 @@ const theme = createTheme({
     border: {
       main: '#c2c2c2'
     },
+    chip: {
+      main: '#D4E3FF'
+    },
     status: {
       open: {
         primary: '#2640EB',

@@ -2,19 +2,26 @@
 // © Crown Copyright 2025. This work has been developed by the National Digital Twin Programme
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
+import { UiSchema } from "@rjsf/utils";
+import { JSONSchema7 } from "json-schema";
+
 export type Field = {
     id: string;
     label: string;
-    type: 'string' | 'number' | 'boolean' | 'select';
+    type: 'string' | 'textarea' | 'number' | 'boolean' | 'select';
     options?: string[]
     required?: boolean;
   };
 
+export interface FormData {
+    schema: JSONSchema7;
+    uiSchema: UiSchema;
+  }
 
 export interface Form {
     id: string;
     title: string;
-    formData: object;
+    formData: FormData;
     createdAt: string;
     authorName?: string;
   }

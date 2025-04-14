@@ -126,6 +126,7 @@ const SortableFieldRow: React.FC<SortableFieldRowProps> = ({
             }}
           >
             <MenuItem value="string">Text</MenuItem>
+            <MenuItem value="textarea">Text Area</MenuItem>
             <MenuItem value="number">Number</MenuItem>
             <MenuItem value="boolean">Checkbox</MenuItem>
             <MenuItem value="select">Dropdown</MenuItem>
@@ -150,7 +151,6 @@ const SortableFieldRow: React.FC<SortableFieldRowProps> = ({
           </Grid>
         )}
         <Grid>
-          {/* SH Revert this if possible */}
           {/* eslint-disable-next-line react/jsx-props-no-spreading */}
           <IconButton {...attributes} {...listeners}>
             <DragIndicatorIcon />

@@ -146,7 +146,7 @@ const Filter = ({ filters, appliedFilters, onChange, isMobile }: Props) => (
                     px: 1.5,
                     py: 0.5,
                     fontWeight: 'bold',
-                    backgroundColor: isActive ? '#D4E3FF' : 'transparent',
+                    backgroundColor: isActive ? 'chip.main' : 'transparent',
                     borderColor: isActive ? 'primary.main' : 'grey.400',
                     '&:hover': {
                       backgroundColor: isActive ? 'primary.light' : 'grey.100',
