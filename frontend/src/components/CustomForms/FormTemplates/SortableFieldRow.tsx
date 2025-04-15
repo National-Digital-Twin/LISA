@@ -145,7 +145,7 @@ const SortableFieldRow: React.FC<SortableFieldRowProps> = ({
             </IconButton>
           </Grid>
         )}
-        {field.type !== 'boolean' && (
+        {!['boolean', 'label'].includes(field.type) && (
           <Grid>
             <IconButton
               onClick={() => onChange(index, 'required', !field.required)}
