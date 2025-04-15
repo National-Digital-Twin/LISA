@@ -8,6 +8,7 @@ import validator from '@rjsf/validator-ajv8';
 import { Box, Typography } from '@mui/material';
 import { UiSchema } from '@rjsf/utils';
 import { JSONSchema7 } from 'json-schema';
+import CustomLabelField from './CustomLabelField';
 
 const Form = withTheme(Mui5Theme);
 
@@ -21,6 +22,7 @@ const FormPreview = ({ schema, uiSchema }: { schema: JSONSchema7; uiSchema: UiSc
         schema={schema}
         uiSchema={uiSchema}
         validator={validator}
+        fields={{ label: CustomLabelField }}
       />
     </Box>
   </Box>

@@ -2,7 +2,14 @@
 // © Crown Copyright 2025. This work has been developed by the National Digital Twin Programme
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
-export function generateFieldKey(label: string): string {
+import { Field } from "./FormTemplates/types";
+
+export function generateFieldKey(field : Field): string {
+  if(field.type === "label") {
+    return field.id;
+  }
+  
+  const {label} = field;
   return `f${  label
     .toLowerCase()
     .replace(/\s+/g, '_')        // Replace spaces with underscore
