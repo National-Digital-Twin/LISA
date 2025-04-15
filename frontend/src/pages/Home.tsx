@@ -114,7 +114,7 @@ const Home = () => {
     const typeCounts = incidents.reduce<Record<string, number>>((acc, incident) => {
       const typeKey = incident.type;
       if (typeKey) {
-        acc[typeKey] = (acc[typeKey] || 0) + 1;
+        acc[typeKey] = (acc[typeKey] ?? 0) + 1;
       }
       return acc;
     }, {});

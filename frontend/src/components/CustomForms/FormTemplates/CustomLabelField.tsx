@@ -8,7 +8,7 @@ import { FieldProps } from '@rjsf/utils';
 
 const CustomLabelField: React.FC<FieldProps> = ({ schema }) => (
   <Typography>
-    {schema.title || '<Missing Label>'}
+    {schema.title ?? '<Missing Label>'}
   </Typography>
 );
 
