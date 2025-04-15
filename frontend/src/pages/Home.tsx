@@ -98,7 +98,7 @@ const Home = () => {
       .filter(Boolean) as string[];
   
     const counts = values.reduce<Record<string, number>>((acc, val) => {
-      acc[val] = (acc[val] || 0) + 1;
+      acc[val] = (acc[val] ?? 0) + 1;
       return acc;
     }, {});
   

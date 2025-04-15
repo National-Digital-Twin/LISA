@@ -29,7 +29,7 @@ export default function TabNavigation({
   );
 
   const { hash } = useLocation();
-  const active = hash || TABS.FORM;
+  const active = hash ?? TABS.FORM;
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const [showScrollHint, setShowScrollHint] = useState(false);
