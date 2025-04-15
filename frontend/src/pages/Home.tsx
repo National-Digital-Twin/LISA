@@ -98,7 +98,7 @@ const Home = () => {
       .filter(Boolean) as string[];
   
     const counts = values.reduce<Record<string, number>>((acc, val) => {
-      acc[val] = (acc[val] || 0) + 1;
+      acc[val] = (acc[val] ?? 0) + 1;
       return acc;
     }, {});
   
@@ -114,7 +114,7 @@ const Home = () => {
     const typeCounts = incidents.reduce<Record<string, number>>((acc, incident) => {
       const typeKey = incident.type;
       if (typeKey) {
-        acc[typeKey] = (acc[typeKey] || 0) + 1;
+        acc[typeKey] = (acc[typeKey] ?? 0) + 1;
       }
       return acc;
     }, {});
@@ -254,7 +254,7 @@ const Home = () => {
       </PageTitle>
 
 
-      <Box mb={3} display="flex" flexDirection="column" gap={2}>
+      <Box display="flex" flexDirection="column" gap={2}>
         {/* Top row: Search + Filter (mobile) OR all filters (desktop) */}
         {isMobile ? (
           <Box
@@ -400,7 +400,6 @@ const Home = () => {
 
         {/* Stage chips always visible below, scrollable on mobile */}
         <Box
-          mt={1}
           sx={{
             overflowX: isMobile ? 'auto' : 'visible',
             overflowY: 'hidden',
@@ -437,9 +436,6 @@ const Home = () => {
           </Box>
         </Box>
       </Box>
-
-
-
 
       <TableContainer sx={{ boxShadow: 0 }} component={Paper}>
         <Table>

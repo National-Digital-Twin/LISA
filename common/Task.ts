@@ -7,9 +7,9 @@ import { Static, Record, String, Optional, Literal, Union } from 'runtypes';
 import { User } from './User';
 
 export const TaskStatus = Union(
-  Literal('Open'),
+  Literal('ToDo'),
   Literal('InProgress'),
-  Literal('Closed')
+  Literal('Done')
 );
 
 export type TaskStatus = Static<typeof TaskStatus>;

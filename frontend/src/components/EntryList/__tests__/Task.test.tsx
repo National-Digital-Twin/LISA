@@ -12,7 +12,7 @@ describe('Task Component', () => {
       name: 'Investigate issue',
       description: 'Look into the failing pipeline',
       assignee: { username: 'jdoe', displayName: 'John Doe' },
-      status: 'Open'
+      status: 'ToDo'
     },
     author: { username: 'author', displayName: 'Author Name' },
     dateTime: '2025-04-02T12:00:00Z',

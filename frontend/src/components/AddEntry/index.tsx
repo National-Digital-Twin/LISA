@@ -130,7 +130,7 @@ const AddEntry = ({
 
     let mutatedEntry = entry;
     if (entry.task?.include === 'Yes') {
-      mutatedEntry = { ...entry, task: { ...entry.task, status: 'Open' } };
+      mutatedEntry = { ...entry, task: { ...entry.task, status: 'ToDo' } };
     }
 
     onCreateEntry({ ...mutatedEntry, dateTime } as LogEntry, [

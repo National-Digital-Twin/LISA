@@ -181,8 +181,8 @@ const Tasks = () => {
             };
 
             const statusValue = () => {
-              if (isStatusUpdating) return updateTask.status.value ?? 'Open';
-              return task.status ?? 'Open';
+              if (isStatusUpdating) return updateTask.status.value ?? 'ToDo';
+              return task.status ?? 'ToDo';
             };
 
             return (
@@ -269,9 +269,9 @@ const Tasks = () => {
                                 label: 'New Status',
                                 value: task.status,
                                 options: [
-                                  { value: 'Open', label: 'Open' },
+                                  { value: 'ToDo', label: 'To Do' },
                                   { value: 'InProgress', label: 'In Progress' },
-                                  { value: 'Closed', label: 'Closed' }
+                                  { value: 'Done', label: 'Done' }
                                 ]
                               }}
                               error={displayErrors ? (updateTask.status.error as ValidationError) : undefined}

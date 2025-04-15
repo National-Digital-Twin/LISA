@@ -3,12 +3,11 @@
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
 // Local imports
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Tabs, Tab, Box } from '@mui/material';
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { type ValidationError } from '../../../utils/types';
 import { TABS } from '../constants';
-import { useResponsive } from '../../../hooks/useResponsiveHook';
 
 interface Props {
   fileCount: number;
@@ -20,64 +19,122 @@ export default function TabNavigation({
   validationErrors,
   showValidationErrors
 }: Readonly<Props>) {
-  const { isMobile } = useResponsive();
-  const hasLocationError: boolean = useMemo(
+  const hasLocationError = useMemo(
     () => !!validationErrors.find((e) => e.fieldId.startsWith('location')),
     [validationErrors]
   );
-  const hasFormError: boolean = useMemo(
+  const hasFormError = useMemo(
     () => !!validationErrors.find((e) => !e.fieldId.startsWith('location')),
     [validationErrors]
   );
 
-  const [active, setActive] = useState(TABS.FORM);
+  const { hash } = useLocation();
+  const active = hash ?? TABS.FORM;
 
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [showScrollHint, setShowScrollHint] = useState(false);
+
+  const navigate = useNavigate();
   const handleChange = (_: React.SyntheticEvent, newValue: string) => {
-    setActive(newValue);
+    navigate(newValue);
   };
+
 
   const tabMeta = [
     { label: 'Form', value: TABS.FORM, error: hasFormError },
     { label: 'Location', value: TABS.LOCATION, error: hasLocationError },
     { label: `Files (${fileCount})`, value: TABS.FILES },
     { label: 'Sketch', value: TABS.SKETCH },
-    {
-      label: 'Task',
-      value: TABS.TASK
-    }
+    { label: 'Task', value: TABS.TASK }
   ];
 
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) {
+      return () => {};
+    }
+  
+    const handleScroll = () => {
+      const shouldShow =
+        el.scrollWidth > el.clientWidth &&
+        el.scrollLeft + el.clientWidth < el.scrollWidth - 1;
+      setShowScrollHint(shouldShow);
+    };
+  
+    handleScroll();
+    el.addEventListener('scroll', handleScroll);
+    window.addEventListener('resize', handleScroll);
+  
+    return () => {
+      el.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', handleScroll);
+    };
+  }, []);
+  
+
   return (
-    <Box display="flex" justifyContent="flex-end" width="100%">
-      <Tabs
-        value={active}
-        onChange={handleChange}
-        variant={isMobile ? 'fullWidth' : 'standard'}
-        TabIndicatorProps={{
-          style: { backgroundColor: showValidationErrors ? 'error.main' : 'primary.main' }
-        }}
+    <Box sx={{ position: 'relative', width: '100%' }}>
+      <Box
+        ref={scrollRef}
         sx={{
-          '& .Mui-selected': {
-            color: showValidationErrors ? 'error.main' : 'primary.main'
-          },
-          '& .MuiTabs-indicator': {
-            backgroundColor: showValidationErrors ? 'error.main' : 'primary.main'
-          }
+          overflowX: 'auto',
+          whiteSpace: 'nowrap',
+          WebkitOverflowScrolling: 'touch',
+          scrollbarWidth: 'none',
+          '&::-webkit-scrollbar': { display: 'none' }
         }}
       >
-        {tabMeta.map(({ label, value, error }) => (
-          <Tab
-            key={value}
-            id={`log-tab-${value}`}
-            aria-controls={`log-tab-${value}`}
-            sx={{ textTransform: 'none', fontWeight: 'bold' }}
-            component={Link}
-            to={value}
-            label={error ? `${label}*` : label}
-            value={value}
-          />
-        ))}
-      </Tabs>
+        <Tabs
+          value={active}
+          onChange={handleChange}
+          variant="scrollable"
+          scrollButtons={false}
+          TabIndicatorProps={{
+            style: {
+              backgroundColor: showValidationErrors ? 'error.main' : 'primary.main'
+            }
+          }}
+          sx={{
+            minWidth: 'max-content',
+            '& .Mui-selected': {
+              color: showValidationErrors ? 'error.main' : 'primary.main'
+            },
+            '& .MuiTabs-indicator': {
+              backgroundColor: showValidationErrors ? 'error.main' : 'primary.main'
+            }
+          }}
+        >
+          {tabMeta.map(({ label, value, error }) => (
+            <Tab
+              key={value}
+              id={`log-tab-${value}`}
+              aria-controls={`log-tab-${value}`}
+              sx={{ textTransform: 'none', fontWeight: 'bold', flexShrink: 0 }}
+              component={Link}
+              to={value}
+              label={error ? `${label}*` : label}
+              value={value}
+            />
+          ))}
+        </Tabs>
+      </Box>
+
+      {showScrollHint && (
+        <Box
+          sx={{
+            position: 'absolute',
+            top: 0,
+            right: 0,
+            width: 24,
+            height: '100%',
+            pointerEvents: 'none',
+            background: 'linear-gradient(to left, rgba(255,255,255,0.9), rgba(255,255,255,0))',
+            transition: 'opacity 0.2s ease-in-out',
+            opacity: showScrollHint ? 1 : 0,
+          }}
+        />      
+      )}
     </Box>
   );
 }
+

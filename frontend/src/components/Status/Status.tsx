@@ -15,7 +15,15 @@ const Status = ({
   width?: string | number;
 }) => {
   const color = status.toLowerCase();
-  const label = status.toUpperCase().includes('INPROGRESS') ? 'IN PROGRESS' : status.toUpperCase();
+  let label = status.toUpperCase();
+
+  if (label === 'INPROGRESS') {
+    label = 'IN PROGRESS';
+  } else if (label === 'TODO') {
+    label = 'TO DO';
+  }
+
+
   return (
     <Chip
       label={label}
