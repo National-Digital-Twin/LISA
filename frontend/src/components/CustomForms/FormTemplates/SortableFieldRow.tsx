@@ -98,7 +98,7 @@ const SortableFieldRow: React.FC<SortableFieldRowProps> = ({
       >
         <Grid sx={{ flexGrow: 1 }}>
           <TextField
-            label="Label"
+            label={field.type === 'label' ? 'Text' : 'Label'}
             fullWidth
             size="small"
             value={field.label}
@@ -109,6 +109,10 @@ const SortableFieldRow: React.FC<SortableFieldRowProps> = ({
               '& .MuiInputBase-input': {
                 backgroundColor: 'white',
               }
+            }}
+            // The below property is deprecated but maxLength support not yet added to slotProps.input
+            inputProps={{
+              maxLength: 30
             }}
           />
         </Grid>
@@ -130,6 +134,7 @@ const SortableFieldRow: React.FC<SortableFieldRowProps> = ({
             <MenuItem value="number">Number</MenuItem>
             <MenuItem value="boolean">Checkbox</MenuItem>
             <MenuItem value="select">Dropdown</MenuItem>
+            <MenuItem value="label">Label</MenuItem>
           </Select>
         </Grid>
 
@@ -140,7 +145,7 @@ const SortableFieldRow: React.FC<SortableFieldRowProps> = ({
             </IconButton>
           </Grid>
         )}
-        {field.type !== 'boolean' && (
+        {!['boolean', 'label'].includes(field.type) && (
           <Grid>
             <IconButton
               onClick={() => onChange(index, 'required', !field.required)}

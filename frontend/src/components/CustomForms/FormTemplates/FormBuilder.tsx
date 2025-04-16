@@ -56,7 +56,7 @@ const FormBuilder = ({ onSchemaChange }: Props) => {
   const generateSchema = useCallback(() => {
     const requiredFields = fields
       .filter((f) => f.required)
-      .map((f) => generateFieldKey(f.label));
+      .map((f) => generateFieldKey(f));
   
     const properties = Object.fromEntries(
       fields.map((f) => {
@@ -64,12 +64,14 @@ const FormBuilder = ({ onSchemaChange }: Props) => {
   
         if (f.type === 'select' || f.type === 'textarea') {
           fieldType = 'string';
+        } else if (f.type === 'label') {
+          fieldType = 'null';
         } else {
           fieldType = f.type;
         }
   
         return [
-          generateFieldKey(f.label),
+          generateFieldKey(f),
           {
             type: fieldType,
             title: f.label,
@@ -89,23 +91,29 @@ const FormBuilder = ({ onSchemaChange }: Props) => {
   
   const generateUiSchema = useCallback(() => {
     const uiSchema: UiSchema = {
-      'ui:order': fields.map((f) => generateFieldKey(f.label)),
+      'ui:order': fields.map((f) => generateFieldKey(f)),
       'ui:submitButtonOptions': { norender: true }
     };
   
     fields.forEach((f) => {
+      const key = generateFieldKey(f);
       if (f.type === 'textarea') {
-        uiSchema[generateFieldKey(f.label)] = {
+        uiSchema[key] = {
           'ui:widget': 'textarea',
-          'ui:options': {
-            rows: 4
-          }
+          'ui:options': { rows: 4 }
+        };
+      }
+  
+      if (f.type === 'label') {
+        uiSchema[key] = {
+          'ui:field': 'label'
         };
       }
     });
   
     return uiSchema;
   }, [fields]);
+  
   
 
   useEffect(() => {
@@ -119,7 +127,7 @@ const FormBuilder = ({ onSchemaChange }: Props) => {
     const errors: Record<string, string> = {};
     const labelCount: Record<string, number> = {};
   
-    fields.forEach((field) => {
+    fields.filter((f) => f.type !== 'label').forEach((field) => {
       const label = field.label.trim();
   
       if (!label) {
@@ -139,7 +147,7 @@ const FormBuilder = ({ onSchemaChange }: Props) => {
     Object.entries(labelCount).forEach(([label, count]) => {
       if (count > 1) {
         fields
-          .filter((f) => f.label.trim() === label)
+          .filter((f) => f.type !== 'label' && f.label.trim() === label)
           .forEach((f) => {
             errors[f.id] = 'Label must be unique.';
           });

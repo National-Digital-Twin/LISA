@@ -8,7 +8,7 @@ import { JSONSchema7 } from "json-schema";
 export type Field = {
     id: string;
     label: string;
-    type: 'string' | 'textarea' | 'number' | 'boolean' | 'select';
+    type: 'string' | 'textarea' | 'number' | 'boolean' | 'select' | 'label';
     options?: string[]
     required?: boolean;
   };

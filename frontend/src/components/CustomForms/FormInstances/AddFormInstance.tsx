@@ -16,6 +16,7 @@ import { MODAL_KEY } from "../../../utils/constants";
 import { useFormTemplates } from "../../../hooks/Forms/useFormTemplates";
 import { Form } from "../FormTemplates/types";
 import { useCreateFormInstance } from "../../../hooks/Forms/useFormInstances";
+import CustomLabelField from "../FormTemplates/CustomLabelField";
 
 type AddFormProps = {
   onCancel: () => void;
@@ -146,6 +147,7 @@ const AddFormInstance = ({ onCancel }: AddFormProps) => {
                 onSubmit={handleFormSubmit}
                 onError={() => setInvalidFormDataAttempted(true)}
                 liveValidate={invalidFormDataAttempted}
+                fields={{ label: CustomLabelField }}
               />
               <Box mt={2} display="flex" justifyContent="end" gap={1}>
                 <Button onClick={onCancel} variant="outlined">
