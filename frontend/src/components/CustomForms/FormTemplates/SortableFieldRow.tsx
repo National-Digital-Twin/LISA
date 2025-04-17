@@ -108,12 +108,19 @@ const SortableFieldRow: React.FC<SortableFieldRowProps> = ({
             sx={{
               '& .MuiInputBase-input': {
                 backgroundColor: 'white',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
               }
             }}
             // The below property is deprecated but maxLength support not yet added to slotProps.input
-            inputProps={{
-              maxLength: 30
-            }}
+            inputProps={
+              field.type !== 'label'
+                ? {
+                  maxLength: 30,
+                }
+                : undefined
+            }
           />
         </Grid>
 

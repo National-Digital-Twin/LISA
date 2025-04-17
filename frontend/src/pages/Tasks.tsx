@@ -186,11 +186,11 @@ const Tasks = () => {
             };
 
             return (
-              <Box 
-                key={task.id} 
-                id={task.id} 
-                display="flex" 
-                flexDirection="column" 
+              <Box
+                key={task.id}
+                id={task.id}
+                display="flex"
+                flexDirection="column"
                 gap={1}
                 sx={(theme) => ({
                   backgroundColor:
@@ -209,6 +209,7 @@ const Tasks = () => {
                 <Typography variant="h5" component="h2" fontWeight="bold">
                   {task.name}
                 </Typography>
+            
                 <Box
                   display="flex"
                   flexDirection="column"
@@ -247,89 +248,92 @@ const Tasks = () => {
                         Change Assignee
                       </Button>
                     </Box>
+            
                     <Box
                       display="flex"
                       flexDirection={isBelowMd ? 'column' : 'row'}
                       justifyContent="space-between"
                       gap={2}
                       flexGrow={1}
+                      alignItems="flex-start"
                     >
-                      <Box display="flex" flexDirection="column" gap={1} flexGrow={1}>
-                        <Typography variant="body1" fontWeight="bold">
-                          Current Status
-                        </Typography>
-                        <Status width="fit-content" status={statusValue()} />
-                        {isStatusUpdating && (
-                          <Box component="ul" width="100%">
-                            <FormField
-                              component="li"
-                              field={{
-                                id: 'name',
-                                type: 'Select',
-                                label: 'New Status',
-                                value: task.status,
-                                options: [
-                                  { value: 'ToDo', label: 'To Do' },
-                                  { value: 'InProgress', label: 'In Progress' },
-                                  { value: 'Done', label: 'Done' }
-                                ]
-                              }}
-                              error={displayErrors ? (updateTask.status.error as ValidationError) : undefined}
-                              onChange={(_, value) => handleUpdateStatus(task, value)}
-                            />
-                          </Box>
-                        )}
+                      <Box display="flex" flexDirection="column" gap={2} flex={1}>
+                        <Box display="flex" flexDirection="column" gap={1}>
+                          <Typography variant="body1" fontWeight="bold">
+                              Current Status
+                          </Typography>
+                          <Status width="fit-content" status={statusValue()} />
+                          {isStatusUpdating && (
+                            <Box component="ul" width="100%">
+                              <FormField
+                                component="li"
+                                field={{
+                                  id: 'name',
+                                  type: 'Select',
+                                  label: 'New Status',
+                                  value: task.status,
+                                  options: [
+                                    { value: 'ToDo', label: 'To Do' },
+                                    { value: 'InProgress', label: 'In Progress' },
+                                    { value: 'Done', label: 'Done' }
+                                  ]
+                                }}
+                                error={
+                                  displayErrors ? (updateTask.status.error as ValidationError) : undefined
+                                }
+                                onChange={(_, value) => handleUpdateStatus(task, value)}
+                              />
+                            </Box>
+                          )}
+                        </Box>
+
+                        <Box display="flex" flexDirection="column" gap={1}>
+                          <Typography variant="body1" fontWeight="bold">Task description</Typography>
+                          <Typography variant="body1">{task.description}</Typography>
+                        </Box>
+
+                        <Box display="flex" flexDirection="column" gap={1}>
+                          <Typography variant="body1" fontWeight="bold">Assigned by</Typography>
+                          <Typography variant="body1">{Format.user(entry.author)}</Typography>
+                        </Box>
                       </Box>
-                      <Box display="flex" flexDirection="column" gap={1} flexGrow={1}>
-                        <Typography variant="body1" fontWeight="bold">
-                          Assigned to
-                        </Typography>
-                        <Typography component={Link} to="/" color="primary" fontWeight="bold">
-                          {Format.user(task.assignee)}
-                        </Typography>
-                        {isAssigneeUpdating && (
-                          <Box component="ul" width="100%">
-                            <FormField
-                              component="li"
-                              field={{
-                                id: 'assignee',
-                                type: 'Select',
-                                label: 'Assign to',
-                                value: formatDefaultAssignee,
-                                options: assignees ?? []
-                              }}
-                              error={
-                                displayErrors ? (updateTask.assignee.error as ValidationError) : undefined
-                              }
-                              onChange={(_, value) => handleUpdateAssignee(task, value)}
-                            />
-                          </Box>
-                        )}
+
+                      <Box display="flex" flexDirection="column" gap={2} flex={1}>
+                        <Box display="flex" flexDirection="column" gap={1}>
+                          <Typography variant="body1" fontWeight="bold">Assigned to</Typography>
+                          <Typography component={Link} to="/" color="primary" fontWeight="bold">
+                            {Format.user(task.assignee)}
+                          </Typography>
+                          {isAssigneeUpdating && (
+                            <Box component="ul" width="100%">
+                              <FormField
+                                component="li"
+                                field={{
+                                  id: 'assignee',
+                                  type: 'Select',
+                                  label: 'Assign to',
+                                  value: formatDefaultAssignee,
+                                  options: assignees ?? []
+                                }}
+                                error={
+                                  displayErrors ? (updateTask.assignee.error as ValidationError) : undefined
+                                }
+                                onChange={(_, value) => handleUpdateAssignee(task, value)}
+                              />
+                            </Box>
+                          )}
+                        </Box>
+
+                        <Box display="flex" flexDirection="column" gap={1}>
+                          <Typography variant="body1" fontWeight="bold">Date and time recorded</Typography>
+                          <Typography variant="body1">
+                            {Format.dateAndTimeMobile(entry.dateTime)}
+                          </Typography>
+                        </Box>
                       </Box>
                     </Box>
                   </Box>
-                  <Box display="flex" flexDirection="column" gap={1}>
-                    <Typography variant="body1" fontWeight="bold">
-                      Task description
-                    </Typography>
-                    <Typography variant="body1">{task.description}</Typography>
-                  </Box>
-                  <Box display="flex" flexDirection={isBelowMd ? 'column' : 'row'} gap={2}>
-                    <Box display="flex" flexDirection="column" gap={1} flexGrow={0.33}>
-                      <Typography variant="body1" fontWeight="bold">
-                        Assigned by
-                      </Typography>
-                      <Typography variant="body1">{Format.user(entry.author)}</Typography>
-                    </Box>
-                    <Box display="flex" flexDirection="column" gap={1} flexGrow={1}>
-                      <Typography variant="body1" fontWeight="bold">
-                        Date and time recorded
-                      </Typography>
-                      <Typography variant="body1">
-                        {Format.dateAndTimeMobile(entry.dateTime)}
-                      </Typography>
-                    </Box>
-                  </Box>
+            
                   <Typography
                     variant="body1"
                     component={Link}

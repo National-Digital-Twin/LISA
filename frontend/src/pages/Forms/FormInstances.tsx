@@ -115,7 +115,7 @@ const FormInstances = () => {
                     <Typography variant="body1" fontWeight="bold">
                       {field.label}:
                     </Typography>
-                    <Typography variant="body1">{field.value}</Typography>
+                    <Typography variant="body1" sx={{ whiteSpace: 'normal', wordBreak: 'break-word' }}>{field.value}</Typography>
                   </Box>
                 ))}
                 <Box mt={2}>

@@ -7,7 +7,14 @@ import { Typography } from '@mui/material';
 import { FieldProps } from '@rjsf/utils';
 
 const CustomLabelField: React.FC<FieldProps> = ({ schema }) => (
-  <Typography>
+  <Typography
+    variant="body1"
+    sx={{
+      whiteSpace: 'normal',
+      overflowWrap: 'break-word',
+      wordBreak: 'break-word',
+    }}
+  >
     {schema.title ?? '<Missing Label>'}
   </Typography>
 );

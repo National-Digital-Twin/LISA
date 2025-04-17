@@ -146,7 +146,6 @@ const AddFormInstance = ({ onCancel }: AddFormProps) => {
                 uiSchema={selectedForm.formData.uiSchema}
                 onSubmit={handleFormSubmit}
                 onError={() => setInvalidFormDataAttempted(true)}
-                liveValidate={invalidFormDataAttempted}
                 fields={{ label: CustomLabelField }}
               />
               <Box mt={2} display="flex" justifyContent="end" gap={1}>
