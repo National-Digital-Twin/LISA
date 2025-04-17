@@ -111,11 +111,11 @@ const FormInstances = () => {
               </Typography>
               <Box display="flex" flexDirection="column" gap={1} bgcolor="background.default" padding={2}>
                 {(form.formData as { fieldId: string; label: string; value: string }[]).map((field) => (
-                  <Box key={field.fieldId} display="flex" gap={1}>
+                  <Box key={field.fieldId} display="flex" flexDirection="column" gap={0.5}>
                     <Typography variant="body1" fontWeight="bold">
                       {field.label}:
                     </Typography>
-                    <Typography variant="body1">{field.value}</Typography>
+                    <Typography variant="body1" sx={{ whiteSpace: 'normal', wordBreak: 'break-word' }}>{field.value}</Typography>
                   </Box>
                 ))}
                 <Box mt={2}>
