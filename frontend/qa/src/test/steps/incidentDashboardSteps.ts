@@ -8,7 +8,7 @@ Given('I {string} include closed Incidents', async (negation: string) => {
   const shouldInclude = negation === 'do';
 
   incidentDashboardPage = new IncidentDashboardPage(basePage.page);
-  await incidentDashboardPage.setChkboxIncludeClosedIncidents(shouldInclude);
+  await incidentDashboardPage.setClosedFilter(shouldInclude);
 });
 
 Then('I should see Add new incident button displayed', async () => {
@@ -30,3 +30,8 @@ Then('I should see the number of active and closed incidents', async () => {
   incidentDashboardPage = new IncidentDashboardPage(basePage.page);
   await incidentDashboardPage.verifyActiveAndClosedTitleAreDisplayed();
 });
+
+Given('I have pressed add new incident', async () => {
+  incidentDashboardPage = new IncidentDashboardPage(basePage.page);
+  await incidentDashboardPage.addNewIncident();
+})
