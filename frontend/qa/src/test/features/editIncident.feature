@@ -1,9 +1,13 @@
 Feature: Edit Incident Page
 
   Background:
-    Given I am a valid user logged into the "IRIS" NDTP application
+    Given I am a valid user logged into the "LISA" NDTP application
+    And I have pressed add new incident
+    And I populate the new incident details
+    And I click add new incident
+    And the page should load with the incident name in the header
 
-    @DPAV-562 @functional
+    @DPAV-562 @functional @inprogress
     Scenario: Verify active and closed title are displayed on the l!sa dashboard
       And I select the Incident from the incident list
           |incidentId|incidentName|incidentStatus|

@@ -21,7 +21,7 @@ export default class IncidentDashboardPage {
     editIncidentOrganisation: '//input[@id="referrer.organisation"]',
     editIncidentTelephoneNo: '//input[@id="referrer.telephone"]',
     editIncidentEmail: '//input[@id="referrer.email"]',
-    chkCloseIncidents: '//input[@id="include-closed"]'
+    chipCloseIncidents: '//input[@id="Closed"]'
   };
 
   async verifyAddIncidentBtn() {
@@ -36,12 +36,15 @@ export default class IncidentDashboardPage {
     expect(await checkbox.isChecked()).toBeTruthy();
   }
 
-  async setChkboxIncludeClosedIncidents(shouldInclude: boolean) {
-    const chklocator = this.page.locator(this.Elements.chkCloseIncidents);
-    const isChecked = await chklocator.isChecked();
+  async setClosedFilter(shouldInclude: boolean) {
+    const chiplocator = this.page.locator(this.Elements.chipCloseIncidents);
+    
+    const isActive = await chiplocator.getAttribute('class').then(cls =>
+      cls?.includes('Mui-selected') || cls?.includes('MuiChip-clickable')
+    );
 
-    if (isChecked !== shouldInclude) {
-      await chklocator.click();
+    if (isActive !== shouldInclude) {
+      await chiplocator.click();
     }
   }
 
@@ -121,5 +124,9 @@ export default class IncidentDashboardPage {
       default:
         break;
     }
+  }
+
+  async addNewIncident() {
+    await this.page.getByRole('button', { name: this.Elements.addIncidentBtn }).click();
   }
 }
