@@ -8,6 +8,7 @@ import { Tabs, Tab, Box } from '@mui/material';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { type ValidationError } from '../../../utils/types';
 import { TABS } from '../constants';
+import { useResponsive } from '../../../hooks/useResponsiveHook';
 
 interface Props {
   fileCount: number;
@@ -29,7 +30,8 @@ export default function TabNavigation({
   );
 
   const { hash } = useLocation();
-  const active = hash ?? TABS.FORM;
+  const { isMobile } = useResponsive();
+  const active = hash || TABS.FORM;
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const [showScrollHint, setShowScrollHint] = useState(false);
@@ -77,6 +79,8 @@ export default function TabNavigation({
       <Box
         ref={scrollRef}
         sx={{
+          display: 'flex',
+          justifyContent: isMobile ? 'flex-start' : 'flex-end',
           overflowX: 'auto',
           whiteSpace: 'nowrap',
           WebkitOverflowScrolling: 'touch',
