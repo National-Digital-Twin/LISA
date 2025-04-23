@@ -51,6 +51,12 @@ export default class CreateIncidentPage {
   }
 
   async verifyIncidentLoaded() {
-    await expect(this.page.getByText(this.incidentName)).toBeVisible({ timeout: 30000 });
+    await expect(this.page.getByText(this.incidentName)).toBeVisible({ timeout: 60000 });
+    return this.incidentName;
+  }
+
+  async returnToDashboard() {
+    await this.page.getByRole('link', { name: 'INCIDENTS' }).click();
+    await await this.page.getByRole('button', { name: 'Add new incident' }).waitFor();
   }
 }

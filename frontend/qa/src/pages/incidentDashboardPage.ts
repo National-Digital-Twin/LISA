@@ -88,8 +88,10 @@ export default class IncidentDashboardPage {
     expect(allIncidentText).toBe(uiH1IncidentText);
   }
 
-  async selectIncidentByNameStatus(incidentName: string, incidentStatus: string) {
-    await this.page.getByRole('link', { name: `${incidentName} ${incidentStatus}` }).click();
+  async selectCreatedIncident(incidentName: string) {
+    await this.page
+      .getByRole('row', { name: new RegExp(`${incidentName}.*${process.env.USERNAME}`, 'i') })
+      .getByRole('link', { name: incidentName }).click();
   }
 
   async selectIncidentByData(incidentId: string, incidentName: string, incidentStatus: string) {
