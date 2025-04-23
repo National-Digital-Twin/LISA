@@ -6,25 +6,30 @@ import { UsernamesData } from '../helper/interface/usernameData';
 import data from '../helper/data/username.json';
 import dropdownMapping from '../helper/data/dropdownMapping.json';
 import { basePage } from '../hooks/basePage';
+import { LogEntrySelectType } from '../helper/util/enums';
 
 const Elements = {
-  txtPageName: "//div[contains(@class,'page-title')]//h1",
   btnAddLogEntry: "//button[contains(text(),'Add log entry')]",
-  isLogTabActive: "//a[contains(@class,'active') and contains(text(),'$LINKNAME$')]",
+  isLogTabActive: "//a[@role='tab' and @aria-selected='true' and contains(.,'$LINKNAME$')]",
   linkLogEntryTab: "//h2[@class='rollup-header']//a[starts-with(text(),'$LINKNAME$')]",
   ddCategoryById: "//div[@id='$DROPDOWNBYID$']//div[@data-value]",
   ddSelectCategory:
     "//div[starts-with(@id,'react-select-')]//span[contains(text(),'$DropdownOption$') and @class='option-label__label']",
   btnDateTimeNow: "//a[@class='date-now']",
   inpDescriptionTxt: "//div[@class='editor-input']",
-  btnSaveLog: "//button[@class='button submit']",
   getLogEntryList: '//div[@class="log-entry-list"]//div[@class="item__header"]',
 
   btnFormExactLocation: '//div[@id="ExactLocation"]//button[.="$BUTTONSTATE$"]',
   txtFormTabByID: '//textarea[@id="$TEXTAREABYID$"]',
   inpFormLocationDescription: '//input[@id="location.description"]',
 
-  inpFileUpload: '//input[@id="fileUpload"]'
+  inpFileUpload: '//input[@id="fileUpload"]',
+
+  logTypeNearbyLabel: 'Category',
+  selectComponentPlaceholderText: 'Select',
+  incidentAddNowName: '< Now',
+
+  setLocationButtonName: 'SET'
 };
 
 export default class EditIncidentLogPage {
@@ -48,11 +53,6 @@ export default class EditIncidentLogPage {
     return null; // Return null if not found
   }
 
-  async verifyPageTitle() {
-    const getPageTitle = await this.page.locator(Elements.txtPageName).textContent();
-    expect(getPageTitle).toContain('Incident log');
-  }
-
   async setLogStatusByCount() {
     return this.page.locator(Elements.getLogEntryList).count();
   }
@@ -69,30 +69,31 @@ export default class EditIncidentLogPage {
   }
 
   async updateLogByTab(tabName: string) {
-    if (
-      (await this.page.locator(Elements.isLogTabActive.replace('$LINKNAME$', tabName)).count()) <= 0
-    ) {
-      await this.page.locator(Elements.linkLogEntryTab.replace('$LINKNAME$', tabName)).click();
-    } else {
-      // eslint-disable-next-line no-console
-      console.warn(`Tab "${tabName}" is already active.`);
-    }
+    const id = `log-tab-#${tabName.toLowerCase()}`;
+    const tab = this.page.locator(`[id="${id}"]`);
+    await tab.click();
+    await expect(tab).toHaveAttribute('aria-selected', 'true');
   }
 
-  async updateDropDownById(logType: string) {
-    const logTypeId = EditIncidentLogPage.getDropdownCategory(logType);
-
-    await this.page
-      .locator(Elements.ddCategoryById.replace('$DROPDOWNBYID$', logTypeId))
-      .first()
-      .click();
-    await this.page
-      .locator(Elements.ddSelectCategory.replace('$DropdownOption$', logType.split(',')[0]))
-      .click();
+  async updateDropDownById(option: string, selectType : LogEntrySelectType = LogEntrySelectType.logType) {
+    switch(+selectType) {
+      case LogEntrySelectType.logType:
+      case LogEntrySelectType.locationType:
+        await this.page.getByPlaceholder(Elements.selectComponentPlaceholderText).nth(0).click();
+        break;
+      case LogEntrySelectType.majorIncidentDeclared:
+        await this.page.getByPlaceholder(Elements.selectComponentPlaceholderText).nth(1).click();
+        break;
+      default:
+        throw new Error("No LogEntrySelectType passed");
+    };
+    
+    await this.page.waitForSelector(`role=option[name="${option}"]`);
+    await this.page.getByRole('option', { name: option, exact: true }).click();
   }
 
-  async updateLogTabFormDateTimeNow(inpString: string) {
-    if (inpString === 'Now') await this.page.getByRole('link', { name: '< Now' }).click();
+  async updateLogTabFormDateTimeNow() {
+    await this.page.getByRole('button', {name: Elements.incidentAddNowName }).click();
   }
 
   async updateLogTabFormDesc(boolTagUser: boolean, boolAddDesc: boolean) {
@@ -113,7 +114,7 @@ export default class EditIncidentLogPage {
   }
 
   async btnAddLogSave() {
-    await this.page.locator(Elements.btnSaveLog).click();
+    await this.page.getByRole('button', { name: 'Save' }).click();
   }
 
   async updateSitRepTextFields(isOptionalFieldNeeded: boolean) {
@@ -137,17 +138,12 @@ export default class EditIncidentLogPage {
   }
 
   async setSitRepLocation(isSitRepLocationReq: string) {
-    if (
-      (await this.page
-        .locator(Elements.btnFormExactLocation.replace('$BUTTONSTATE$', 'Set'))
-        .count()) > 0
-    ) {
-      await this.page
-        .locator(Elements.btnFormExactLocation.replace('$BUTTONSTATE$', 'Set'))
-        .click();
+    if (await this.page.getByRole('button', {name: Elements.setLocationButtonName }).count() > 0) {
+      await this.page.getByRole('button', {name: Elements.setLocationButtonName }).click();
 
-      await this.updateLogByTab('Location');
-      await this.updateDropDownById(isSitRepLocationReq);
+      await this.page.waitForTimeout(2000);
+
+      await this.updateDropDownById(isSitRepLocationReq, LogEntrySelectType.locationType);
 
       switch (isSitRepLocationReq) {
         case 'Description only':
@@ -189,21 +185,23 @@ export default class EditIncidentLogPage {
   }
 
   async verifyUpdatedStage(newStage: string) {
-    await this.page.reload();
-    await basePage.customSleep(1000);
+    await basePage.customSleep(30000);
+    await basePage.page.reload();
 
     const lastLogEntry = this.page.locator('.log-entry-list .item').last();
     // Check if the last log entry is visible
-    await expect(lastLogEntry).toBeVisible();
+    await expect(lastLogEntry).toBeVisible({ timeout: 30000 });
 
     // Get the text content of the log entry meta
-    const logMetaText = await lastLogEntry.locator('.log-entry-meta div').first().textContent();
+    const logMetaText = await lastLogEntry.locator('.item__header p').first().textContent();
 
     // Assert that the meta text contains "Stage change"
     expect(logMetaText).toContain('Stage change');
 
-    const logEntryDetails = await lastLogEntry.locator('.log-entry-details').first().textContent();
-    expect(logEntryDetails).toContain(newStage);
+    const stageChip = lastLogEntry.locator('.MuiChip-label');
+    const stageText = await stageChip.textContent();
+
+    expect(stageText).toContain(newStage);
   }
 
   async clickRandomPointOnMap() {
