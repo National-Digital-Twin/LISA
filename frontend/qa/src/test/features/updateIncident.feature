@@ -17,3 +17,6 @@ Feature: Update Incident Page
     Examples:
     |newStage|
     |Recovery|
+    |Response|
+    |Recovery|
+    |Closed|

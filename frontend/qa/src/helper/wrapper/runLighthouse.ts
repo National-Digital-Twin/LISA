@@ -5,6 +5,7 @@ import { launch } from 'chrome-launcher';
 
 import LoginPage from '../../pages/loginPage';
 import { basePage } from '../../hooks/basePage';
+import LandingPage from '../../pages/landingPage';
 
 let nloginPage: LoginPage;
 
@@ -45,10 +46,11 @@ export async function runLighthouse(url: string, outputDir = 'test-results/light
 
 async function getUserLogin() {
   nloginPage = new LoginPage(basePage.page);
-  await nloginPage.navigateToLoginPage(process.env.LISAURL);
+  const nlandingPage = new LandingPage(basePage.page);
+  await nloginPage.navigateToLoginPage(process.env.BASEURL);
   basePage.logger.info('Navigated to the application');
   await nloginPage.loginUser(process.env.USERNAME, process.env.PASSWORD);
-
+  await nlandingPage.verifyLisaAppPage();
   await basePage.page.waitForURL(process.env.LISAURL);
 
   // Get cookies after login
