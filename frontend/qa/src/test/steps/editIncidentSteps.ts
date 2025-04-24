@@ -17,8 +17,6 @@ setDefaultTimeout(60 * 1000 * 2);
 Given('I select the created Incident from the incident list',
   async function getIncident (this: IncidentWorld) {
     dashboardPage = new IncidentDashboardPage(basePage.page);
-    
-    console.log(`here is my world value | ${this.incidentName}`);
 
     await basePage.customSleep(5000);
 
