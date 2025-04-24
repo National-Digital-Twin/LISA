@@ -49,7 +49,7 @@ export default class IncidentDashboardPage {
     const incidentCount = await incidentRows.count();
 
     const closedIncidentText = await this.page.locator('h2.MuiTypography-h2').textContent();
-    const closedIncidentNumber = /\d+/.exec(closedIncidentText)?.[0] ?? 0;
+    const closedIncidentNumber = Number(/\d+/.exec(closedIncidentText)?.[0] ?? 0);
 
     expect(incidentCount).toEqual(closedIncidentNumber)
   }
@@ -59,7 +59,8 @@ export default class IncidentDashboardPage {
     const closedIncidentText = await this.page.locator('h2.MuiTypography-h2').textContent();
 
     const activeIncidentNumber = /\d+/.exec(allIncidentText)?.[0] ?? 0;
-    const closedIncidentNumber = /\d+/.exec(closedIncidentText)?.[0] ?? "None";
+    const match = /\d+/.exec(closedIncidentText);
+    const closedIncidentNumber = match ? `+${match[0]}` : "None";
 
     const uiH1IncidentText = await this.page.getByText(`${activeIncidentNumber} active incidents`).textContent();
     const uiH2IncidentText = await this.page.getByText(`(${closedIncidentNumber} closed)`).textContent();
@@ -70,7 +71,7 @@ export default class IncidentDashboardPage {
 
   async selectCreatedIncident(incidentName: string) {
     await this.page
-      .getByRole('row', { name: new RegExp(`${incidentName}.*${process.env.USERNAME}`, 'i') })
+      .getByRole('row', { name: new RegExp(`${incidentName}.*${process.env.TESTUSER}`, 'i') })
       .getByRole('link', { name: incidentName }).click();
   }
 
