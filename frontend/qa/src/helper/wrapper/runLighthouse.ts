@@ -49,7 +49,7 @@ async function getUserLogin() {
   const nlandingPage = new LandingPage(basePage.page);
   await nloginPage.navigateToLoginPage(process.env.BASEURL);
   basePage.logger.info('Navigated to the application');
-  await nloginPage.loginUser(process.env.USERNAME, process.env.PASSWORD);
+  await nloginPage.loginUser(process.env.TESTUSER, process.env.PASSWORD);
   await nlandingPage.verifyLisaAppPage();
   await basePage.page.waitForURL(process.env.LISAURL);
 

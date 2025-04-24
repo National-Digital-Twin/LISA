@@ -3,7 +3,7 @@
 Cucumber is a popular behavior-driven development (BDD) tool that allows developers and stakeholders to collaborate on defining and testing application requirements in a human-readable format.
 TypeScript is a powerful superset of JavaScript that adds optional static typing, making it easier to catch errors before runtime. By combining these two tools, we can create more reliable and maintainable tests.
 
-## Framewwork Features
+## Framework Features
 
 1. Awesome report with screenshots, videos & logs
 2. Execute tests on multiple environments
@@ -38,7 +38,11 @@ node js needs to be latest or minimum version 22
 2. Extract and open in the VS-Code
 3. `npm i` to install the dependencies
 4. `npx playwright install` to install the browsers
-5. `USERNAME="ndtp.user" PASSWORD="ndtp.pass" npm run test` to execute the tests
+5. Get the Test User login details from the secret vault in Kubernetes. If it hasn't been created for this enviroment, refer to [Setting Up a new Test User](#setting-up-a-new-test-user) below.
+6. Populate the `TESTUSER` and `TESTPASS` values in the env file with the appropriate values
+7. Populate the `BASEURL` and `LISAURL` values with the appropriate URLs
+8. `cd frontend/qa` to get to the relevant folder
+9. `ENV=dev npx cucumber-js -c config/cucumber.js` to run the tests, replacing the ENV value with whichever environment you are targeting (this directly drives which env file it will use)
 
 ### Folder structure
 
@@ -54,6 +58,34 @@ node js needs to be latest or minimum version 22
 9. `package.json` -> Contains all the dependencies
 10. `src\helper\auth` -> Storage state (Auth file)
 11. `src\helper\util` -> Read test data from json & logger
+
+### Setting up a new Test User
+
+1. Run AWS login in your CLI
+2. Once logged in, populate the below tokens with appropriate replacements and run the below two commands:
+
+```bash
+aws cognito-idp admin-create-user \
+  --user-pool-id <user-pool-id> \
+  --username <email> \
+  --user-attributes Name=email,Value=<email> \
+                   Name=email_verified,Value=true \
+  --temporary-password "InitialPassword1" \
+  --message-action SUPPRESS`
+```
+
+```bash
+aws cognito-idp admin-set-user-password \
+  --user-pool-id <user-pool-id> \
+  --username <email> \
+  --password "<new-secure-password>" \
+  --permanent
+```
+
+3. Once those have been run, login to AWS Cognito, navigate to the relevant user pool and find the new user.
+4. Add a new Attribute for the user with the name "name" - give the test user an appropriate value for this. eg. "Test_User"
+5. Add the new test user to the relevant roles for access to the applications 
+6. Add the new test username and password to the secret vault in Kubernetes as TESTUSER and TESTPASS
 
 # Performance testing
 
