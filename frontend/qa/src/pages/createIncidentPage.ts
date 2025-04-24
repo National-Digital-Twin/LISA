@@ -57,6 +57,6 @@ export default class CreateIncidentPage {
 
   async returnToDashboard() {
     await this.page.getByRole('link', { name: 'INCIDENTS' }).click();
-    await await this.page.getByRole('button', { name: 'Add new incident' }).waitFor();
+    await this.page.getByRole('button', { name: 'Add new incident' }).waitFor();
   }
 }
