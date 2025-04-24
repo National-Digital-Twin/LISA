@@ -1,2 +1,3 @@
 # Going to accept the following vulnerabilities in the base debian image as we are not immediately vulnerable to these and a fix is eventually going to be pushed up to the main nginx container.
 # TODO: update nginx image when fix is published
+CVE-2024-56406
