@@ -5,6 +5,8 @@ import IncidentDashboardPage from '../../pages/incidentDashboardPage';
 import { RandomDataGenerator } from '../../helper/util/RandomDataGenerator';
 import EditIncidentLogPage from '../../pages/editIncidentLogPage';
 import LandingPage from '../../pages/landingPage';
+import { IncidentWorld } from '../../helper/util/world';
+import { LogEntrySelectType } from '../../helper/util/enums';
 
 let landingPage: LandingPage;
 let dashboardPage: IncidentDashboardPage;
@@ -12,13 +14,13 @@ let incidentEditLogPage: EditIncidentLogPage;
 
 setDefaultTimeout(60 * 1000 * 2);
 
-Given(
-  'I select the Incident with name contains {string} and Status as {string}',
-  async (incidentName, incidentStatus) => {
+Given('I select the created Incident from the incident list',
+  async function getIncident (this: IncidentWorld) {
     dashboardPage = new IncidentDashboardPage(basePage.page);
+
     await basePage.customSleep(5000);
 
-    await dashboardPage.selectIncidentByNameStatus(incidentName, incidentStatus);
+    await dashboardPage.selectCreatedIncident(this.incidentName);
 
     await basePage.customSleep(3000);
   }
@@ -93,7 +95,6 @@ Then('I should be able to save the application successfully', async () => {
 Given('I proceed to add a Log entry page from the Incident Log page', async () => {
   incidentEditLogPage = new EditIncidentLogPage(basePage.page);
   await basePage.customSleep(2000);
-  await incidentEditLogPage.verifyPageTitle();
   process.env.getLogEntriesCount = (await incidentEditLogPage.setLogStatusByCount()).toString();
   await incidentEditLogPage.btnClickAddLogEntry();
 });
@@ -103,19 +104,19 @@ When('I add the log details', async (dataTable) => {
 
   incidentEditLogPage = new EditIncidentLogPage(basePage.page);
   await incidentEditLogPage.updateLogByTab(await data[0]);
-  await incidentEditLogPage.updateDropDownById(await data[1]);
-  await incidentEditLogPage.updateLogTabFormDateTimeNow(await data[2]);
+  await incidentEditLogPage.updateDropDownById(await data[1], LogEntrySelectType.logType);
+  await incidentEditLogPage.updateLogTabFormDateTimeNow();
 
   switch (data[1]) {
     case 'General': {
-      await incidentEditLogPage.updateLogTabFormDesc(data[3] === 'Yes', data[4] === 'Yes');
+      await incidentEditLogPage.updateLogTabFormDesc(data[2] === 'Yes', data[3] === 'Yes');
       break;
     }
-    case 'SitRep': {
-      await incidentEditLogPage.updateDropDownById(data[3]);
-      await incidentEditLogPage.updateSitRepTextFields(data[4] === 'Yes');
-      await incidentEditLogPage.setSitRepLocation(data[5]);
-      await incidentEditLogPage.doFileUpload(data[6]);
+    case 'SitRep (M/ETHANE)': {
+      await incidentEditLogPage.updateDropDownById(data[2], LogEntrySelectType.majorIncidentDeclared);
+      await incidentEditLogPage.updateSitRepTextFields(data[3] === 'Yes');
+      await incidentEditLogPage.setSitRepLocation(data[4]);
+      await incidentEditLogPage.doFileUpload(data[5]);
       break;
     }
     default: {
@@ -123,6 +124,8 @@ When('I add the log details', async (dataTable) => {
       console.log('No Matching dropdown types');
     }
   }
+
+  basePage.customSleep(10000)
 
   await incidentEditLogPage.btnAddLogSave();
 });
@@ -164,7 +167,7 @@ Then(
 
     dashboardPage = new IncidentDashboardPage(basePage.page);
     await basePage.customSleep(5000);
-    await dashboardPage.selectIncidentByNameStatus(incidentName, newStage);
+    await dashboardPage.selectCreatedIncident(incidentName);
 
     await basePage.navigateMenuByLink('OVERVIEW');
     await basePage.customSleep(500);

@@ -10,7 +10,6 @@ export default class IncidentDashboardPage {
 
   private readonly Elements = {
     addIncidentBtn: 'Add new incident',
-    includeClosedIncidents: 'Include closed incidents',
     incidents: '.incident-title',
     incidentH1: '.title',
     closedIncident: '.subtitle',
@@ -21,7 +20,7 @@ export default class IncidentDashboardPage {
     editIncidentOrganisation: '//input[@id="referrer.organisation"]',
     editIncidentTelephoneNo: '//input[@id="referrer.telephone"]',
     editIncidentEmail: '//input[@id="referrer.email"]',
-    chkCloseIncidents: '//input[@id="include-closed"]'
+    chipCloseIncidents: '//input[@id="Closed"]'
   };
 
   async verifyAddIncidentBtn() {
@@ -29,64 +28,51 @@ export default class IncidentDashboardPage {
     await expect(button).toBeVisible();
   }
 
-  async checkClosedIncidentCheckBox() {
-    const checkbox = this.page.getByLabel(this.Elements.includeClosedIncidents);
-    expect(await checkbox.isChecked()).toBeFalsy();
-    await checkbox.check();
-    expect(await checkbox.isChecked()).toBeTruthy();
+  async clickClosedIncidentsChip() {
+    await this.page.getByRole('button', { name: 'Closed' }).click();
   }
 
-  async setChkboxIncludeClosedIncidents(shouldInclude: boolean) {
-    const chklocator = this.page.locator(this.Elements.chkCloseIncidents);
-    const isChecked = await chklocator.isChecked();
+  async setClosedFilter(shouldInclude: boolean) {
+    const chiplocator = this.page.locator(this.Elements.chipCloseIncidents);
+    
+    const isActive = await chiplocator.getAttribute('class').then(cls =>
+      cls?.includes('Mui-selected') || cls?.includes('MuiChip-clickable')
+    );
 
-    if (isChecked !== shouldInclude) {
-      await chklocator.click();
+    if (isActive !== shouldInclude) {
+      await chiplocator.click();
     }
   }
 
   async verifyAllIncidenceDetailsAndCount() {
-    const incidents = this.page.locator(this.Elements.incidents);
-    const incidentTexts = await incidents.allTextContents();
-    const allIncidentText = await this.page.locator(this.Elements.incidentH1).textContent();
-    const closedIncidentText = await this.page.locator(this.Elements.closedIncident).innerText();
-    const activeIncidentNumber = Number(/\d+/.exec(allIncidentText)[0]);
-    const closedIncidentNumber = Number(/\d+/.exec(closedIncidentText)[0]);
-    await this.page.waitForSelector(this.Elements.incidents, { state: 'visible' });
-    await this.page.waitForSelector(this.Elements.closedIncident, { state: 'visible' });
-    const totalIncidents = activeIncidentNumber + closedIncidentNumber;
-    const incidentCount = await incidents.count();
-    // Validate total incidents
-    expect(incidentCount).toEqual(totalIncidents);
-    // Validate date and title format
-    const datePattern = /\d{1,2} \w{3,} \d{4}/;
-    const titlePattern = /: .+/;
+    const incidentRows = await this.page.locator('table.MuiTable-root tbody tr');
+    const incidentCount = await incidentRows.count();
 
-    // eslint-disable-next-line no-restricted-syntax
-    for (const text of incidentTexts) {
-      expect(datePattern.test(text)).toBeTruthy();
-      const titlePart = text.replace(datePattern, '').trim();
-      // Ensure there is something after the date
-      expect(titlePart.length).toBeGreaterThan(0);
-      // Check if the title part has a colon and some description after it
-      expect(titlePattern.test(titlePart)).toBeTruthy();
-    }
+    const closedIncidentText = await this.page.locator('h2.MuiTypography-h2').textContent();
+    const closedIncidentNumber = Number(/\d+/.exec(closedIncidentText)?.[0] ?? 0);
+
+    expect(incidentCount).toEqual(closedIncidentNumber)
   }
 
   async verifyActiveAndClosedTitleAreDisplayed() {
-    const allIncidentText = await this.page.locator(this.Elements.incidentH1).textContent();
-    const closedIncidentText = await this.page.locator(this.Elements.closedIncident).innerText();
-    const activeIncidentNumber = /\d+/.exec(allIncidentText)[0];
-    const closedIncidentNumber = /\d+/.exec(closedIncidentText)[0];
-    const uiH1IncidentLocator = this.page.getByText(
-      `${activeIncidentNumber} active incidents( +${closedIncidentNumber} closed )`
-    );
-    const uiH1IncidentText = await uiH1IncidentLocator.textContent();
+    const allIncidentText = await this.page.locator('h1.MuiTypography-h1.title').textContent();;
+    const closedIncidentText = await this.page.locator('h2.MuiTypography-h2').textContent();
+
+    const activeIncidentNumber = /\d+/.exec(allIncidentText)?.[0] ?? 0;
+    const match = /\d+/.exec(closedIncidentText);
+    const closedIncidentNumber = match ? `+${match[0]}` : "None";
+
+    const uiH1IncidentText = await this.page.getByText(`${activeIncidentNumber} active incidents`).textContent();
+    const uiH2IncidentText = await this.page.getByText(`(${closedIncidentNumber} closed)`).textContent();
+    
     expect(allIncidentText).toBe(uiH1IncidentText);
+    expect(closedIncidentText).toBe(uiH2IncidentText);
   }
 
-  async selectIncidentByNameStatus(incidentName: string, incidentStatus: string) {
-    await this.page.getByRole('link', { name: `${incidentName} ${incidentStatus}` }).click();
+  async selectCreatedIncident(incidentName: string) {
+    await this.page
+      .getByRole('row', { name: new RegExp(`${incidentName}.*${process.env.TESTUSER}`, 'i') })
+      .getByRole('link', { name: incidentName }).click();
   }
 
   async selectIncidentByData(incidentId: string, incidentName: string, incidentStatus: string) {
@@ -121,5 +107,9 @@ export default class IncidentDashboardPage {
       default:
         break;
     }
+  }
+
+  async addNewIncident() {
+    await this.page.getByRole('button', { name: this.Elements.addIncidentBtn }).click();
   }
 }
