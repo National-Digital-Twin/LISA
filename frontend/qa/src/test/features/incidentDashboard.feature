@@ -1,12 +1,11 @@
 Feature: Incident Dashboard Page
 
   Background:
-    Given I login to the ndtp app with the user credentials
-    When I click the "LISA" menu
+    Given I am a valid user logged into the "LISA" NDTP application
 
     Scenario: Verify active and closed title are displayed on the l!sa dashboard
         Then I should see the number of active and closed incidents  
-        
+
     Scenario: Verify the Add new incident button is visible on the Lisa Incident Dashboard page
        Then I should see Add new incident button displayed
 

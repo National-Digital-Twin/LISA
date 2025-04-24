@@ -10,7 +10,6 @@ export default class IncidentDashboardPage {
 
   private readonly Elements = {
     addIncidentBtn: 'Add new incident',
-    includeClosedIncidents: 'Include closed incidents',
     incidents: '.incident-title',
     incidentH1: '.title',
     closedIncident: '.subtitle',
@@ -29,11 +28,8 @@ export default class IncidentDashboardPage {
     await expect(button).toBeVisible();
   }
 
-  async checkClosedIncidentCheckBox() {
-    const checkbox = this.page.getByLabel(this.Elements.includeClosedIncidents);
-    expect(await checkbox.isChecked()).toBeFalsy();
-    await checkbox.check();
-    expect(await checkbox.isChecked()).toBeTruthy();
+  async clickClosedIncidentsChip() {
+    await this.page.getByRole('button', { name: 'Closed' }).click();
   }
 
   async setClosedFilter(shouldInclude: boolean) {
@@ -49,43 +45,27 @@ export default class IncidentDashboardPage {
   }
 
   async verifyAllIncidenceDetailsAndCount() {
-    const incidents = this.page.locator(this.Elements.incidents);
-    const incidentTexts = await incidents.allTextContents();
-    const allIncidentText = await this.page.locator(this.Elements.incidentH1).textContent();
-    const closedIncidentText = await this.page.locator(this.Elements.closedIncident).innerText();
-    const activeIncidentNumber = Number(/\d+/.exec(allIncidentText)[0]);
-    const closedIncidentNumber = Number(/\d+/.exec(closedIncidentText)[0]);
-    await this.page.waitForSelector(this.Elements.incidents, { state: 'visible' });
-    await this.page.waitForSelector(this.Elements.closedIncident, { state: 'visible' });
-    const totalIncidents = activeIncidentNumber + closedIncidentNumber;
-    const incidentCount = await incidents.count();
-    // Validate total incidents
-    expect(incidentCount).toEqual(totalIncidents);
-    // Validate date and title format
-    const datePattern = /\d{1,2} \w{3,} \d{4}/;
-    const titlePattern = /: .+/;
+    const incidentRows = await this.page.locator('table.MuiTable-root tbody tr');
+    const incidentCount = await incidentRows.count();
 
-    // eslint-disable-next-line no-restricted-syntax
-    for (const text of incidentTexts) {
-      expect(datePattern.test(text)).toBeTruthy();
-      const titlePart = text.replace(datePattern, '').trim();
-      // Ensure there is something after the date
-      expect(titlePart.length).toBeGreaterThan(0);
-      // Check if the title part has a colon and some description after it
-      expect(titlePattern.test(titlePart)).toBeTruthy();
-    }
+    const closedIncidentText = await this.page.locator('h2.MuiTypography-h2').textContent();
+    const closedIncidentNumber = /\d+/.exec(closedIncidentText)?.[0] ?? 0;
+
+    expect(incidentCount).toEqual(closedIncidentNumber)
   }
 
   async verifyActiveAndClosedTitleAreDisplayed() {
-    const allIncidentText = await this.page.locator(this.Elements.incidentH1).textContent();
-    const closedIncidentText = await this.page.locator(this.Elements.closedIncident).innerText();
-    const activeIncidentNumber = /\d+/.exec(allIncidentText)[0];
-    const closedIncidentNumber = /\d+/.exec(closedIncidentText)[0];
-    const uiH1IncidentLocator = this.page.getByText(
-      `${activeIncidentNumber} active incidents( +${closedIncidentNumber} closed )`
-    );
-    const uiH1IncidentText = await uiH1IncidentLocator.textContent();
+    const allIncidentText = await this.page.locator('h1.MuiTypography-h1.title').textContent();;
+    const closedIncidentText = await this.page.locator('h2.MuiTypography-h2').textContent();
+
+    const activeIncidentNumber = /\d+/.exec(allIncidentText)?.[0] ?? 0;
+    const closedIncidentNumber = /\d+/.exec(closedIncidentText)?.[0] ?? "None";
+
+    const uiH1IncidentText = await this.page.getByText(`${activeIncidentNumber} active incidents`).textContent();
+    const uiH2IncidentText = await this.page.getByText(`(${closedIncidentNumber} closed)`).textContent();
+    
     expect(allIncidentText).toBe(uiH1IncidentText);
+    expect(closedIncidentText).toBe(uiH2IncidentText);
   }
 
   async selectCreatedIncident(incidentName: string) {
