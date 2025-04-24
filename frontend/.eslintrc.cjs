@@ -50,6 +50,7 @@ module.exports = {
     'import/no-extraneous-dependencies': ['error', { devDependencies: true }],
     'import/no-unresolved': ['error', { ignore: ['\\.svg\\?react$'] }],
     'no-unused-vars': 'off',
+    'no-shadow' : 'off',
     '@typescript-eslint/no-unused-vars': ['error'],
     'import/prefer-default-export': 'off'
   }
