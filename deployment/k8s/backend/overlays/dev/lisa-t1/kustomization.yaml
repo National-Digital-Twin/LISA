@@ -1,5 +1,6 @@
 resources:
-  - ../../base
+  - ../../../base
+  - namespace.yaml
 
 namespace: lisa
 
@@ -20,7 +21,7 @@ patches:
 
 labels:
   - pairs:
-      env: staging
+      env: dev
 
 images:
   - name: lisa-backend-image:template

@@ -1,0 +1,4 @@
+resources:
+  - ../../../backend/overlays/staging/lisa-ndtp
+  - ../../../webapp/overlays/staging/lisa-ndtp
+  - ../../../transparent-proxy/overlays/staging/lisa-ndtp

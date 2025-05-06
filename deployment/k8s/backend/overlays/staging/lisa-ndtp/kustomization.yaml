@@ -1,0 +1,30 @@
+resources:
+  - ../../../base
+
+namespace: lisa
+
+
+configMapGenerator:
+  - name: lisa-backend-configs
+    envs:
+      - params.env
+
+patches:
+  - path: patches/service-account.yaml
+    target:
+      kind: ServiceAccount
+      name: lisa-backend-sa
+  - path: patches/allow-ingress.yaml
+    target:
+      kind: AuthorizationPolicy
+
+labels:
+  - pairs:
+      env: staging
+
+images:
+  - name: lisa-backend-image:template
+    newName: 503561419905.dkr.ecr.eu-west-2.amazonaws.com/lisa/api
+    newTag: '1739959086'
+
+
