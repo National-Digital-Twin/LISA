@@ -1,0 +1,27 @@
+resources:
+  - ../../../base
+  - namespace.yaml
+
+namespace: lisa-t2
+
+configMapGenerator:
+  - name: lisa-transparent-proxy-configs
+    envs:
+      - params.env
+
+patches:
+
+  - path: patches/service-account.yaml
+    target:
+      kind: ServiceAccount
+
+labels:
+  - pairs:
+      env: dev
+
+images:
+  - name: lisa-transparent-proxy-image:template
+    newName: 537124944113.dkr.ecr.eu-west-2.amazonaws.com/lisa/transparent-proxy
+    newTag: "1736292556"
+
+
