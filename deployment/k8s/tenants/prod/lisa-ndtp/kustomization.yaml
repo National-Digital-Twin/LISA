@@ -1,4 +1,0 @@
-resources:
-  - ../../../backend/overlays/prod/lisa-ndtp
-  - ../../../webapp/overlays/prod/lisa-ndtp
-  - ../../../transparent-proxy/overlays/prod/lisa-ndtp
