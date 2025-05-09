@@ -10,6 +10,6 @@ resources:
 
 labels:
   - pairs:
-      app: lisa-transparent-proxy
+      app: $(TENANT)-transparent-proxy
       env: ENV_PLACEHOLDER
-      app.kubernetes.io/name: lisa-transparent-proxy
+      app.kubernetes.io/name: $(TENANT)-transparent-proxy

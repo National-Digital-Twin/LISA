@@ -2,11 +2,11 @@ resources:
   - ../../../base
   - namespace.yaml
 
-namespace: lisa-t2
+namespace: $(TENANT)
 
 
 configMapGenerator:
-  - name: lisa-backend-configs
+  - name: $(TENANT)-backend-configs
     envs:
       - params.env
 
@@ -14,7 +14,7 @@ patches:
   - path: patches/service-account.yaml
     target:
       kind: ServiceAccount
-      name: lisa-backend-sa
+      name: $(TENANT)-backend-sa
   - path: patches/allow-ingress.yaml
     target:
       kind: AuthorizationPolicy
@@ -28,4 +28,10 @@ images:
     newName: 503561419905.dkr.ecr.eu-west-2.amazonaws.com/lisa/api
     newTag: '1739959086'
 
+vars:
+  - name: TENANT
+    objref:
+      kind: Namespace
+      name: lisa-t2
+      apiVersion: v1
 

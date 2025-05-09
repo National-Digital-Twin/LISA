@@ -7,6 +7,6 @@ resources:
 
 labels:
   - pairs:
-      app: lisa
+      app: $(TENANT)
       env: ENV_PLACEHOLDER
-      app.kubernetes.io/name: lisa
+      app.kubernetes.io/name: $(TENANT)

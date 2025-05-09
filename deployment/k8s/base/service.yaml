@@ -9,8 +9,8 @@ metadata:
 #    service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "https"
 
   labels:
-    io.kompose.service: lisa-webapp
-  name: lisa
+    io.kompose.service: $(TENANT)-webapp
+  name: $(TENANT)
 spec:
   type: ClusterIP
   ports:
@@ -18,4 +18,4 @@ spec:
       port: 80
       targetPort: 3000
   selector:
-    io.kompose.service: lisa
+    io.kompose.service: $(TENANT)

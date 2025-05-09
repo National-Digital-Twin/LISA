@@ -4,8 +4,8 @@ metadata:
   annotations: {}
 
   labels:
-    io.kompose.service: lisa
-  name: lisa
+    io.kompose.service: $(TENANT)
+  name: $(TENANT)
 spec:
   type: NodePort
   ports:
@@ -13,4 +13,4 @@ spec:
       port: 80
       targetPort: 80
   selector:
-    io.kompose.service: lisa
+    io.kompose.service: $(TENANT)

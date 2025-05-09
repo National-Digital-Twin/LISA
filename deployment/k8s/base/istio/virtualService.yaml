@@ -21,7 +21,7 @@ spec:
   hosts:
     - lisa.staging.ndtp.co.uk
   gateways:
-    - lisa/lisa-ingress-gateway
+    - $(TENANT)/$(TENANT)-ingress-gateway
   http:
     - match:
         - uri:
@@ -33,6 +33,6 @@ spec:
           rewrite: /\2
       route:
         - destination:
-            host: lisa
+            host: $(TENANT)
             port:
               number: 80

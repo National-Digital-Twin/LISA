@@ -6,7 +6,7 @@ metadata:
 spec:
   selector:
     matchLabels:
-      io.kompose.service: lisa-transparent-proxy
+      io.kompose.service: $(TENANT)-transparent-proxy
   action: ALLOW
   rules:
     - from:

@@ -9,8 +9,8 @@ resources:
 
 labels:
   - pairs:
-      app: lisa-backend
+      app: $(TENANT)-backend
       env: ENV_PLACEHOLDER
-      app.kubernetes.io/name: lisa-backend
+      app.kubernetes.io/name: $(TENANT)-backend
 
 

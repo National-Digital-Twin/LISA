@@ -2,11 +2,11 @@
 apiVersion: security.istio.io/v1
 kind: AuthorizationPolicy
 metadata:
-  name: allow-ingress-to-lisa-webapp
+  name: allow-ingress-to-$(TENANT)-webapp
 spec:
   selector:
     matchLabels:
-      io.kompose.service: lisa
+      io.kompose.service: $(TENANT)
   action: ALLOW
   rules:
     - from:

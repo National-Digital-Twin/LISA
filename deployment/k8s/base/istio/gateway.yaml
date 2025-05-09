@@ -1,7 +1,7 @@
 apiVersion: networking.istio.io/v1alpha3
 kind: Gateway
 metadata:
-  name: lisa-ingress-gateway
+  name: $(TENANT)-ingress-gateway
 spec:
   selector:
     app: istio-ingress

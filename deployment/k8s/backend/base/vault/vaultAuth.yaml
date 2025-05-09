@@ -1,12 +1,12 @@
 apiVersion: secrets.hashicorp.com/v1beta1
 kind: VaultAuth
 metadata:
-  name: lisa-backend-vault-auth
+  name: $(TENANT)-backend-vault-auth
 spec:
   method: kubernetes
   mount: kubernetes
   kubernetes:
-    role: lisa-backend-role
-    serviceAccount: lisa-backend-sa
+    role: $(TENANT)-backend-role
+    serviceAccount: $(TENANT)-backend-sa
     audiences:
       - vault

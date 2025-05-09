@@ -2,13 +2,13 @@ resources:
   - ../../../base
   - namespace.yaml
 
-namespace: lisa
+namespace: $(TENANT)
 
 patches:
   - path: patches/service-account.yaml
     target:
       kind: ServiceAccount
-      name: lisa-sa
+      name: $(TENANT)-sa
 
 
 labels:
@@ -21,3 +21,9 @@ images:
     newTag: '1739959086'
 
 
+vars:
+  - name: TENANT
+    objref:
+      kind: Namespace
+      name: lisa
+      apiVersion: v1

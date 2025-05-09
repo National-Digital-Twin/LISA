@@ -2,10 +2,10 @@ resources:
   - ../../../base
   - namespace.yaml
 
-namespace: lisa-t2
+namespace: $(TENANT)
 
 configMapGenerator:
-  - name: lisa-transparent-proxy-configs
+  - name: $(TENANT)-transparent-proxy-configs
     envs:
       - params.env
 
@@ -25,3 +25,9 @@ images:
     newTag: "1736292556"
 
 
+vars:
+  - name: TENANT
+    objref:
+      kind: Namespace
+      name: lisa-t2
+      apiVersion: v1

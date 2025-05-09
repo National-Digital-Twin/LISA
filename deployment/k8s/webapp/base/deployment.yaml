@@ -2,19 +2,19 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   annotations: {}
-  name: lisa-webapp
+  name: $(TENANT)-webapp
 spec:
   replicas: 1
   selector:
     matchLabels:
-      io.kompose.service: lisa
+      io.kompose.service: $(TENANT)
   template:
     metadata:
       annotations: {}
       labels:
-        io.kompose.service: lisa
+        io.kompose.service: $(TENANT)
     spec:
-      serviceAccountName: lisa-sa
+      serviceAccountName: $(TENANT)-sa
       containers:
         - image: lisa-image:template
           livenessProbe:
@@ -31,7 +31,7 @@ spec:
               failureThreshold: 5
               periodSeconds: 30
               timeoutSeconds: 20
-          name: lisa
+          name: $(TENANT)
           resources:
             limits:
               memory: "2Gi"

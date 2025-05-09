@@ -3,8 +3,8 @@ kind: Service
 metadata:
   annotations: {}
   labels:
-    io.kompose.service: lisa-transparent-proxy
-  name: lisa-transparent-proxy
+    io.kompose.service: $(TENANT)-transparent-proxy
+  name: $(TENANT)-transparent-proxy
 spec:
   type: ClusterIP
   ports:
@@ -12,4 +12,4 @@ spec:
       port: 80
       targetPort: 80
   selector:
-    io.kompose.service: lisa-transparent-proxy
+    io.kompose.service: $(TENANT)-transparent-proxy

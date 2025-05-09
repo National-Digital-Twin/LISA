@@ -2,11 +2,11 @@
 apiVersion: security.istio.io/v1
 kind: AuthorizationPolicy
 metadata:
-  name: allow-ingress-to-lisa-backend
+  name: allow-ingress-to-$(TENANT)-backend
 spec:
   selector:
     matchLabels:
-      io.kompose.service: lisa-backend
+      io.kompose.service: $(TENANT)-backend
   action: ALLOW
   rules:
     - from:
