@@ -1,6 +1,5 @@
 resources:
   - ../../../base
-  - namespace.yaml
 
 namespace: lisa-t2
 
