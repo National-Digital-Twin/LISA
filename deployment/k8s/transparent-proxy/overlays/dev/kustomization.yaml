@@ -1,7 +1,7 @@
 resources:
-  - ../../../base
+  - ../../base
 
-namespace: lisa-t2
+namespace: lisa
 
 configMapGenerator:
   - name: lisa-transparent-proxy-configs
