@@ -1,5 +1,0 @@
-resources:
-  - namespace.yaml
-  - ../../../backend/overlays/dev/lisa-t1
-  - ../../../webapp/overlays/dev/lisa-t1
-  - ../../../transparent-proxy/overlays/dev/lisa-t1
