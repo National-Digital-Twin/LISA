@@ -1,8 +1,7 @@
 resources:
-  - ../../../base
-  - namespace.yaml
+  - ../../base
 
-namespace: lisa-t2
+namespace: lisa
 
 patches:
   - path: patches/service-account.yaml

@@ -1,6 +1,5 @@
 resources:
-  - ../../../base
-  - namespace.yaml
+  - ../../base
 
 namespace: lisa
 
@@ -17,11 +16,11 @@ patches:
 
 labels:
   - pairs:
-      env: dev
+      env: staging
 
 images:
   - name: lisa-transparent-proxy-image:template
-    newName: 537124944113.dkr.ecr.eu-west-2.amazonaws.com/lisa/transparent-proxy
+    newName: 503561419905.dkr.ecr.eu-west-2.amazonaws.com/lisa/transparent-proxy
     newTag: "1736292556"
 
 
