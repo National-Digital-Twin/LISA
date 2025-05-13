@@ -7,3 +7,6 @@ spec:
   jwtRules:
     - issuer: "https://cognito-idp.eu-west-2.amazonaws.com/eu-west-2_NxljPqlz7"
       jwksUri: "https://cognito-idp.eu-west-2.amazonaws.com/eu-west-2_NxljPqlz7/.well-known/jwks.json"
+      outputClaimToHeaders:
+        - header: "x-jwt-groups"
+          claim: "groups"

@@ -4,7 +4,6 @@ resources:
   - istio/request-authentication.yaml
   - istio/gateway.yaml
   - istio/virtualService.yaml
-  #- istio/envoy-filter-tenant-injector.yaml
   - namespace.yaml
 
 
