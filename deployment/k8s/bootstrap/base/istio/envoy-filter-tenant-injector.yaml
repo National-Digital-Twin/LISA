@@ -1,0 +1,45 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: EnvoyFilter
+metadata:
+  name: inject-jwt-groups
+  namespace: istio-system
+spec:
+  workloadSelector:
+    labels:
+      io.kompose.service: lisa-transparent-proxy
+
+  configPatches:
+    - applyTo: HTTP_FILTER
+      match:
+        context: SIDECAR_INBOUND
+        listener:
+          filterChain:
+            filter:
+              name: envoy.filters.network.http_connection_manager
+      patch:
+        operation: INSERT_BEFORE
+        value:
+          name: envoy.filters.http.lua
+          typed_config:
+            "@type": type.googleapis.com/envoy.extensions.filters.http.lua.v3.Lua
+            inlineCode: |
+              function envoy_on_request(handle)
+                local auth_header = handle:headers():get("x-auth-request-access-token")
+                if auth_header ~= nil then
+                  local jwt = string.match(auth_header, "Bearer%s+(.+)")
+                  if jwt ~= nil then
+                    local payload = jwt:match("%.(.+)%.")
+                    if payload ~= nil then
+                      local decoded = handle:base64Decode(payload)
+                      local ok, data = pcall(cjson.decode, decoded)
+                      if ok and data["groups"] then
+                        if type(data["groups"]) == "string" then
+                          handle:headers():add("x-jwt-groups", data["groups"])
+                        elseif type(data["groups"]) == "table" then
+                          handle:headers():add("x-jwt-groups", table.concat(data["groups"], ","))
+                        end
+                      end
+                    end
+                  end
+                end
+              end
