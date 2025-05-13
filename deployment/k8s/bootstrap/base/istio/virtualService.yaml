@@ -15,7 +15,7 @@ spec:
             prefix: /transparent-proxy
         - headers:
             "@request.auth.claims.groups":
-              exact: lisa-access
+              exact: lisa-access-xxxxxx
       route:
         - destination:
             host: lisa-transparent-proxy
