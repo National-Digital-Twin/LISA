@@ -24,7 +24,7 @@ spec:
             "@type": type.googleapis.com/envoy.extensions.filters.http.lua.v3.Lua
             inlineCode: |
               function envoy_on_request(handle)
-              handle:headers():add("test-jwt-groups", 'my-value')
+                handle:headers():add("test-jwt-groups", 'my-value')
                 local auth_header = handle:headers():get("x-auth-request-access-token")
                 if auth_header ~= nil then
                   local jwt = string.match(auth_header, "Bearer%s+(.+)")
