@@ -1,4 +1,3 @@
-#  Copyright (c) Telicent Ltd.
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
 #  you may not use this file except in compliance with the License.
@@ -23,9 +22,12 @@ spec:
   gateways:
     - lisa/lisa-ingress-gateway
   http:
-    - match:
-        - uri:
-            prefix: /
+    - headers:
+      "@request.auth.claims.groups":
+        exact: lisa-access
+#    - match:
+#        - uri:
+#            prefix: /
 
       rewrite:
         uriRegexRewrite:
