@@ -15,7 +15,11 @@ This project follows **Semantic Versioning (SemVer)** ([semver.org](https://semv
 
  ---
 
- ## Unreleased
+ ## [0.92.0] - 2025-05-15
+
+ ### Features
+
+ - Added Multi-instance support for multitenancy within LISA
 
  ### Bugfix
 

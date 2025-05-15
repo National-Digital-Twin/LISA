@@ -24,11 +24,11 @@ patches:
 
 labels:
   - pairs:
-      env: dev
+      env: prod
 
 images:
   - name: lisa-backend-image:template
-    newName: 503561419905.dkr.ecr.eu-west-2.amazonaws.com/lisa/api
+    newName: 940482405940.dkr.ecr.eu-west-2.amazonaws.com/lisa/api
     newTag: '1739959086'
 
 
