@@ -1,16 +1,9 @@
+- op: add
+  path: /spec/selector/matchLabels/tenant
+  value: dft
 
-apiVersion: security.istio.io/v1
-kind: AuthorizationPolicy
-metadata:
-  name: allow-ingress-to-lisa-webapp
-spec:
-  selector:
-    matchLabels:
-      tenant: dft
-  action: ALLOW
-  rules:
+- op: replace
+  path: /spec/rules/0/when/0/values
+  value:
+    - lisa_dft_access
 
-     - when:
-       - key: request.auth.claims[groups]
-         values:
-             - lisa_dft_access
