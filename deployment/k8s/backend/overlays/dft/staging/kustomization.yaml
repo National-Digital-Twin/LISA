@@ -24,7 +24,7 @@ patches:
 
 labels:
   - pairs:
-      env: dev
+      env: staging
 
 images:
   - name: lisa-backend-image:template
