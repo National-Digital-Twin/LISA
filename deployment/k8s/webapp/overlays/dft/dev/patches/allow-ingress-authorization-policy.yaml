@@ -6,16 +6,11 @@ metadata:
 spec:
   selector:
     matchLabels:
-      io.kompose.service: lisa
+      tenant: lisa
   action: ALLOW
   rules:
-    - from:
-        - source:
-            principals : ["cluster.local/ns/istio-ingress/sa/istio-ingress"]
-      to:
-        - operation:
-            methods: ["GET","POST","PUT"]
-      when:
+
+     - when:
        - key: request.auth.claims[groups]
          values:
              - lisa_dft_access
