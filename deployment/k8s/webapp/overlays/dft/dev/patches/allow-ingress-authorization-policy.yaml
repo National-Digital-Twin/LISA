@@ -6,7 +6,7 @@ metadata:
 spec:
   selector:
     matchLabels:
-      tenant: lisa
+      tenant: dft
   action: ALLOW
   rules:
 
