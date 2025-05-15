@@ -16,7 +16,7 @@ patches:
 labels:
   - pairs:
       env: dev
-
+      tenant: dft
 images:
   - name: lisa-image:template
     newName: 537124944113.dkr.ecr.eu-west-2.amazonaws.com/lisa/webapp
