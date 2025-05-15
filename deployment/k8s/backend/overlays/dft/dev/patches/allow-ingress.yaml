@@ -1,10 +1,4 @@
-apiVersion: security.istio.io/v1
-kind: AuthorizationPolicy
-metadata:
-  name: allow-ingress-to-lisa-backend
-spec:
-  rules:
-    - from:
-        - source:
-            principals: ["cluster.local/ns/istio-ingress/sa/istio-ingress"]
-
+- op: replace
+  path: /spec/rules/0/when/0/values
+  value:
+    - lisa_dft_access
