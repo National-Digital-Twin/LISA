@@ -17,7 +17,10 @@ patches:
     target:
       kind: VaultStaticSecret
       name: lisa-transparent-proxy-static-secret
-
+  - path: patches/allow-ingress-to-lisa-transparent-proxy.yaml
+    target:
+      kind: AuthorizationPolicy
+      name: allow-ingress-to-transparent-proxy
 labels:
   - pairs:
       env: dev
