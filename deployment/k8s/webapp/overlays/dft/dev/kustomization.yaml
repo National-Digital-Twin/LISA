@@ -8,12 +8,15 @@ patches:
     target:
       kind: ServiceAccount
       name: lisa-sa
-
+  - path: patches/allow-ingress-authorization-policy.yaml
+    target:
+      kind: AuthorizationPolicy
+      name: allow-ingress-to-lisa-webapp
 
 labels:
   - pairs:
       env: dev
-
+      tenant: dft
 images:
   - name: lisa-image:template
     newName: 537124944113.dkr.ecr.eu-west-2.amazonaws.com/lisa/webapp

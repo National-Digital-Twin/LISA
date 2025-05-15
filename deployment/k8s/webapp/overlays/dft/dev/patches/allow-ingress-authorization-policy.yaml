@@ -1,0 +1,9 @@
+- op: add
+  path: /spec/selector/matchLabels/tenant
+  value: dft
+
+- op: replace
+  path: /spec/rules/0/when/0/values
+  value:
+    - lisa_dft_access
+
