@@ -1,4 +1,4 @@
 - op: replace
   path: /spec/rules/0/when/0/values
   value:
-    - lisa_dft_access
+    - lisa_hantsar_access
