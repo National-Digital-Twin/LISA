@@ -21,6 +21,10 @@ patches:
     target:
       kind: VaultStaticSecret
       name: lisa-backend-static-secret
+  - path: patches/vaultAuth.yaml
+    target:
+      kind: VaultAuth
+      name: lisa-backend-vault-auth
 
 labels:
   - pairs:
