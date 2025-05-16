@@ -15,11 +15,11 @@ This project follows **Semantic Versioning (SemVer)** ([semver.org](https://semv
 
  ---
 
- ## [0.92.1] - [0.92.6] - 2025-05-16
+ ## [0.92.1] - [0.92.7] - 2025-05-16
 
  ### Bugfix
 
- - Missing Staging/Prod deployment scripts added for DFT LISA Instance
+ - Missing Staging/Prod deployment scripts added for Hantsar LISA Instance
 
  ## [0.92.0] - 2025-05-15
 
