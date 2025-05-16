@@ -1,5 +1,5 @@
 resources:
-  - ../../../base
+  - ../../base
 
 namespace: lisa-dft
 
@@ -15,11 +15,11 @@ patches:
 
 labels:
   - pairs:
-      env: dev
-      tenant: dft
+      env: staging
+
 images:
   - name: lisa-image:template
-    newName: 537124944113.dkr.ecr.eu-west-2.amazonaws.com/lisa/webapp
+    newName: 503561419905.dkr.ecr.eu-west-2.amazonaws.com/lisa/webapp
     newTag: '1739959086'
 
 

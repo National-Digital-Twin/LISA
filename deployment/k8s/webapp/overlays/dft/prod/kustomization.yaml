@@ -1,5 +1,5 @@
 resources:
-  - ../../../base
+  - ../../base
 
 namespace: lisa-dft
 
@@ -13,13 +13,14 @@ patches:
       kind: AuthorizationPolicy
       name: allow-ingress-to-lisa-webapp
 
+
 labels:
   - pairs:
-      env: dev
-      tenant: dft
+      env: prod
+
 images:
   - name: lisa-image:template
-    newName: 537124944113.dkr.ecr.eu-west-2.amazonaws.com/lisa/webapp
+    newName: 940482405940.dkr.ecr.eu-west-2.amazonaws.com/lisa/webapp
     newTag: '1739959086'
 
 
