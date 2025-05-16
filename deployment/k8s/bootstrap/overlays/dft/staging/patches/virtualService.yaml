@@ -1,0 +1,31 @@
+- op: replace
+  path: /spec/hosts/0
+  value: lisa-dft.staging.ndtp.co.uk
+
+- op: replace
+  path: /spec/gateways/0
+  value: lisa-dft/lisa-ingress-gateway
+
+- op: replace
+  path: /spec/http/1/headers/response/add/Content-Security-Policy
+  value: "connect-src 'self' data: blob: wss://lisa-dft.staging.ndtp.co.uk ws://lisa-dft.staging.ndtp.co.uk https://lisa-dft.staging.ndtp.co.uk https://landing.app.ndtp.co.uk https://access.app.ndtp.co.uk https://api.os.uk https://nominatim.openstreetmap.org; worker-src 'self' blob:; child-src 'self' blob:; img-src 'self' data: blob:"
+
+- op: replace
+  path: /spec/http/1/headers/response/add/Access-Control-Allow-Origin
+  value: "lisa-dft.staging.ndtp.co.uk"
+
+- op: replace
+  path: /spec/http/2/headers/response/add/Content-Security-Policy
+  value: "connect-src 'self' data: blob: wss://lisa-dft.staging.ndtp.co.uk ws://lisa-dft.staging.ndtp.co.uk https://lisa-dft.staging.ndtp.co.uk https://landing.app.ndtp.co.uk https://access.app.ndtp.co.uk https://api.os.uk https://nominatim.openstreetmap.org; worker-src 'self' blob:; child-src 'self' blob:; img-src 'self' data: blob:"
+
+- op: replace
+  path: /spec/http/2/headers/response/add/Access-Control-Allow-Origin
+  value: "lisa-dft.staging.ndtp.co.uk"
+
+- op: replace
+  path: /spec/http/3/headers/response/add/Content-Security-Policy
+  value: "connect-src 'self' data: blob: wss://lisa-dft.staging.ndtp.co.uk ws://lisa-dft.staging.ndtp.co.uk https://lisa-dft.staging.ndtp.co.uk https://landing.app.ndtp.co.uk https://access.app.ndtp.co.uk https://api.os.uk https://nominatim.openstreetmap.org; worker-src 'self' blob:; child-src 'self' blob:; img-src 'self' data: blob:"
+
+- op: replace
+  path: /spec/http/3/headers/response/add/Access-Control-Allow-Origin
+  value: "lisa-dft.staging.ndtp.co.uk"

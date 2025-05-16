@@ -1,5 +1,5 @@
 resources:
-  - ../../../base
+  - ../../base
 
 namespace: lisa-dft
 
@@ -9,7 +9,6 @@ configMapGenerator:
       - params.env
 
 patches:
-
   - path: patches/service-account.yaml
     target:
       kind: ServiceAccount
@@ -23,11 +22,11 @@ patches:
       name: allow-ingress-to-transparent-proxy
 labels:
   - pairs:
-      env: dev
+      env: staging
 
 images:
   - name: lisa-transparent-proxy-image:template
-    newName: 537124944113.dkr.ecr.eu-west-2.amazonaws.com/lisa/transparent-proxy
+    newName: 503561419905.dkr.ecr.eu-west-2.amazonaws.com/lisa/transparent-proxy
     newTag: "1736292556"
 
 
