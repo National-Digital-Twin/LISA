@@ -20,6 +20,10 @@ patches:
     target:
       kind: AuthorizationPolicy
       name: allow-ingress-to-transparent-proxy
+  - path: patches/vaultAuth.yaml
+    target:
+      kind: VaultAuth
+      name: lisa-transparent-proxy-vault-auth
 labels:
   - pairs:
       env: staging
