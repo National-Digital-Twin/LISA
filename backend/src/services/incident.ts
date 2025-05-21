@@ -168,17 +168,17 @@ function getReferrer(row: ia.ResultRow, amendments?: Amendments): Referrer | und
     return undefined;
   }
   const referrer: Partial<Referrer> = {
-    name: amendments?.['referrer.name'] || row.referrerName?.value,
-    organisation: amendments?.['referrer.organisation'] || row.referrerOrg?.value,
-    telephone: amendments?.['referrer.telephone'] || row.referrerTel?.value,
-    email: amendments?.['referrer.email'] || row.referrerEmail?.value
+    name: amendments?.['referrer.name'] ?? row.referrerName?.value,
+    organisation: amendments?.['referrer.organisation'] ?? row.referrerOrg?.value,
+    telephone: amendments?.['referrer.telephone'] ?? row.referrerTel?.value,
+    email: amendments?.['referrer.email'] ?? row.referrerEmail?.value
   };
   const supportRequested =
-    amendments?.['referrer.supportRequested'] || row.referrerSupportRequested?.value;
+    amendments?.['referrer.supportRequested'] ?? row.referrerSupportRequested?.value;
   if (supportRequested === 'Yes') {
     referrer.supportRequested = 'Yes';
     referrer.supportDescription =
-      amendments?.['referrer.supportDescription'] || row.referrerSupportDesc?.value;
+      amendments?.['referrer.supportDescription'] ?? row.referrerSupportDesc?.value;
   } else {
     referrer.supportRequested = 'No';
   }
@@ -186,7 +186,7 @@ function getReferrer(row: ia.ResultRow, amendments?: Amendments): Referrer | und
 }
 
 function getName(row: ia.ResultRow, amendments?: Amendments): string {
-  return amendments?.name || row.name?.value;
+  return amendments?.name ?? row.name?.value;
 }
 
 export async function get(_: Request, res: Response) {
@@ -247,7 +247,7 @@ export async function get(_: Request, res: Response) {
 
   const amendmentsByIncident = amendments.reduce((map, row) => {
     const incidentId = nodeValue(row.id.value);
-    const amends = map[incidentId] || {};
+    const amends = map[incidentId] ?? {};
     amends[row.fieldName.value] = row.fieldValue.value;
     return { ...map, [incidentId]: amends };
   }, new Map<string, Amendments>());
@@ -263,8 +263,8 @@ export async function get(_: Request, res: Response) {
         name: getName(row, amendmentsByIncident[nodeValue(row.id.value)]),
         referrer: getReferrer(row, amendmentsByIncident[nodeValue(row.id.value)]),
         reportedBy: {
-          username: row.reportedByName?.value || undefined,
-          displayName: row.reportedByName?.value || undefined
+          username: row.reportedByName?.value ?? undefined,
+          displayName: row.reportedByName?.value ?? undefined
         }
       }) satisfies Incident
   );
