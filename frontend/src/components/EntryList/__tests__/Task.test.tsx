@@ -16,7 +16,7 @@ describe('Task Component', () => {
     },
     author: { username: 'author', displayName: 'Author Name' },
     dateTime: '2025-04-02T12:00:00Z',
-    content: {text: "", json: ""},
+    content: { text: '', json: '' },
     type: 'General'
   };
 
@@ -37,5 +37,5 @@ describe('Task Component', () => {
     const noTaskEntry = { ...mockLogEntry, task: undefined };
     providersRender(<Task entry={noTaskEntry} />);
     expect(screen.queryByText('Task name')).not.toBeInTheDocument();
-  });  
+  });
 });

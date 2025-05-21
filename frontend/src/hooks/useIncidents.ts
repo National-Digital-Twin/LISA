@@ -73,11 +73,12 @@ export const useCreateIncident = () => {
 export const useChangeIncidentStage = () => {
   const queryClient = useQueryClient();
   const createIncident = useMutation<Incident, Error, Incident>({
-    mutationFn: (incident) => post(`/incident/${incident.id}/stage`, {
-      id: incident.id,
-      stage: incident.stage,
-      sequence: createSequenceNumber()
-    }),
+    mutationFn: (incident) =>
+      post(`/incident/${incident.id}/stage`, {
+        id: incident.id,
+        stage: incident.stage,
+        sequence: createSequenceNumber()
+      }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['incidents'] });
     },
