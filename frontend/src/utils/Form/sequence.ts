@@ -3,7 +3,6 @@
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
 export const createSequenceNumber = () => {
-
   const date = new Date();
   return [
     date.getDate(),
@@ -14,4 +13,4 @@ export const createSequenceNumber = () => {
   ]
     .map((element) => String(element).padStart(2, '0'))
     .join('');
-}
+};
