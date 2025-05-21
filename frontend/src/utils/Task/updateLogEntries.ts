@@ -14,7 +14,7 @@ export function createLogEntryFromTaskStatusUpdate(taskId : string, status : Tas
     dateTime: new Date().toISOString(),
     content: {},
     fields: [],
-    sequence: createSequenceNumber(new Date()),
+    sequence: createSequenceNumber(),
     details: {
       changedStatus: status,
       changedTaskId: taskId
@@ -31,7 +31,7 @@ export function createLogEntryFromTaskAssigneeUpdate(taskId : string, assigneeNa
     dateTime: new Date().toISOString(),
     content: {},
     fields: [],
-    sequence: createSequenceNumber(new Date()),
+    sequence: createSequenceNumber(),
     details: {
       changedAssignee: assigneeName,
       changedTaskId: taskId

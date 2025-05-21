@@ -84,7 +84,7 @@ export async function create(req: Request, res: Response) {
 }
 
 export async function changeStage(req: Request, res: Response) {
-  const { id: incidentId, stage: stageStr } = req.body;
+  const { id: incidentId, stage: stageStr, sequence: seqNumber } = req.body;
 
   const stage = IncidentStage.check(stageStr);
 
@@ -127,8 +127,9 @@ export async function changeStage(req: Request, res: Response) {
   const entryIdNode = ns.data(randomUUID());
   const authorNode = ns.data(randomUUID());
 
+  const now = new Date();
   const incidentStateNode = ns.data(incidentState);
-  const startDateNode = literalDate(new Date());
+  const startDateNode = literalDate(now);
 
   await ia.insert({
     triples: [
@@ -147,20 +148,15 @@ export async function changeStage(req: Request, res: Response) {
       [entryIdNode, ns.rdf.type, ns.lisa('ChangeStage' as LogEntryType)],
       [entryIdNode, ns.lisa.inStage, literalString(stage)],
       [entryIdNode, ns.ies.inPeriod, startDateNode],
-      [entryIdNode, ns.lisa.hasSequence, '?seq'],
+      [entryIdNode, ns.lisa.createdAt, literalDate(now)],
+      [entryIdNode, ns.lisa.hasSequence, literalString(seqNumber)],
 
       [authorNode, ns.rdf.type, ns.ies.Creator],
       [authorNode, ns.ies.hasName, literalString(res.locals.user.displayName)],
       [authorNode, ns.ies.isParticipantIn, entryIdNode]
     ],
     where: [
-      `FILTER NOT EXISTS {${new TriplePattern('?x', ns.ies.isEndOf, ns.data(lastStateNodeId))}}`,
-      `{SELECT (COALESCE(MAX(?number), 0) AS ?maxNumber) WHERE {${sparql.optional([
-        [incidentIdNode, ns.lisa.hasLogEntry, '?entry'],
-        ['?entry', ns.lisa.hasSequence, '?number']
-      ])}
-      }}`,
-      'BIND (?maxNumber + 1 AS ?seq)'
+      `FILTER NOT EXISTS {${new TriplePattern('?x', ns.ies.isEndOf, ns.data(lastStateNodeId))}}`
     ]
   });
 
@@ -172,17 +168,17 @@ function getReferrer(row: ia.ResultRow, amendments?: Amendments): Referrer | und
     return undefined;
   }
   const referrer: Partial<Referrer> = {
-    name: amendments?.['referrer.name'] || row.referrerName?.value,
-    organisation: amendments?.['referrer.organisation'] || row.referrerOrg?.value,
-    telephone: amendments?.['referrer.telephone'] || row.referrerTel?.value,
-    email: amendments?.['referrer.email'] || row.referrerEmail?.value
+    name: amendments?.['referrer.name'] ?? row.referrerName?.value,
+    organisation: amendments?.['referrer.organisation'] ?? row.referrerOrg?.value,
+    telephone: amendments?.['referrer.telephone'] ?? row.referrerTel?.value,
+    email: amendments?.['referrer.email'] ?? row.referrerEmail?.value
   };
   const supportRequested =
-    amendments?.['referrer.supportRequested'] || row.referrerSupportRequested?.value;
+    amendments?.['referrer.supportRequested'] ?? row.referrerSupportRequested?.value;
   if (supportRequested === 'Yes') {
     referrer.supportRequested = 'Yes';
     referrer.supportDescription =
-      amendments?.['referrer.supportDescription'] || row.referrerSupportDesc?.value;
+      amendments?.['referrer.supportDescription'] ?? row.referrerSupportDesc?.value;
   } else {
     referrer.supportRequested = 'No';
   }
@@ -190,7 +186,7 @@ function getReferrer(row: ia.ResultRow, amendments?: Amendments): Referrer | und
 }
 
 function getName(row: ia.ResultRow, amendments?: Amendments): string {
-  return amendments?.name || row.name?.value;
+  return amendments?.name ?? row.name?.value;
 }
 
 export async function get(_: Request, res: Response) {
@@ -251,7 +247,7 @@ export async function get(_: Request, res: Response) {
 
   const amendmentsByIncident = amendments.reduce((map, row) => {
     const incidentId = nodeValue(row.id.value);
-    const amends = map[incidentId] || {};
+    const amends = map[incidentId] ?? {};
     amends[row.fieldName.value] = row.fieldValue.value;
     return { ...map, [incidentId]: amends };
   }, new Map<string, Amendments>());
@@ -267,8 +263,8 @@ export async function get(_: Request, res: Response) {
         name: getName(row, amendmentsByIncident[nodeValue(row.id.value)]),
         referrer: getReferrer(row, amendmentsByIncident[nodeValue(row.id.value)]),
         reportedBy: {
-          username: row.reportedByName?.value || undefined,
-          displayName: row.reportedByName?.value || undefined
+          username: row.reportedByName?.value ?? undefined,
+          displayName: row.reportedByName?.value ?? undefined
         }
       }) satisfies Incident
   );
@@ -316,3 +312,4 @@ export async function getAttachments(req: Request, res: Response) {
 
   res.json(attachments);
 }
+

@@ -9,6 +9,7 @@ import { QueryClient, useMutation, useQuery, useQueryClient } from '@tanstack/re
 // Local imports
 import { type Incident } from 'common/Incident';
 import { FetchError, get, post } from '../api';
+import { createSequenceNumber } from '../utils/Form/sequence';
 
 export const useIncidents = () =>
   useQuery<Incident[], FetchError>({
@@ -72,7 +73,12 @@ export const useCreateIncident = () => {
 export const useChangeIncidentStage = () => {
   const queryClient = useQueryClient();
   const createIncident = useMutation<Incident, Error, Incident>({
-    mutationFn: (incident) => post(`/incident/${incident.id}/stage`, incident),
+    mutationFn: (incident) =>
+      post(`/incident/${incident.id}/stage`, {
+        id: incident.id,
+        stage: incident.stage,
+        sequence: createSequenceNumber()
+      }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['incidents'] });
     },

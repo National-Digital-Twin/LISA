@@ -3,17 +3,22 @@
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { LogEntry } from "common/LogEntry";
-import { createSequenceNumber } from "../../utils/Form/sequence";
+import { LogEntry } from 'common/LogEntry';
+import { createSequenceNumber } from '../../utils/Form/sequence';
 
-export function createLogEntryFromSubmittedForm(formTitle: string, formId: string, incidentId: string, entry? : Partial<LogEntry>): Partial<LogEntry>{
+export function createLogEntryFromSubmittedForm(
+  formTitle: string,
+  formId: string,
+  incidentId: string,
+  entry?: Partial<LogEntry>
+): Partial<LogEntry> {
   const logEntry: Partial<LogEntry> = entry ?? {
     type: 'FormSubmitted',
     incidentId,
     dateTime: new Date().toISOString(),
     content: {},
     fields: [],
-    sequence: createSequenceNumber(new Date()),
+    sequence: createSequenceNumber(),
     details: {
       submittedFormId: formId,
       submittedFormTitle: formTitle

@@ -18,22 +18,22 @@ function getIncidentValue(incident: Incident, field: Field): string | undefined 
     const parts = id.split('.');
     const obj = incident[parts[0] as keyof Incident];
     if (typeof obj === 'object') {
-      value = String(obj[parts[1] as keyof typeof obj] || '');
+      value = String(obj[parts[1] as keyof typeof obj] ?? '');
     }
   } else {
-    value = String(incident[id as keyof Incident] || '');
+    value = String(incident[id as keyof Incident] ?? '');
   }
   return !value?.length ? undefined : value;
 }
 
 function makeEntryFromIncident(incident: Incident, entry?: Partial<LogEntry>): Partial<LogEntry> {
-  const logEntry: Partial<LogEntry> = entry || {
+  const logEntry: Partial<LogEntry> = entry ?? {
     type: 'SetIncidentInformation',
     incidentId: incident.id,
     dateTime: '',
     content: {},
     fields: [],
-    sequence: createSequenceNumber(new Date())
+    sequence: createSequenceNumber()
   };
   const type = LogEntryTypes.SetIncidentInformation;
   type?.fields(logEntry).forEach((field) => {
@@ -61,8 +61,8 @@ export function getDirtyEntry(entry: Partial<LogEntry>, incident: Incident): Par
   };
   dirtyEntry.fields = [];
 
-  const origFields = getInitialEntry(incident).fields || [];
-  const newFields = entry.fields || [];
+  const origFields = getInitialEntry(incident).fields ?? [];
+  const newFields = entry.fields ?? [];
   origFields.forEach((field) => {
     const newField = newFields.find((f) => f.id === field.id);
     if (!newField) {
@@ -95,7 +95,7 @@ export function validate(entry: Partial<LogEntry>, incident: Incident): Validati
   const validationErrors: ValidationError[] = Validate.entry(entry, []);
   const dirtyEntry = getDirtyEntry(entry, incident);
   if (!dirtyEntry.fields?.length) {
-    const origFieldIds = getInitialEntry(incident).fields?.map((f) => f.id) || [];
+    const origFieldIds = getInitialEntry(incident).fields?.map((f) => f.id) ?? [];
     origFieldIds.forEach((fieldId) => {
       validationErrors.push({
         fieldId,

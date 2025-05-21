@@ -16,17 +16,17 @@ describe('Task Component', () => {
     },
     author: { username: 'author', displayName: 'Author Name' },
     dateTime: '2025-04-02T12:00:00Z',
-    content: {text: "", json: ""},
+    content: { text: '', json: '' },
     type: 'General'
   };
 
   it('renders task name, description, and assignee', () => {
     providersRender(<Task entry={mockLogEntry} />);
 
-    expect(screen.getByText('Task name')).toBeInTheDocument();
+    expect(screen.getByText('Task name:')).toBeInTheDocument();
     expect(screen.getByText('Investigate issue')).toBeInTheDocument();
 
-    expect(screen.getByText('Assigned to')).toBeInTheDocument();
+    expect(screen.getByText('Assigned to:')).toBeInTheDocument();
     expect(screen.getByText('jdoe')).toBeInTheDocument();
 
     expect(screen.getByText('Task description')).toBeInTheDocument();
@@ -37,5 +37,5 @@ describe('Task Component', () => {
     const noTaskEntry = { ...mockLogEntry, task: undefined };
     providersRender(<Task entry={noTaskEntry} />);
     expect(screen.queryByText('Task name')).not.toBeInTheDocument();
-  });  
+  });
 });
