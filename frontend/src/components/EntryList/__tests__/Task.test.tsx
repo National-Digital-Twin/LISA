@@ -23,10 +23,10 @@ describe('Task Component', () => {
   it('renders task name, description, and assignee', () => {
     providersRender(<Task entry={mockLogEntry} />);
 
-    expect(screen.getByText('Task name')).toBeInTheDocument();
+    expect(screen.getByText('Task name:')).toBeInTheDocument();
     expect(screen.getByText('Investigate issue')).toBeInTheDocument();
 
-    expect(screen.getByText('Assigned to')).toBeInTheDocument();
+    expect(screen.getByText('Assigned to:')).toBeInTheDocument();
     expect(screen.getByText('jdoe')).toBeInTheDocument();
 
     expect(screen.getByText('Task description')).toBeInTheDocument();
