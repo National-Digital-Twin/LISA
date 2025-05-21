@@ -84,7 +84,7 @@ export async function create(req: Request, res: Response) {
 }
 
 export async function changeStage(req: Request, res: Response) {
-  const { id: incidentId, stage: stageStr } = req.body;
+  const { id: incidentId, stage: stageStr, sequence: seqNumber } = req.body;
 
   const stage = IncidentStage.check(stageStr);
 
@@ -127,8 +127,9 @@ export async function changeStage(req: Request, res: Response) {
   const entryIdNode = ns.data(randomUUID());
   const authorNode = ns.data(randomUUID());
 
+  const now = new Date();
   const incidentStateNode = ns.data(incidentState);
-  const startDateNode = literalDate(new Date());
+  const startDateNode = literalDate(now);
 
   await ia.insert({
     triples: [
@@ -147,20 +148,15 @@ export async function changeStage(req: Request, res: Response) {
       [entryIdNode, ns.rdf.type, ns.lisa('ChangeStage' as LogEntryType)],
       [entryIdNode, ns.lisa.inStage, literalString(stage)],
       [entryIdNode, ns.ies.inPeriod, startDateNode],
-      [entryIdNode, ns.lisa.hasSequence, '?seq'],
+      [entryIdNode, ns.lisa.createdAt, literalDate(now)],
+      [entryIdNode, ns.lisa.hasSequence, literalString(seqNumber)],
 
       [authorNode, ns.rdf.type, ns.ies.Creator],
       [authorNode, ns.ies.hasName, literalString(res.locals.user.displayName)],
       [authorNode, ns.ies.isParticipantIn, entryIdNode]
     ],
     where: [
-      `FILTER NOT EXISTS {${new TriplePattern('?x', ns.ies.isEndOf, ns.data(lastStateNodeId))}}`,
-      `{SELECT (COALESCE(MAX(?number), 0) AS ?maxNumber) WHERE {${sparql.optional([
-        [incidentIdNode, ns.lisa.hasLogEntry, '?entry'],
-        ['?entry', ns.lisa.hasSequence, '?number']
-      ])}
-      }}`,
-      'BIND (?maxNumber + 1 AS ?seq)'
+      `FILTER NOT EXISTS {${new TriplePattern('?x', ns.ies.isEndOf, ns.data(lastStateNodeId))}}`
     ]
   });
 
@@ -316,3 +312,4 @@ export async function getAttachments(req: Request, res: Response) {
 
   res.json(attachments);
 }
+

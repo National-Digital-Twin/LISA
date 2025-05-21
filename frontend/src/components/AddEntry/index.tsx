@@ -56,7 +56,7 @@ const AddEntry = ({
   const { users } = useUsers();
   const [entry, setEntry] = useState<Partial<LogEntry>>({
     incidentId: incident?.id,
-    sequence: createSequenceNumber(new Date()),
+    sequence: createSequenceNumber(),
     type: 'General',
     content: {}
   });
