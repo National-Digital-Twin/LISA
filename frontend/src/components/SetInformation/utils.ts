@@ -33,7 +33,7 @@ function makeEntryFromIncident(incident: Incident, entry?: Partial<LogEntry>): P
     dateTime: '',
     content: {},
     fields: [],
-    sequence: createSequenceNumber(new Date())
+    sequence: createSequenceNumber()
   };
   const type = LogEntryTypes.SetIncidentInformation;
   type?.fields(logEntry).forEach((field) => {

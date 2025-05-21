@@ -13,7 +13,7 @@ export function createLogEntryFromSubmittedForm(formTitle: string, formId: strin
     dateTime: new Date().toISOString(),
     content: {},
     fields: [],
-    sequence: createSequenceNumber(new Date()),
+    sequence: createSequenceNumber(),
     details: {
       submittedFormId: formId,
       submittedFormTitle: formTitle
