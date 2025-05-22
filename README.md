@@ -60,6 +60,9 @@ Refer to [INSTALLATION.md](INSTALLATION.md) for detailed installation steps, inc
 ### 4. Uninstallation  
 For steps to remove this repository and its dependencies, see [UNINSTALL.md](UNINSTALL.md).  
 
+## Multitenancy
+L!SA supports multitenancy via namespace isolation within Kubernetes. The steps to add new instances are all covered in [MULITENANCY.md](MULTITENANCY.md).
+
 ## Features  
 Include a brief list of key features provided by this repository. These should highlight what makes the project valuable to users and contributors. Examples of features might include:  
 - **Core functionality** LISA (Local Incident Services Application) is a web-based crisis and incident management application designed to support real-time decision-making, structured logging, and cross-agency collaboration during emergency incidents. It allows teams to digitally manage incidents, capture critical information, and securely share updates across stakeholders, improving coordination and response times. 
