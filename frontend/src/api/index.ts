@@ -64,4 +64,15 @@ export const put = async <T>(endpoint: string, data: object | FormData): Promise
   return handleResponse(res);
 };
 
+export const patch = async <T>(endpoint: string, data: object | FormData): Promise<T> => {
+  const headers = await getHeaders(data instanceof FormData);
+  const res = await fetch(`${baseUrl}${endpoint}`, {
+    method: 'PATCH',
+    body: data instanceof FormData ? data : JSON.stringify(data),
+    headers
+  });
+
+  return handleResponse(res);
+};
+
 export { FetchError };

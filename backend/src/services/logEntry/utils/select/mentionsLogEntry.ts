@@ -6,7 +6,7 @@
 import { select } from '../../../../ia';
 import { ns } from '../../../../rdfutil';
 
-export function mentionsLogEntry(incidentId: string) {
+export function mentionsLogEntryInLogContent(incidentId: string) {
   return select({
     clause: [
       [ns.data(incidentId), ns.lisa.hasLogEntry, '?entryId'],
@@ -14,3 +14,4 @@ export function mentionsLogEntry(incidentId: string) {
     ]
   });
 }
+

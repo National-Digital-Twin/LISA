@@ -3,7 +3,7 @@
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
 // Global imports
-import { Array, Boolean, Optional, Record, Static, String, Union } from 'runtypes';
+import { Array, Boolean, Optional, Record, Static, String, Number, Union } from 'runtypes';
 
 // Local imports
 import { FieldType } from './FieldType';
@@ -33,7 +33,9 @@ export const Field = Record({
   // These properties are only needed for the UI.
   label: Optional(String),
   hint: Optional(String),
-  className: Optional(String)
+  className: Optional(String),
+  multiline: Optional(Boolean),
+  rows: Optional(Number)
 });
 
 /* eslint-disable no-redeclare */

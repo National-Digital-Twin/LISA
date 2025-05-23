@@ -12,7 +12,7 @@
 
 - op: replace
   path: /spec/http/1/headers/response/add/Access-Control-Allow-Origin
-  value: "*"
+  value: "lisa.dev.ndtp.co.uk"
 
 - op: replace
   path: /spec/http/2/headers/response/add/Content-Security-Policy
@@ -20,7 +20,7 @@
 
 - op: replace
   path: /spec/http/2/headers/response/add/Access-Control-Allow-Origin
-  value: "*"
+  value: "lisa.dev.ndtp.co.uk"
 
 - op: replace
   path: /spec/http/3/headers/response/add/Content-Security-Policy
@@ -28,4 +28,4 @@
 
 - op: replace
   path: /spec/http/3/headers/response/add/Access-Control-Allow-Origin
-  value: "*"
+  value: "lisa.dev.ndtp.co.uk"

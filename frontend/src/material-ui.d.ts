@@ -14,6 +14,14 @@ declare module '@mui/material/styles/createPalette' {
     border: {
       main: string;
     };
+    chip: {
+      main: string;
+    }
+    status: {
+      todo: StageType;
+      done: StageType;
+      inprogress: StageType;
+    };
     stage: {
       monitoring: StageType;
       response: StageType;

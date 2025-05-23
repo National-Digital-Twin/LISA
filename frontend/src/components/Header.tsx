@@ -42,8 +42,15 @@ const HEADER_ITEMS = [
       { to: 'logbook', label: 'LOG' },
       { to: 'incident', label: 'OVERVIEW' },
       { to: 'files', label: 'FILES' },
-      { to: 'location', label: 'LOCATION' }
+      { to: 'location', label: 'LOCATION' },
+      { to: 'tasks', label: 'TASKS' },
+      { to: 'forms', label: 'FORMS'}
     ]
+  },
+  {
+    to: '/forms',
+    label: 'FORM TEMPLATES',
+    subItems: []
   }
 ];
 
@@ -82,7 +89,7 @@ const NavigationItems = ({ isBelowMd = false, pathname, handleLink }: Navigation
           />
         </IconButton>
         {HEADER_ITEMS.map(({ to, label }) => {
-          const selected = pathname.includes(to);
+          const selected = pathname === to;
           return (
             <Box component="li" key={to} className={`${selected ? 'selected' : ''}`}>
               <Typography
@@ -116,9 +123,18 @@ const Header = () => {
   const { user } = useAuth();
   const query = useIncidents();
   const headerRef = useRef<null | HTMLElement>(null);
+
+  const getInitialActive = () => {
+    const matched = HEADER_ITEMS.flatMap(item =>
+      item.subItems?.map(sub => `${sub.to}/${incidentId}`) || []
+    ).find(route => pathname.includes(route));
+  
+    return matched ?? '';
+  };
+
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [accountAnchorEl, setAccountAnchorEl] = useState<null | HTMLElement>(null);
-  const [active, setActive] = useState('');
+  const [active, setActive] = useState(getInitialActive);
   const [openGuide, setOpenGuide] = useState(false);
   const openNav = Boolean(anchorEl);
   const openAccount = Boolean(accountAnchorEl);
@@ -155,6 +171,37 @@ const Header = () => {
   };
 
   const { isBelowMd } = useResponsive();
+
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [showScrollHint, setShowScrollHint] = useState(isBelowMd);
+
+  const handleScroll = () => {
+    const el = scrollRef.current;
+    if (!el) return;
+
+    const isScrollable = el.scrollWidth > el.clientWidth;
+    const isScrolledToEnd = el.scrollLeft + el.clientWidth >= el.scrollWidth - 1;
+    setShowScrollHint(isScrollable && !isScrolledToEnd);
+  };
+
+  useEffect(() => {
+    const el = scrollRef.current;
+  
+    if (el && isBelowMd) {
+      el.addEventListener('scroll', handleScroll);
+      window.addEventListener('resize', handleScroll);
+    }
+  
+    return () => {
+      if (el && isBelowMd) {
+        el.removeEventListener('scroll', handleScroll);
+        window.removeEventListener('resize', handleScroll);
+      }
+    };
+  }, [isBelowMd]);
+  
+  
+
 
   return (
     <Box>
@@ -291,62 +338,94 @@ const Header = () => {
           paddingLeft={isBelowMd ? 2 : '140px'}
           paddingRight={2}
         >
-          <Tabs
-            value={active}
-            onChange={handleChange}
-            variant="scrollable"
-            TabIndicatorProps={{
-              style: { display: 'none' }
-            }}
-            color="text.primary"
-          >
-            {cPage.subItems.map(({ to, label }, index) => {
-              const isLastItem = index === cPage.subItems.length - 1;
-              const value = `${to}/${incident.id}`;
-              const selected = value === active;
-              return (
-                <Tab
-                  key={value}
-                  aria-controls={`log-tab-${label}`}
-                  label={
-                    <Box display="flex" gap={2}>
-                      <Typography
-                        variant="body1"
-                        fontWeight="bold"
-                        sx={{
-                          color: selected ? 'primary.main' : 'text.primary',
-                          textDecorationLine: selected ? 'underline !important' : '',
-                          textDecorationThickness: selected ? '2px !important' : 0,
-                          textUnderlineOffset: '0.5rem',
-                          transition: 'color 0.3s',
-                          '&:hover': { color: 'primary.main' }
-                        }}
-                        component={Link}
-                        onClick={handleLink}
-                        to={`${to}/${incident.id}`}
-                      >
-                        {label}
-                      </Typography>
-                      {!isLastItem && (
-                        <Divider
-                          orientation="vertical"
-                          flexItem
-                          sx={{ borderColor: 'text.primary' }}
-                        />
-                      )}
-                    </Box>
-                  }
-                  component={Link}
-                  to={value}
-                  value={value}
-                  sx={{ minWidth: 0, padding: 1 }}
-                  color="text.primary"
-                />
-              );
-            })}
-          </Tabs>
+          <Box sx={{ position: 'relative' }}>
+            <Box
+              ref={scrollRef}
+              sx={{
+                overflowX: 'auto',
+                whiteSpace: 'nowrap',
+                WebkitOverflowScrolling: 'touch',
+                scrollbarWidth: 'none',
+                '&::-webkit-scrollbar': {
+                  display: 'none'
+                }
+              }}
+              onScroll={handleScroll}
+            >
+              <Tabs
+                value={active}
+                onChange={handleChange}
+                variant="scrollable"
+                TabIndicatorProps={{ style: { display: 'none' } }}
+                color="text.primary"
+                sx={{ scrollBehavior: 'smooth', minWidth: 'max-content' }}
+              >
+                {cPage.subItems.map(({ to, label }, index) => {
+                  const isLastItem = index === cPage.subItems.length - 1;
+                  const value = `${to}/${incident.id}`;
+                  const selected = value === active;
+
+                  return (
+                    <Tab
+                      key={value}
+                      aria-controls={`log-tab-${label}`}
+                      label={
+                        <Box display="flex" gap={2}>
+                          <Typography
+                            variant="body1"
+                            fontWeight="bold"
+                            sx={{
+                              color: selected ? 'primary.main' : 'text.primary',
+                              textDecorationLine: selected ? 'underline !important' : '',
+                              textDecorationThickness: selected ? '2px !important' : 0,
+                              textUnderlineOffset: '0.5rem',
+                              transition: 'color 0.3s',
+                              '&:hover': { color: 'primary.main' }
+                            }}
+                            component={Link}
+                            onClick={handleLink}
+                            to={`${to}/${incident.id}`}
+                          >
+                            {label}
+                          </Typography>
+                          {!isLastItem && (
+                            <Divider
+                              orientation="vertical"
+                              flexItem
+                              sx={{ borderColor: 'text.primary' }}
+                            />
+                          )}
+                        </Box>
+                      }
+                      component={Link}
+                      to={value}
+                      value={value}
+                      sx={{ minWidth: 0, padding: 1 }}
+                      color="text.primary"
+                    />
+                  );
+                })}
+              </Tabs>
+            </Box>
+
+            {isBelowMd && showScrollHint && (
+              <Box
+                sx={{
+                  position: 'absolute',
+                  top: 0,
+                  right: 0,
+                  width: 30,
+                  height: '100%',
+                  pointerEvents: 'none',
+                  background: (theme) =>
+                    `linear-gradient(to left, ${theme.palette.background.default}, transparent)`
+                }}
+              />
+            )}
+          </Box>
         </Box>
       )}
+
       <Modal open={openGuide} onClose={() => setOpenGuide(!openGuide)}>
         <Box
           display="flex"

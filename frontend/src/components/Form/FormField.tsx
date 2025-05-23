@@ -50,8 +50,8 @@ const FormField = ({
   };
 
   const onTextChange = (evt: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const value = evt.target.value ? evt.target.value : undefined;
-    onChange(field.id, value as FieldValueType);
+    const {value} = evt.target;
+    onChange(field.id, value);
   };
   const onSelectionChange = (id: string, value: FieldValueType) => {
     onChange(id, value);
@@ -117,6 +117,7 @@ const FormField = ({
           onChange={onTextChange}
           error={Boolean(error)}
           helperText={error?.error}
+          rows={field.rows ?? 1}
         />
       )}
       {isSelect && (
