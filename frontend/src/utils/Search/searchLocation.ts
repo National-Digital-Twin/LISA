@@ -22,7 +22,7 @@ export async function searchLocation(input: Input): Promise<LocationResult[]> {
   try {
     resultJSON = await results.json();
     return resultJSON as LocationResult[];
-  } catch (e) {
+  } catch {
     // Do nothing.
   }
   return [];

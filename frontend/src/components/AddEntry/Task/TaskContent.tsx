@@ -2,8 +2,7 @@
 // © Crown Copyright 2025. This work has been developed by the National Digital Twin Programme
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
-import Grid from '@mui/material/Grid2';
-import { Box } from '@mui/material';
+import { Box, Grid } from '@mui/material';
 import { type LogEntry } from 'common/LogEntry';
 import { useEffect, useState } from 'react';
 import { type User } from 'common/User';
@@ -25,19 +24,19 @@ type TaskContentProps = {
   showValidationErrors: boolean;
 };
 
-const TaskContent = ({ 
-  task, 
-  entries, 
-  onFieldChange, 
-  users, 
+const TaskContent = ({
+  task,
+  entries,
+  onFieldChange,
+  users,
   validationErrors,
-  showValidationErrors 
+  showValidationErrors
 }: TaskContentProps) => {
   const [includeTask, setIncludeTask] = useState<boolean>(false);
 
   const assignees = users?.map(Format.mentionable.user).map(({ id, label }) => ({
     value: id,
-    label,
+    label
   }));
 
   useEffect(() => {
@@ -49,7 +48,7 @@ const TaskContent = ({
     if (findAssignee) {
       onFieldChange(id, {
         username: findAssignee.value,
-        displayName: findAssignee.label,
+        displayName: findAssignee.label
       });
     }
   };
@@ -87,7 +86,11 @@ const TaskContent = ({
             <Grid component="li" size={12}>
               <FormField
                 component="li"
-                field={{ ...ASSIGNEE_FIELD, value: task?.assignee?.username ?? '', options: assignees ?? [] }}
+                field={{
+                  ...ASSIGNEE_FIELD,
+                  value: task?.assignee?.username ?? '',
+                  options: assignees ?? []
+                }}
                 entries={entries}
                 onChange={onAssigneeChange}
                 error={

@@ -3,7 +3,7 @@
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
 import AddCircleIcon from '@mui/icons-material/AddCircle';
-import { Box, Button, Grid2 as Grid, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
+import { Box, Button, Grid, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
 import { useFormTemplates } from '../../hooks/Forms/useFormTemplates';
 import Format from '../../utils/Format';

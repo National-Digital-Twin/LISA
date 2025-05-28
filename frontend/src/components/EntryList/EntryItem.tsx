@@ -5,7 +5,7 @@
 // Global imports
 import { MouseEvent, ReactElement, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Box, Button, Divider, Grid2 as Grid, Paper, Popover, Typography } from '@mui/material';
+import { Box, Button, Divider, Grid, Paper, Popover, Typography } from '@mui/material';
 import PersonIcon from '@mui/icons-material/Person';
 
 // Local imports

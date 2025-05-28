@@ -4,8 +4,7 @@
 
 // Global imports
 import { MouseEvent, useEffect, useState } from 'react';
-import { Box, Typography } from '@mui/material';
-import Grid from '@mui/material/Grid2';
+import { Box, Typography, Grid } from '@mui/material';
 
 // Local imports
 import { type Incident } from 'common/Incident';
