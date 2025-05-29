@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom';
 
 // Local imports
 import { type Referrer, type Incident } from 'common/Incident';
-import { Box, Typography, Grid, useMediaQuery } from '@mui/material';
+import { Box, Typography, Grid2 as Grid, useMediaQuery } from '@mui/material';
 import { FormField, FormFooter } from '../components/Form';
 import { useCreateIncident } from '../hooks';
 import { Form, Incident as IncidentUtil, Validate } from '../utils';

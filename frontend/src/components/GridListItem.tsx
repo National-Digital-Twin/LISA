@@ -3,7 +3,7 @@
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
 import { ReactElement } from 'react';
-import { Box, Typography, Grid } from '@mui/material';
+import { Box, Typography, Grid2 as Grid } from '@mui/material';
 
 export const GridListItem = ({
   title,

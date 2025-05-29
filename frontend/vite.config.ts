@@ -23,7 +23,8 @@ export default defineConfig(({ mode }) => {
         },
         includeAssets: ['apple-touch-icon.png', 'mask-icon.svg', 'assets/*.ttf', 'assets/*.svg'],
         workbox: {
-          navigateFallbackDenylist: [/^\/api\//]
+          navigateFallbackDenylist: [/^\/api\//],
+          maximumFileSizeToCacheInBytes: 5 * 1024 * 1024 // 5MB
         },
         manifest: {
           name: 'Local Incident Services Application',

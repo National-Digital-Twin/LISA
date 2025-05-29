@@ -10,7 +10,7 @@ import ListIcon from '@mui/icons-material/List';
 import EmergencyIcon from '@mui/icons-material/Emergency';
 import EmergencyOutlinedIcon from '@mui/icons-material/EmergencyOutlined';
 import {
-  Grid,
+  Grid2 as Grid,
   IconButton,
   MenuItem,
   Select,

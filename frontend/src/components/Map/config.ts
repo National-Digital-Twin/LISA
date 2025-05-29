@@ -3,7 +3,7 @@
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
 import { LngLatBoundsLike, StyleSpecification } from 'maplibre-gl';
-import { ViewState } from 'react-map-gl/dist/esm/types';
+import { ViewState } from 'react-map-gl';
 
 export const MAP_STYLE: StyleSpecification = {
   version: 8,
