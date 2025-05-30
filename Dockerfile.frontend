@@ -1,5 +1,5 @@
 # FROM nginx as runner
-FROM nginx:1.27.5
+FROM nginx:1.28.0
 
 # Copy the built files from the builder stage to the runner stage
 COPY frontend/dist /usr/share/nginx/html
