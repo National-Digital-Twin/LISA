@@ -5,7 +5,7 @@
 // Global imports
 import { MouseEvent, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Box, Button, InputAdornment, TextField, Typography } from '@mui/material';
+import { Box, Button, InputAdornment, Popover, TextField, Typography } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
@@ -40,6 +40,7 @@ const Logbook = () => {
   const [appliedFilters, setAppliedFilters] = useState<FilterType>({ author: [], category: [] });
   const [searchText, setSearchText] = useState<string>('');
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const openFilters = Boolean(anchorEl);
   const { isMobile } = useResponsive();
   const navigate = useNavigate();
 
@@ -232,14 +233,63 @@ const Logbook = () => {
                     ]}
                   />
                 ) : (
-                  <Button
-                    variant="outlined"
-                    color="secondary"
-                    endIcon={<FilterAltIcon color={anchorEl ? 'primary' : 'secondary'} />}
-                    onClick={handleOpenFilters}
-                  >
-                    Filter
-                  </Button>
+                  <>
+                    <Button
+                      variant="outlined"
+                      color="secondary"
+                      endIcon={<FilterAltIcon color={anchorEl ? 'primary' : 'secondary'} />}
+                      onClick={handleOpenFilters}
+                    >
+                      Filter
+                    </Button>
+
+                    <Popover
+                      open={openFilters}
+                      anchorEl={anchorEl}
+                      onClose={() => setAnchorEl(null)}
+                      anchorOrigin={{
+                        vertical: 'bottom',
+                        horizontal: 'left'
+                      }}
+                      transformOrigin={{
+                        vertical: -10,
+                        horizontal: 'left'
+                      }}
+                      slotProps={{
+                        paper: {
+                          sx: {
+                            width: '100%',
+                            padding: '1rem',
+                            borderRadius: 0
+                          }
+                        }
+                      }}
+                    >
+                      <Box display="flex" flexDirection="column" gap={1} width="100%">
+                        <Filter
+                          isMobile={isMobile}
+                          appliedFilters={appliedFilters}
+                          onChange={onFilterChange}
+                          filters={[
+                            {
+                              id: 'author',
+                              label: 'Author',
+                              hintText: 'Everyone',
+                              type: 'multiselect',
+                              options: filterAuthors
+                            },
+                            {
+                              id: 'category',
+                              label: 'Category',
+                              hintText: 'Any',
+                              type: 'multiselect',
+                              options: filterCategories
+                            }
+                          ]}
+                        />
+                      </Box>
+                    </Popover>
+                  </>
                 )}
               </Box>
               {!isMobile && (
