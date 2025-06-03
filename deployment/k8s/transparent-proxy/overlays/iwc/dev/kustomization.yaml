@@ -1,0 +1,37 @@
+resources:
+  - ../../../base
+
+namespace: lisa-iwc
+
+configMapGenerator:
+  - name: lisa-transparent-proxy-configs
+    envs:
+      - params.env
+
+patches:
+
+  - path: patches/service-account.yaml
+    target:
+      kind: ServiceAccount
+  - path: patches/vaultStaticSecret.yaml
+    target:
+      kind: VaultStaticSecret
+      name: lisa-transparent-proxy-static-secret
+  - path: patches/allow-ingress-to-lisa-transparent-proxy.yaml
+    target:
+      kind: AuthorizationPolicy
+      name: allow-ingress-to-transparent-proxy
+  - path: patches/vaultAuth.yaml
+    target:
+      kind: VaultAuth
+      name: lisa-transparent-proxy-vault-auth
+labels:
+  - pairs:
+      env: dev
+
+images:
+  - name: lisa-transparent-proxy-image:template
+    newName: 537124944113.dkr.ecr.eu-west-2.amazonaws.com/lisa/transparent-proxy
+    newTag: "1736292556"
+
+
