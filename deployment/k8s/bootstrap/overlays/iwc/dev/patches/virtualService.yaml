@@ -1,0 +1,31 @@
+- op: replace
+  path: /spec/hosts/0
+  value: lisa-iwc.dev.ndtp.co.uk
+
+- op: replace
+  path: /spec/gateways/0
+  value: lisa-iwc/lisa-ingress-gateway
+
+- op: replace
+  path: /spec/http/1/headers/response/add/Content-Security-Policy
+  value: "connect-src 'self' data: blob: wss://lisa-iwc.dev.ndtp.co.uk ws://lisa-iwc.dev.ndtp.co.uk https://lisa-iwc.dev.ndtp.co.uk https://landing.dev.ndtp.co.uk https://access.dev.ndtp.co.uk https://api.os.uk https://nominatim.openstreetmap.org; worker-src 'self' blob: https://landing.dev.ndtp.co.uk https://access.dev.ndtp.co.uk; child-src 'self' blob: https://landing.dev.ndtp.co.uk https://access.dev.ndtp.co.uk; img-src 'self' data: blob:"
+
+- op: replace
+  path: /spec/http/1/headers/response/add/Access-Control-Allow-Origin
+  value: "lisa-iwc.dev.ndtp.co.uk"
+
+- op: replace
+  path: /spec/http/2/headers/response/add/Content-Security-Policy
+  value: "connect-src 'self' data: blob: wss://lisa-iwc.dev.ndtp.co.uk ws://lisa-iwc.dev.ndtp.co.uk https://lisa-iwc.dev.ndtp.co.uk https://landing.dev.ndtp.co.uk https://access.dev.ndtp.co.uk https://api.os.uk https://nominatim.openstreetmap.org; worker-src 'self' blob: https://landing.dev.ndtp.co.uk https://access.dev.ndtp.co.uk; child-src 'self' blob: https://landing.dev.ndtp.co.uk https://access.dev.ndtp.co.uk; img-src 'self' data: blob:"
+
+- op: replace
+  path: /spec/http/2/headers/response/add/Access-Control-Allow-Origin
+  value: "lisa-iwc.dev.ndtp.co.uk"
+
+- op: replace
+  path: /spec/http/3/headers/response/add/Content-Security-Policy
+  value: "connect-src 'self' data: blob: wss://lisa-iwc.dev.ndtp.co.uk ws://lisa-iwc.dev.ndtp.co.uk https://lisa-iwc.dev.ndtp.co.uk https://landing.dev.ndtp.co.uk https://access.dev.ndtp.co.uk https://api.os.uk https://nominatim.openstreetmap.org; worker-src 'self' blob: https://landing.dev.ndtp.co.uk https://access.dev.ndtp.co.uk; child-src 'self' blob: https://landing.dev.ndtp.co.uk https://access.dev.ndtp.co.uk; img-src 'self' data: blob:"
+
+- op: replace
+  path: /spec/http/3/headers/response/add/Access-Control-Allow-Origin
+  value: "lisa-iwc.dev.ndtp.co.uk"
