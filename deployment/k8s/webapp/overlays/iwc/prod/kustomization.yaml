@@ -1,0 +1,26 @@
+resources:
+  - ../../../base
+
+namespace: lisa-iwc
+
+patches:
+  - path: patches/service-account.yaml
+    target:
+      kind: ServiceAccount
+      name: lisa-sa
+  - path: patches/allow-ingress-authorization-policy.yaml
+    target:
+      kind: AuthorizationPolicy
+      name: allow-ingress-to-lisa-webapp
+
+
+labels:
+  - pairs:
+      env: prod
+
+images:
+  - name: lisa-image:template
+    newName: 940482405940.dkr.ecr.eu-west-2.amazonaws.com/lisa/webapp
+    newTag: '1739959086'
+
+
