@@ -71,7 +71,7 @@ const MapComponent = ({ id, marker, setMarker }: Props) => {
         id={id}
         ref={mapRef}
         initialViewState={INITIAL_VIEW_STATE}
-        mapStyle={MAP_STYLE}
+        mapStyle={MAP_STYLE as unknown as string}
         attributionControl={false}
         onClick={onDropPin}
         maxZoom={17}

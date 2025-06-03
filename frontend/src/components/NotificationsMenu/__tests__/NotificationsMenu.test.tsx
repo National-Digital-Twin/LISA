@@ -105,7 +105,7 @@ describe('NotificationsMenu Component', () => {
 
   it('displays "No notifications" when notification list is empty', () => {
     // Override the useNotifications hook to return an empty array for notifications
-    // eslint-disable-next-line @typescript-eslint/no-var-requires,global-require
+    // eslint-disable-next-line @typescript-eslint/no-require-imports,global-require
     const { useNotifications } = require('../../../hooks');
     useNotifications.mockImplementation(() => ({
       notifications: [],
@@ -122,7 +122,7 @@ describe('NotificationsMenu Component', () => {
 
   it('calls invalidate when new notifications are received (via useMessaging hook)', () => {
     // Override useMessaging to simulate new notifications being received
-    // eslint-disable-next-line @typescript-eslint/no-var-requires,global-require
+    // eslint-disable-next-line @typescript-eslint/no-require-imports,global-require
     const useMessaging = require('../../../hooks/useMessaging');
     useMessaging.mockReturnValue(true);
 

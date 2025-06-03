@@ -48,7 +48,7 @@ module.exports = {
     ],
     'import/extensions': ['error', 'ignorePackages', { '': 'never', ts: 'never', tsx: 'never' }],
     'import/no-extraneous-dependencies': ['error', { devDependencies: true }],
-    'import/no-unresolved': ['error', { ignore: ['\\.svg\\?react$'] }],
+    'import/no-unresolved': ['error', { ignore: ['\\.svg\\?react$', 'react-map-gl'] }],
     'no-unused-vars': 'off',
     'no-shadow' : 'off',
     '@typescript-eslint/no-unused-vars': ['error'],
