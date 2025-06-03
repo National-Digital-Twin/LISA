@@ -3,7 +3,7 @@
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
 // Global imports
-import { MouseEvent, useEffect, useMemo, useState } from 'react';
+import { MouseEvent, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Box, Button, InputAdornment, Popover, TextField, Typography } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
@@ -35,13 +35,14 @@ const Logbook = () => {
   const { logEntries } = useLogEntries(incidentId);
   const { createLogEntry } = useCreateLogEntry(incidentId);
   const { user } = useAuth();
-  const [adding, setAdding] = useState<boolean>();
+  const [adding, setAdding] = useState<boolean>(false);
   const [sortAsc, setSortAsc] = useState<boolean>(false);
   const [appliedFilters, setAppliedFilters] = useState<FilterType>({ author: [], category: [] });
   const [searchText, setSearchText] = useState<string>('');
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const openFilters = Boolean(anchorEl);
   const { isMobile } = useResponsive();
+  const navigate = useNavigate();
 
   const handleOpenFilters = (event: MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(anchorEl ? null : event.currentTarget);
@@ -65,14 +66,10 @@ const Logbook = () => {
   }, [adding, logEntries]);
 
   useLogEntriesUpdates(incidentId ?? '');
-  const navigate = useNavigate();
 
   const incident = query?.data?.find((inc) => inc.id === incidentId);
-  const filterAuthors = useMemo(
-    () => Format.incident.authors(user.current, logEntries),
-    [logEntries, user]
-  );
-  const filterCategories = useMemo(() => Format.incident.categories(logEntries), [logEntries]);
+  const filterAuthors = Format.incident.authors(user.current, logEntries);
+  const filterCategories = Format.incident.categories(logEntries);
 
   const onSort = (evt: MouseEvent<HTMLButtonElement>) => {
     evt.preventDefault();
@@ -100,7 +97,6 @@ const Logbook = () => {
 
   const onMentionClick = (mention: Mentionable) => {
     if (mention.type === 'User') {
-      // eslint-disable-next-line no-console
       console.log(`Clicked on user ${mention.id}:`, mention.label);
       navigate('#');
     } else if (mention.type === 'File') {
@@ -315,18 +311,25 @@ const Logbook = () => {
                 </Box>
               )}
             </Box>
-            <EntryList
-              entries={(logEntries ?? []).filter(filterEntries)}
-              sortAsc={sortAsc}
-              onContentClick={onContentClick}
-              onMentionClick={onMentionClick}
-            />
+            {(logEntries ?? []).filter(filterEntries).length > 0 ? (
+              <EntryList
+                entries={(logEntries ?? []).filter(filterEntries)}
+                sortAsc={sortAsc}
+                onContentClick={onContentClick}
+                onMentionClick={onMentionClick}
+              />
+            ) : (
+              <Box p={2} bgcolor="background.default">
+                <Typography variant="h6">No results found.</Typography>
+                <Typography mt={1}>Try adjusting your filters to see more log entries.</Typography>
+              </Box>
+            )}
           </>
         ) : (
-          <>
-            <h3>There are currently no log entries.</h3>
-            <hr />
-          </>
+          <Box p={2} bgcolor="background.default">
+            <Typography variant="h6">No logs found.</Typography>
+            <Typography mt={1}>There are currently no log entries.</Typography>
+          </Box>
         )}
       </Box>
     </PageWrapper>

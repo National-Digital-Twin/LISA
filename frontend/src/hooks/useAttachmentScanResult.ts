@@ -31,7 +31,7 @@ export const useAttachmentScanResult = (initialScanResult: string, key: string) 
             timeout = setTimeout(pollScanResult, 2000);
           }
         }
-      } catch (error) {
+      } catch {
         setScanResult('PENDING');
       }
     };

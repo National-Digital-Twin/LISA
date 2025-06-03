@@ -3,8 +3,7 @@
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
 import { MouseEvent, useEffect, useState } from 'react';
-import { Box, Typography } from '@mui/material';
-import Grid from '@mui/material/Grid2';
+import { Box, Typography, Grid2 as Grid } from '@mui/material';
 
 import { type Field } from 'common/Field';
 import { type Incident } from 'common/Incident';

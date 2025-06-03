@@ -4,8 +4,7 @@
 
 import { ReactElement } from 'react';
 import { Link } from 'react-router-dom';
-import Grid from '@mui/material/Grid2';
-import { Typography } from '@mui/material';
+import { Typography, Grid2 as Grid } from '@mui/material';
 import SellIcon from '@mui/icons-material/Sell';
 import PersonIcon from '@mui/icons-material/Person';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';

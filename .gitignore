@@ -1,8 +1,5 @@
 # node_modules
-node_modules/*
-frontend/node_modules/*
-frontend/qa/node_modules/*
-common/node_modules/*
+node_modules
 
 # build
 **/dist/*
@@ -35,3 +32,4 @@ frontend/qa/*.deb
 frontend/coverage
 
 .npmrc
+*.patch

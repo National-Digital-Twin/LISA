@@ -6,8 +6,7 @@
 import parse from 'html-react-parser';
 import { useEffect, useMemo, useState, useCallback, useRef } from 'react';
 import { useReactMediaRecorder } from 'react-media-recorder';
-import { Box, InputLabel, Typography } from '@mui/material';
-import Grid from '@mui/material/Grid2';
+import { Box, InputLabel, Typography, Grid2 as Grid } from '@mui/material';
 
 // Local imports
 import { type Field } from 'common/Field';
@@ -123,7 +122,7 @@ export default function FormContent({
   // Start or stop recording based on the `recording` state
   useEffect(() => {
     if (recording) {
-      hasStoppedRef.current = false
+      hasStoppedRef.current = false;
       startRecording();
     } else {
       stopRecording();

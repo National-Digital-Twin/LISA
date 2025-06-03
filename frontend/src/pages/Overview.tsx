@@ -5,8 +5,7 @@
 // Global imports
 import { useState } from 'react';
 import { useParams } from 'react-router-dom';
-import Grid from '@mui/material/Grid2';
-import { Box, Button, Typography } from '@mui/material';
+import { Box, Button, Typography, Grid2 as Grid } from '@mui/material';
 
 // Local imports
 import { type IncidentStage } from 'common/IncidentStage';
