@@ -15,6 +15,12 @@ This project follows **Semantic Versioning (SemVer)** ([semver.org](https://semv
 
  ---
 
+ ## [0.93.0] - 2025-06-03
+
+ ### Features
+
+ - Add deployment resources for IWC LISA Instance
+
  ## [0.92.1] - [0.92.7] - 2025-05-16
 
  ### Bugfix

@@ -1,0 +1,38 @@
+resources:
+  - ../../../base
+
+namespace: lisa-iwc
+
+
+configMapGenerator:
+  - name: lisa-backend-configs
+    envs:
+      - params.env
+
+patches:
+  - path: patches/service-account.yaml
+    target:
+      kind: ServiceAccount
+      name: lisa-backend-sa
+  - path: patches/allow-ingress.yaml
+    target:
+      kind: AuthorizationPolicy
+  - path: patches/vaultStaticSecret.yaml
+    target:
+      kind: VaultStaticSecret
+      name: lisa-backend-static-secret
+  - path: patches/vaultAuth.yaml
+    target:
+      kind: VaultAuth
+      name: lisa-backend-vault-auth
+
+labels:
+  - pairs:
+      env: staging
+
+images:
+  - name: lisa-backend-image:template
+    newName: 503561419905.dkr.ecr.eu-west-2.amazonaws.com/lisa/api
+    newTag: '1739959086'
+
+
