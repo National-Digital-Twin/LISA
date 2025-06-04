@@ -14,7 +14,7 @@ spec:
             principals : ["cluster.local/ns/istio-ingress/sa/istio-ingress"]
       to:
         - operation:
-            methods: ["GET","POST","PUT"]
+            methods: ["GET","PATCH", "POST","PUT"]
       when:
         - key: request.auth.claims[groups]
           values:
