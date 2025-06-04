@@ -8,7 +8,7 @@
 
 - op: replace
   path: /spec/http/1/headers/response/add/Content-Security-Policy
-  value: "connect-src 'self' data: blob: wss://lisa-iwc.staging.ndtp.co.uk ws://lisa-iwc.staging.ndtp.co.uk https://lisa-iwc.staging.ndtp.co.uk https://landing.app.ndtp.co.uk https://access.app.ndtp.co.uk https://api.os.uk https://nominatim.openstreetmap.org; worker-src 'self' blob:; child-src 'self' blob:; img-src 'self' data: blob:"
+  value: "connect-src 'self' data: blob: wss://lisa-iwc.staging.ndtp.co.uk ws://lisa-iwc.staging.ndtp.co.uk https://lisa-iwc.staging.ndtp.co.uk https://landing.staging.ndtp.co.uk https://access.staging.ndtp.co.uk https://api.os.uk https://nominatim.openstreetmap.org; worker-src 'self' blob:; child-src 'self' blob:; img-src 'self' data: blob:"
 
 - op: replace
   path: /spec/http/1/headers/response/add/Access-Control-Allow-Origin
@@ -16,7 +16,7 @@
 
 - op: replace
   path: /spec/http/2/headers/response/add/Content-Security-Policy
-  value: "connect-src 'self' data: blob: wss://lisa-iwc.staging.ndtp.co.uk ws://lisa-iwc.staging.ndtp.co.uk https://lisa-iwc.staging.ndtp.co.uk https://landing.app.ndtp.co.uk https://access.app.ndtp.co.uk https://api.os.uk https://nominatim.openstreetmap.org; worker-src 'self' blob:; child-src 'self' blob:; img-src 'self' data: blob:"
+  value: "connect-src 'self' data: blob: wss://lisa-iwc.staging.ndtp.co.uk ws://lisa-iwc.staging.ndtp.co.uk https://lisa-iwc.staging.ndtp.co.uk https://landing.staging.ndtp.co.uk https://access.staging.ndtp.co.uk https://api.os.uk https://nominatim.openstreetmap.org; worker-src 'self' blob:; child-src 'self' blob:; img-src 'self' data: blob:"
 
 - op: replace
   path: /spec/http/2/headers/response/add/Access-Control-Allow-Origin
@@ -24,7 +24,7 @@
 
 - op: replace
   path: /spec/http/3/headers/response/add/Content-Security-Policy
-  value: "connect-src 'self' data: blob: wss://lisa-iwc.staging.ndtp.co.uk ws://lisa-iwc.staging.ndtp.co.uk https://lisa-iwc.staging.ndtp.co.uk https://landing.app.ndtp.co.uk https://access.app.ndtp.co.uk https://api.os.uk https://nominatim.openstreetmap.org; worker-src 'self' blob:; child-src 'self' blob:; img-src 'self' data: blob:"
+  value: "connect-src 'self' data: blob: wss://lisa-iwc.staging.ndtp.co.uk ws://lisa-iwc.staging.ndtp.co.uk https://lisa-iwc.staging.ndtp.co.uk https://landing.staging.ndtp.co.uk https://access.staging.ndtp.co.uk https://api.os.uk https://nominatim.openstreetmap.org; worker-src 'self' blob:; child-src 'self' blob:; img-src 'self' data: blob:"
 
 - op: replace
   path: /spec/http/3/headers/response/add/Access-Control-Allow-Origin
