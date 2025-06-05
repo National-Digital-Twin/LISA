@@ -1,3 +1,6 @@
 # Going to accept the following vulnerabilities in the base debian image as we are not immediately vulnerable to these and a fix is eventually going to be pushed up to the main nginx container.
 # TODO: update nginx image when fix is published
 CVE-2025-4598
+
+# Accepted until patched formally in an official NGINX image on the basis the solution does not process AVIF images.
+CVE-2025-48174
