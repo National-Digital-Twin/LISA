@@ -1,8 +1,8 @@
 # MULTITENANCY  
 
-**Repository:**  `LISA`
+**Repository:**  `LISA`  
 **Description:**  `This repository contains both the frontend and backend of LISA, along with a transparent proxy that will mask sensitive requests. LISA (Local Incident Services Application) is a web-based crisis and incident management application designed to support real-time decision-making, structured logging, and cross-agency collaboration during emergency incidents.`
-**SPDX-License-Identifier:**  `Apache-2.0 AND OGL-UK-3.0 `
+**SPDX-License-Identifier:**  `Apache-2.0 AND OGL-UK-3.0`
 
 ## Overview
 
