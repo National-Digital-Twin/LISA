@@ -1,12 +1,14 @@
 # MULTITENANCY  
 
-**Repository:**  `LISA`
-**Description:**  `This repository contains both the frontend and backend of LISA, along with a transparent proxy that will mask sensitive requests. LISA (Local Incident Services Application) is a web-based crisis and incident management application designed to support real-time decision-making, structured logging, and cross-agency collaboration during emergency incidents.`
-**SPDX-License-Identifier:**  `Apache-2.0 AND OGL-UK-3.0 `
+**Repository:**  `LISA`  
+**Description:**  `This repository contains both the frontend and backend of LISA, along with a transparent proxy that will mask sensitive requests. LISA (Local Incident Services Application) is a web-based crisis and incident management application designed to support real-time decision-making, structured logging, and cross-agency collaboration during emergency incidents.`  
+**SPDX-License-Identifier:**  `Apache-2.0 AND OGL-UK-3.0`
 
 ## Overview
 
-Multitenancy is supported in L!SA via the method of namespace isolation. The full stack of LISA (Frontend, Backend, Transparent Proxy and IA Node) is replicated in a different namespace and routed to via a different subdomain and access role on the user. This document covers how to configure a new instance of L!SA on an existing environment - namely DEV. For other environments, simply replace references to DEV with the appropriate environment (ie. Staging, Prod etc)
+Multitenancy is supported in L!SA via the method of namespace isolation. The full stack of LISA (Frontend, Backend, Transparent Proxy and IA Node) as shown in the diagram below, gets replicated in a different namespace and routed to via a different subdomain and access role on the user. This document covers how to configure a new instance of L!SA on an existing environment - namely DEV. For other environments, simply replace references to DEV with the appropriate environment (ie. Staging, Prod etc)
+
+![L!SA Tenant Resources](diagrams/c4/LISA.svg)
 
 ## Repository Changes
 
