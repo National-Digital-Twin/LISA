@@ -2,7 +2,6 @@
 // © Crown Copyright 2025. This work has been developed by the National Digital Twin Programme
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
-
 import React, { useState } from 'react';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -34,7 +33,7 @@ interface SortableFieldRowProps {
   field: Field;
   index: number;
   error?: string;
-  onChange:  <K extends keyof Field>(index: number, key: K, value: Field[K]) => void;
+  onChange: <K extends keyof Field>(index: number, key: K, value: Field[K]) => void;
   onDelete: (index: number) => void;
 }
 
@@ -46,14 +45,9 @@ const SortableFieldRow: React.FC<SortableFieldRowProps> = ({
   onChange,
   onDelete
 }) => {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging
-  } = useSortable({ id });
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id
+  });
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -89,13 +83,7 @@ const SortableFieldRow: React.FC<SortableFieldRowProps> = ({
 
   return (
     <>
-      <Grid
-        container
-        spacing={2}
-        alignItems="flex-start"
-        ref={setNodeRef}
-        style={style}
-      >
+      <Grid container spacing={2} alignItems="flex-start" ref={setNodeRef} style={style}>
         <Grid sx={{ flexGrow: 1 }}>
           <TextField
             label={field.type === 'label' ? 'Text' : 'Label'}
@@ -110,14 +98,14 @@ const SortableFieldRow: React.FC<SortableFieldRowProps> = ({
                 backgroundColor: 'white',
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
-                whiteSpace: 'nowrap',
+                whiteSpace: 'nowrap'
               }
             }}
             // The below property is deprecated but maxLength support not yet added to slotProps.input
             inputProps={
               field.type !== 'label'
                 ? {
-                  maxLength: 30,
+                  maxLength: 500
                 }
                 : undefined
             }
@@ -132,7 +120,7 @@ const SortableFieldRow: React.FC<SortableFieldRowProps> = ({
             onChange={(e) => onChange(index, 'type', e.target.value as Field['type'])}
             sx={{
               '& .MuiInputBase-input': {
-                backgroundColor: 'white',
+                backgroundColor: 'white'
               }
             }}
           >
@@ -148,7 +136,7 @@ const SortableFieldRow: React.FC<SortableFieldRowProps> = ({
         {field.type === 'select' && (
           <Grid>
             <IconButton onClick={openDialog}>
-              <ListIcon/>
+              <ListIcon />
             </IconButton>
           </Grid>
         )}
