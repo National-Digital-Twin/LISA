@@ -31,6 +31,11 @@ export function getMentions(content: LogEntryContent): Mentionable[] {
     }
   }
   const parsedContent = JSON.parse(content.json);
+
+  if (!Object.keys(parsedContent).length) {
+    return [];
+  }
+
   findMentions(parsedContent.root);
   return mentions;
 }
