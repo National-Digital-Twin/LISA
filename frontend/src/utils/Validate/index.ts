@@ -153,15 +153,15 @@ const Validate = {
     }
 
     if (!task.name) {
-      taskValidationErrors.push({ fieldId: 'name', error: 'Name required' });
+      taskValidationErrors.push({ fieldId: 'task_name', error: 'Name required' });
     }
 
     if (!task.assignee) {
-      taskValidationErrors.push({ fieldId: 'assignee', error: 'Assignee required' });
+      taskValidationErrors.push({ fieldId: 'task_assignee', error: 'Assignee required' });
     }
 
     if (!task.description) {
-      taskValidationErrors.push({ fieldId: 'description', error: 'Description required' });
+      taskValidationErrors.push({ fieldId: 'task_description', error: 'Description required' });
     }
 
     return taskValidationErrors;

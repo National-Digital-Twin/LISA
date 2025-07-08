@@ -13,19 +13,19 @@ export const INCLUDE_FIELD: Field = {
 };
 
 export const NAME_FIELD: Field = {
-  id: 'name',
+  id: 'task_name',
   type: 'Input',
   label: 'Task name'
 };
 
 export const ASSIGNEE_FIELD: Field = {
-  id: 'assignee',
+  id: 'task_assignee',
   type: 'Select',
   label: 'Assign to'
 };
 
 export const DESC_FIELD: Field = {
-  id: 'description',
+  id: 'task_description',
   type: 'TextArea',
   label: 'Task description',
   multiline: true,
