@@ -27,6 +27,7 @@ import {
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { Field } from './types';
+import { MAX_FORM_LABEL_LENGTH } from '../constants';
 
 interface SortableFieldRowProps {
   id: string;
@@ -105,7 +106,7 @@ const SortableFieldRow: React.FC<SortableFieldRowProps> = ({
             inputProps={
               field.type !== 'label'
                 ? {
-                  maxLength: 500
+                  maxLength: MAX_FORM_LABEL_LENGTH
                 }
                 : undefined
             }
