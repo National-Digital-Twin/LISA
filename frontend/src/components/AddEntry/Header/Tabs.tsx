@@ -24,8 +24,14 @@ export default function TabNavigation({
     () => !!validationErrors.find((e) => e.fieldId.startsWith('location')),
     [validationErrors]
   );
+
+  const hasTaskError = useMemo(
+    () => !!validationErrors.find((e) => e.fieldId.startsWith('task')),
+    [validationErrors]
+  );
+
   const hasFormError = useMemo(
-    () => !!validationErrors.find((e) => !e.fieldId.startsWith('location')),
+    () => !!validationErrors.find((e) => !e.fieldId.startsWith('location') && !e.fieldId.startsWith('task')),
     [validationErrors]
   );
 
@@ -47,7 +53,7 @@ export default function TabNavigation({
     { label: 'Location', value: TABS.LOCATION, error: hasLocationError },
     { label: `Files (${fileCount})`, value: TABS.FILES },
     { label: 'Sketch', value: TABS.SKETCH },
-    { label: 'Task', value: TABS.TASK }
+    { label: 'Task', value: TABS.TASK, error: hasTaskError }
   ];
 
   useEffect(() => {
@@ -100,12 +106,6 @@ export default function TabNavigation({
           }}
           sx={{
             minWidth: 'max-content',
-            '& .Mui-selected': {
-              color: showValidationErrors ? 'error.main' : 'primary.main'
-            },
-            '& .MuiTabs-indicator': {
-              backgroundColor: showValidationErrors ? 'error.main' : 'primary.main'
-            }
           }}
         >
           {tabMeta.map(({ label, value, error }) => (
@@ -113,7 +113,15 @@ export default function TabNavigation({
               key={value}
               id={`log-tab-${value}`}
               aria-controls={`log-tab-${value}`}
-              sx={{ textTransform: 'none', fontWeight: 'bold', flexShrink: 0 }}
+              sx={{
+                textTransform: 'none',
+                fontWeight: 'bold',
+                flexShrink: 0,
+                color: error ? 'error.main' : 'inherit',
+                '&.Mui-selected': {
+                  color: error ? 'error.main' : 'primary.main',
+                },
+              }}
               component={Link}
               to={value}
               label={error ? `${label}*` : label}

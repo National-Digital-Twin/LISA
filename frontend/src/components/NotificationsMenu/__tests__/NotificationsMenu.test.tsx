@@ -2,10 +2,17 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { type Notification } from 'common/Notification';
 import { NotificationsMenu } from '../index';
 import { providersRender } from '../../../test-utils';
+import * as hooks from '../../../hooks';
+import useMessaging from '../../../hooks/useMessaging';
 
 // Create mock implementations for the custom hooks used in NotificationsMenu
 const mockInvalidate = jest.fn();
 const mockMutate = jest.fn();
+
+jest.mock('../../../hooks', () => ({
+  ...jest.requireActual('../../../hooks'),
+  useNotifications: jest.fn()
+}));
 
 const sampleNotifications: Notification[] = [
   {
@@ -62,7 +69,7 @@ jest.mock('../../../hooks/useMessaging', () => jest.fn(() => false));
 jest.mock('../handlers', () => ({
   __esModule: true,
   default: jest.fn((notification) => ({
-    title: notification.recipient, // using recipient as the title
+    title: notification.recipient,
     Content: <span>{notification.recipient}</span>,
     clickHandler: jest.fn()
   }))
@@ -105,9 +112,7 @@ describe('NotificationsMenu Component', () => {
 
   it('displays "No notifications" when notification list is empty', () => {
     // Override the useNotifications hook to return an empty array for notifications
-    // eslint-disable-next-line @typescript-eslint/no-require-imports,global-require
-    const { useNotifications } = require('../../../hooks');
-    useNotifications.mockImplementation(() => ({
+    (hooks.useNotifications as jest.Mock).mockImplementation(() => ({
       notifications: [],
       invalidate: mockInvalidate
     }));
@@ -122,9 +127,7 @@ describe('NotificationsMenu Component', () => {
 
   it('calls invalidate when new notifications are received (via useMessaging hook)', () => {
     // Override useMessaging to simulate new notifications being received
-    // eslint-disable-next-line @typescript-eslint/no-require-imports,global-require
-    const useMessaging = require('../../../hooks/useMessaging');
-    useMessaging.mockReturnValue(true);
+    (useMessaging as jest.Mock).mockReturnValue(true);
 
     render(<NotificationsMenu />);
     // The hook effect should call invalidate if new notifications have arrived.
