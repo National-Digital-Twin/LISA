@@ -13,6 +13,7 @@ import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client
 // Local imports
 import App from './App';
 import { FetchError, post } from './api';
+import { logout } from './utils/auth';
 
 // Styles
 import './App.scss';
@@ -22,21 +23,17 @@ const persister = createSyncStoragePersister({
   storage: window.localStorage
 });
 
+const onError = async (error: FetchError) => {
+  if (error.status === 302) {
+    document.location = error.redirectUrl!;
+  } else if (error.status === 401 || error.status === 403) {
+    await logout();
+  }
+};
+
 const queryClient = new QueryClient({
-  queryCache: new QueryCache({
-    onError: (error: FetchError) => {
-      if (error.status === 302) {
-        document.location = error.redirectUrl!;
-      }
-    }
-  }),
-  mutationCache: new MutationCache({
-    onError: (error: FetchError) => {
-      if (error.status === 302) {
-        document.location = error.redirectUrl!;
-      }
-    }
-  })
+  queryCache: new QueryCache({ onError }),
+  mutationCache: new MutationCache({ onError })
 });
 
 queryClient.setMutationDefaults(['createIncident'], {
