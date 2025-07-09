@@ -10,6 +10,9 @@ import { QueryClient, useMutation, useQuery, useQueryClient } from '@tanstack/re
 import { type Incident } from 'common/Incident';
 import { FetchError, get, post } from '../api';
 import { createSequenceNumber } from '../utils/Form/sequence';
+import { addIncident } from '../offline/db/dbOperations';
+import { isOnline } from './utils/network';
+import { OfflineIncident } from '../offline/types/OfflineIncident';
 
 export const useIncidents = () =>
   useQuery<Incident[], FetchError>({
@@ -35,35 +38,69 @@ async function poll(
 
 export const useCreateIncident = () => {
   const queryClient = useQueryClient();
+
   const { mutate, isPending } = useMutation<
     Incident,
     Error,
     Omit<Incident, 'id' | 'reportedBy'>,
     {
       previousIncidents?: Incident[];
+      newIncidentId: string;
     }
   >({
-    mutationFn: (incident) => post('/incident', incident),
+    mutationFn: async (incident) => {
+      const newIncidentId = uuidV4();
+
+      const newIncidentOffline: OfflineIncident  = {
+        ...incident,
+        id: newIncidentId,
+        offline: true,
+        createdAt: new Date().toISOString(),
+        expiresAt: '',
+      };
+
+      if (!isOnline()) {
+        await addIncident(newIncidentOffline);
+        return newIncidentOffline;
+      }
+
+      const createdIncident = await post<Incident>('/incident', {
+        ...incident,
+        id: newIncidentId,
+      });
+
+      return createdIncident;
+    },
+
     onSuccess: async (data) => {
       setTimeout(() => poll(data.id, queryClient, 1), 1000);
     },
+
     onError: async (_error, _variables, context) => {
       // rollback to previously captured incidents from the context.
-      queryClient.setQueryData<Incident[]>(['incidents'], context!.previousIncidents);
+      if (context?.previousIncidents) {
+        queryClient.setQueryData<Incident[]>(['incidents'], context.previousIncidents);
+      }
     },
     // optimistic update
     onMutate: async (newIncident) => {
       await queryClient.cancelQueries({ queryKey: ['incidents'] });
+
       const previousIncidents = queryClient.getQueryData<Incident[]>(['incidents']);
-      const newIncidentOffline = {
+      const newIncidentId = uuidV4();
+
+      const newIncidentOffline: Incident = {
         ...newIncident,
-        id: uuidV4(),
-        offline: true
+        id: newIncidentId,
+        offline: true,
+        createdAt: new Date().toISOString(),
       };
+
       queryClient.setQueryData<Incident[]>(['incidents'], (oldData) =>
-        oldData!.concat(newIncidentOffline)
+        oldData ? oldData.concat(newIncidentOffline) : [newIncidentOffline]
       );
-      return { previousIncidents };
+
+      return { previousIncidents, newIncidentId };
     }
   });
 
@@ -72,6 +109,7 @@ export const useCreateIncident = () => {
 
 export const useChangeIncidentStage = () => {
   const queryClient = useQueryClient();
+
   const createIncident = useMutation<Incident, Error, Incident>({
     mutationFn: (incident) =>
       post(`/incident/${incident.id}/stage`, {
@@ -79,12 +117,14 @@ export const useChangeIncidentStage = () => {
         stage: incident.stage,
         sequence: createSequenceNumber()
       }),
+
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['incidents'] });
     },
-    // optimistic update
+
     onMutate: async (updatedIncident) => {
       await queryClient.cancelQueries({ queryKey: ['incidents'] });
+
       const previousIncidents = queryClient.getQueryData<Incident[]>(['incidents']);
       if (previousIncidents) {
         queryClient.setQueryData<Incident[]>(
@@ -94,6 +134,7 @@ export const useChangeIncidentStage = () => {
           )
         );
       }
+
       return { previousIncidents };
     }
   });

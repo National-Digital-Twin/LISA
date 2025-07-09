@@ -11,14 +11,19 @@ import { onlineManager, useQueryClient } from '@tanstack/react-query';
 // Local imports
 import AppWrapper from './components/AppWrapper';
 import Toasts from './components/Toasts';
+import { clearExpiredEntities } from './offline/db/indexedDb';
+import { useOfflineSync } from './hooks/useOfflineSync';
 
 // Styles
 import './App.scss';
 import MessagingProvider from './providers/MessagingProvider';
 import ToastProvider from './providers/ToastProvider';
-import AuthContextProvider from './providers/AuthContextProvider';
+import AuthContextProvider from './providers/AuthContextProvider'
 
 const App = () => {
+
+  useOfflineSync();
+
   useRegisterSW({
     immediate: true
   });
@@ -36,6 +41,10 @@ const App = () => {
       }),
     [queryClient]
   );
+
+  useEffect(() => {
+    clearExpiredEntities();
+  }, []);
 
   return (
     <AuthContextProvider>
