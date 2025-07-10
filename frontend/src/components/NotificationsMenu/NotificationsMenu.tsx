@@ -22,18 +22,14 @@ export default function NotificationsMenu() {
   const { notifications, invalidate } = useNotifications();
   const readNotification = useReadNotification();
   const { user } = useAuth();
-  const hasNewNotifications = useMessaging('NewNotification', user?.current?.username);
+  const [hasNewNotifications, resetNewNotifications] = useMessaging('NewNotification', user?.current?.username);
 
   useEffect(() => {
-    /* eslint-disable-next-line no-console */
-    console.log('responding to hasNewNotifications')
-    if (!hasNewNotifications) {
-      /* eslint-disable-next-line no-console */
-      console.log('hasNewNotifications false')
-      // return;
+    if (hasNewNotifications) {
+      invalidate();
+      resetNewNotifications();
     }
-    invalidate();
-  }, [hasNewNotifications, invalidate]);
+  }, [hasNewNotifications, invalidate, resetNewNotifications]);
 
   const onItemClick = (notification: Notification) => {
     setAnchorEl(null);

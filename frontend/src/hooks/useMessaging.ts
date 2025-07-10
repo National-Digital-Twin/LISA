@@ -11,13 +11,11 @@ import { MessagingContext } from '../context/MessagingContext';
 import { MessagingContextType } from '../utils/types';
 
 
-export default function useMessaging(topic: MessagingTopicType, subject?: string) {
+export default function useMessaging(topic: MessagingTopicType, subject?: string): [boolean, () => void] {
   const { subscribe, unsubscribe } = useContext(MessagingContext) as MessagingContextType;
   const [hasMessage, setHasMessage] = useState<boolean>(false);
 
   const callback = useCallback(() => {
-    /* eslint-disable-next-line no-console */
-    console.log('hasMessage true');
     setHasMessage(true);
   }, []);
 
@@ -32,11 +30,5 @@ export default function useMessaging(topic: MessagingTopicType, subject?: string
     };
   }, [topic, subject, subscribe, unsubscribe, callback]);
 
-  useEffect(() => {
-    /* eslint-disable-next-line no-console */
-    console.log('hasMessage false');
-    setHasMessage(false);
-  }, [hasMessage]);
-
-  return hasMessage;
+  return [hasMessage, () => setHasMessage(false)];
 }
