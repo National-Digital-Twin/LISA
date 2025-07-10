@@ -25,7 +25,11 @@ export default function NotificationsMenu() {
   const hasNewNotifications = useMessaging('NewNotification', user?.current?.username);
 
   useEffect(() => {
+    /* eslint-disable-next-line no-console */
+    console.log('responding to hasNewNotifications')
     if (!hasNewNotifications) {
+      /* eslint-disable-next-line no-console */
+      console.log('hasNewNotifications false')
       // return;
     }
     invalidate();
