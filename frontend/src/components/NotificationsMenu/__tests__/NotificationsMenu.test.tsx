@@ -63,7 +63,7 @@ jest.mock('../../../hooks', () => ({
   }))
 }));
 
-jest.mock('../../../hooks/useMessaging', () => jest.fn(() => false));
+jest.mock('../../../hooks/useMessaging', () => jest.fn(() => [false, jest.fn()]));
 
 // Mock getHandler used by NotificationItem so that the title and content come from the notification
 jest.mock('../handlers', () => ({
@@ -127,7 +127,7 @@ describe('NotificationsMenu Component', () => {
 
   it('calls invalidate when new notifications are received (via useMessaging hook)', () => {
     // Override useMessaging to simulate new notifications being received
-    (useMessaging as jest.Mock).mockReturnValue(true);
+    (useMessaging as jest.Mock).mockReturnValue([true, jest.fn()]);
 
     render(<NotificationsMenu />);
     // The hook effect should call invalidate if new notifications have arrived.

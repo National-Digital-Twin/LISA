@@ -72,11 +72,10 @@ describe('useMessaging', () => {
     // Render the hook and capture its result so we can inspect the state.
     const { result, unmount } = renderHook(() => useMessaging(topic, subject), { wrapper });
 
-    // Initially, since no message has been received, it should return false.
-    expect(result.current).toBe(false);
+    let [initialHasMessage, resetHasMessage] = result.current;
 
-    // At this point our subscribeMock should have captured the callback.
-    expect(capturedCallback).toBeDefined();
+    // Initially, since no message has been received, it should return false.
+    expect(initialHasMessage).toBe(false);
 
     // Simulate receiving a message using act.
     act(() => {
@@ -85,7 +84,23 @@ describe('useMessaging', () => {
 
     // Wait for the state update using waitFor.
     await waitFor(() => {
-      expect(result.current).toBe(false);
+      const [hasMessageAfterCallback] = result.current;
+      expect(hasMessageAfterCallback).toBe(true);
+    });
+
+    // After state update, check reset function
+    const [, reset] = result.current;
+    expect(typeof reset).toBe('function');
+
+    // Call reset function
+    act(() => {
+      reset();
+    });
+
+    // Wait for state to reset back to false
+    await waitFor(() => {
+      const [hasMessageAfterReset] = result.current;
+      expect(hasMessageAfterReset).toBe(false);
     });
 
     unmount();
