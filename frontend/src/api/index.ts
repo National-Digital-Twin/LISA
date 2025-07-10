@@ -16,6 +16,19 @@ const getHeaders = async (isFormData: boolean = false) => {
   if (!isFormData) {
     headers['Content-Type'] = 'application/json';
   }
+
+  const localAuth = localStorage.getItem('local-auth');
+  if (localAuth) {
+    try {
+      const parsed = JSON.parse(localAuth);
+      const { userId, userEmail, userName } = parsed;
+      headers['X-Auth-User-Id'] = userId;
+      headers['X-Auth-User-Email'] = userEmail;
+      headers['X-Auth-User-Name'] = userName;
+    } catch {
+      localStorage.removeItem('local-auth');
+    }
+  }
   return headers;
 };
 
