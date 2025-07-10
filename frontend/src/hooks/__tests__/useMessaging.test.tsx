@@ -72,7 +72,7 @@ describe('useMessaging', () => {
     // Render the hook and capture its result so we can inspect the state.
     const { result, unmount } = renderHook(() => useMessaging(topic, subject), { wrapper });
 
-    let [initialHasMessage, resetHasMessage] = result.current;
+    const [initialHasMessage, resetHasMessage] = result.current;
 
     // Initially, since no message has been received, it should return false.
     expect(initialHasMessage).toBe(false);
