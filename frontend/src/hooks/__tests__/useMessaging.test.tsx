@@ -88,13 +88,9 @@ describe('useMessaging', () => {
       expect(hasMessageAfterCallback).toBe(true);
     });
 
-    // After state update, check reset function
-    const [, reset] = result.current;
-    expect(typeof reset).toBe('function');
-
     // Call reset function
     act(() => {
-      reset();
+      resetHasMessage();
     });
 
     // Wait for state to reset back to false
