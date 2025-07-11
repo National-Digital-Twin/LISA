@@ -103,8 +103,8 @@ export default function TabNavigation({
             const hasError = errors.length > 0;
             const tooltipText = (
               <>
-                {errors.map((e, i) => (
-                  <React.Fragment key={i}>
+                {errors.map((e) => (
+                  <React.Fragment key={e.fieldId}>
                     {e.error}
                     <br />
                   </React.Fragment>
