@@ -4,7 +4,7 @@
 
 // Local imports
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Tabs, Tab, Box } from '@mui/material';
+import { Tabs, Tab, Box, Tooltip } from '@mui/material';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { type ValidationError } from '../../../utils/types';
 import { TABS } from '../constants';
@@ -20,20 +20,11 @@ export default function TabNavigation({
   validationErrors,
   showValidationErrors
 }: Readonly<Props>) {
-  const hasLocationError = useMemo(
-    () => !!validationErrors.find((e) => e.fieldId.startsWith('location')),
-    [validationErrors]
-  );
-
-  const hasTaskError = useMemo(
-    () => !!validationErrors.find((e) => e.fieldId.startsWith('task')),
-    [validationErrors]
-  );
-
-  const hasFormError = useMemo(
-    () => !!validationErrors.find((e) => !e.fieldId.startsWith('location') && !e.fieldId.startsWith('task')),
-    [validationErrors]
-  );
+  const tabErrors = useMemo(() => ({
+    form: validationErrors.filter(e => !e.fieldId.startsWith('location') && !e.fieldId.startsWith('task')),
+    location: validationErrors.filter(e => e.fieldId.startsWith('location')),
+    task: validationErrors.filter(e => e.fieldId.startsWith('task')),
+  }), [validationErrors]);
 
   const { hash } = useLocation();
   const { isMobile } = useResponsive();
@@ -49,11 +40,11 @@ export default function TabNavigation({
 
 
   const tabMeta = [
-    { label: 'Form', value: TABS.FORM, error: hasFormError },
-    { label: 'Location', value: TABS.LOCATION, error: hasLocationError },
-    { label: `Files (${fileCount})`, value: TABS.FILES },
-    { label: 'Sketch', value: TABS.SKETCH },
-    { label: 'Task', value: TABS.TASK, error: hasTaskError }
+    { label: 'Form', value: TABS.FORM, errors: tabErrors.form },
+    { label: 'Location', value: TABS.LOCATION, errors: tabErrors.location },
+    { label: `Files (${fileCount})`, value: TABS.FILES, errors: [] },
+    { label: 'Sketch', value: TABS.SKETCH, errors: [] },
+    { label: 'Task', value: TABS.TASK, errors: tabErrors.task }
   ];
 
   useEffect(() => {
@@ -108,26 +99,50 @@ export default function TabNavigation({
             minWidth: 'max-content',
           }}
         >
-          {tabMeta.map(({ label, value, error }) => (
-            <Tab
-              key={value}
-              id={`log-tab-${value}`}
-              aria-controls={`log-tab-${value}`}
-              sx={{
-                textTransform: 'none',
-                fontWeight: 'bold',
-                flexShrink: 0,
-                color: error ? 'error.main' : 'inherit',
-                '&.Mui-selected': {
-                  color: error ? 'error.main' : 'primary.main',
-                },
-              }}
-              component={Link}
-              to={value}
-              label={error ? `${label}*` : label}
-              value={value}
-            />
-          ))}
+          {tabMeta.map(({ label, value, errors }) => {
+            const hasError = errors.length > 0;
+            const tooltipText = (
+              <>
+                {errors.map((e, i) => (
+                  <React.Fragment key={i}>
+                    {e.error}
+                    <br />
+                  </React.Fragment>
+                ))}
+              </>
+            );
+
+            const tabComponent = (
+              <Tab
+                key={value}
+                id={`log-tab-${value}`}
+                aria-controls={`log-tab-${value}`}
+                sx={{
+                  textTransform: 'none',
+                  fontWeight: 'bold',
+                  flexShrink: 0,
+                  color: hasError ? 'error.main' : 'inherit',
+                  '&.Mui-selected': {
+                    color: hasError ? 'error.main' : 'primary.main',
+                  },
+                }}
+                component={Link}
+                to={value}
+                value={value}
+                label={
+                  hasError ? (
+                    <Tooltip title={tooltipText} placement="top" arrow>
+                      <span>{`${label}*`}</span>
+                    </Tooltip>
+                  ) : (
+                    label
+                  )
+                }
+              />
+            );
+
+            return tabComponent;
+          })}
         </Tabs>
       </Box>
 
