@@ -10,7 +10,7 @@ import { useToast } from './useToasts';
 
 export function useLogEntriesUpdates(incidentId: string) {
   const queryClient = useQueryClient();
-  const hasNewLogEntries = useMessaging('NewLogEntries', incidentId);
+  const [hasNewLogEntries, resetNewLogEntries] = useMessaging('NewLogEntries', incidentId);
   const postToast = useToast();
 
   useEffect(() => {
@@ -39,5 +39,7 @@ export function useLogEntriesUpdates(incidentId: string) {
       ),
       isDismissable: true
     });
-  }, [incidentId, queryClient, postToast, hasNewLogEntries]);
+
+    resetNewLogEntries();
+  }, [incidentId, queryClient, postToast, hasNewLogEntries, resetNewLogEntries]);
 }
