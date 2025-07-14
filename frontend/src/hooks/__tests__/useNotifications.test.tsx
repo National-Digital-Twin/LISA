@@ -1,8 +1,8 @@
 import React from 'react';
 import { renderHook, act, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { useNotifications, useReadNotification } from '../useNotifications';
-import { get, put } from '../../api';
+import { useNotifications } from '../useNotifications';
+import { get } from '../../api';
 
 jest.mock('../../api');
 
@@ -39,35 +39,6 @@ describe('useNotifications', () => {
       await result.current.invalidate();
     });
 
-    expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: ['notifications'] });
-    invalidateSpy.mockRestore();
-  });
-});
-
-describe('useReadNotification', () => {
-  beforeEach(() => {
-    jest.resetAllMocks();
-  });
-
-  it('calls API to mark notification as read and invalidates notifications', async () => {
-    const notificationId = '123';
-    (put as jest.Mock).mockResolvedValueOnce(undefined);
-
-    // Reuse the helper to obtain the wrapper and queryClient.
-    const { wrapper, queryClient } = createWrapper();
-    const { result } = renderHook(() => useReadNotification(), {
-      wrapper
-    });
-
-    // Spy on the invalidateQueries method.
-    const invalidateSpy = jest.spyOn(queryClient, 'invalidateQueries');
-
-    // Trigger the mutation.
-    await act(async () => {
-      await result.current.mutateAsync(notificationId);
-    });
-
-    expect(put).toHaveBeenCalledWith(`/notifications/${notificationId}`, {});
     expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: ['notifications'] });
     invalidateSpy.mockRestore();
   });

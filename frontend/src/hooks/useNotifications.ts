@@ -55,7 +55,7 @@ export async function pollForTotalNotifications(
   }
 }
 
-async function pollForReadNotifications(
+export async function pollForReadNotifications(
   notificationId: string,
   attemptNumber: number,
   queryClient: QueryClient
@@ -102,8 +102,8 @@ export function useReadNotification() {
 
         if (notificationToBeUpdated) {
           const updatedNotifications: Notification[] = [
-            ...otherNotifications,
-            { ...notificationToBeUpdated, read: true }
+            { ...notificationToBeUpdated, read: true },
+            ...otherNotifications
           ];
           queryClient.setQueryData<Notification[]>(['notifications'], updatedNotifications);
         }
