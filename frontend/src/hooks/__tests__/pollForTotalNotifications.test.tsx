@@ -7,7 +7,7 @@ jest.mock('../../api', () => ({
 }));
 
 describe('pollForTotalNotifications', () => {
-  const notificationToBeRead: Notification = {
+  const newNotification: Notification = {
     id: 'notification-1',
     dateTime: '1970-01-01',
     recipient: 'local.user',
@@ -47,7 +47,7 @@ describe('pollForTotalNotifications', () => {
 
   it('calls the invalidate function when the amount of notifications are increased', async () => {
     const invalidate: () => void = jest.fn();
-    (get as jest.Mock).mockResolvedValueOnce([notificationToBeRead, ...previousNotifications]);
+    (get as jest.Mock).mockResolvedValueOnce([newNotification, ...previousNotifications]);
 
     await pollForTotalNotifications(1, 1, invalidate, jest.fn());
 
@@ -66,7 +66,7 @@ describe('pollForTotalNotifications', () => {
   });
 
   it('calls the reset new notifications function when the amount of notifications are increased', async () => {
-    (get as jest.Mock).mockResolvedValueOnce([notificationToBeRead, ...previousNotifications]);
+    (get as jest.Mock).mockResolvedValueOnce([newNotification, ...previousNotifications]);
     const resetNewNotifications: () => void = jest.fn();
 
     await pollForTotalNotifications(1, 1, jest.fn(), resetNewNotifications);
