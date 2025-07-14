@@ -9,19 +9,16 @@ import useMessaging from './useMessaging';
 import { useToast } from './useToasts';
 
 export function useLogEntriesUpdates(incidentId: string) {
+  const pollingInterval = 10;
   const queryClient = useQueryClient();
   const [hasNewLogEntries, resetNewLogEntries] = useMessaging('NewLogEntries', incidentId);
   const postToast = useToast();
-  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const pollingIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
-    if (!hasNewLogEntries) return;
+    if (!incidentId) return;
 
-    if (timerRef.current) {
-      clearTimeout(timerRef.current);
-    }
-
-    const handler = async () => {
+    const pollForNewEntries = async () => {
       await queryClient.invalidateQueries({
         queryKey: [`incident/${incidentId}/logEntries`]
       });
@@ -30,15 +27,31 @@ export function useLogEntriesUpdates(incidentId: string) {
       });
     };
 
-    timerRef.current = setTimeout(async () => {
-      await handler();
+    pollingIntervalRef.current = setInterval(pollForNewEntries, pollingInterval * 1000);
 
-      postToast({
-        type: 'Info',
-        id: `NEW_LOG_ENTRIES:${incidentId}`,
-        content: <span>New log entries have been added to this incident.</span>,
-        isDismissable: true
-      });
-    }, 1000);
+    // eslint-disable-next-line consistent-return
+    return () => {
+      if (pollingIntervalRef.current) {
+        clearInterval(pollingIntervalRef.current);
+        pollingIntervalRef.current = null;
+      }
+    };
+  }, [incidentId, queryClient]);
+
+  useEffect(() => {
+    if (!hasNewLogEntries) return;
+
+    postToast({
+      type: 'Info',
+      id: `NEW_LOG_ENTRIES:${incidentId}`,
+      content: (
+        <span>
+          New log entries have been detected. Checking for updates every {pollingInterval} seconds...
+        </span>
+      ),
+      isDismissable: true
+    });
+
+    resetNewLogEntries();
   }, [incidentId, queryClient, postToast, hasNewLogEntries, resetNewLogEntries]);
 }
