@@ -47,7 +47,11 @@ export default class PubSubManager {
     }
 
     if (actionResult.value === 'Subscribe') {
-      if (!this.subscribers.find((sub) => sub.id === id && sub.topic === topic && sub.subject === subject)) {
+      if (
+        !this.subscribers.find(
+          (sub) => sub.id === id && sub.topic === topic && sub.subject === subject
+        )
+      ) {
         this.subscribers.push({
           id,
           subject,
@@ -57,8 +61,13 @@ export default class PubSubManager {
         });
       }
     } else {
-      this.subscribers = this.subscribers
-        .filter((sub) => sub.id !== id && sub.topic !== topic && sub.subject !== subject);
+      this.subscribers = this.subscribers.filter((sub) => {
+        if (sub.id === id) {
+          return sub.topic !== topic && sub.subject !== subject;
+        }
+
+        return true;
+      });
     }
   }
 
