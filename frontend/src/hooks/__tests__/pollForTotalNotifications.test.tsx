@@ -1,6 +1,6 @@
 import { get } from '../../api';
+import { newNotificationGenerator, previousTestNotifications } from '../notificationMocks';
 import { pollForTotalNotifications } from '../useNotifications';
-import { newNotificationGenerator, previousTestNotifications } from './notificationMocks';
 
 jest.mock('../../api', () => ({
   get: jest.fn()

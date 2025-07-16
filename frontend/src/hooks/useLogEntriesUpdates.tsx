@@ -3,40 +3,58 @@
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
 import { useQueryClient } from '@tanstack/react-query';
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 
 import useMessaging from './useMessaging';
 import { useToast } from './useToasts';
 
+const POLLING_INTERVAL_SECONDS = 10;
+const POLLING_INTERVAL_MS = POLLING_INTERVAL_SECONDS * 1000;
+
+const pollingResetRef = { current: null as (() => void) | null };
+
 export function useLogEntriesUpdates(incidentId: string) {
-  const pollingInterval = 10;
   const queryClient = useQueryClient();
   const [hasNewLogEntries, resetNewLogEntries] = useMessaging('NewLogEntries', incidentId);
   const postToast = useToast();
   const pollingIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
+  const invalidateQueries = useCallback(async () => {
+    await queryClient.invalidateQueries({
+      queryKey: [`incident/${incidentId}/logEntries`]
+    });
+    await queryClient.invalidateQueries({
+      queryKey: [`incident/${incidentId}/attachments`]
+    });
+  }, [queryClient, incidentId]);
+
+  const clearPolling = useCallback(() => {
+    if (pollingIntervalRef.current) {
+      clearInterval(pollingIntervalRef.current);
+      pollingIntervalRef.current = null;
+    }
+  }, []);
+
+  const startPolling = useCallback(() => {
+    clearPolling();
+    pollingIntervalRef.current = setInterval(invalidateQueries, POLLING_INTERVAL_MS);
+  }, [clearPolling, invalidateQueries]);
+
+  const resetPollingInterval = useCallback(() => {
+    clearPolling();
+    pollingIntervalRef.current = setInterval(invalidateQueries, POLLING_INTERVAL_MS);
+  }, [clearPolling, invalidateQueries]);
+
   useEffect(() => {
     if (!incidentId) return;
-
-    const pollForNewEntries = async () => {
-      await queryClient.invalidateQueries({
-        queryKey: [`incident/${incidentId}/logEntries`]
-      });
-      await queryClient.invalidateQueries({
-        queryKey: [`incident/${incidentId}/attachments`]
-      });
-    };
-
-    pollingIntervalRef.current = setInterval(pollForNewEntries, pollingInterval * 1000);
-
+    startPolling();
+    pollingResetRef.current = resetPollingInterval;
     // eslint-disable-next-line consistent-return
     return () => {
-      if (pollingIntervalRef.current) {
-        clearInterval(pollingIntervalRef.current);
-        pollingIntervalRef.current = null;
-      }
+      clearPolling();
+      pollingResetRef.current = null;
     };
-  }, [incidentId, queryClient]);
+  }, [incidentId, startPolling, resetPollingInterval, clearPolling]);
 
   useEffect(() => {
     if (!hasNewLogEntries) return;
@@ -46,12 +64,19 @@ export function useLogEntriesUpdates(incidentId: string) {
       id: `NEW_LOG_ENTRIES:${incidentId}`,
       content: (
         <span>
-          New log entries have been detected. Checking for updates every {pollingInterval} seconds...
+          New log entries have been detected. Checking for updates every {POLLING_INTERVAL_SECONDS}{' '}
+          seconds...
         </span>
       ),
       isDismissable: true
     });
 
     resetNewLogEntries();
-  }, [incidentId, queryClient, postToast, hasNewLogEntries, resetNewLogEntries]);
+  }, [incidentId, postToast, hasNewLogEntries, resetNewLogEntries]);
 }
+
+export const resetPolling = () => {
+  if (pollingResetRef.current) {
+    pollingResetRef.current();
+  }
+};
