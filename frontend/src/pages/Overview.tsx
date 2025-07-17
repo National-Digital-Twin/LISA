@@ -48,7 +48,7 @@ const Overview = () => {
   };
 
   const onSetInformation = (logEntry: Partial<LogEntry>) => {
-    createLogEntry({ newLogEntry: logEntry as LogEntry });
+    createLogEntry({ logEntry: logEntry as LogEntry });
     setSettingInformation(false);
   };
 
