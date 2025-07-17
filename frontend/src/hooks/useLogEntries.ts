@@ -25,6 +25,7 @@ export const useLogEntries = (incidentId?: string) => {
 type CreateLogEntryParams = {
   logEntry: Omit<LogEntry, 'id' | 'author'>;
   attachments?: File[];
+  optimisticEntryId?: string;
 };
 
 export const useCreateLogEntry = (incidentId?: string) => {
@@ -37,19 +38,28 @@ export const useCreateLogEntry = (incidentId?: string) => {
     { previousEntries?: LogEntry[] }
   >({
     mutationFn: async ({ logEntry, attachments }) => {
+      const optimisticEntryId = queryClient.getQueryData<string>(['optimisticEntryId']);
+      
+      const logEntryWithId = optimisticEntryId 
+        ? { ...logEntry, id: optimisticEntryId }
+        : logEntry;
+
       if (attachments?.length) {
         const formData = new FormData();
-        attachments.forEach((file) => formData.append(file.name, file));
-        formData.append('logEntry', JSON.stringify(logEntry));
+        attachments.forEach((file: File) => formData.append(file.name, file));
+        formData.append('logEntry', JSON.stringify(logEntryWithId));
         return post(`/incident/${incidentId}/logEntry`, formData);
       }
-      return post(`/incident/${incidentId}/logEntry`, logEntry);
+      return post(`/incident/${incidentId}/logEntry`, logEntryWithId);
     },
     onMutate: async ({ logEntry }) => {
       resetPolling();
       await queryClient.cancelQueries({ queryKey: [`incident/${incidentId}/logEntries`] });
 
-      const { previousEntries } = addOptimisticLogEntry(incidentId!, logEntry);
+      const { optimisticEntry, previousEntries } = addOptimisticLogEntry(incidentId!, logEntry);
+      
+      queryClient.setQueryData(['optimisticEntryId'], optimisticEntry.id);
+      
       return { previousEntries };
     },
     onError: (_error, _variables, context) => {
@@ -57,6 +67,9 @@ export const useCreateLogEntry = (incidentId?: string) => {
         [`incident/${incidentId}/logEntries`],
         context!.previousEntries
       );
+    },
+    onSuccess: () => {
+      queryClient.removeQueries({ queryKey: ['optimisticEntryId'] });
     }
   });
 

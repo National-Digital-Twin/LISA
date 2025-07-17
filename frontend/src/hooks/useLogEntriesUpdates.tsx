@@ -28,11 +28,27 @@ export function useLogEntriesUpdates(incidentId: string) {
   const pollingIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const invalidateQueries = useCallback(async () => {
+    const currentData = queryClient.getQueryData<LogEntry[]>([
+      `incident/${incidentId}/logEntries`
+    ]);
+    const optimisticEntries = currentData?.filter(entry => entry.offline) ?? [];
+
     await queryClient.invalidateQueries({
       queryKey: [`incident/${incidentId}/logEntries`]
     });
     await queryClient.invalidateQueries({
       queryKey: [`incident/${incidentId}/attachments`]
+    });
+
+    queryClient.setQueryData<LogEntry[]>([`incident/${incidentId}/logEntries`], (serverData) => {
+      if (!serverData) return optimisticEntries;
+      
+      const serverEntryIds = new Set(serverData.map(entry => entry.id));
+      const remainingOptimisticEntries = optimisticEntries.filter(
+        entry => !serverEntryIds.has(entry.id)
+      );
+      
+      return [...serverData, ...remainingOptimisticEntries];
     });
   }, [queryClient, incidentId]);
 
@@ -86,10 +102,12 @@ export function useLogEntriesUpdates(incidentId: string) {
     ]);
 
     const optimisticEntries = Array.from(optimisticEntriesRef.current.entries());
-    optimisticEntries.forEach(([optimisticId]) => {
-      const confirmedEntry = currentEntries?.find((entry) => entry.id !== optimisticId);
+    optimisticEntries.forEach(([optimisticId, optimisticEntry]) => {
+      const hasMatchingServerEntry = currentEntries?.some(serverEntry => 
+        serverEntry.id === optimisticEntry.id
+      );
 
-      if (confirmedEntry) {
+      if (hasMatchingServerEntry) {
         optimisticEntriesRef.current.delete(optimisticId);
       }
     });
