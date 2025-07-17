@@ -15,6 +15,7 @@ export const previousTestNotifications: Notification[] = [
     }
   }
 ];
+
 export const newNotificationGenerator: (notificationId: string) => Notification = (
   notificationId
 ) => ({

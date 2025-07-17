@@ -1,7 +1,7 @@
 import { QueryClient } from '@tanstack/react-query';
 import { get } from '../../api';
+import { newNotificationGenerator, previousTestNotifications } from './notification.mock';
 import { pollForReadNotifications } from '../useNotifications';
-import { newNotificationGenerator, previousTestNotifications } from './notificationMocks';
 
 jest.mock('../../api', () => ({
   get: jest.fn()
