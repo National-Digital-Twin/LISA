@@ -74,7 +74,7 @@ export const useCreateFormInstance = (incidentId? : string) => {
       const logEntry = {
         ...createLogEntryFromSubmittedForm(formTitle, formId, incidentId)
       } as Omit<LogEntry, 'id' | 'author'>;
-      createLogEntry({ newLogEntry: logEntry });
+      createLogEntry({ logEntry });
     }
   });
 };
