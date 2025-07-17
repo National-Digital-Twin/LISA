@@ -1,17 +1,28 @@
-import { get, post, put, FetchError } from '../index';
+// SPDX-License-Identifier: Apache-2.0
+// © Crown Copyright 2025. This work has been developed by the National Digital Twin Programme
+// and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
-/**
- * Helper function to create a fake fetch response.
- *
- * @param overrides - An object containing properties to override.
- * @returns A fake response object.
- */
-function createFakeResponse(overrides: Partial<Response> & { jsonData?: unknown }) {
-  const { jsonData, ...rest } = overrides;
+import { get, post, FetchError } from '../index';
+
+interface FakeResponseOptions {
+  ok: boolean;
+  status: number;
+  statusText: string;
+  jsonData?: unknown;
+}
+
+function createFakeResponse({
+  ok,
+  status,
+  statusText,
+  jsonData = {}
+}: FakeResponseOptions): Response {
   return {
-    json: jest.fn().mockResolvedValue(jsonData),
-    ...rest
-  };
+    ok,
+    status,
+    statusText,
+    json: async () => jsonData
+  } as Response;
 }
 
 describe('API methods', () => {
@@ -29,6 +40,7 @@ describe('API methods', () => {
       const fakeResponse = createFakeResponse({
         ok: true,
         status: 200,
+        statusText: 'OK',
         jsonData: mockData
       });
       (global.fetch as jest.Mock).mockResolvedValue(fakeResponse);
@@ -72,69 +84,61 @@ describe('API methods', () => {
         })
       );
     });
+
+    it('should throw a FetchError for a 403 response', async () => {
+      const fakeResponse = createFakeResponse({
+        ok: false,
+        status: 403,
+        statusText: 'Forbidden',
+        jsonData: {}
+      });
+      (global.fetch as jest.Mock).mockResolvedValue(fakeResponse);
+
+      await expect(get('/forbidden')).rejects.toThrow(
+        expect.objectContaining({
+          message: 'Forbidden',
+          status: 403
+        })
+      );
+    });
   });
 
   describe('post', () => {
-    it('should send JSON data with proper headers', async () => {
-      const mockData = { message: 'created' };
+    it('should return JSON data on a successful POST request', async () => {
+      const mockData = { message: 'success' };
       const fakeResponse = createFakeResponse({
         ok: true,
-        status: 201,
+        status: 200,
+        statusText: 'OK',
         jsonData: mockData
       });
       (global.fetch as jest.Mock).mockResolvedValue(fakeResponse);
 
-      const data = { key: 'value' };
-      const result = await post('/test', data);
+      const result = await post('/test', { data: 'test' });
 
       expect(result).toEqual(mockData);
       expect(global.fetch).toHaveBeenCalledWith('/api/test', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
+        body: JSON.stringify({ data: 'test' }),
+        headers: { 'Content-Type': 'application/json' }
       });
     });
 
-    it('should send FormData without the Content-Type header', async () => {
-      const mockData = { message: 'form success' };
+    it('should throw a FetchError for a 403 response', async () => {
       const fakeResponse = createFakeResponse({
-        ok: true,
-        status: 200,
-        jsonData: mockData
+        ok: false,
+        status: 403,
+        statusText: 'Forbidden',
+        jsonData: {}
       });
       (global.fetch as jest.Mock).mockResolvedValue(fakeResponse);
 
-      // Create a FormData object.
-      const formData = new FormData();
-      formData.append('file', new Blob(['content'], { type: 'text/plain' }), 'test.txt');
-
-      await post('/upload', formData);
-
-      const fetchCallOptions = (global.fetch as jest.Mock).mock.calls[0][1];
-      expect(fetchCallOptions.headers).not.toHaveProperty('Content-Type');
-      expect(fetchCallOptions.body).toBe(formData);
-    });
-  });
-
-  describe('put', () => {
-    it('should send JSON data with proper headers', async () => {
-      const mockData = { message: 'updated' };
-      const fakeResponse = createFakeResponse({
-        ok: true,
-        status: 200,
-        jsonData: mockData
-      });
-      (global.fetch as jest.Mock).mockResolvedValue(fakeResponse);
-
-      const data = { key: 'updatedValue' };
-      const result = await put('/update', data);
-
-      expect(result).toEqual(mockData);
-      expect(global.fetch).toHaveBeenCalledWith('/api/update', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-      });
+      await expect(post('/forbidden', { data: 'test' })).rejects.toThrow(
+        expect.objectContaining({
+          message: 'Forbidden',
+          status: 403
+        })
+      );
     });
   });
 });

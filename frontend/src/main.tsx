@@ -27,6 +27,10 @@ const queryClient = new QueryClient({
     onError: (error: FetchError) => {
       if (error.status === 302) {
         document.location = error.redirectUrl!;
+      } else if (error.status === 403) {
+        localStorage.clear();
+        sessionStorage.clear();
+        document.location = '/';
       }
     }
   }),
@@ -34,6 +38,10 @@ const queryClient = new QueryClient({
     onError: (error: FetchError) => {
       if (error.status === 302) {
         document.location = error.redirectUrl!;
+      } else if (error.status === 403) {
+        localStorage.clear();
+        sessionStorage.clear();
+        document.location = '/';
       }
     }
   })
