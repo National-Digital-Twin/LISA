@@ -6,7 +6,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { LogEntry } from 'common/LogEntry';
 import { FetchError, get, post } from '../api';
-import { addOptimisticLogEntry, resetPolling } from './useLogEntriesUpdates';
+import { addOptimisticLogEntry, resetPolling, optimisticEntriesRef } from './useLogEntriesUpdates';
 
 export const useLogEntries = (incidentId?: string) => {
   const {
@@ -25,7 +25,6 @@ export const useLogEntries = (incidentId?: string) => {
 type CreateLogEntryParams = {
   logEntry: Omit<LogEntry, 'id' | 'author'>;
   attachments?: File[];
-  optimisticEntryId?: string;
 };
 
 export const useCreateLogEntry = (incidentId?: string) => {
@@ -35,22 +34,16 @@ export const useCreateLogEntry = (incidentId?: string) => {
     LogEntry,
     Error,
     CreateLogEntryParams,
-    { previousEntries?: LogEntry[] }
+    { previousEntries?: LogEntry[]; optimisticEntryId?: string }
   >({
     mutationFn: async ({ logEntry, attachments }) => {
-      const optimisticEntryId = queryClient.getQueryData<string>(['optimisticEntryId']);
-      
-      const logEntryWithId = optimisticEntryId 
-        ? { ...logEntry, id: optimisticEntryId }
-        : logEntry;
-
       if (attachments?.length) {
         const formData = new FormData();
         attachments.forEach((file: File) => formData.append(file.name, file));
-        formData.append('logEntry', JSON.stringify(logEntryWithId));
+        formData.append('logEntry', JSON.stringify(logEntry));
         return post(`/incident/${incidentId}/logEntry`, formData);
       }
-      return post(`/incident/${incidentId}/logEntry`, logEntryWithId);
+      return post(`/incident/${incidentId}/logEntry`, logEntry);
     },
     onMutate: async ({ logEntry }) => {
       resetPolling();
@@ -58,18 +51,21 @@ export const useCreateLogEntry = (incidentId?: string) => {
 
       const { optimisticEntry, previousEntries } = addOptimisticLogEntry(incidentId!, logEntry);
       
-      queryClient.setQueryData(['optimisticEntryId'], optimisticEntry.id);
-      
-      return { previousEntries };
+      return { previousEntries, optimisticEntryId: optimisticEntry.id };
+    },
+    onSuccess: (data, _variables, context) => {
+      if (context?.optimisticEntryId && data.id) {
+        const optimisticEntry = optimisticEntriesRef.current.get(context.optimisticEntryId);
+        if (optimisticEntry) {
+          optimisticEntry.serverId = data.id;
+        }
+      }
     },
     onError: (_error, _variables, context) => {
       queryClient.setQueryData<LogEntry[]>(
         [`incident/${incidentId}/logEntries`],
         context!.previousEntries
       );
-    },
-    onSuccess: () => {
-      queryClient.removeQueries({ queryKey: ['optimisticEntryId'] });
     }
   });
 

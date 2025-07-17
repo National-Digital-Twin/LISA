@@ -15,7 +15,7 @@ const POLLING_INTERVAL_SECONDS = 10;
 const POLLING_INTERVAL_MS = POLLING_INTERVAL_SECONDS * 1000;
 
 const pollingResetRef = { current: null as (() => void) | null };
-const optimisticEntriesRef = { current: new Map<string, LogEntry>() };
+export const optimisticEntriesRef = { current: new Map<string, LogEntry>() };
 let globalQueryClient: QueryClient | null = null;
 
 type OptimisticEntryParams = Omit<LogEntry, 'id' | 'author'>;
@@ -28,10 +28,8 @@ export function useLogEntriesUpdates(incidentId: string) {
   const pollingIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const invalidateQueries = useCallback(async () => {
-    const currentData = queryClient.getQueryData<LogEntry[]>([
-      `incident/${incidentId}/logEntries`
-    ]);
-    const optimisticEntries = currentData?.filter(entry => entry.offline) ?? [];
+    const currentData = queryClient.getQueryData<LogEntry[]>([`incident/${incidentId}/logEntries`]);
+    const optimisticEntries = currentData?.filter((entry) => entry.offline) ?? [];
 
     await queryClient.invalidateQueries({
       queryKey: [`incident/${incidentId}/logEntries`]
@@ -42,12 +40,12 @@ export function useLogEntriesUpdates(incidentId: string) {
 
     queryClient.setQueryData<LogEntry[]>([`incident/${incidentId}/logEntries`], (serverData) => {
       if (!serverData) return optimisticEntries;
-      
-      const serverEntryIds = new Set(serverData.map(entry => entry.id));
+
+      const serverEntryIds = new Set(serverData.map((entry) => entry.id));
       const remainingOptimisticEntries = optimisticEntries.filter(
-        entry => !serverEntryIds.has(entry.id)
+        (entry) => !serverEntryIds.has(entry.id)
       );
-      
+
       return [...serverData, ...remainingOptimisticEntries];
     });
   }, [queryClient, incidentId]);
@@ -103,12 +101,38 @@ export function useLogEntriesUpdates(incidentId: string) {
 
     const optimisticEntries = Array.from(optimisticEntriesRef.current.entries());
     optimisticEntries.forEach(([optimisticId, optimisticEntry]) => {
-      const hasMatchingServerEntry = currentEntries?.some(serverEntry => 
-        serverEntry.id === optimisticEntry.id
-      );
+      const hasMatchingServerEntry = currentEntries?.some((serverEntry) => {
+        if (serverEntry.id === optimisticEntry.id) {
+          return true;
+        }
+
+        if (optimisticEntry.serverId && serverEntry.id === optimisticEntry.serverId) {
+          return true;
+        }
+
+        return false;
+      });
 
       if (hasMatchingServerEntry) {
         optimisticEntriesRef.current.delete(optimisticId);
+
+        queryClient.setQueryData<LogEntry[]>([`incident/${incidentId}/logEntries`], (oldData) => {
+          if (!oldData) return oldData;
+          return oldData.filter((entry) => entry.id !== optimisticId);
+        });
+      }
+    });
+
+    const fiveMinutesAgo = Date.now() - 5 * 60 * 1000;
+    optimisticEntries.forEach(([optimisticId, optimisticEntry]) => {
+      const entryTime = new Date(optimisticEntry.dateTime).getTime();
+      if (entryTime < fiveMinutesAgo) {
+        optimisticEntriesRef.current.delete(optimisticId);
+
+        queryClient.setQueryData<LogEntry[]>([`incident/${incidentId}/logEntries`], (oldData) => {
+          if (!oldData) return oldData;
+          return oldData.filter((entry) => entry.id !== optimisticId);
+        });
       }
     });
   }, [queryClient, incidentId]);
