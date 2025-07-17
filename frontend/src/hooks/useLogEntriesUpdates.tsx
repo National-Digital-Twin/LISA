@@ -54,10 +54,8 @@ export function useLogEntriesUpdates(incidentId: string) {
         throw new Error('incidentId is required for optimistic entry creation');
       }
 
-      const safeIncidentId = incidentId!;
-
       const previousEntries = queryClient.getQueryData<LogEntry[]>([
-        `incident/${safeIncidentId}/logEntries`
+        `incident/${incidentId}/logEntries`
       ]);
 
       const offlineCount = previousEntries?.filter((entry: LogEntry) => entry.offline).length ?? 0;
@@ -69,7 +67,7 @@ export function useLogEntriesUpdates(incidentId: string) {
       };
 
       optimisticEntriesRef.current.set(optimisticEntry.id!, optimisticEntry);
-      queryClient.setQueryData<LogEntry[]>([`incident/${safeIncidentId}/logEntries`], (oldData) =>
+      queryClient.setQueryData<LogEntry[]>([`incident/${incidentId}/logEntries`], (oldData) =>
         oldData!.concat(optimisticEntry)
       );
 
@@ -87,23 +85,12 @@ export function useLogEntriesUpdates(incidentId: string) {
       `incident/${incidentId}/logEntries`
     ]);
 
-    if (!currentEntries) return;
-
     const optimisticEntries = Array.from(optimisticEntriesRef.current.entries());
-    optimisticEntries.forEach(([optimisticId, optimisticEntry]) => {
-      const confirmedEntry = currentEntries.find(
-        (entry) =>
-          entry.id !== optimisticId &&
-          entry.sequence === optimisticEntry.sequence &&
-          entry.content === optimisticEntry.content &&
-          entry.dateTime === optimisticEntry.dateTime
-      );
+    optimisticEntries.forEach(([optimisticId]) => {
+      const confirmedEntry = currentEntries?.find((entry) => entry.id !== optimisticId);
 
       if (confirmedEntry) {
         optimisticEntriesRef.current.delete(optimisticId);
-        queryClient.setQueryData<LogEntry[]>([`incident/${incidentId}/logEntries`], (oldData) =>
-          oldData!.filter((entry) => entry.id !== optimisticId)
-        );
       }
     });
   }, [queryClient, incidentId]);

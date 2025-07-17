@@ -2,7 +2,7 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import { type Notification } from 'common/Notification';
 import { get } from '../../../api';
 import * as hooks from '../../../hooks';
-import { newNotificationGenerator } from '../../../hooks/notificationMocks';
+import { newNotificationGenerator } from '../../../hooks/__tests__/notification.mock';
 import useMessaging from '../../../hooks/useMessaging';
 import { providersRender } from '../../../test-utils';
 import { NotificationsMenu } from '../index';
