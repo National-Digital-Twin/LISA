@@ -82,16 +82,6 @@ updates:
           - "*"
 
   - package-ecosystem: "docker"
-    directory: "/"
-    target-branch: "develop"
-    schedule:
-      interval: "weekly"
-    groups:
-      docker-dependencies:
-        patterns:
-          - "*"
-
-  - package-ecosystem: "docker"
     directory: "/deployment/sag"
     target-branch: "develop"
     schedule:
