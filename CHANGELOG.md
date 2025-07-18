@@ -15,11 +15,10 @@ This project follows **Semantic Versioning (SemVer)** ([semver.org](https://semv
 
  ---
 
- ## [0.93.1] - 2025-06-10
+ ## [0.93.2] - 2025-07-18
 
  ### Features
 
- - Add C4 diagrams to multitenancy documentation
  - Form validation improvements
 
  ### Fixes
@@ -27,6 +26,12 @@ This project follows **Semantic Versioning (SemVer)** ([semver.org](https://semv
  - Remove assignee link
  - Fix for saving of Form Templates and Risk Assessment
  - Log entries no longer require refresh to appear
+
+ ## [0.93.1] - 2025-06-10
+
+ ### Features
+
+ - Add C4 diagrams to multitenancy documentation
 
  ## [0.93.0] - 2025-06-03
 
