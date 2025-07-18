@@ -11,5 +11,6 @@ export default {
   },
   setupFilesAfterEnv: ['<rootDir>/src/setupTests.ts'],
   coveragePathIgnorePatterns: ['/node_modules/', '\\.svg$'],
-  coverageReporters: ['text', 'text-summary', 'lcov', 'json']
+  coverageReporters: ['text', 'text-summary', 'lcov', 'json'],
+  testPathIgnorePatterns: ['\\.mock.ts$']
 };

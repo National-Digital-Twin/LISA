@@ -8,21 +8,7 @@ import type { User } from 'common/User';
 import { FetchError, get } from '../api';
 import { AuthContextType } from '../utils/types';
 import { AuthContext } from '../context/AuthContext';
-
-async function clearServiceWorkerCaches() {
-  // Clear service worker cache
-  if ('caches' in window) {
-    await caches.keys().then((cacheNames) => {
-      Promise.all(cacheNames.map((cacheName) => caches.delete(cacheName)));
-    });
-  }
-}
-
-function clearLocalAndSessionStorage() {
-  // Handle client-side storage
-  localStorage.clear();
-  sessionStorage.clear();
-}
+import { logout } from '../utils/auth';
 
 const AuthContextProvider = ({ children }: PropsWithChildren) => {
   const [offline, setOffline] = useState<boolean>(true);
@@ -31,25 +17,6 @@ const AuthContextProvider = ({ children }: PropsWithChildren) => {
     queryFn: () => get('/auth/user'),
     retry: false
   });
-
-  const logout = async () => {
-    await fetch('/api/auth/logout-links').then(
-      async (response) => {
-        if (response.ok) {
-          const logoutLinks = await response.json();
-          await clearServiceWorkerCaches();
-          clearLocalAndSessionStorage();
-          await fetch(logoutLinks.oAuthLogoutUrl, { method: 'GET', redirect: 'manual', credentials: 'include' });
-          document.location = logoutLinks.redirect;
-        } else {
-          document.location = '/';
-        }
-      },
-      () => {
-        document.location = '/';
-      }
-    );
-  };
 
   useEffect(() => {
     const isOffline = error?.message === 'Failed to fetch';

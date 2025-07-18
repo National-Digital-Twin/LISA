@@ -301,7 +301,7 @@ const Tasks = () => {
                       <Box display="flex" flexDirection="column" gap={2} flex={1}>
                         <Box display="flex" flexDirection="column" gap={1}>
                           <Typography variant="body1" fontWeight="bold">Assigned to</Typography>
-                          <Typography component={Link} to="/" color="primary" fontWeight="bold">
+                          <Typography>
                             {Format.user(task.assignee)}
                           </Typography>
                           {isAssigneeUpdating && (

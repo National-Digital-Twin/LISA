@@ -39,14 +39,20 @@ const TaskContent = ({
     label
   }));
 
+  const fieldIdToTaskKeyMap: Record<string, string> = {
+    task_name: 'name',
+    task_assignee: 'assignee',
+    task_description: 'description'
+  };
+
   useEffect(() => {
     setIncludeTask(task?.include === 'Yes');
   }, [task?.include]);
 
-  const onAssigneeChange = (id: string, text: FieldValueType) => {
+  const onAssigneeChange = (_:string, text: FieldValueType) => {
     const findAssignee = assignees?.find((user) => user.value === text);
     if (findAssignee) {
-      onFieldChange(id, {
+      onFieldChange('assignee', {
         username: findAssignee.value,
         displayName: findAssignee.label
       });
@@ -57,6 +63,11 @@ const TaskContent = ({
     setIncludeTask(value === 'Yes');
     onFieldChange(id, value);
   };
+
+  const onTaskInputChange = (id: string, value: FieldValueType) => {
+    const mappedKey = fieldIdToTaskKeyMap[id] ?? id;
+    onFieldChange(mappedKey, value);
+  }
 
   return (
     <Box display="flex" flexDirection="column" gap={4}>
@@ -77,7 +88,7 @@ const TaskContent = ({
                 component="li"
                 field={{ ...NAME_FIELD, value: task?.name }}
                 entries={entries}
-                onChange={onFieldChange}
+                onChange={onTaskInputChange}
                 error={
                   showValidationErrors ? Form.getError(NAME_FIELD, validationErrors) : undefined
                 }
@@ -104,7 +115,7 @@ const TaskContent = ({
                 component="li"
                 field={{ ...DESC_FIELD, value: task?.description }}
                 entries={entries}
-                onChange={onFieldChange}
+                onChange={onTaskInputChange}
                 error={
                   showValidationErrors ? Form.getError(DESC_FIELD, validationErrors) : undefined
                 }

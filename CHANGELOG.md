@@ -1,7 +1,7 @@
 # Changelog
 
 **Repository:** `LISA`  
-**Description:** `Tracks all notable changes, version history, and roadmap toward 1.0.0 following Semantic Versioning.`
+**Description:** `Tracks all notable changes, version history, and roadmap toward 1.0.0 following Semantic Versioning.`  
 **SPDX-License-Identifier:** OGL-UK-3.0
 
 All notable changes to this repository will be documented in this file.
@@ -14,6 +14,24 @@ This project follows **Semantic Versioning (SemVer)** ([semver.org](https://semv
  - **Build metadata** – If needed, use `+build` (e.g., `2.1.0+20250314`).
 
  ---
+
+ ## [0.93.2] - 2025-07-18
+
+ ### Features
+
+ - Form validation improvements
+
+ ### Fixes
+
+ - Remove assignee link
+ - Fix for saving of Form Templates and Risk Assessment
+ - Log entries no longer require refresh to appear
+
+ ## [0.93.1] - 2025-06-10
+
+ ### Features
+
+ - Add C4 diagrams to multitenancy documentation
 
  ## [0.93.0] - 2025-06-03
 

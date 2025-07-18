@@ -9,7 +9,7 @@ services:
       - ALLOW_ANONYMOUS_LOGIN=yes
   kafka:
     container_name: lisa-kafka
-    image: 'bitnami/kafka:latest'
+    image: 'bitnami/kafka:3.5'
     depends_on:
       - zookeeper
     ports:
@@ -23,8 +23,8 @@ services:
     depends_on:
       - kafka
     environment:
-      JAVA_OPTIONS: "-XX:MaxRAMPercentage=40.0"
-      JWKS_URL: "disabled"
+      JAVA_OPTIONS: '-XX:MaxRAMPercentage=40.0'
+      JWKS_URL: 'disabled'
     command:
       - --config
       - /fuseki/config/config.ttl

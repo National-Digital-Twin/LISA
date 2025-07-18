@@ -30,6 +30,7 @@ import SortableFieldRow from "./SortableFieldRow"
 import { generateFieldKey } from '../utils';
 import { Field } from './types';
 import { useCreateFormTemplate } from '../../../hooks/Forms/useFormTemplates';
+import { MAX_FORM_LABEL_LENGTH } from '../constants';
 
 type Props = {
   onSchemaChange: (schema: JSONSchema7, uiSchema: UiSchema) => void;
@@ -140,6 +141,11 @@ const FormBuilder = ({ onSchemaChange }: Props) => {
         if (!field.options || field.options.length === 0) {
           errors[field.id] = 'Dropdown must have at least one option.';
         }
+      }
+
+
+      if(label.length > MAX_FORM_LABEL_LENGTH) {
+        errors[field.id] = `Label must be less than ${MAX_FORM_LABEL_LENGTH} characters`
       }
     });
   
