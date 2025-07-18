@@ -80,7 +80,7 @@ This repository contains both source code and documentation, which are covered b
 See `LICENSE.md`, `OGL_LICENCE.md`, and `NOTICE.md` for details.  
 
 ## Security and Responsible Disclosure  
-We take security seriously. If you believe you have found a security vulnerability in this repository, please follow our responsible disclosure process outlined in `SECURITY.md`.  
+We take security seriously. If you believe you have found a security vulnerability in this repository, please follow our responsible disclosure process outlined in `SECURITY.md`.
 
 ## Contributing  
 We welcome contributions that align with the Programme’s objectives. Please read our `CONTRIBUTING.md` guidelines before submitting pull requests.  
