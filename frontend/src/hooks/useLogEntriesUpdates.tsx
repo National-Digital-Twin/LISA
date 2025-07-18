@@ -11,7 +11,7 @@ import { v4 as uuidV4 } from 'uuid';
 import useMessaging from './useMessaging';
 import { useToast } from './useToasts';
 
-const POLLING_INTERVAL_SECONDS = 10;
+const POLLING_INTERVAL_SECONDS = 30;
 const POLLING_INTERVAL_MS = POLLING_INTERVAL_SECONDS * 1000;
 
 const pollingResetRef = { current: null as (() => void) | null };
