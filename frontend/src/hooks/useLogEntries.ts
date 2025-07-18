@@ -6,7 +6,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { LogEntry } from 'common/LogEntry';
 import { FetchError, get, post } from '../api';
-import { addOptimisticLogEntry, resetPolling } from './useLogEntriesUpdates';
+import { addOptimisticLogEntry, resetPolling, optimisticEntriesRef } from './useLogEntriesUpdates';
 
 export const useLogEntries = (incidentId?: string) => {
   const {
@@ -34,12 +34,12 @@ export const useCreateLogEntry = (incidentId?: string) => {
     LogEntry,
     Error,
     CreateLogEntryParams,
-    { previousEntries?: LogEntry[] }
+    { previousEntries?: LogEntry[]; optimisticEntryId?: string }
   >({
     mutationFn: async ({ logEntry, attachments }) => {
       if (attachments?.length) {
         const formData = new FormData();
-        attachments.forEach((file) => formData.append(file.name, file));
+        attachments.forEach((file: File) => formData.append(file.name, file));
         formData.append('logEntry', JSON.stringify(logEntry));
         return post(`/incident/${incidentId}/logEntry`, formData);
       }
@@ -49,8 +49,17 @@ export const useCreateLogEntry = (incidentId?: string) => {
       resetPolling();
       await queryClient.cancelQueries({ queryKey: [`incident/${incidentId}/logEntries`] });
 
-      const { previousEntries } = addOptimisticLogEntry(incidentId!, logEntry);
-      return { previousEntries };
+      const { optimisticEntry, previousEntries } = addOptimisticLogEntry(incidentId!, logEntry);
+      
+      return { previousEntries, optimisticEntryId: optimisticEntry.id };
+    },
+    onSuccess: (data, _variables, context) => {
+      if (context?.optimisticEntryId && data.id) {
+        const optimisticEntry = optimisticEntriesRef.current.get(context.optimisticEntryId);
+        if (optimisticEntry) {
+          optimisticEntry.serverId = data.id;
+        }
+      }
     },
     onError: (_error, _variables, context) => {
       queryClient.setQueryData<LogEntry[]>(
