@@ -62,31 +62,8 @@ export default function IncidentMap({ logEntries, highlightId = undefined }: Rea
   const mapRef = useRef<MapRef>(null);
   const navigate = useNavigate();
   const highlighted = logEntries?.find((entry) => entry.id === highlightId);
-  const showLogList = Boolean(logEntries?.length && highlighted);
 
   const logListRef = useRef<HTMLDivElement>(null);
-
-  const FOOTER_HEIGHT = 50;
-
-  const [mapHeight, setMapHeight] = useState<number>(window.innerHeight - FOOTER_HEIGHT);
-
-  useEffect(() => {
-    const updateMapHeight = () => {
-      let newHeight = window.innerHeight - FOOTER_HEIGHT;
-      if (showLogList && logListRef.current) {
-        // Subtract the log list height from the window height (or any container height)
-        newHeight -= logListRef.current.clientHeight;
-      }
-      setMapHeight(newHeight);
-    };
-
-    updateMapHeight();
-    window.addEventListener('resize', updateMapHeight);
-
-    return () => {
-      window.removeEventListener('resize', updateMapHeight);
-    };
-  }, [showLogList]);
 
   const markers: LogEntryMarkerType[] = useMemo(() => {
     if (!logEntries) return [];
@@ -181,7 +158,7 @@ export default function IncidentMap({ logEntries, highlightId = undefined }: Rea
   return (
     <Box
       className="container--location map-container"
-      sx={{ position: 'relative', height: mapHeight }}
+      sx={{ position: 'relative', height: '100%', display: 'flex', flexDirection: 'column' }}
     >
       <Map
         ref={mapRef}
@@ -204,11 +181,15 @@ export default function IncidentMap({ logEntries, highlightId = undefined }: Rea
           ref={logListRef}
           sx={{
             position: 'absolute',
-            bottom: 2,
-            left: 5,
-            width: 'calc(100% - 53px)',
-            maxWidth: 1600,
-            p: 1
+            bottom: 0,
+            left: 0,
+            right: 0,
+            width: '100%',
+            maxWidth: '100%',
+            p: isMobile ? 1 : 2,
+            backgroundColor: 'white',
+            borderTop: '1px solid #e0e0e0',
+            boxShadow: '0 -2px 4px rgba(0,0,0,0.1)'
           }}
           className="log-entry-list"
         >
