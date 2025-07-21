@@ -21,13 +21,16 @@ export async function parseTasks(
     const taskId = nodeValue(result.taskId.value);
 
     if (!tasksByEntry.has(entryId)) {
+      const userNode = result.user?.value;
+      const username = userNode ? nodeValue(userNode) : undefined;
+      
       const task: Task = {
         id: taskId,
         name: result.taskName.value,
         description: result.description?.value,
         status: removePrefix(result.taskStatus.value) as TaskStatus,
         assignee: {
-          username: result.assigneeName?.value ?? undefined,
+          username: username ?? result.assigneeName?.value ?? undefined,
           displayName: result.assigneeName?.value ?? undefined
         }
       };

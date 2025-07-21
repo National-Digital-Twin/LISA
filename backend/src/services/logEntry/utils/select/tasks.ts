@@ -18,6 +18,7 @@ export function tasks(incidentId: string) {
   const taskStatusValues = TaskStatus.alternatives.map((literal) => `<${ns.lisa(literal.value).value}>`).join(' ');
 
   return select({
+    selection: ['?entryId', '?taskId', '?taskName', '?description', '?taskStatus', '?assigneeName', '?user'],
     clause: [
       [ns.data(incidentId), ns.lisa.hasLogEntry, '?entryId'],
       ['?entryId', ns.lisa.hasTask, '?taskId'],

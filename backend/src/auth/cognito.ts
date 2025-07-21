@@ -49,6 +49,17 @@ export async function getUsers(): Promise<UserList> {
     GroupName: settings.COGNITO_USER_GROUP_NAME
   });
 
-  const resp = await client.send(command);
-  return resp.Users?.map(cognitoUserToUserListItem);
+  try {
+    const resp = await client.send(command);
+    return resp.Users?.map(cognitoUserToUserListItem) ?? [];
+  } catch (error) {
+    if (settings.NODE_ENV === 'development') {
+      return [
+        { username: 'local.user', displayName: 'Local User' },
+        { username: 'test.user', displayName: 'Test User' },
+        { username: 'demo.user', displayName: 'Demo User' }
+      ];
+    }
+    throw error;
+  }
 }
