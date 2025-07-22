@@ -78,24 +78,32 @@ export async function create(req: Request, res: Response) {
   }
 
   if (entry.location) {
-    let coordinates: Coordinates;
+    let coordinates: Coordinates[];
     let description: string;
     if (entry.location.type === 'description' || entry.location.type === 'both') {
       description = entry.location.description;
     }
     if (entry.location.type === 'coordinates' || entry.location.type === 'both') {
-      coordinates = entry.location.coordinates;
+      coordinates = Array.isArray(entry.location.coordinates) ? entry.location.coordinates : [entry.location.coordinates];
     }
-    const locationIdNode = ns.data(randomUUID());
-    triples.push([locationIdNode, ns.rdf.type, ns.ies.Location]);
-    if (coordinates) {
-      triples.push([locationIdNode, ns.ies.Latitude, literalDecimal(coordinates.latitude)]);
-      triples.push([locationIdNode, ns.ies.Longitude, literalDecimal(coordinates.longitude)]);
-    }
-    if (description) {
+    
+    if (coordinates && coordinates.length > 0) {
+      coordinates.forEach((coordinate, index) => {
+        const locationIdNode = ns.data(`${randomUUID()}-${index}`);
+        triples.push([locationIdNode, ns.rdf.type, ns.ies.Location]);
+        triples.push([locationIdNode, ns.ies.Latitude, literalDecimal(coordinate.latitude)]);
+        triples.push([locationIdNode, ns.ies.Longitude, literalDecimal(coordinate.longitude)]);
+        if (description) {
+          triples.push([locationIdNode, ns.lisa.hasDescription, literalString(description)]);
+        }
+        triples.push([entryIdNode, ns.ies.inLocation, locationIdNode]);
+      });
+    } else if (description) {
+      const locationIdNode = ns.data(randomUUID());
+      triples.push([locationIdNode, ns.rdf.type, ns.ies.Location]);
       triples.push([locationIdNode, ns.lisa.hasDescription, literalString(description)]);
+      triples.push([entryIdNode, ns.ies.inLocation, locationIdNode]);
     }
-    triples.push([entryIdNode, ns.ies.inLocation, locationIdNode]);
   }
 
   await ia.insertData(triples);

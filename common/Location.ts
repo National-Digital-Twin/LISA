@@ -3,7 +3,7 @@
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
 // Global imports
-import { Literal, Number, Record, Static, String, Union } from 'runtypes';
+import { Literal, Number, Record, Static, String, Union, Array } from 'runtypes';
 
 const LocationType = Union(
   Literal('none'),
@@ -26,12 +26,12 @@ const DescriptionLocation = Record({
 });
 const CoordinatesLocation = Record({
   type: Literal('coordinates'),
-  coordinates: Coordinates
+  coordinates: Array(Coordinates)
 });
 const FullLocation = Record({
   type: Literal('both'),
   description: String,
-  coordinates: Coordinates
+  coordinates: Array(Coordinates)
 });
 
 export const Location = Union(
