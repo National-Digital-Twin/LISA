@@ -71,6 +71,8 @@ apiRouter.get('/form', formTemplate.get);
 apiRouter.post('/incident/:incidentId/form', formInstance.create);
 apiRouter.get('/incident/:incidentId/form', formInstance.get);
 
+apiRouter.head('/ping', (_, res) => res.sendStatus(200));
+
 apiRouter.use(errorsMiddleware);
 
 export default router;
