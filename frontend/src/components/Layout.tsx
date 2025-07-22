@@ -9,6 +9,7 @@ import { Outlet } from 'react-router-dom';
 // Local imports
 import { PRINTABLE_KEY } from '../utils/constants';
 import Header from './Header';
+import { OfflineBanner } from './OfflineBanner';
 
 export default function Layout() {
   // To come from user permissions/roles
@@ -16,6 +17,7 @@ export default function Layout() {
   return (
     <div className={`App ${printable ? 'printable' : ''}`}>
       <Header />
+      <OfflineBanner /> 
       <Outlet />
     </div>
   );
