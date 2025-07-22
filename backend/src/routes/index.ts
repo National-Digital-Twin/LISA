@@ -47,6 +47,8 @@ if (settings.NODE_ENV === 'development') {
 apiRouter.get('/incidents', incident.get);
 apiRouter.post('/incident', incident.create);
 
+apiRouter.get('/incident/:incidentId', incident.getById);
+
 apiRouter.get('/incident/:incidentId/logEntries', logEntry.get);
 apiRouter.post('/incident/:incidentId/logEntry', upload.any(), logEntry.create);
 
@@ -62,8 +64,8 @@ apiRouter.get('/searchLocation', osMaps.searchLocation);
 apiRouter.get('/notifications', notifications.get);
 apiRouter.put('/notifications/:id', notifications.markRead);
 
-apiRouter.patch('/task/:taskId/status', task.changeStatus)
-apiRouter.patch('/task/:taskId/assignee', task.changeAssignee)
+apiRouter.patch('/task/:taskId/status', task.changeStatus);
+apiRouter.patch('/task/:taskId/assignee', task.changeAssignee);
 
 apiRouter.post('/form', formTemplate.create);
 apiRouter.get('/form', formTemplate.get);

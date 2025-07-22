@@ -6,8 +6,7 @@
 import { v4 as uuidV4 } from 'uuid';
 import { QueryClient, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 // Local imports
-// eslint-disable-next-line import/no-extraneous-dependencies
-import { LogEntry } from 'common/LogEntry';
+import { type LogEntry } from 'common/LogEntry';
 import { FetchError, get, post } from '../api';
 
 export const useLogEntries = (incidentId?: string) => {
@@ -23,19 +22,38 @@ export async function poll(
   incidentId: string | undefined,
   logEntryId: string | undefined,
   queryClient: QueryClient,
-  attemptNumber: number
+  attemptNumber: number,
+  retryAttemptNumber: number
 ) {
-  const logEntries = await get<LogEntry[]>(`/incident/${incidentId}/logEntries`);
+  try {
+    const logEntries = await get<LogEntry[]>(`/incident/${incidentId}/logEntries`);
 
-  if (attemptNumber <= 10) {
-    if (logEntries.find((logEntry) => logEntry.id === logEntryId)) {
-      queryClient
-        .invalidateQueries({ queryKey: [`incident/${incidentId}/logEntries`] })
-        .then(() =>
-          queryClient.invalidateQueries({ queryKey: [`incident/${incidentId}/attachments`] })
+    if (attemptNumber <= 10) {
+      if (logEntries.find((logEntry) => logEntry.id === logEntryId)) {
+        queryClient
+          .invalidateQueries({ queryKey: [`incident/${incidentId}/logEntries`] })
+          .then(() =>
+            queryClient.invalidateQueries({ queryKey: [`incident/${incidentId}/attachments`] })
+          );
+      } else {
+        setTimeout(
+          () => poll(incidentId, logEntryId, queryClient, attemptNumber + 1, retryAttemptNumber),
+          10000
         );
-    } else {
-      setTimeout(() => poll(incidentId, logEntryId, queryClient, attemptNumber + 1), 10000);
+      }
+    }
+  } catch (error) {
+    const retryAttemptsLeft = 3 - retryAttemptNumber;
+    // eslint-disable-next-line no-console
+    console.error(
+      `Error occured while polling for updates: ${error}. Retry attempts left: ${retryAttemptsLeft}`
+    );
+
+    if (retryAttemptsLeft > 0) {
+      setTimeout(
+        () => poll(incidentId, logEntryId, queryClient, attemptNumber + 1, retryAttemptNumber + 1),
+        5000
+      );
     }
   }
 }
@@ -51,6 +69,7 @@ export const useCreateLogEntry = (incidentId?: string) => {
     },
     {
       previousEntries?: LogEntry[];
+      updatedEntries?: LogEntry[];
     }
   >({
     mutationFn: async ({ newLogEntry, selectedFiles }) => {
@@ -63,13 +82,22 @@ export const useCreateLogEntry = (incidentId?: string) => {
       return post(`/incident/${incidentId}/logEntry`, data);
     },
     onSuccess: async (data) => {
-      setTimeout(() => poll(incidentId, data.id, queryClient, 1), 1000);
+      setTimeout(() => poll(incidentId, data.id, queryClient, 1, 1), 10000);
     },
-    onError(_error, _variables, context) {
-      queryClient.setQueryData<LogEntry[]>(
-        [`incident/${incidentId}/logEntries`],
-        context!.previousEntries
-      );
+    onError(error, _variables, context) {
+      if (error.cause && context?.previousEntries) {
+        queryClient.setQueryData<LogEntry[]>(
+          [`incident/${incidentId}/logEntries`],
+          context.previousEntries
+        );
+      }
+
+      if (context?.updatedEntries) {
+        queryClient.setQueryData<LogEntry[]>(
+          [`incident/${incidentId}/logEntries`],
+          context.updatedEntries
+        );
+      }
     },
     // optimistic update
     onMutate: async ({ newLogEntry }) => {
@@ -84,10 +112,12 @@ export const useCreateLogEntry = (incidentId?: string) => {
         sequence: `${countOffline + 1}`,
         offline: true
       };
-      queryClient.setQueryData<LogEntry[]>([`incident/${incidentId}/logEntries`], (oldData) =>
-        oldData!.concat(newLogEntryOffline)
+      queryClient.setQueryData<LogEntry[]>(
+        [`incident/${incidentId}/logEntries`],
+        (oldData) => oldData?.concat(newLogEntryOffline) || [newLogEntryOffline]
       );
-      return { previousEntries };
+      const updatedEntries = previousEntries?.concat(newLogEntryOffline) || [newLogEntryOffline];
+      return { previousEntries, updatedEntries };
     }
   });
   return { createLogEntry: mutate, isLoading: isPending };
