@@ -17,6 +17,7 @@ import './App.scss';
 import MessagingProvider from './providers/MessagingProvider';
 import ToastProvider from './providers/ToastProvider';
 import AuthContextProvider from './providers/AuthContextProvider';
+import { useUsers } from './hooks';
 
 const App = () => {
   useRegisterSW({
@@ -36,6 +37,14 @@ const App = () => {
       }),
     [queryClient]
   );
+
+  // Pre-warm users cache here
+  useUsers({
+    enabled: true,
+    staleTime: Infinity,
+    retry: false,
+    refetchOnWindowFocus: false,
+  });
 
   return (
     <AuthContextProvider>
