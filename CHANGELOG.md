@@ -15,6 +15,18 @@ This project follows **Semantic Versioning (SemVer)** ([semver.org](https://semv
 
  ---
 
+ ## [0.93.2] - 2025-07-18
+
+ ### Features
+
+ - Form validation improvements
+
+ ### Fixes
+
+ - Remove assignee link
+ - Fix for saving of Form Templates and Risk Assessment
+ - Log entries no longer require refresh to appear
+
  ## [0.93.1] - 2025-06-10
 
  ### Features
