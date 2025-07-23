@@ -2,19 +2,19 @@
 // © Crown Copyright 2025. This work has been developed by the National Digital Twin Programme
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
-import { type Notification } from 'common/Notification';
-import { Badge, Box, IconButton, Popover } from '@mui/material';
-import NotificationsNoneOutlinedIcon from '@mui/icons-material/NotificationsNoneOutlined';
-import NotificationsIcon from '@mui/icons-material/Notifications';
 import CloseIcon from '@mui/icons-material/Close';
-import NotificationItem from './NotificationItem';
-import { bem } from '../../utils';
+import NotificationsIcon from '@mui/icons-material/Notifications';
+import NotificationsNoneOutlinedIcon from '@mui/icons-material/NotificationsNoneOutlined';
+import { Badge, Box, IconButton, Popover } from '@mui/material';
+import { type Notification } from 'common/Notification';
 import { useAuth, useNotifications, useReadNotification } from '../../hooks';
 import useMessaging from '../../hooks/useMessaging';
-import { useResponsive } from '../../hooks/useResponsiveHook';
 import { pollForTotalNotifications } from '../../hooks/useNotifications';
+import { useResponsive } from '../../hooks/useResponsiveHook';
+import { bem } from '../../utils';
+import NotificationItem from './NotificationItem';
 
 export default function NotificationsMenu() {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -50,6 +50,20 @@ export default function NotificationsMenu() {
     }
   };
 
+  const sortedNotifications = useMemo(() => {
+    if (!notifications) return [];
+
+    return [...notifications].sort((a, b) => {
+      if (a.read !== b.read) {
+        return a.read ? 1 : -1;
+      }
+
+      const dateA = new Date(a.dateTime).getTime();
+      const dateB = new Date(b.dateTime).getTime();
+      return dateB - dateA;
+    });
+  }, [notifications]);
+
   const unreadCount = notifications?.filter((n) => !n.read).length ?? 0;
   const classes = bem('alerts');
 
@@ -58,7 +72,7 @@ export default function NotificationsMenu() {
   return (
     <div className={classes()}>
       <IconButton type="button" onClick={(event) => setAnchorEl(event.currentTarget)}>
-        <Badge badgeContent={unreadCount} color="error" overlap="circular" max={99}>
+        <Badge badgeContent={expanded ? 0 : unreadCount} color="error" overlap="circular" max={99}>
           {!expanded ? (
             <NotificationsNoneOutlinedIcon sx={{ color: 'white' }} />
           ) : (
@@ -104,10 +118,10 @@ export default function NotificationsMenu() {
           </Box>
 
           <div className={classes('menu-list')}>
-            {notifications?.length === 0 && (
+            {sortedNotifications.length === 0 && (
               <span className={classes('empty')}>No notifications</span>
             )}
-            {notifications?.map((notification) => (
+            {sortedNotifications.map((notification) => (
               <NotificationItem
                 key={notification.id}
                 notification={notification}
