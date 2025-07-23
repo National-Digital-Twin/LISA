@@ -11,6 +11,8 @@ import { type Incident } from 'common/Incident';
 import { FetchError, get, post } from '../api';
 import { createSequenceNumber } from '../utils/Form/sequence';
 
+const TOTAL_RETRY_ATTEMPTS = 3;
+
 export const useIncidents = () =>
   useQuery<Incident[], FetchError>({
     queryKey: ['incidents'],
@@ -19,9 +21,9 @@ export const useIncidents = () =>
 
 async function poll(
   incidentId: string | undefined,
-  queryClient: QueryClient,
   attemptNumber: number,
-  retryAttemptNumber: number
+  retryAttemptNumber: number,
+  queryClient: QueryClient
 ) {
   try {
     const incidents = await get<Incident[]>('/incidents');
@@ -31,7 +33,7 @@ async function poll(
         queryClient.invalidateQueries({ queryKey: ['incidents'] });
       } else {
         setTimeout(
-          () => poll(incidentId, queryClient, attemptNumber + 1, retryAttemptNumber),
+          () => poll(incidentId, attemptNumber + 1, retryAttemptNumber, queryClient),
           10000
         );
       }
@@ -39,7 +41,7 @@ async function poll(
       queryClient.invalidateQueries({ queryKey: ['incidents'] });
     }
   } catch (error) {
-    const retryAttemptsLeft = 3 - retryAttemptNumber;
+    const retryAttemptsLeft = TOTAL_RETRY_ATTEMPTS - retryAttemptNumber;
 
     if (retryAttemptsLeft > 0) {
       // eslint-disable-next-line no-console
@@ -47,7 +49,7 @@ async function poll(
         `Error occured while polling for updates: ${error}. Retry attempts left: ${retryAttemptsLeft}`
       );
       setTimeout(
-        () => poll(incidentId, queryClient, attemptNumber + 1, retryAttemptNumber + 1),
+        () => poll(incidentId, attemptNumber + 1, retryAttemptNumber + 1, queryClient),
         5000
       );
     }
@@ -67,7 +69,7 @@ export const useCreateIncident = () => {
   >({
     mutationFn: (incident) => post('/incident', incident),
     onSuccess: async (data) => {
-      setTimeout(() => poll(data.id, queryClient, 1, 1), 1000);
+      setTimeout(() => poll(data.id, 1, 1, queryClient), 1000);
     },
     onError: async (error, _variables, context) => {
       // assumption: when the user is offline there will be no cause so we can use this to differentiate between
@@ -106,8 +108,8 @@ export const useCreateIncident = () => {
 export async function pollForIncidentUpdate(
   incidentId: string | undefined,
   attemptNumber: number,
-  queryClient: QueryClient,
-  retryAttemptNumber: number
+  retryAttemptNumber: number,
+  queryClient: QueryClient
 ): Promise<void> {
   if (!incidentId) {
     throw new Error('Incident id undefined unable to poll for updates!');
@@ -130,7 +132,7 @@ export async function pollForIncidentUpdate(
     );
 
     try {
-      const incident: Incident | undefined = await get(`/incident/${incidentId}`);
+      const incident: Incident | undefined = await get<Incident>(`/incident/${incidentId}`);
 
       if (cachedIncident && incident) {
         if (cachedIncident.stage === incident.stage) {
@@ -138,13 +140,13 @@ export async function pollForIncidentUpdate(
         } else {
           setTimeout(
             () =>
-              pollForIncidentUpdate(incidentId, attemptNumber + 1, queryClient, retryAttemptNumber),
+              pollForIncidentUpdate(incidentId, attemptNumber + 1, retryAttemptNumber, queryClient),
             10000
           );
         }
       }
     } catch (error) {
-      const retryAttemptsLeft = 3 - retryAttemptNumber;
+      const retryAttemptsLeft = TOTAL_RETRY_ATTEMPTS - retryAttemptNumber;
       // eslint-disable-next-line no-console
       console.error(
         `Error occured while polling for updates: ${error}. Retry attempts left: ${retryAttemptsLeft}`
@@ -155,8 +157,8 @@ export async function pollForIncidentUpdate(
             pollForIncidentUpdate(
               incidentId,
               attemptNumber + 1,
-              queryClient,
-              retryAttemptNumber + 1
+              retryAttemptNumber + 1,
+              queryClient
             ),
           5000
         );
@@ -178,7 +180,7 @@ export const useChangeIncidentStage = () => {
           sequence: createSequenceNumber()
         }),
       onSuccess: async (incident) => {
-        setTimeout(() => pollForIncidentUpdate(incident.id, 1, queryClient, 1), 1000);
+        setTimeout(() => pollForIncidentUpdate(incident.id, 1, 1, queryClient), 1000);
       },
       onError: (_error, _variables, context) => {
         if (context?.previousIncidents) {

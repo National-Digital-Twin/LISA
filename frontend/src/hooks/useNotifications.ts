@@ -8,6 +8,8 @@ import { useCallback } from 'react';
 
 import { FetchError, get, put } from '../api';
 
+const TOTAL_RETRY_ATTEMPTS = 3;
+
 export function useNotifications() {
   const queryClient = useQueryClient();
   const invalidate = useCallback(
@@ -57,7 +59,7 @@ export async function pollForTotalNotifications(
       resetNewNotifications();
     }
   } catch (error) {
-    const retryAttemptsLeft = 3 - retryAttemptNumber;
+    const retryAttemptsLeft = TOTAL_RETRY_ATTEMPTS - retryAttemptNumber;
     // eslint-disable-next-line no-console
     console.error(
       `Error occured while polling for updates: ${error}. Retry attempts left: ${retryAttemptsLeft}`
@@ -115,7 +117,7 @@ export async function pollForReadNotifications(
       });
     }
   } catch (error) {
-    const retryAttemptsLeft = 3 - retryAttemptNumber;
+    const retryAttemptsLeft = TOTAL_RETRY_ATTEMPTS - retryAttemptNumber;
     // eslint-disable-next-line no-console
     console.error(
       `Error occured while polling for updates: ${error}. Retry attempts left: ${retryAttemptsLeft}`

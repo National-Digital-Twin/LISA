@@ -1,6 +1,6 @@
 import { QueryClient } from '@tanstack/react-query';
 import { type Referrer, type Incident } from 'common/Incident';
-import { get } from '../../api';
+import { FetchError, get } from '../../api';
 import { pollForIncidentUpdate } from '../useIncidents';
 
 jest.mock('../../api', () => ({
@@ -71,20 +71,32 @@ describe('pollForIncidentUpdate', () => {
   });
 
   it('throws an error when the incident id provided is undefined', async () => {
-    await expect(() => pollForIncidentUpdate(undefined, 1, queryClient)).rejects.toThrow(
+    await expect(() => pollForIncidentUpdate(undefined, 1, 1, queryClient)).rejects.toThrow(
       'Incident id undefined unable to poll for updates!'
     );
   });
 
   it('throws an error when the attempt number provided is equal to 0', async () => {
-    await expect(() => pollForIncidentUpdate('incident-0', 0, queryClient)).rejects.toThrow(
+    await expect(() => pollForIncidentUpdate('incident-0', 0, 1, queryClient)).rejects.toThrow(
       'Attempt number is less than or equal to 0 unable to poll for updates!'
     );
   });
 
   it('throws an error when the attempt number provided is less than 0', async () => {
-    await expect(() => pollForIncidentUpdate('incident-0', -1, queryClient)).rejects.toThrow(
+    await expect(() => pollForIncidentUpdate('incident-0', -1, 1, queryClient)).rejects.toThrow(
       'Attempt number is less than or equal to 0 unable to poll for updates!'
+    );
+  });
+
+  it('throws an error when the retry attempt number provided is equal to 0', async () => {
+    await expect(() => pollForIncidentUpdate('incident-0', 1, 0, queryClient)).rejects.toThrow(
+      'Retry attempt number is less than or equal to 0 unable to poll for updates!'
+    );
+  });
+
+  it('throws an error when the retry attempt number provided is less than 0', async () => {
+    await expect(() => pollForIncidentUpdate('incident-0', 1, -1, queryClient)).rejects.toThrow(
+      'Retry attempt number is less than or equal to 0 unable to poll for updates!'
     );
   });
 
@@ -94,7 +106,7 @@ describe('pollForIncidentUpdate', () => {
     });
     (get as jest.Mock).mockResolvedValueOnce(mockOtherIncidentForTest);
 
-    await pollForIncidentUpdate('incident-3', 1, queryClient);
+    await pollForIncidentUpdate('incident-3', 1, 1, queryClient);
 
     expect(setTimeout).not.toHaveBeenCalled();
     expect(queryClient.invalidateQueries).not.toHaveBeenCalled();
@@ -106,7 +118,7 @@ describe('pollForIncidentUpdate', () => {
     });
     (get as jest.Mock).mockResolvedValueOnce(undefined);
 
-    await pollForIncidentUpdate('incident-1', 1, queryClient);
+    await pollForIncidentUpdate('incident-1', 1, 1, queryClient);
 
     expect(setTimeout).not.toHaveBeenCalled();
     expect(queryClient.invalidateQueries).not.toHaveBeenCalled();
@@ -118,7 +130,7 @@ describe('pollForIncidentUpdate', () => {
     });
     (get as jest.Mock).mockResolvedValueOnce(mockIncidentForTest);
 
-    await pollForIncidentUpdate('incident-1', 1, queryClient);
+    await pollForIncidentUpdate('incident-1', 1, 1, queryClient);
 
     expect(queryClient.invalidateQueries).toHaveBeenCalledWith({ queryKey: ['incidents'] });
   });
@@ -129,7 +141,7 @@ describe('pollForIncidentUpdate', () => {
     });
     (get as jest.Mock).mockResolvedValueOnce(mockIncidentWithoutStageChangeForTest);
 
-    await pollForIncidentUpdate('incident-1', 11, queryClient);
+    await pollForIncidentUpdate('incident-1', 11, 1, queryClient);
 
     expect(queryClient.invalidateQueries).toHaveBeenCalledWith({ queryKey: ['incidents'] });
   });
@@ -142,8 +154,37 @@ describe('pollForIncidentUpdate', () => {
     });
     (get as jest.Mock).mockResolvedValueOnce(mockIncidentWithoutStageChangeForTest);
 
-    await pollForIncidentUpdate('incident-1', 1, queryClient);
+    await pollForIncidentUpdate('incident-1', 1, 1, queryClient);
 
     expect(setTimeoutCalled).toBeTruthy();
+  });
+
+  it('calls set timeout when an error is encountered while fetching the incidents and the retry attempt is < 3', async () => {
+    let setTimeoutCalled = false;
+    jest.spyOn(global, 'setTimeout').mockImplementationOnce(() => {
+      setTimeoutCalled = true;
+      return setTimeout(() => {}, 0);
+    });
+    (get as jest.Mock).mockImplementationOnce(() => {
+      throw new FetchError('Error occured!', 500);
+    });
+
+    await pollForIncidentUpdate('incident-1', 1, 1, queryClient);
+
+    expect(setTimeoutCalled).toBeTruthy();
+  });
+
+  it('does nothing when an error is encountered while fetching the incidents and the retry attempt is > 3', async () => {
+    jest.spyOn(global, 'setTimeout').mockImplementationOnce(() => {
+      throw new Error('setTimeout should not have been called');
+    });
+    (get as jest.Mock).mockImplementationOnce(() => {
+      throw new FetchError('Error occured!', 500);
+    });
+
+    await pollForIncidentUpdate('incident-1', 1, 4, queryClient);
+
+    expect(setTimeout).not.toHaveBeenCalled();
+    expect(queryClient.invalidateQueries).not.toHaveBeenCalled();
   });
 });
