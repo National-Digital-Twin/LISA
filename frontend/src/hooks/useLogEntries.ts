@@ -52,7 +52,7 @@ export const useCreateLogEntry = (incidentId?: string) => {
     onMutate: async ({ logEntry }) => {
       await queryClient.cancelQueries({ queryKey: [`incident/${incidentId}/logEntries`] });
 
-      const { previousEntries, updatedEntries } = addOptimisticLogEntry(incidentId, logEntry);
+      const { previousEntries, updatedEntries } = await addOptimisticLogEntry(incidentId, logEntry);
 
       return { previousEntries, updatedEntries };
     },
