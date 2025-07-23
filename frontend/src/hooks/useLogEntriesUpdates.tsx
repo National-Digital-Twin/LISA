@@ -65,9 +65,9 @@ export function useLogEntriesUpdates(incidentId: string) {
   return { startPolling, clearPolling };
 }
 
-export const addOptimisticLogEntry = (incidentId: string, logEntry: LogEntry) => {
-  if (!globalQueryClient || !incidentId) {
-    throw new Error('QueryClient or incidentId not available');
+export const addOptimisticLogEntry = async (incidentId: string, logEntry: LogEntry) => {
+  if (!globalQueryClient) {
+    throw new Error('queryClient not available!');
   }
 
   const previousEntries = globalQueryClient.getQueryData<LogEntry[]>([
