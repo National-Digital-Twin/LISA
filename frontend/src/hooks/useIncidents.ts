@@ -38,7 +38,7 @@ export const useCreateIncident = () => {
   const { mutate, isPending } = useMutation<
     Incident,
     Error,
-    Omit<Incident, 'id' | 'reportedBy'>,
+    Omit<Incident, 'reportedBy'>,
     {
       previousIncidents?: Incident[];
     }

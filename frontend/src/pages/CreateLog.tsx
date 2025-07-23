@@ -5,6 +5,7 @@
 // Global imports
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { v4 as uuidv4 } from 'uuid';
 
 // Local imports
 import { type Referrer, type Incident } from 'common/Incident';
@@ -18,14 +19,16 @@ import PageWrapper from '../components/PageWrapper';
 import theme from '../theme';
 
 const CreateLog = () => {
+  const { createIncident } = useCreateIncident();
+
   const [incident, setIncident] = useState<Partial<Incident>>({
     stage: 'Monitoring',
-    referrer: {} as Referrer
+    referrer: {} as Referrer,
+    id: uuidv4()
   });
   const [validationErrors, setValidationErrors] = useState<Array<ValidationError>>([]);
   const [showValidationErrors, setShowValidationErrors] = useState<boolean>(false);
 
-  const { createIncident } = useCreateIncident();
   const navigate = useNavigate();
 
   // Go back to where we've just come from.
