@@ -2,42 +2,212 @@
 // © Crown Copyright 2025. This work has been developed by the National Digital Twin Programme
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
-import { useQueryClient } from '@tanstack/react-query';
-import { useEffect } from 'react';
+import { QueryClient, useQueryClient } from '@tanstack/react-query';
+import { useCallback, useEffect, useRef } from 'react';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { LogEntry } from 'common/LogEntry';
+import { v4 as uuidV4 } from 'uuid';
 
 import useMessaging from './useMessaging';
 import { useToast } from './useToasts';
 
+const POLLING_INTERVAL_SECONDS = 30;
+const POLLING_INTERVAL_MS = POLLING_INTERVAL_SECONDS * 1000;
+
+const pollingResetRef = { current: null as (() => void) | null };
+export const optimisticEntriesRef = { current: new Map<string, LogEntry>() };
+let globalQueryClient: QueryClient | null = null;
+
+type OptimisticEntryParams = Omit<LogEntry, 'id' | 'author'>;
+
 export function useLogEntriesUpdates(incidentId: string) {
   const queryClient = useQueryClient();
-  const hasNewLogEntries = useMessaging('NewLogEntries', incidentId);
+  globalQueryClient = queryClient;
+  const [hasNewLogEntries, resetNewLogEntries] = useMessaging('NewLogEntries', incidentId);
   const postToast = useToast();
+  const pollingIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const invalidateQueries = useCallback(async () => {
+    const currentData = queryClient.getQueryData<LogEntry[]>([`incident/${incidentId}/logEntries`]);
+    const optimisticEntries = currentData?.filter((entry) => entry.offline) ?? [];
+
+    await queryClient.invalidateQueries({
+      queryKey: [`incident/${incidentId}/logEntries`]
+    });
+    await queryClient.invalidateQueries({
+      queryKey: [`incident/${incidentId}/attachments`]
+    });
+
+    queryClient.setQueryData<LogEntry[]>([`incident/${incidentId}/logEntries`], (serverData) => {
+      if (!serverData) return optimisticEntries;
+
+      const serverEntryIds = new Set(serverData.map((entry) => entry.id));
+      const remainingOptimisticEntries = optimisticEntries.filter(
+        (entry) => !serverEntryIds.has(entry.id)
+      );
+
+      return [...serverData, ...remainingOptimisticEntries];
+    });
+  }, [queryClient, incidentId]);
+
+  const clearPolling = useCallback(() => {
+    if (pollingIntervalRef.current) {
+      clearInterval(pollingIntervalRef.current);
+      pollingIntervalRef.current = null;
+    }
+  }, []);
+
+  const startPolling = useCallback(() => {
+    clearPolling();
+    pollingIntervalRef.current = setInterval(invalidateQueries, POLLING_INTERVAL_MS);
+  }, [clearPolling, invalidateQueries]);
+
+  const createOptimisticEntry = useCallback(
+    (logEntry: OptimisticEntryParams) => {
+      if (!incidentId) {
+        throw new Error('incidentId is required for optimistic entry creation');
+      }
+
+      const previousEntries = queryClient.getQueryData<LogEntry[]>([
+        `incident/${incidentId}/logEntries`
+      ]);
+
+      const offlineCount = previousEntries?.filter((entry: LogEntry) => entry.offline).length ?? 0;
+      const optimisticEntry: LogEntry = {
+        ...logEntry,
+        id: uuidV4(),
+        sequence: `${offlineCount + 1}`,
+        offline: true
+      };
+
+      optimisticEntriesRef.current.set(optimisticEntry.id!, optimisticEntry);
+      queryClient.setQueryData<LogEntry[]>([`incident/${incidentId}/logEntries`], (oldData) =>
+        oldData!.concat(optimisticEntry)
+      );
+
+      return { optimisticEntry, previousEntries };
+    },
+    [queryClient, incidentId]
+  );
+
+  const removeOptimisticEntry = useCallback((entryId: string) => {
+    optimisticEntriesRef.current.delete(entryId);
+  }, []);
+
+  const cleanConfirmedOptimisticEntries = useCallback(async () => {
+    const currentEntries = queryClient.getQueryData<LogEntry[]>([
+      `incident/${incidentId}/logEntries`
+    ]);
+
+    const optimisticEntries = Array.from(optimisticEntriesRef.current.entries());
+    optimisticEntries.forEach(([optimisticId, optimisticEntry]) => {
+      const hasMatchingServerEntry = currentEntries?.some((serverEntry) => {
+        if (serverEntry.id === optimisticEntry.id) {
+          return true;
+        }
+
+        if (optimisticEntry.serverId && serverEntry.id === optimisticEntry.serverId) {
+          return true;
+        }
+
+        return false;
+      });
+
+      if (hasMatchingServerEntry) {
+        optimisticEntriesRef.current.delete(optimisticId);
+
+        queryClient.setQueryData<LogEntry[]>([`incident/${incidentId}/logEntries`], (oldData) => {
+          if (!oldData) return oldData;
+          return oldData.filter((entry) => entry.id !== optimisticId);
+        });
+      }
+    });
+
+    const fiveMinutesAgo = Date.now() - 5 * 60 * 1000;
+    optimisticEntries.forEach(([optimisticId, optimisticEntry]) => {
+      const entryTime = new Date(optimisticEntry.dateTime).getTime();
+      if (entryTime < fiveMinutesAgo) {
+        optimisticEntriesRef.current.delete(optimisticId);
+
+        queryClient.setQueryData<LogEntry[]>([`incident/${incidentId}/logEntries`], (oldData) => {
+          if (!oldData) return oldData;
+          return oldData.filter((entry) => entry.id !== optimisticId);
+        });
+      }
+    });
+  }, [queryClient, incidentId]);
+
+  const pollWithCleanup = useCallback(async () => {
+    await invalidateQueries();
+    await cleanConfirmedOptimisticEntries();
+  }, [invalidateQueries, cleanConfirmedOptimisticEntries]);
+
+  const resetPollingInterval = useCallback(() => {
+    clearPolling();
+    pollingIntervalRef.current = setInterval(pollWithCleanup, POLLING_INTERVAL_MS);
+  }, [clearPolling, pollWithCleanup]);
+
+  useEffect(() => {
+    if (!incidentId) return;
+
+    startPolling();
+    pollingResetRef.current = resetPollingInterval;
+
+    // eslint-disable-next-line consistent-return
+    return () => {
+      clearPolling();
+      pollingResetRef.current = null;
+    };
+  }, [incidentId, startPolling, resetPollingInterval, clearPolling]);
 
   useEffect(() => {
     if (!hasNewLogEntries) return;
-
-    const handler = async () => {
-      await queryClient.invalidateQueries({
-        queryKey: [`incident/${incidentId}/logEntries`]
-      });
-      await queryClient.invalidateQueries({
-        queryKey: [`incident/${incidentId}/attachments`]
-      });
-    };
 
     postToast({
       type: 'Info',
       id: `NEW_LOG_ENTRIES:${incidentId}`,
       content: (
         <span>
-          New log entries have been added to this incident.{' '}
-          <button type="button" onClick={handler}>
-            Click here
-          </button>{' '}
-          to load them.
+          New log entries have been detected. Checking for updates every {POLLING_INTERVAL_SECONDS}{' '}
+          seconds...
         </span>
       ),
       isDismissable: true
     });
-  }, [incidentId, queryClient, postToast, hasNewLogEntries]);
+
+    resetNewLogEntries();
+  }, [incidentId, postToast, hasNewLogEntries, resetNewLogEntries]);
+
+  return { addOptimisticEntry: createOptimisticEntry, removeOptimisticEntry };
 }
+
+export const resetPolling = () => {
+  if (pollingResetRef.current) {
+    pollingResetRef.current();
+  }
+};
+
+export const addOptimisticLogEntry = (incidentId: string, logEntry: OptimisticEntryParams) => {
+  if (!globalQueryClient || !incidentId) {
+    throw new Error('QueryClient or incidentId not available');
+  }
+
+  const previousEntries = globalQueryClient.getQueryData<LogEntry[]>([
+    `incident/${incidentId}/logEntries`
+  ]);
+
+  const offlineCount = previousEntries?.filter((entry: LogEntry) => entry.offline).length ?? 0;
+  const optimisticEntry: LogEntry = {
+    ...logEntry,
+    id: uuidV4(),
+    sequence: `${offlineCount + 1}`,
+    offline: true
+  };
+
+  optimisticEntriesRef.current.set(optimisticEntry.id!, optimisticEntry);
+  globalQueryClient.setQueryData<LogEntry[]>([`incident/${incidentId}/logEntries`], (oldData) =>
+    oldData!.concat(optimisticEntry)
+  );
+
+  return { optimisticEntry, previousEntries };
+};

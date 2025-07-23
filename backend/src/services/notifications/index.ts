@@ -36,24 +36,20 @@ export async function markRead(req: Request, res: Response) {
     clause: [
       ['?id', ns.rdf.type, '?type'],
       ['?id', ns.lisa.hasRecipient, '?recipient'],
-      sparql.optional([
-        ['?id', ns.lisa.readAt, '?read'],
-      ]),
+      sparql.optional([['?id', ns.lisa.readAt, '?read']])
     ],
     filters: [
       sparql.in('?recipient', [ns.data(username)]),
       sparql.in('?id', [idNode]),
-      sparql.in('?type', getTypesList()),
+      sparql.in('?type', getTypesList())
     ]
   });
 
   if (results.length === 1 && !results[0].read?.value) {
-    await ia.insertData([
-      [idNode, ns.lisa.readAt, literalDate(new Date())]
-    ]);
+    await ia.insertData([[idNode, ns.lisa.readAt, literalDate(new Date())]]);
   }
 
-  res.status(204).send();
+  res.json({ id });
 }
 
 export async function get(req: Request, res: Response) {
@@ -69,18 +65,11 @@ export async function get(req: Request, res: Response) {
       ['?id', ns.lisa.hasIncident, '?incidentId'],
       ['?entryId', ns.ies.inPeriod, '?dateTime'],
       ['?entryId', ns.lisa.hasSequence, '?sequence'],
-      sparql.optional([
-        ['?id', ns.lisa.readAt, '?read']
-      ]),
+      sparql.optional([['?id', ns.lisa.readAt, '?read']]),
       ...optionals
     ],
-    filters: [
-      sparql.in('?recipient', [ns.data(username)]),
-      sparql.in('?type', getTypesList())
-    ],
-    orderBy: [
-      ['?createdAt', 'DESC']
-    ]
+    filters: [sparql.in('?recipient', [ns.data(username)]), sparql.in('?type', getTypesList())],
+    orderBy: [['?createdAt', 'DESC']]
   });
 
   const notifications: Notification[] = results.map(parseNotification);

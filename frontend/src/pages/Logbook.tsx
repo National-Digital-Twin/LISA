@@ -87,7 +87,7 @@ const Logbook = () => {
   };
 
   const onAddEntry: OnCreateEntry = (_entry, files) => {
-    createLogEntry({ newLogEntry: _entry, selectedFiles: files });
+    createLogEntry({ logEntry: _entry, attachments: files });
     setTimeout(() => {
       setAdding(false);
       document.documentElement.scrollTo(0, 0);

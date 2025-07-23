@@ -5,6 +5,7 @@
 // Global imports
 import { ElementType } from 'react';
 import { Accordion, AccordionDetails, AccordionSummary, Box, Typography } from '@mui/material';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 // Local imports
 import { type Field } from 'common/Field';
@@ -44,7 +45,10 @@ export default function FormGroup({
   if (group.label) {
     return (
       <Accordion defaultExpanded={group.defaultOpen} elevation={0}>
-        <AccordionSummary sx={{ backgroundColor: 'border.default' }}>
+        <AccordionSummary
+          sx={{ backgroundColor: 'border.default' }}
+          expandIcon={<ExpandMoreIcon />}
+        >
           <Typography>{group.label}</Typography>
         </AccordionSummary>
         <AccordionDetails

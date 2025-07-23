@@ -10,7 +10,8 @@ import { type MessagingTopicType } from 'common/Messaging';
 import { MessagingContext } from '../context/MessagingContext';
 import { MessagingContextType } from '../utils/types';
 
-export default function useMessaging(topic: MessagingTopicType, subject?: string) {
+
+export default function useMessaging(topic: MessagingTopicType, subject?: string): [boolean, () => void] {
   const { subscribe, unsubscribe } = useContext(MessagingContext) as MessagingContextType;
   const [hasMessage, setHasMessage] = useState<boolean>(false);
 
@@ -29,9 +30,5 @@ export default function useMessaging(topic: MessagingTopicType, subject?: string
     };
   }, [topic, subject, subscribe, unsubscribe, callback]);
 
-  useEffect(() => {
-    setHasMessage(false);
-  }, [hasMessage]);
-
-  return hasMessage;
+  return [hasMessage, () => setHasMessage(false)];
 }

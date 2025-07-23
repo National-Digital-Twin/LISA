@@ -50,8 +50,9 @@ export async function user(_req: Request, res: Response) {
 }
 
 export async function logoutLinks(_req: Request, res: Response) {
+  const landingPageUrl = settings.LANDING_PAGE_URL;
   if (settings.NODE_ENV === 'development') {
-    return res.json({ oAuthLogoutUrl: '/', redirect: '/' });
+    return res.json({ oAuthLogoutUrl: '/', redirect: '/', landingPageUrl });
   }
 
   try {
@@ -65,7 +66,7 @@ export async function logoutLinks(_req: Request, res: Response) {
     }
 
     const logoutRedirect = await response.json();
-    return res.json({ oAuthLogoutUrl, redirect: logoutRedirect.href });
+    return res.json({ oAuthLogoutUrl, redirect: logoutRedirect.href, landingPageUrl });
   } catch (error) {
     throw new ApplicationError(error);
   }

@@ -69,7 +69,7 @@ export const useUpdateTaskStatus = (incidentId?: string) => {
       const logEntry = {
         ...createLogEntryFromTaskStatusUpdate(taskId, taskStatus, incidentId)
       } as Omit<LogEntry, 'id' | 'author'>;
-      createLogEntry({ newLogEntry: logEntry });
+      createLogEntry({ logEntry });
     },
   });
 };
@@ -133,7 +133,7 @@ export const useUpdateTaskAssignee = (incidentId?: string) => {
       const logEntry = {
         ...createLogEntryFromTaskAssigneeUpdate(taskId, taskAssignee, incidentId)
       } as Omit<LogEntry, 'id' | 'author'>;
-      createLogEntry({ newLogEntry: logEntry });
+      createLogEntry({ logEntry });
     },
   });
 };

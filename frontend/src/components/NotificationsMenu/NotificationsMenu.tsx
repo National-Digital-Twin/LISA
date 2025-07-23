@@ -14,6 +14,7 @@ import { bem } from '../../utils';
 import { useAuth, useNotifications, useReadNotification } from '../../hooks';
 import useMessaging from '../../hooks/useMessaging';
 import { useResponsive } from '../../hooks/useResponsiveHook';
+import { pollForTotalNotifications } from '../../hooks/useNotifications';
 
 export default function NotificationsMenu() {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -22,14 +23,25 @@ export default function NotificationsMenu() {
   const { notifications, invalidate } = useNotifications();
   const readNotification = useReadNotification();
   const { user } = useAuth();
-  const hasNewNotifications = useMessaging('NewNotification', user?.current?.username);
+  const [hasNewNotifications, resetNewNotifications] = useMessaging(
+    'NewNotification',
+    user?.current?.username
+  );
 
   useEffect(() => {
-    if (!hasNewNotifications) {
-      // return;
+    if (hasNewNotifications) {
+      setTimeout(
+        () =>
+          pollForTotalNotifications(
+            notifications?.length ?? 0,
+            1,
+            invalidate,
+            resetNewNotifications
+          ),
+        1000
+      );
     }
-    invalidate();
-  }, [hasNewNotifications, invalidate]);
+  }, [hasNewNotifications, notifications, invalidate, resetNewNotifications]);
 
   const onItemClick = (notification: Notification) => {
     setAnchorEl(null);

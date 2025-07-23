@@ -19,7 +19,8 @@ export async function syncAllOfflineEntities() {
           await post('/incident', incident);
           await deleteIncident(incident.id);
           // console.log(`Synced incident ${incident.id}`);
-        } catch (err) {
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        } catch (_err) {
           // console.error(`Failed to sync incident ${incident.id}`, err);
         }
       }),
@@ -35,7 +36,8 @@ export async function syncAllOfflineEntities() {
           await post(`/incident/${form.incidentId}/form`, form); // TODO: correct model to include incidentId
           await deleteForms(form.id);
           // console.log(`Synced form ${form.id}`);
-        } catch (err) {
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        } catch (_err) {
           // console.error(`Failed to sync form ${form.id}`, err);
         }
       }),
@@ -51,7 +53,8 @@ export async function syncAllOfflineEntities() {
           await post(`/incident/${log.incidentId}/logEntry`, log);
           await deleteLog(log.id!);
           // console.log(`Synced log ${log.id}`);
-        } catch (err) {
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        } catch (_err) {
           // console.error(`Failed to sync log ${log.id}`, err);
         }
       }),
