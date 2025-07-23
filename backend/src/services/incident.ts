@@ -26,6 +26,12 @@ type Amendments = Record<string, string>;
 
 export async function create(req: Request, res: Response) {
   const incident = Incident.check(req.body);
+
+  incident.reportedBy = {
+    username: res.locals.user.username,
+    displayName: res.locals.user.displayName
+  };
+  
   const incidentBoundingState = randomUUID();
   const incidentState = randomUUID();
   const stateBoundingState = randomUUID();

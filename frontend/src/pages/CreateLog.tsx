@@ -11,7 +11,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { type Referrer, type Incident } from 'common/Incident';
 import { Box, Typography, Grid2 as Grid, useMediaQuery } from '@mui/material';
 import { FormField, FormFooter } from '../components/Form';
-import { useAuth, useCreateIncident } from '../hooks';
+import { useCreateIncident } from '../hooks';
 import { Form, Incident as IncidentUtil, Validate } from '../utils';
 import { type FieldValueType, type ValidationError } from '../utils/types';
 import { PageTitle } from '../components';
@@ -19,14 +19,12 @@ import PageWrapper from '../components/PageWrapper';
 import theme from '../theme';
 
 const CreateLog = () => {
-  const { user } = useAuth();
   const { createIncident } = useCreateIncident();
 
   const [incident, setIncident] = useState<Partial<Incident>>({
     stage: 'Monitoring',
     referrer: {} as Referrer,
-    id: uuidv4(),
-    reportedBy : user.current,
+    id: uuidv4()
   });
   const [validationErrors, setValidationErrors] = useState<Array<ValidationError>>([]);
   const [showValidationErrors, setShowValidationErrors] = useState<boolean>(false);
