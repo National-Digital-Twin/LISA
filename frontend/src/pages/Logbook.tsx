@@ -15,6 +15,7 @@ import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 // Local imports
 import { type LogEntry } from 'common/LogEntry';
 import { type Mentionable, type MentionableType } from 'common/Mentionable';
+import { v4 as uuidV4 } from 'uuid';
 import { AddEntry, EntryList, Filter, PageTitle } from '../components';
 import PageWrapper from '../components/PageWrapper';
 import {
@@ -28,12 +29,15 @@ import { Format, Search as SearchUtil } from '../utils';
 import { type OnCreateEntry } from '../utils/handlers';
 import { type FieldValueType, type FilterType, type SpanType } from '../utils/types';
 import { useResponsive } from '../hooks/useResponsiveHook';
+import { useIsOnline } from '../hooks/useIsOnline';
 
 const Logbook = () => {
   const { incidentId } = useParams();
   const query = useIncidents();
   const { logEntries } = useLogEntries(incidentId);
   const { createLogEntry } = useCreateLogEntry(incidentId);
+  const { startPolling, clearPolling } = useLogEntriesUpdates(incidentId!);
+  const isOnline = useIsOnline();
   const { user } = useAuth();
   const [adding, setAdding] = useState<boolean>(false);
   const [sortAsc, setSortAsc] = useState<boolean>(false);
@@ -65,7 +69,13 @@ const Logbook = () => {
     };
   }, [adding, logEntries]);
 
-  useLogEntriesUpdates(incidentId ?? '');
+  useEffect(() => {
+    if (isOnline) {
+      startPolling();
+    } else {
+      clearPolling();
+    }
+  }, [isOnline, startPolling, clearPolling]);
 
   const incident = query?.data?.find((inc) => inc.id === incidentId);
   const filterAuthors = Format.incident.authors(user.current, logEntries);
@@ -86,8 +96,8 @@ const Logbook = () => {
     setAdding(true);
   };
 
-  const onAddEntry: OnCreateEntry = (_entry, files) => {
-    createLogEntry({ logEntry: _entry, attachments: files });
+  const onAddEntry: OnCreateEntry = (entry, files) => {
+    createLogEntry({ logEntry: { id: uuidV4(), ...entry }, attachments: files });
     setTimeout(() => {
       setAdding(false);
       document.documentElement.scrollTo(0, 0);

@@ -41,8 +41,6 @@ export const LogEntry = Record({
   // This allows for determining if the Incident has been synced to the server during
   // offline operation.
   offline: Optional(Boolean),
-  // This stores the server-assigned ID for optimistic entries that have been confirmed
-  serverId: Optional(String),
   details: Optional(LogEntryChangeDetails)
 });
 

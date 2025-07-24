@@ -31,9 +31,7 @@ export async function create(req: Request, res: Response) {
     entry.dateTime = now.toISOString();
   }
 
-  const entryId = randomUUID();
-  entry.id = entryId;
-
+  const entryId = entry.id;
   const entryIdNode = ns.data(entryId);
   const incidentIdNode = ns.data(incidentId);
   const authorNode = ns.data(res.locals.user.username);
@@ -49,7 +47,7 @@ export async function create(req: Request, res: Response) {
   const userLogMentions = mentions.extractLogContent.user(entry, entryIdNode);
 
   const type = LogEntryTypes[entry.type];
-  const content = type.noContent ? {} : entry.content ?? {}; // should probably be invalid request?
+  const content = type.noContent ? {} : (entry.content ?? {}); // should probably be invalid request?
 
   let triples: unknown[] = [];
   try {
@@ -107,16 +105,16 @@ export async function create(req: Request, res: Response) {
       entryId: entry.id,
       incidentId: entry.incidentId
     });
-  }); 
-  
-  if(entry.task?.assignee) {
+  });
+
+  if (entry.task?.assignee) {
     createNotification({
       recipient: entry.task.assignee.username,
       type: 'TaskAssignedNotification',
       entryId: entry.id,
       incidentId: entry.incidentId,
       taskId
-    })
+    });
   }
 
   PubSubManager.getInstance().publish('NewLogEntries', entry.incidentId, res.locals.user.username);

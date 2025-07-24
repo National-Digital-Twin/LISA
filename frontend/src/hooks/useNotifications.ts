@@ -8,6 +8,8 @@ import { useCallback } from 'react';
 
 import { FetchError, get, put } from '../api';
 
+const TOTAL_RETRY_ATTEMPTS = 3;
+
 export function useNotifications() {
   const queryClient = useQueryClient();
   const invalidate = useCallback(
@@ -28,86 +30,150 @@ export function useNotifications() {
 export async function pollForTotalNotifications(
   totalCurrentNotifications: number,
   attemptNumber: number,
+  retryAttemptNumber: number,
   invalidateNotifications: () => void,
   resetNewNotifications: () => void
 ) {
-  const notifications = await get<Notification[]>('/notifications');
+  try {
+    const notifications = await get<Notification[]>('/notifications');
 
-  if (attemptNumber <= 10) {
-    if (notifications.length > totalCurrentNotifications) {
+    if (attemptNumber <= 10) {
+      if (notifications.length > totalCurrentNotifications) {
+        invalidateNotifications();
+        resetNewNotifications();
+      } else {
+        setTimeout(
+          () =>
+            pollForTotalNotifications(
+              totalCurrentNotifications,
+              attemptNumber + 1,
+              retryAttemptNumber,
+              invalidateNotifications,
+              resetNewNotifications
+            ),
+          10000
+        );
+      }
+    } else {
       invalidateNotifications();
       resetNewNotifications();
-    } else {
+    }
+  } catch (error) {
+    const retryAttemptsLeft = TOTAL_RETRY_ATTEMPTS - retryAttemptNumber;
+    // eslint-disable-next-line no-console
+    console.error(
+      `Error occured while polling for updates: ${error}. Retry attempts left: ${retryAttemptsLeft}`
+    );
+
+    if (retryAttemptsLeft > 0) {
       setTimeout(
         () =>
           pollForTotalNotifications(
             totalCurrentNotifications,
             attemptNumber + 1,
+            retryAttemptNumber + 1,
             invalidateNotifications,
             resetNewNotifications
           ),
         10000
       );
     }
-  } else {
-    invalidateNotifications();
-    resetNewNotifications();
   }
 }
 
 export async function pollForReadNotifications(
   notificationId: string,
   attemptNumber: number,
+  retryAttemptNumber: number,
   queryClient: QueryClient
 ) {
-  const notifications = await get<Notification[]>('/notifications');
+  try {
+    const notifications = await get<Notification[]>('/notifications');
 
-  if (attemptNumber <= 10) {
-    if (
-      notifications.find((notification) => notification.id === notificationId && notification.read)
-    ) {
+    if (attemptNumber <= 10) {
+      if (
+        notifications.find(
+          (notification) => notification.id === notificationId && notification.read
+        )
+      ) {
+        queryClient.invalidateQueries({
+          queryKey: ['notifications']
+        });
+      } else {
+        setTimeout(
+          () =>
+            pollForReadNotifications(
+              notificationId,
+              attemptNumber + 1,
+              retryAttemptNumber,
+              queryClient
+            ),
+          10000
+        );
+      }
+    } else {
       queryClient.invalidateQueries({
         queryKey: ['notifications']
       });
-    } else {
+    }
+  } catch (error) {
+    const retryAttemptsLeft = TOTAL_RETRY_ATTEMPTS - retryAttemptNumber;
+    // eslint-disable-next-line no-console
+    console.error(
+      `Error occured while polling for updates: ${error}. Retry attempts left: ${retryAttemptsLeft}`
+    );
+
+    if (retryAttemptsLeft > 0) {
       setTimeout(
-        () => pollForReadNotifications(notificationId, attemptNumber + 1, queryClient),
-        10000
+        () =>
+          pollForReadNotifications(
+            notificationId,
+            attemptNumber + 1,
+            retryAttemptNumber + 1,
+            queryClient
+          ),
+        5000
       );
     }
-  } else {
-    queryClient.invalidateQueries({
-      queryKey: ['notifications']
-    });
   }
 }
 
 export function useReadNotification() {
   const queryClient = useQueryClient();
-  const readNotification = useMutation<{ id: string }, Error, string>({
+  const readNotification = useMutation<
+    { id: string },
+    Error,
+    string,
+    { previousNotifications?: Notification[] }
+  >({
     mutationFn: (id: string) => put(`/notifications/${id}`, {}),
     onSuccess: async (data) =>
-      setTimeout(() => pollForReadNotifications(data.id, 1, queryClient), 1000),
+      setTimeout(() => pollForReadNotifications(data.id, 1, 1, queryClient), 1000),
+    onError: (_variables, _error, context) => {
+      if (context?.previousNotifications) {
+        queryClient.setQueryData(['notifications'], context.previousNotifications);
+      }
+    },
     onMutate: async (id: string) => {
       await queryClient.cancelQueries({ queryKey: ['notifications'] });
-      const notifications = queryClient.getQueryData<Notification[]>(['notifications']);
+      const previousNotifications = queryClient.getQueryData<Notification[]>(['notifications']);
 
-      if (notifications) {
-        const otherNotifications: Notification[] = notifications!.filter(
-          (notification) => notification.id !== id
-        );
-        const notificationToBeUpdated: Notification | undefined = notifications!.find(
-          (notification) => notification.id === id
-        );
+      const otherNotifications: Notification[] = previousNotifications!.filter(
+        (notification) => notification.id !== id
+      );
+      const notificationToBeUpdated: Notification | undefined = previousNotifications!.find(
+        (notification) => notification.id === id
+      );
 
-        if (notificationToBeUpdated) {
-          const updatedNotifications: Notification[] = [
-            { ...notificationToBeUpdated, read: true },
-            ...otherNotifications
-          ];
-          queryClient.setQueryData<Notification[]>(['notifications'], updatedNotifications);
-        }
+      if (notificationToBeUpdated) {
+        const updatedNotifications = [
+          { ...notificationToBeUpdated, read: true },
+          ...otherNotifications
+        ];
+        queryClient.setQueryData<Notification[]>(['notifications'], updatedNotifications);
       }
+
+      return { previousNotifications };
     }
   });
   return readNotification;
