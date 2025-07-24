@@ -10,9 +10,6 @@ import { QueryClient, useMutation, useQuery, useQueryClient } from '@tanstack/re
 import { type Incident } from 'common/Incident';
 import { FetchError, get, post } from '../api';
 import { createSequenceNumber } from '../utils/Form/sequence';
-import { addIncident } from '../offline/db/dbOperations';
-import { isOnline } from './utils/network';
-import { OfflineIncident } from '../offline/types/OfflineIncident';
 
 export const useIncidents = () =>
   useQuery<Incident[], FetchError>({
@@ -50,19 +47,6 @@ export const useCreateIncident = () => {
   >({
     mutationFn: async (incident) => {
       const newIncidentId = uuidV4();
-
-      const newIncidentOffline: OfflineIncident  = {
-        ...incident,
-        id: newIncidentId,
-        offline: true,
-        createdAt: new Date().toISOString(),
-        expiresAt: '',
-      };
-
-      if (!isOnline()) {
-        await addIncident(newIncidentOffline);
-        return newIncidentOffline;
-      }
 
       const createdIncident = await post<Incident>('/incident', {
         ...incident,

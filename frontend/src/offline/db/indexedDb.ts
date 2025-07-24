@@ -33,7 +33,10 @@ export const dbPromise = openDB<OfflineDB>('lisa-offline-db', 1, {
 
 export async function clearExpiredEntities() {
   const db = await dbPromise;
-  const tx = db.transaction(['incidents', 'forms'], 'readwrite');
+
+  if(!db) return;
+
+  const tx = db.transaction(['incidents', 'forms', 'logs'], 'readwrite');
   const now = new Date();
 
   // Clear expired incidents
