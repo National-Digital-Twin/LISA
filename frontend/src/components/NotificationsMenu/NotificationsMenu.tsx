@@ -35,6 +35,7 @@ export default function NotificationsMenu() {
           pollForTotalNotifications(
             notifications?.length ?? 0,
             1,
+            1,
             invalidate,
             resetNewNotifications
           ),

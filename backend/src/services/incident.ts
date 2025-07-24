@@ -27,12 +27,11 @@ type Amendments = Record<string, string>;
 export async function create(req: Request, res: Response) {
   const incident = Incident.check(req.body);
 
-  incident.id = randomUUID();
   incident.reportedBy = {
     username: res.locals.user.username,
     displayName: res.locals.user.displayName
   };
-
+  
   const incidentBoundingState = randomUUID();
   const incidentState = randomUUID();
   const stateBoundingState = randomUUID();
@@ -160,7 +159,7 @@ export async function changeStage(req: Request, res: Response) {
     ]
   });
 
-  res.json(results);
+  res.json({ id: incidentId, ...results[0] });
 }
 
 function getReferrer(row: ia.ResultRow, amendments?: Amendments): Referrer | undefined {
@@ -187,6 +186,22 @@ function getReferrer(row: ia.ResultRow, amendments?: Amendments): Referrer | und
 
 function getName(row: ia.ResultRow, amendments?: Amendments): string {
   return amendments?.name ?? row.name?.value;
+}
+
+function mapIncident(row: ia.ResultRow, amendmentsByIncident: Map<string, Amendments>): Incident {
+  return {
+    id: nodeValue(row.id.value),
+    type: removeIncidentSuffix(nodeValue(row.type.value)),
+    stage: removeStageSuffix(nodeValue(row.stage.value)),
+    startedAt: row.startedAt.value,
+    createdAt: row.createdAt?.value,
+    name: getName(row, amendmentsByIncident[nodeValue(row.id.value)]),
+    referrer: getReferrer(row, amendmentsByIncident[nodeValue(row.id.value)]),
+    reportedBy: {
+      username: row.reportedByName?.value ?? undefined,
+      displayName: row.reportedByName?.value ?? undefined
+    }
+  } satisfies Incident;
 }
 
 export async function get(_: Request, res: Response) {
@@ -252,24 +267,76 @@ export async function get(_: Request, res: Response) {
     return { ...map, [incidentId]: amends };
   }, new Map<string, Amendments>());
 
-  const incidents = results.map(
-    (row) =>
-      ({
-        id: nodeValue(row.id.value),
-        type: removeIncidentSuffix(nodeValue(row.type.value)),
-        stage: removeStageSuffix(nodeValue(row.stage.value)),
-        startedAt: row.startedAt.value,
-        createdAt: row.createdAt?.value,
-        name: getName(row, amendmentsByIncident[nodeValue(row.id.value)]),
-        referrer: getReferrer(row, amendmentsByIncident[nodeValue(row.id.value)]),
-        reportedBy: {
-          username: row.reportedByName?.value ?? undefined,
-          displayName: row.reportedByName?.value ?? undefined
-        }
-      }) satisfies Incident
-  );
+  const incidents = results.map((row) => mapIncident(row, amendmentsByIncident));
 
   res.json(incidents);
+}
+
+export async function getById(req: Request, res: Response) {
+  const { incidentId } = req.params;
+
+  if (!incidentId) {
+    return res.sendStatus(400);
+  }
+
+  const incidentIdNode = ns.data(incidentId);
+
+  const requests: Promise<ia.ResultRow[]>[] = [
+    ia.select({
+      clause: [
+        [incidentIdNode, ns.lisa.hasLogEntry, '?entryId'],
+        ['?entryId', ns.lisa.createdAt, '?createdAt'],
+        ['?entryId', ns.rdf.type, '?type'],
+        ['?entryId', ns.lisa.hasField, '?fieldId'],
+        ['?fieldId', ns.ies.hasName, '?fieldName'],
+        ['?fieldId', ns.ies.hasValue, '?fieldValue'],
+        `VALUES (?type) { (<${ns.lisa('SetIncidentInformation').value}>) }`
+      ],
+      orderBy: [['?createdAt', 'ASC']]
+    }),
+    ia.select({
+      clause: [
+        [incidentIdNode, ns.rdf.type, '?type'],
+        ['?isStateOf', ns.ies.isStateOf, incidentIdNode],
+        ['?isStateOf', ns.rdf.type, '?stage'],
+        ['?isStartOf', ns.ies.isStartOf, incidentIdNode],
+        ['?isStartOf', ns.ies.inPeriod, '?startedAt'],
+        sparql.optional([
+          [incidentIdNode, ns.ies.hasName, '?name'],
+          ['?reportedBy', ns.ies.isParticipantIn, incidentIdNode],
+          ['?reportedBy', ns.ies.hasName, '?reportedByName']
+        ]),
+        sparql.optional([
+          [incidentIdNode, ns.lisa.hasReferrer, '?referrer'],
+          ['?referrer', ns.ies.hasName, '?referrerName'],
+          ['?referrer', ns.lisa.hasOrg, '?referrerOrg'],
+          ['?referrer', ns.lisa.hasTel, '?referrerTel'],
+          ['?referrer', ns.lisa.hasEmail, '?referrerEmail'],
+          ['?referrer', ns.lisa.hasSupportRequest, '?referrerSupportRequested'],
+          sparql.optional([['?referrer', ns.lisa.hasSupportRequestDesc, '?referrerSupportDesc']])
+        ]),
+        sparql.optional([[incidentIdNode, ns.lisa.createdAt, '?createdAt']]),
+        `FILTER NOT EXISTS {${new TriplePattern('?x', ns.ies.isEndOf, '?isStateOf')}}`
+      ],
+      orderBy: [['?startedAt', 'DESC']]
+    })
+  ];
+
+  const [amendments, results] = await Promise.all(requests);
+
+  if (results.length === 0) {
+    return res.sendStatus(404);
+  }
+
+  const amendmentsByIncident = amendments.reduce((map, row) => {
+    const amends = map[incidentId] ?? {};
+    amends[row.fieldName.value] = row.fieldValue.value;
+    return { ...map, [incidentId]: amends };
+  }, new Map<string, Amendments>());
+
+  return res.json(
+    mapIncident({ id: { type: 'string', value: incidentId }, ...results[0] }, amendmentsByIncident)
+  );
 }
 
 export async function getAttachments(req: Request, res: Response) {
@@ -312,4 +379,3 @@ export async function getAttachments(req: Request, res: Response) {
 
   res.json(attachments);
 }
-
