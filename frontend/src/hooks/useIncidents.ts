@@ -58,7 +58,6 @@ async function poll(
 
 export const useCreateIncident = () => {
   const queryClient = useQueryClient();
-
   const { mutate, isPending } = useMutation<
     Incident,
     Error,
@@ -68,17 +67,7 @@ export const useCreateIncident = () => {
       updatedIncidents?: Incident[];
     }
   >({
-    mutationFn: async (incident) => {
-      const newIncidentId = uuidV4();
-
-      const createdIncident = await post<Incident>('/incident', {
-        ...incident,
-        id: newIncidentId,
-      });
-
-      return createdIncident;
-    },
-
+    mutationFn: (incident) => post('/incident', incident),
     onSuccess: async (data) => {
       setTimeout(() => poll(data.id, 1, 1, queryClient), 1000);
     },
@@ -96,15 +85,11 @@ export const useCreateIncident = () => {
     // optimistic update
     onMutate: async (newIncident) => {
       await queryClient.cancelQueries({ queryKey: ['incidents'] });
-
       const previousIncidents = queryClient.getQueryData<Incident[]>(['incidents']);
-      const newIncidentId = uuidV4();
-
-      const newIncidentOffline: Incident = {
+      const newIncidentOffline = {
         ...newIncident,
-        id: newIncidentId,
-        offline: true,
-        createdAt: new Date().toISOString(),
+        id: uuidV4(),
+        offline: true
       };
       queryClient.setQueryData<Incident[]>(
         ['incidents'],

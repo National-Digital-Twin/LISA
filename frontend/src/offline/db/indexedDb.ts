@@ -45,8 +45,8 @@ export async function clearExpiredEntities() {
 
   await Promise.all(
     allIncidents
-      .filter(record => record.expiresAt && new Date(record.expiresAt) <= now)
-      .map(record => incidentStore.delete(record.id))
+      .filter(record => record.expiresAt && record.id && new Date(record.expiresAt) <= now)
+      .map(record => incidentStore.delete(record.id!))
   );
 
   // Clear expired forms
@@ -55,8 +55,8 @@ export async function clearExpiredEntities() {
 
   await Promise.all(
     allForms
-      .filter(record => record.expiresAt && new Date(record.expiresAt) <= now)
-      .map(record => formStore.delete(record.id))
+      .filter(record => record.expiresAt && record.id && new Date(record.expiresAt) <= now)
+      .map(record => formStore.delete(record.id!))
   );
 
   // Clear expired logs
@@ -65,8 +65,8 @@ export async function clearExpiredEntities() {
 
   await Promise.all(
     allLogs
-      .filter(record => record.expiresAt && new Date(record.expiresAt) <= now)
-      .map(record => logStore.delete(record.id))
+      .filter(record => record.expiresAt && record.id && new Date(record.expiresAt) <= now)
+      .map(record => logStore.delete(record.id!))
   );
 
   await tx.done;
