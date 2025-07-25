@@ -12,9 +12,9 @@ import Map, { LngLatBoundsLike, MapRef, Marker, NavigationControl } from 'react-
 import { useNavigate } from 'react-router-dom';
 
 // Local imports
+import { Box, IconButton } from '@mui/material';
 import { type Coordinates } from 'common/Location';
 import { type LogEntry } from 'common/LogEntry';
-import { Box, IconButton } from '@mui/material';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { LogEntryTypes } from 'common/LogEntryTypes';
 import { type MentionableType } from 'common/Mentionable';
@@ -97,6 +97,8 @@ export default function IncidentMap({ logEntries, highlightId = undefined }: Rea
     if (mapRef.current) {
       const { coordinates } = (focus?.location || {}) as FullLocationType;
 
+      const baseOptions: FitBoundsOptions = { padding: 60, duration: 250 };
+
       if (coordinates && Array.isArray(coordinates) && coordinates.length > 1) {
         const entryBounds: LngLatBoundsLike = [
           [
@@ -110,14 +112,13 @@ export default function IncidentMap({ logEntries, highlightId = undefined }: Rea
         ];
 
         const options: FitBoundsOptions = {
-          padding: 60,
-          duration: 250,
+          ...baseOptions,
           maxZoom: 15
         };
 
         mapRef.current.fitBounds(entryBounds, options);
       } else if (coordinates && Array.isArray(coordinates) && coordinates.length === 1) {
-        const options: FitBoundsOptions = { padding: 60, duration: 250 };
+        const options: FitBoundsOptions = { ...baseOptions };
         options.center = [coordinates[0].longitude, coordinates[0].latitude];
 
         if (bounds) {
@@ -126,8 +127,7 @@ export default function IncidentMap({ logEntries, highlightId = undefined }: Rea
           mapRef.current.getMap().flyTo(options);
         }
       } else if (bounds) {
-        const options: FitBoundsOptions = { padding: 60, duration: 250 };
-        mapRef.current.fitBounds(bounds, options);
+        mapRef.current.fitBounds(bounds, baseOptions);
       }
     }
   };

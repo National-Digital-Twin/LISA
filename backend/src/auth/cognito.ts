@@ -49,17 +49,27 @@ export async function getUsers(): Promise<UserList> {
     GroupName: settings.COGNITO_USER_GROUP_NAME
   });
 
+  let cognitoUsers: UserListItem[] = [];
+
   try {
     const resp = await client.send(command);
-    return resp.Users?.map(cognitoUserToUserListItem) ?? [];
+    cognitoUsers = resp.Users?.map(cognitoUserToUserListItem) ?? [];
   } catch (error) {
     if (settings.NODE_ENV === 'development') {
-      return [
-        { username: 'local.user', displayName: 'Local User' },
-        { username: 'test.user', displayName: 'Test User' },
-        { username: 'demo.user', displayName: 'Demo User' }
-      ];
+      console.warn('Failed to fetch users from Cognito:', error);
+    } else {
+      throw error;
     }
-    throw error;
   }
+
+  if (settings.NODE_ENV === 'development') {
+    return [
+      ...cognitoUsers,
+      { username: 'local.user', displayName: 'Local User' },
+      { username: 'test.user', displayName: 'Test User' },
+      { username: 'demo.user', displayName: 'Demo User' }
+    ];
+  }
+
+  return cognitoUsers;
 }

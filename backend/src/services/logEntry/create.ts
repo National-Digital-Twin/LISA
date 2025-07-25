@@ -80,29 +80,32 @@ export async function create(req: Request, res: Response) {
   if (entry.location) {
     let coordinates: Coordinates[];
     let description: string;
+    let locationIdNode: string | undefined;
+
     if (entry.location.type === 'description' || entry.location.type === 'both') {
       description = entry.location.description;
     }
     if (entry.location.type === 'coordinates' || entry.location.type === 'both') {
-      coordinates = Array.isArray(entry.location.coordinates) ? entry.location.coordinates : [entry.location.coordinates];
+      coordinates = entry.location.coordinates;
     }
     
-    if (coordinates && coordinates.length > 0) {
+    if (coordinates.length > 0) {
       coordinates.forEach((coordinate, index) => {
-        const locationIdNode = ns.data(`${randomUUID()}-${index}`);
-        triples.push([locationIdNode, ns.rdf.type, ns.ies.Location]);
-        triples.push([locationIdNode, ns.ies.Latitude, literalDecimal(coordinate.latitude)]);
-        triples.push([locationIdNode, ns.ies.Longitude, literalDecimal(coordinate.longitude)]);
-        if (description) {
-          triples.push([locationIdNode, ns.lisa.hasDescription, literalString(description)]);
-        }
-        triples.push([entryIdNode, ns.ies.inLocation, locationIdNode]);
+        locationIdNode = `${randomUUID()}-${index}`;
+        triples.push([ns.data(locationIdNode), ns.rdf.type, ns.ies.Location]);
+        triples.push([ns.data(locationIdNode), ns.ies.Latitude, literalDecimal(coordinate.latitude)]);
+        triples.push([ns.data(locationIdNode), ns.ies.Longitude, literalDecimal(coordinate.longitude)]);
+        triples.push([entryIdNode, ns.ies.inLocation, ns.data(locationIdNode)]);
       });
-    } else if (description) {
-      const locationIdNode = ns.data(randomUUID());
-      triples.push([locationIdNode, ns.rdf.type, ns.ies.Location]);
-      triples.push([locationIdNode, ns.lisa.hasDescription, literalString(description)]);
-      triples.push([entryIdNode, ns.ies.inLocation, locationIdNode]);
+    }
+
+    if (description) {
+      if (!locationIdNode) {
+        locationIdNode = randomUUID();
+        triples.push([ns.data(locationIdNode), ns.rdf.type, ns.ies.Location]);
+        triples.push([entryIdNode, ns.ies.inLocation, ns.data(locationIdNode)]);
+      }
+      triples.push([ns.data(locationIdNode), ns.lisa.hasDescription, literalString(description)]);
     }
   }
 
