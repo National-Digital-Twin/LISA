@@ -12,7 +12,7 @@ export const ns = {
   owl: namespace('http://www.w3.org/2002/07/owl#'),
   ies: namespace('http://ies.data.gov.uk/ontology/ies4#'),
   lisa: namespace('http://ndtp.co.uk/ontology/lisa#'),
-  data: namespace('http://ndtp.co.uk/lisa#'),
+  data: namespace('http://ndtp.co.uk/lisa#')
 };
 
 export function literalDate(date: Date) {

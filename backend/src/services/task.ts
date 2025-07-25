@@ -16,10 +16,9 @@ import * as ia from '../ia';
   creating an immutable log of changes, we create "boundings" for both
   changeable aspects of a Task; Status + Assignee. Using these, we only
   fetch the latest of these states for the UI, however the history of a task
-  can be queried directly against the graph. The methods below close the 
+  can be queried directly against the graph. The methods below close the
   previous boundings and create new ones with the new states.
 */
-
 
 function removePrefix(uri: string): string {
   return uri.split('#').pop() || uri.split('/').pop() || uri;
@@ -32,7 +31,9 @@ export async function changeStatus(req: Request, res: Response) {
   const status = TaskStatus.check(rawStatus);
   const now = new Date();
 
-  const taskStatusValues = TaskStatus.alternatives.map((literal) => `<${ns.lisa(literal.value).value}>`).join(' ');
+  const taskStatusValues = TaskStatus.alternatives
+    .map((literal) => `<${ns.lisa(literal.value).value}>`)
+    .join(' ');
 
   const taskIdNode = ns.data(taskId);
   const statusNodeType = ns.lisa(status);
@@ -87,7 +88,7 @@ export async function changeStatus(req: Request, res: Response) {
 
   await ia.insertData(triples);
 
-  res.status(200).json({ message: "Status changed successfully" });
+  res.status(200).json({ message: 'Status changed successfully' });
 }
 
 export async function changeAssignee(req: Request, res: Response) {
@@ -125,10 +126,7 @@ export async function changeAssignee(req: Request, res: Response) {
   const triples = [];
 
   // Prevent reassigning same person
-  if (
-    results.length === 1 &&
-    results[0].user?.value === userNode.value
-  ) {
+  if (results.length === 1 && results[0].user?.value === userNode.value) {
     throw new InvalidValueError('New assignee is the same as current assignee');
   }
 
@@ -136,10 +134,7 @@ export async function changeAssignee(req: Request, res: Response) {
   for (const result of results) {
     const prevStateNode = ns.data(nodeValue(result.currentAssignee.value));
     const closeNode = ns.data(randomUUID());
-    triples.push(
-      [closeNode, ns.ies.inPeriod, nowNode],
-      [closeNode, ns.ies.isEndOf, prevStateNode]
-    );
+    triples.push([closeNode, ns.ies.inPeriod, nowNode], [closeNode, ns.ies.isEndOf, prevStateNode]);
   }
 
   // Create new assignee state

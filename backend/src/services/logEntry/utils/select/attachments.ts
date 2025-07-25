@@ -15,7 +15,7 @@ export function attachments(incidentId: string) {
       ['?attachmentId', ns.ies.hasKey, '?attachmentKey'],
       ['?attachmentId', ns.lisa.hasSize, '?attachmentSize'],
       ['?attachmentId', ns.lisa.hasMimeType, '?attachmentMimeType'],
-      ['?attachmentId', ns.lisa.hasAttachmentType, '?attachmentType'],
+      ['?attachmentId', ns.lisa.hasAttachmentType, '?attachmentType']
     ]
   });
 }

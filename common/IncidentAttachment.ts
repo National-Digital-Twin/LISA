@@ -13,5 +13,4 @@ export const IncidentAttachment = LogEntryAttachment.extend({
   scanResult: String
 });
 
-// eslint-disable-next-line no-redeclare
 export type IncidentAttachment = Static<typeof IncidentAttachment>;

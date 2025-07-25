@@ -3,9 +3,9 @@
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
 // Global imports
-import { Record, Static, String } from 'runtypes';
+import { Object, Static, String } from 'runtypes';
 
-export const User = Record({
+export const User = Object({
   username: String,
   displayName: String
 });
@@ -17,5 +17,4 @@ export interface UserListItem {
 
 export type UserList = UserListItem[];
 
-// eslint-disable-next-line no-redeclare
 export type User = Static<typeof User>;

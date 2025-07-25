@@ -63,12 +63,7 @@ export async function getUsers(): Promise<UserList> {
   }
 
   if (settings.NODE_ENV === 'development') {
-    return [
-      ...cognitoUsers,
-      { username: 'local.user', displayName: 'Local User' },
-      { username: 'test.user', displayName: 'Test User' },
-      { username: 'demo.user', displayName: 'Demo User' }
-    ];
+    return [...cognitoUsers, { username: 'local.user', displayName: 'Local User' }];
   }
 
   return cognitoUsers;

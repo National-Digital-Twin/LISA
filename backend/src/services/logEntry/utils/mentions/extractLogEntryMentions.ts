@@ -9,15 +9,16 @@ import { LogEntryContent } from 'common/LogEntryContent';
 import { ns } from '../../../../rdfutil';
 import { getMentionsOfType } from './utils';
 
-function getMentions(content : LogEntryContent, entryIdNode : unknown) {
+function getMentions(content: LogEntryContent, entryIdNode: unknown) {
   const logEntryMentions = getMentionsOfType(content, 'LogEntry');
   const mentionedIds = new Set<string>(logEntryMentions.map((l) => l.id));
-  return Array.from(mentionedIds).map((id) => (
-    [ns.data(id), ns.lisa.isMentionedBy, entryIdNode]
-  ));
+  return Array.from(mentionedIds).map((id) => [ns.data(id), ns.lisa.isMentionedBy, entryIdNode]);
 }
 
-export function extractLogEntryMentionsFromLogContent(entry: LogEntry, entryIdNode: unknown): Array<unknown>[] {
+export function extractLogEntryMentionsFromLogContent(
+  entry: LogEntry,
+  entryIdNode: unknown
+): Array<unknown>[] {
   const type = LogEntryTypes[entry.type];
   if (type.noContent || !entry.content.json) {
     return [];

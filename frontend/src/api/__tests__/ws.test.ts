@@ -10,7 +10,7 @@ jest.mock('../config', () => ({
 
 describe('WebSocketClient', () => {
   let originalWebSocket: never;
-  // eslint-disable-next-line no-use-before-define
+   
   let webSocketInstances: MockWebSocket[];
 
   const user: User = { username: 'testUser', displayName: 'Test User' };

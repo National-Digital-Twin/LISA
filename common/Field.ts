@@ -3,42 +3,42 @@
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
 // Global imports
-import { Array, Boolean, Optional, Record, Static, String, Number, Union } from 'runtypes';
+import { Array, Boolean, Object, Static, String, Number, Union } from 'runtypes';
 
 // Local imports
 import { FieldType } from './FieldType';
 import { LogEntryType } from './LogEntryType';
 
-export const FieldOption = Record({
-  index: Optional(String),
-  subIndex: Optional(String),
+export const FieldOption = Object({
+  index: String.optional(),
+  subIndex: String.optional(),
   value: String,
   label: String,
-  options: Optional(Array(Record({
-    index: Optional(String),
-    subIndex: Optional(String),
-    value: String,
-    label: String
-  })))
+  options: Array(
+    Object({
+      index: String.optional(),
+      subIndex: String.optional(),
+      value: String,
+      label: String
+    })
+  ).optional()
 });
 
-export const Field = Record({
+export const Field = Object({
   id: String,
   type: FieldType,
-  value: Optional(Union(String, Array(String))),
-  optional: Optional(Boolean),
-  options: Optional(Array(FieldOption)),
-  linkableTypes: Optional(Array(LogEntryType)),
+  value: Union(String, Array(String)).optional(),
+  optional: Boolean.optional(),
+  options: Array(FieldOption).optional(),
+  linkableTypes: Array(LogEntryType).optional(),
 
   // These properties are only needed for the UI.
-  label: Optional(String),
-  hint: Optional(String),
-  className: Optional(String),
-  multiline: Optional(Boolean),
-  rows: Optional(Number)
+  label: String.optional(),
+  hint: String.optional(),
+  className: String.optional(),
+  multiline: Boolean.optional(),
+  rows: Number.optional()
 });
 
-/* eslint-disable no-redeclare */
 export type Field = Static<typeof Field>;
 export type FieldOption = Static<typeof FieldOption>;
-/* eslint-enable no-redeclare */

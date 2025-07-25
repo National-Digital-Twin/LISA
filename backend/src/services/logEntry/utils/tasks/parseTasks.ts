@@ -10,10 +10,7 @@ function removePrefix(uri: string): string {
   return uri.split('#').pop() || uri.split('/').pop() || uri;
 }
 
-
-export async function parseTasks(
-  results: ResultRow[]
-): Promise<Map<string, Task>> {
+export async function parseTasks(results: ResultRow[]): Promise<Map<string, Task>> {
   const tasksByEntry = new Map<string, Task>();
 
   for (const result of results) {

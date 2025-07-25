@@ -17,17 +17,13 @@ export function details(incidentId: string) {
         ['?entryId', ns.lisa.hasModifiedTask, '?changedTaskId'],
         ['?changedTaskId', ns.ies.hasName, '?changedTaskName']
       ]),
-      optional([
-        ['?entryId', ns.lisa.hasStatus, '?changedStatus'],
-      ]),
-      optional([
-        ['?entryId', ns.lisa.assignee, '?changedAssignee'],
-      ]),
+      optional([['?entryId', ns.lisa.hasStatus, '?changedStatus']]),
+      optional([['?entryId', ns.lisa.assignee, '?changedAssignee']]),
       optional([
         ['?entryId', ns.lisa.hasCompletedForm, '?submittedFormId'],
         ['?submittedFormId', ns.rdf.type, '?parentForm'],
-        ['?parentForm', ns.ies.hasName, '?submittedFormTitle'],
-      ]),
+        ['?parentForm', ns.ies.hasName, '?submittedFormTitle']
+      ])
     ]
   });
 }

@@ -2,9 +2,7 @@
 // © Crown Copyright 2025. This work has been developed by the National Digital Twin Programme
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
-/* eslint-disable no-redeclare */
-
-import { Boolean, Literal, Record, Static, String, Union } from 'runtypes';
+import { Boolean, Literal, Object, Static, String, Union } from 'runtypes';
 import { LogEntry } from './LogEntry';
 import { Task } from './Task';
 
@@ -13,7 +11,7 @@ export const NotificationType = Union(
   Literal('TaskAssignedNotification')
 );
 
-export const BaseNotification = Record({
+export const BaseNotification = Object({
   id: String,
   recipient: String,
   read: Boolean,

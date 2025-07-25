@@ -28,7 +28,7 @@ export default class Broker {
     this.clients[id] = {
       ws,
       user,
-      isAlive: true,
+      isAlive: true
     };
     ws.ping();
   }

@@ -14,7 +14,6 @@ export const IncidentStage = Union(
   Literal('Closed')
 );
 
-// eslint-disable-next-line no-redeclare
 export type IncidentStage = Static<typeof IncidentStage>;
 
 type TypesDict = { [key in IncidentStage]: { label: string } };

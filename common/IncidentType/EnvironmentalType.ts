@@ -22,5 +22,4 @@ export const EnvironmentalType = Union(
   Literal('PoorAirQuality')
 );
 
-// eslint-disable-next-line no-redeclare
 export type EnvironmentalType = Static<typeof EnvironmentalType>;

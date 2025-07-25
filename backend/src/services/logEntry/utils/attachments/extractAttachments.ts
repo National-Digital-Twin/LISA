@@ -18,7 +18,7 @@ export async function extractAttachments(
   req: Request,
   entry: LogEntry,
   entryIdNode: unknown
-): Promise<{ triples: unknown[]; names: FileNameMapping[]}> {
+): Promise<{ triples: unknown[]; names: FileNameMapping[] }> {
   if (!entry.attachments?.length || !req.files?.length) {
     return { triples: [], names: [] };
   }
@@ -39,7 +39,7 @@ export async function extractAttachments(
 
         const { originalname } = uploadedFile;
         const extension = originalname.split('.').pop();
-        const name = originalname.substring(0, (originalname.length - extension.length) - 1);
+        const name = originalname.substring(0, originalname.length - extension.length - 1);
         const fileName = `${name} ${timeStamp}.${extension}`;
 
         nameMaps.push({

@@ -16,5 +16,4 @@ export const HealthType = Union(
   Literal('PlantPestAgrilusPlanipennis')
 );
 
-// eslint-disable-next-line no-redeclare
 export type HealthType = Static<typeof HealthType>;

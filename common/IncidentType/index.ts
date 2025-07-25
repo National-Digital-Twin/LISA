@@ -17,16 +17,14 @@ import { TerrorismType } from './TerrorismType';
 
 const SUFFIX = 'Incident';
 
-export const IncidentType = TerrorismType
-  .Or(GeopoliticalType)
-  .Or(AccidentType)
-  .Or(EnvironmentalType)
-  .Or(HealthType)
-  .Or(SocietalType)
-  .Or(ConflictType)
-  .Or(LegacyType);
+export const IncidentType = TerrorismType.or(GeopoliticalType)
+  .or(AccidentType)
+  .or(EnvironmentalType)
+  .or(HealthType)
+  .or(SocietalType)
+  .or(ConflictType)
+  .or(LegacyType);
 
-// eslint-disable-next-line no-redeclare
 export type IncidentType = Static<typeof IncidentType>;
 
 export function addIncidentSuffix(type: IncidentType): string {

@@ -31,7 +31,7 @@ export async function create(req: Request, res: Response) {
     username: res.locals.user.username,
     displayName: res.locals.user.displayName
   };
-  
+
   const incidentBoundingState = randomUUID();
   const incidentState = randomUUID();
   const stateBoundingState = randomUUID();

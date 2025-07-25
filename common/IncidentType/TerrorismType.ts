@@ -19,5 +19,4 @@ export const TerrorismType = Union(
   Literal('InfrastructureCyber')
 );
 
-// eslint-disable-next-line no-redeclare
 export type TerrorismType = Static<typeof TerrorismType>;

@@ -4,7 +4,12 @@
 
 import * as sparql from 'rdf-sparql-builder';
 
-import { NotificationType, TaskAssignedNotification, UserMentionNotification, type Notification } from 'common/Notification';
+import {
+  NotificationType,
+  TaskAssignedNotification,
+  UserMentionNotification,
+  type Notification
+} from 'common/Notification';
 import { type NotificationInput } from './types';
 import { ResultRow } from '../../ia';
 import { nodeValue, ns } from '../../rdfutil';
@@ -16,22 +21,21 @@ export function getTypesList(): unknown {
 
 export function getCreateData(idNode: unknown, input: NotificationInput): unknown[] {
   const logEntryIdNode = ns.data(input.entryId);
-  
+
   switch (input.type) {
   case 'UserMentionNotification':
     return [
       [idNode, ns.lisa.hasLogEntry, logEntryIdNode],
       [idNode, ns.lisa.hasIncident, ns.data(input.incidentId)]
     ];
-  
-  case 'TaskAssignedNotification':
 
+  case 'TaskAssignedNotification':
     return [
       [idNode, ns.lisa.hasLogEntry, logEntryIdNode],
       [idNode, ns.lisa.hasIncident, ns.data(input.incidentId)],
       [idNode, ns.lisa.hasTask, ns.data(input.taskId)]
     ];
-  
+
   default:
     return [];
   }
@@ -52,8 +56,14 @@ export function getFetchOptionals(): unknown[] {
   ];
 }
 
-function getUserMentionNotification(id : string, type : NotificationType, recipient : string, dateTime : string, read : boolean, row : ResultRow) 
-: UserMentionNotification {
+function getUserMentionNotification(
+  id: string,
+  type: NotificationType,
+  recipient: string,
+  dateTime: string,
+  read: boolean,
+  row: ResultRow
+): UserMentionNotification {
   return {
     id,
     type,
@@ -76,8 +86,14 @@ function getUserMentionNotification(id : string, type : NotificationType, recipi
   } as UserMentionNotification;
 }
 
-function getTaskAssignedNotification(id : string, type : NotificationType, recipient : string, dateTime : string, read : boolean, row : ResultRow)
-: TaskAssignedNotification {
+function getTaskAssignedNotification(
+  id: string,
+  type: NotificationType,
+  recipient: string,
+  dateTime: string,
+  read: boolean,
+  row: ResultRow
+): TaskAssignedNotification {
   return {
     id,
     type,
@@ -119,4 +135,3 @@ export function parseNotification(row: ResultRow): Notification {
     throw new ApplicationError(`unknown notification type ${type} could not be parsed`);
   }
 }
-
