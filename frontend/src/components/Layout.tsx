@@ -16,9 +16,13 @@ export default function Layout() {
   const [printable] = useState<boolean>(sessionStorage.getItem(PRINTABLE_KEY) === 'yes');
   return (
     <div className={`App ${printable ? 'printable' : ''}`}>
-      <Header />
-      <OfflineBanner /> 
-      <Outlet />
+      <div className="app-wrapper">
+        <Header />
+        <main className="app-content">
+          <OfflineBanner /> 
+          <Outlet />
+        </main>
+      </div>
     </div>
   );
 }

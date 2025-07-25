@@ -9,7 +9,7 @@ import { type TaskStatus, type Task } from 'common/Task';
 import { type User } from 'common/User';
 import { FormField, PageTitle } from '../components';
 import PageWrapper from '../components/PageWrapper';
-import { useIncidents, useLogEntries, useUsers } from '../hooks';
+import { useAuth, useIncidents, useLogEntries, useUsers } from '../hooks';
 import Status from '../components/Status';
 import { Format } from '../utils';
 import { useResponsive } from '../hooks/useResponsiveHook';
@@ -22,6 +22,7 @@ const Tasks = () => {
   const query = useIncidents();
   const { users } = useUsers();
   const { logEntries } = useLogEntries(incidentId);
+  const { user } = useAuth();
   const { isBelowMd } = useResponsive();
   const updateTaskStatus = useUpdateTaskStatus(incidentId);
   const updateTaskAssignee = useUpdateTaskAssignee(incidentId);
@@ -69,6 +70,12 @@ const Tasks = () => {
 
   if (!incident) return null;
 
+  const canUpdateTask = (task: Task) => {
+    const currentUsername = user.current?.username;
+    const taskAssigneeUsername = task.assignee?.username;
+    
+    return currentUsername === taskAssigneeUsername;
+  };
 
   const handleOnClickStatus = (task: Task) => {
     if (task.id === updateTask.id) return setUpdateTask(defaultUpdateTask);
@@ -170,6 +177,7 @@ const Tasks = () => {
             const isTaskUpdating = updateTask.id === task.id;
             const isStatusUpdating = isTaskUpdating && updateTask.status.edit;
             const isAssigneeUpdating = isTaskUpdating && updateTask.assignee.edit;
+            const canUpdate = canUpdateTask(task);
             const validationErrors = () => {
               if (isStatusUpdating) {
                 return updateTask.status.error ? [updateTask.status.error] : [];
@@ -230,7 +238,7 @@ const Tasks = () => {
                         size="small"
                         variant="contained"
                         onClick={() => handleOnClickStatus(task)}
-                        disabled={isAssigneeUpdating}
+                        disabled={isAssigneeUpdating || !canUpdate}
                         fullWidth={isBelowMd}
                         sx={{ maxHeight: 40 }}
                       >
@@ -242,7 +250,7 @@ const Tasks = () => {
                         variant="contained"
                         onClick={() => handleOnClickAssignee(task)}
                         fullWidth={isBelowMd}
-                        disabled={isStatusUpdating}
+                        disabled={isStatusUpdating || !canUpdate}
                         sx={{ maxHeight: 40 }}
                       >
                         Change Assignee

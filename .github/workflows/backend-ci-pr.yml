@@ -106,8 +106,8 @@ jobs:
 
       - name: Build backend
         run: | 
-          npm run build
-          npm run bundle
+          (cd ./backend && npm run build)
+          (cd ./backend && npm run bundle)
 
       - name: List files in dist dir
         if: success()
