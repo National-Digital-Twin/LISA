@@ -3,7 +3,7 @@
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
 // Global imports
-import { Array, Boolean, Optional, Record, Static, String } from 'runtypes';
+import { Array, Boolean, Object, type Static, String } from 'runtypes';
 
 // Local imports
 import { nonFuture } from './constraints';
@@ -19,30 +19,29 @@ import { FieldGroup } from './FieldGroup';
 import { Task } from './Task';
 import { LogEntryChangeDetails } from './LogEntryChangeDetails';
 
-export const LogEntry = Record({
-  id: Optional(String), // System-generated
+export const LogEntry = Object({
+  id: String.optional(), // System-generated
   incidentId: String, // Should this be a link to the Incident itself?
   dateTime: String.withConstraint(nonFuture), // User-entered, ISO-format
-  createdAt: Optional(String), // system generated
+  createdAt: String.optional(), // system generated
   type: LogEntryType,
   content: LogEntryContent,
-  fields: Optional(Array(Field)),
-  groups: Optional(Array(FieldGroup)),
-  location: Optional(Location), // User-entered
-  author: Optional(User), // System-determined. Or should this be the user's username?
-  mentionsUsers: Optional(Array(Mentionable)),
-  mentionsLogEntries: Optional(Array(Mentionable)),
-  mentionedByLogEntries: Optional(Array(Mentionable)),
+  fields: Array(Field).optional(),
+  groups: Array(FieldGroup).optional(),
+  location: Location.optional(), // User-entered
+  author: User.optional(), // System-determined. Or should this be the user's username?
+  mentionsUsers: Array(Mentionable).optional(),
+  mentionsLogEntries: Array(Mentionable).optional(),
+  mentionedByLogEntries: Array(Mentionable).optional(),
   // recordings?: Array<string>; // Needs to be linked as multimedia,
-  sequence: Optional(String), // System-generated
-  stage: Optional(IncidentStage), // Only applicable to type ChangeStage
-  attachments: Optional(Array(LogEntryAttachment)),
-  task: Optional(Task),
+  sequence: String.optional(), // System-generated
+  stage: IncidentStage.optional(), // Only applicable to type ChangeStage
+  attachments: Array(LogEntryAttachment).optional(),
+  task: Task.optional(),
   // This allows for determining if the Incident has been synced to the server during
   // offline operation.
-  offline: Optional(Boolean),
-  details: Optional(LogEntryChangeDetails)
+  offline: Boolean.optional(),
+  details: LogEntryChangeDetails.optional()
 });
 
-// eslint-disable-next-line no-redeclare
 export type LogEntry = Static<typeof LogEntry>;

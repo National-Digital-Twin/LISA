@@ -3,16 +3,15 @@
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
 // Global imports
-import { Array, Boolean, Optional, Record, Static, String } from 'runtypes';
+import { Array, Boolean, Object, Static, String } from 'runtypes';
 
-export const FieldGroup = Record({
+export const FieldGroup = Object({
   id: String,
-  label: Optional(String),
-  description: Optional(String),
+  label: String.optional(),
+  description: String.optional(),
   fieldIds: Array(String),
-  defaultOpen: Optional(Boolean),
-  className: Optional(String)
+  defaultOpen: Boolean.optional(),
+  className: String.optional()
 });
 
-// eslint-disable-next-line no-redeclare
 export type FieldGroup = Static<typeof FieldGroup>;

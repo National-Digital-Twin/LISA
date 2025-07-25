@@ -19,7 +19,7 @@ export default class PubSubManager {
 
   private subscribers: Subscriber[] = [];
 
-  // eslint-disable-next-line no-useless-constructor, no-empty-function
+  // eslint-disable-next-line no-empty-function
   private constructor() {}
 
   public publish(topic: MessagingTopicType, subject: string, performer?: string) {
@@ -34,13 +34,13 @@ export default class PubSubManager {
   public processMessage(id: string, user: User, ws: WebSocket, message: string) {
     const [action, topic, subject] = message.split('::');
 
-    const actionResult = MessagingAction.validate(action);
+    const actionResult = MessagingAction.inspect(action);
     if (!actionResult.success) {
       console.warn('invalid messaging action', action, 'received - ignoring');
       return;
     }
 
-    const eventResult = MessagingTopic.validate(topic);
+    const eventResult = MessagingTopic.inspect(topic);
     if (!eventResult.success) {
       console.warn('invalid messaging topic', topic, 'received - ignoring');
       return;

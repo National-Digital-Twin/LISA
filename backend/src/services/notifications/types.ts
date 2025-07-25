@@ -4,11 +4,11 @@
 
 type BaseInput = {
   recipient: string;
-}
+};
 
 export type NotificationInput = BaseInput & {
-  type: 'UserMentionNotification' | 'TaskAssignedNotification',
+  type: 'UserMentionNotification' | 'TaskAssignedNotification';
   incidentId: string;
   entryId: string;
   taskId?: string;
-}
+};

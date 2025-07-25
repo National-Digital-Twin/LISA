@@ -3,7 +3,7 @@
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
 // Global imports
-import { Optional, Record, Static, String, Boolean, Literal, Union } from 'runtypes';
+import { Object, type Static, String, Boolean, Literal, Union } from 'runtypes';
 
 // Local imports
 import { nonFuture } from './constraints';
@@ -11,7 +11,7 @@ import { IncidentStage } from './IncidentStage';
 import { IncidentType } from './IncidentType';
 import { User } from './User';
 
-export const ReferralWithSupport = Record({
+export const ReferralWithSupport = Object({
   name: String,
   organisation: String,
   telephone: String,
@@ -20,28 +20,25 @@ export const ReferralWithSupport = Record({
   supportDescription: String
 });
 
-export const ReferralWithoutSupport = Record({
+export const ReferralWithoutSupport = Object({
   name: String,
   organisation: String,
   telephone: String,
   email: String,
   supportRequested: Literal('No'),
-  supportDescription: Optional(String)
+  supportDescription: String.optional()
 });
 
-export const Referrer = Union(
-  ReferralWithSupport,
-  ReferralWithoutSupport
-);
+export const Referrer = Union(ReferralWithSupport, ReferralWithoutSupport);
 
-export const Incident = Record({
-  id: Optional(String), // System-generated
+export const Incident = Object({
+  id: String.optional(), // System-generated
 
   // Can only be set at the point of creation:
   type: IncidentType, // User-selected
   startedAt: String.withConstraint(nonFuture), // User-entered, ISO-format
-  createdAt: Optional(String), // system generated
-  reportedBy: Optional(User), // user id
+  createdAt: String.optional(), // system generated
+  reportedBy: User.optional(), // user id
   referrer: Referrer,
 
   // Can be changed after creation.
@@ -51,11 +48,9 @@ export const Incident = Record({
 
   // This allows for determining if the Incident has been synced to the server during
   // offline operation.
-  offline: Optional(Boolean)
+  offline: Boolean.optional()
 });
 
-// eslint-disable-next-line no-redeclare
 export type Incident = Static<typeof Incident>;
 
-// eslint-disable-next-line no-redeclare
 export type Referrer = Static<typeof Referrer>;

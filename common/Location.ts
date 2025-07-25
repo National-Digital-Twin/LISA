@@ -3,7 +3,7 @@
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
 // Global imports
-import { Literal, Number, Record, Static, String, Union } from 'runtypes';
+import { Literal, Number, Object, Static, String, Union } from 'runtypes';
 
 const LocationType = Union(
   Literal('none'),
@@ -12,44 +12,38 @@ const LocationType = Union(
   Literal('both')
 );
 
-export const Coordinates = Record({
+export const Coordinates = Object({
   latitude: Number,
   longitude: Number
 });
 
-const NoLocation = Record({
+const NoLocation = Object({
   type: Literal('none')
 });
-const DescriptionLocation = Record({
+const DescriptionLocation = Object({
   type: Literal('description'),
   description: String
 });
-const CoordinatesLocation = Record({
+const CoordinatesLocation = Object({
   type: Literal('coordinates'),
   coordinates: Coordinates
 });
-const FullLocation = Record({
+const FullLocation = Object({
   type: Literal('both'),
   description: String,
   coordinates: Coordinates
 });
 
-export const Location = Union(
-  NoLocation,
-  DescriptionLocation,
-  CoordinatesLocation,
-  FullLocation,
-);
+export const Location = Union(NoLocation, DescriptionLocation, CoordinatesLocation, FullLocation);
 
-// eslint-disable-next-line no-redeclare
 export type Location = Static<typeof Location>;
-// eslint-disable-next-line no-redeclare
+
 export type Coordinates = Static<typeof Coordinates>;
-// eslint-disable-next-line no-redeclare
+
 export type LocationType = Static<typeof LocationType>;
 
 type LocationTypesDict = {
-  [key in LocationType]: string
+  [key in LocationType]: string;
 };
 
 export const LocationTypes: LocationTypesDict = {

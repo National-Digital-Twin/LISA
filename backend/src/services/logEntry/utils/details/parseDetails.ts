@@ -7,7 +7,6 @@ import { LogEntryChangeDetails } from 'common/LogEntryChangeDetails';
 import { type ResultRow } from '../../../../ia';
 import { nodeValue } from '../../../../rdfutil';
 
-
 export async function parseDetails(
   results: ResultRow[]
 ): Promise<Map<string, LogEntryChangeDetails>> {
@@ -16,11 +15,15 @@ export async function parseDetails(
   for (const result of results) {
     const entryId = nodeValue(result.entryId.value);
 
-    const changedTaskId = result?.changedTaskId?.value ? nodeValue(result?.changedTaskId?.value) : undefined;
+    const changedTaskId = result?.changedTaskId?.value
+      ? nodeValue(result?.changedTaskId?.value)
+      : undefined;
     const changedTaskName = result?.changedTaskName?.value;
     const changedAssignee = result?.changedAssignee?.value;
     const changedStatus = result?.changedStatus?.value as TaskStatus;
-    const submittedFormId = result?.submittedFormId?.value ? nodeValue(result?.submittedFormId?.value) : undefined;
+    const submittedFormId = result?.submittedFormId?.value
+      ? nodeValue(result?.submittedFormId?.value)
+      : undefined;
     const submittedFormTitle = result?.submittedFormTitle?.value;
 
     if (!detailsByEntry.has(entryId)) {

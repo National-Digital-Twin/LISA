@@ -15,16 +15,16 @@ export function tasks(incidentId: string) {
   const statusNotExistsFilter = new TriplePattern('?x', ns.ies.isEndOf, '?statusNode');
   const assigneeNotExistsFilter = new TriplePattern('?x', ns.ies.isEndOf, '?assigneeNode');
 
-  const taskStatusValues = TaskStatus.alternatives.map((literal) => `<${ns.lisa(literal.value).value}>`).join(' ');
+  const taskStatusValues = TaskStatus.alternatives
+    .map((literal) => `<${ns.lisa(literal.value).value}>`)
+    .join(' ');
 
   return select({
     clause: [
       [ns.data(incidentId), ns.lisa.hasLogEntry, '?entryId'],
       ['?entryId', ns.lisa.hasTask, '?taskId'],
       ['?taskId', ns.ies.hasName, '?taskName'],
-      optional([
-        ['?taskId', ns.lisa.hasDescription, '?description'],
-      ]),
+      optional([['?taskId', ns.lisa.hasDescription, '?description']]),
 
       // Latest Status
       optional([
