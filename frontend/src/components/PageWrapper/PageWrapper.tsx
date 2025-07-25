@@ -11,7 +11,6 @@ const PageWrapper = ({ children }: { children: ReactNode }) => (
     flexDirection="column"
     gap={4}
     paddingY="2rem"
-    margin="auto"
     sx={{
       '@media print': {
         padding: 0,
@@ -20,7 +19,7 @@ const PageWrapper = ({ children }: { children: ReactNode }) => (
       paddingLeft: { xs: '1rem', md: '60px' },
       paddingRight: { xs: '1rem', md: '60px' }
     }}
-    minHeight="calc(100vh - 150px)"
+    minHeight="100%"
   >
     {children}
   </Box>

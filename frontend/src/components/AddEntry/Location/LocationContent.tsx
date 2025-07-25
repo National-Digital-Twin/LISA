@@ -41,6 +41,15 @@ export default function LocationContent({
     [validationErrors]
   );
 
+  // Convert single coordinates to array format for backward compatibility
+  const markers = useMemo(() => {
+    if (!location || location.type === 'none' || location.type === 'description') return [];
+    if ('coordinates' in location && location.coordinates) {
+      return Array.isArray(location.coordinates) ? location.coordinates : [location.coordinates];
+    }
+    return [];
+  }, [location]);
+
   const onLocationTypeChange = (_: string, value: FieldValueType) => {
     onLocationChange(
       MapUtils.getNewLocation(value as LocationType, (location ?? {}) as FullLocationType)
@@ -51,7 +60,7 @@ export default function LocationContent({
     onLocationChange({ ...location, description } as Location);
   };
 
-  const onLocationCoordinatesChange = (coordinates: Coordinates) => {
+  const onLocationCoordinatesChange = (coordinates: Coordinates[]) => {
     onLocationChange({ ...location, coordinates } as Location);
   };
 
@@ -83,13 +92,13 @@ export default function LocationContent({
           <label htmlFor="location.coordinates">
             <MapComponent
               id="location.coordinates"
-              marker={location?.coordinates}
-              setMarker={onLocationCoordinatesChange}
+              markers={markers}
+              setMarkers={onLocationCoordinatesChange}
             />
           </label>
           {coordinatesError && (
             <div className="field-error">
-              Click on the map to place a pin or search for a location
+              Click on the map to place pins or search for a location
             </div>
           )}
         </li>
