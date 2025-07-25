@@ -35,7 +35,7 @@ export const Referrer = Union(
 );
 
 export const Incident = Record({
-  id: Optional(String), // System-generated
+  id: String, // System-generated
 
   // Can only be set at the point of creation:
   type: IncidentType, // User-selected

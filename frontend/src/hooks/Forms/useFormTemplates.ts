@@ -2,7 +2,7 @@
 // © Crown Copyright 2025. This work has been developed by the National Digital Twin Programme
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
-import { QueryClient, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { QueryClient, useMutation, useQuery, useQueryClient, UseQueryOptions } from '@tanstack/react-query';
 import { FetchError, get, post } from '../../api';
 import { Form } from '../../components/CustomForms/FormTemplates/types';
 import { CreateFormTemplatePayload, CreateFormTemplateContext } from "./types";
@@ -63,11 +63,17 @@ export const useCreateFormTemplate = () => {
   });
 };
 
-export const useFormTemplates = () => {
+export function useFormTemplates(
+  options?: Omit<
+    UseQueryOptions<Form[], FetchError>,
+    'queryKey' | 'queryFn'
+  >
+) {
   const { data, isLoading, isError, error } = useQuery<Form[], FetchError>({
     queryKey: ['forms'],
-    queryFn: () => get("/form")
+    queryFn: () => get<Form[]>('/form'),
+    ...options,
   });
-  
+
   return { forms: data, isLoading, isError, error };
-};
+}

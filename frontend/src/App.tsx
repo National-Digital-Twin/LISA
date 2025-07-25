@@ -19,11 +19,12 @@ import './App.scss';
 import MessagingProvider from './providers/MessagingProvider';
 import ToastProvider from './providers/ToastProvider';
 import AuthContextProvider from './providers/AuthContextProvider'
-import { useUsers } from './hooks';
+import { useOfflineBootstrap } from './hooks/useOfflineBootstrap';
 
 const App = () => {
 
   useOfflineSync();
+  useOfflineBootstrap();
 
   useRegisterSW({
     immediate: true
@@ -46,14 +47,6 @@ const App = () => {
   useEffect(() => {
     clearExpiredEntities();
   }, []);
-
-  // Pre-warm users cache here
-  useUsers({
-    enabled: true,
-    staleTime: Infinity,
-    retry: false,
-    refetchOnWindowFocus: false,
-  });
 
   return (
     <AuthContextProvider>

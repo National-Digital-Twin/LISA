@@ -9,7 +9,7 @@ import * as ia from '../ia';
 
 export async function create(req: Request, res: Response) {
   try {
-    const { formData, formTemplateId } = req.body;
+    const { formData, formTemplateId, createdAt } = req.body;
     const { incidentId } = req.params;
 
     const formId = randomUUID();
@@ -17,7 +17,6 @@ export async function create(req: Request, res: Response) {
     const formTemplateNode = ns.data(formTemplateId);
 
     const authorNode = ns.data(res.locals.user.username);
-    const now = new Date();
 
     const incidentIdNode = ns.data(incidentId);
 
@@ -25,7 +24,7 @@ export async function create(req: Request, res: Response) {
   
     await ia.insertData([
       [formNode, ns.rdf.type, formTemplateNode],
-      [formNode, ns.lisa.createdAt, literalDate(now)],
+      [formNode, ns.lisa.createdAt, literalDate(new Date(createdAt))],
       [incidentIdNode, ns.lisa.hasForm, formNode],
   
       // Form Author details

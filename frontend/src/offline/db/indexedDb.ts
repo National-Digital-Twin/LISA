@@ -1,3 +1,7 @@
+// SPDX-License-Identifier: Apache-2.0
+// © Crown Copyright 2025. This work has been developed by the National Digital Twin Programme
+// and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
+
 import { openDB, DBSchema } from 'idb';
 import { OfflineIncident } from '../types/OfflineIncident';
 import { OfflineLogEntry } from '../types/OfflineLogEntry';
@@ -22,11 +26,18 @@ export interface OfflineDB extends DBSchema {
 
 export const dbPromise = openDB<OfflineDB>('lisa-offline-db', 1, {
   upgrade(db) {
-    db.createObjectStore('incidents', { keyPath: 'id' });
-    db.createObjectStore('forms', { keyPath: 'id' });
-
-    const logStore = db.createObjectStore('logs', { keyPath: 'id' });
-    logStore.createIndex('by-incidentId', 'incidentId');
+    if (!db.objectStoreNames.contains('incidents')) {
+      db.createObjectStore('incidents', { keyPath: 'id' });
+    }
+  
+    if (!db.objectStoreNames.contains('forms')) {
+      db.createObjectStore('forms', { keyPath: 'id' });
+    }
+  
+    if (!db.objectStoreNames.contains('logs')) {
+      const logStore = db.createObjectStore('logs', { keyPath: 'id' });
+      logStore.createIndex('by-incidentId', 'incidentId');
+    }
   },
 });
 
