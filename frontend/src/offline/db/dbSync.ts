@@ -80,7 +80,5 @@ export async function syncAllOfflineEntities() {
       }),
     Promise.resolve()
     );
-  
-  // console.log('All offline entities synced successfully');
 }
   
