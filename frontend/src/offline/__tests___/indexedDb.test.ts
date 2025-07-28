@@ -54,16 +54,6 @@ describe('IndexedDB clearExpiredEntities()', () => {
       expiresAt: expiredDate,
     };
 
-    const futureForm: OfflineFormInstance = {
-      id: 'f1',
-      title: 'Future Form',
-      formTemplateId: 'template1',
-      formData: { field: 'value' },
-      incidentId: 'i1',
-      createdAt: new Date().toISOString(),
-      expiresAt: futureDate,
-    };
-
     const expiredLog: OfflineLogEntry = {
       id: 'l1',
       incidentId: 'i1',
@@ -72,6 +62,17 @@ describe('IndexedDB clearExpiredEntities()', () => {
       content: { text: 'Expired log' },
       offline: true,
       expiresAt: expiredDate,
+    };
+
+    const futureForm: OfflineFormInstance = {
+      id: 'f1',
+      title: 'Future Form',
+      formTemplateId: 'template1',
+      formData: { field: 'value' },
+      incidentId: 'i1',
+      createdAt: new Date().toISOString(),
+      pendingLogEntry: expiredLog,
+      expiresAt: futureDate,
     };
 
     const tx = db.transaction(['incidents', 'forms', 'logs'], 'readwrite');

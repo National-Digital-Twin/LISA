@@ -14,14 +14,15 @@ import { post } from '../../api';
 import { OfflineFormInstance } from '../types/OfflineForm';
 import { OfflineIncident } from '../types/OfflineIncident';
 import { OfflineLogEntry } from '../types/OfflineLogEntry';
+import { logError } from '../../utils/logger';
 
 async function handleFormSync(form : OfflineFormInstance) {
   try {
     await post(`/incident/${form.incidentId}/form`, form);
     await post(`/incident/${form.incidentId}/logEntry`, form.pendingLogEntry);
     await deleteForms(form.id);
-  } catch (_err) {
-    // console.error(`Failed to sync form ${form.id}`, err);
+  } catch (err) {
+    logError(`handle form sync: ${form.id}`, err);
   }
 }
 
@@ -29,8 +30,8 @@ async function handleIncidentSync(incident : OfflineIncident) {
   try {
     await post('/incident', incident);
     await deleteIncident(incident.id);
-  } catch (_err) {
-    // console.error(`Failed to sync incident ${incident.id}`, err);
+  } catch (err) {
+    logError(`handle incident sync: ${incident.id}`, err);
   }
 }
 
@@ -38,8 +39,8 @@ async function handleLogSync(log : OfflineLogEntry) {
   try {
     await post(`/incident/${log.incidentId}/logEntry`, log);
     await deleteLog(log.id!);
-  } catch (_err) {
-    // console.error(`Failed to sync log ${log.id}`, err);
+  } catch (err) {
+    logError(`handle log sync: ${log.id}`, err);
   }
 }
   
