@@ -59,6 +59,7 @@ const mockForm = {
   formData: { field1: 'value1' },
   incidentId: 'incident-1',
   createdAt: new Date().toISOString(),
+  pendingLogEntry: mockLog,
 };
 
 describe('IndexedDB Operations', () => {
