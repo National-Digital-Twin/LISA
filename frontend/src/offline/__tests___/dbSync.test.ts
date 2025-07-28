@@ -36,16 +36,6 @@ describe('syncAllOfflineEntities', () => {
     expiresAt: '',
   };
 
-  const mockForm: OfflineFormInstance = {
-    id: 'f1',
-    incidentId: 'i1',
-    title: 'Form 1',
-    formTemplateId: 'template-1',
-    formData: {},
-    createdAt: new Date().toISOString(),
-    expiresAt: '',
-  };
-
   const mockLog: OfflineLogEntry = {
     id: 'l1',
     incidentId: 'i1',
@@ -54,6 +44,17 @@ describe('syncAllOfflineEntities', () => {
     content: { text: 'test' },
     offline: true,
     expiresAt: '',
+  };
+
+  const mockForm: OfflineFormInstance = {
+    id: 'f1',
+    incidentId: 'i1',
+    title: 'Form 1',
+    formTemplateId: 'template-1',
+    formData: {},
+    createdAt: new Date().toISOString(),
+    expiresAt: '',
+    pendingLogEntry: mockLog
   };
 
   beforeEach(() => {

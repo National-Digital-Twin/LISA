@@ -12,19 +12,13 @@ import {
 } from './dbOperations';
 import { post } from '../../api';
 import { OfflineFormInstance } from '../types/OfflineForm';
-import { createLogEntryFromSubmittedForm } from '../../hooks/Forms/utils';
 import { OfflineIncident } from '../types/OfflineIncident';
 import { OfflineLogEntry } from '../types/OfflineLogEntry';
 
 async function handleFormSync(form : OfflineFormInstance) {
   try {
     await post(`/incident/${form.incidentId}/form`, form);
-    const logEntry = createLogEntryFromSubmittedForm(
-      form.title,
-      form.id,
-      form.incidentId
-    );
-    await post(`/incident/${form.incidentId}/logEntry`, logEntry);
+    await post(`/incident/${form.incidentId}/logEntry`, form.pendingLogEntry);
     await deleteForms(form.id);
   } catch (_err) {
     // console.error(`Failed to sync form ${form.id}`, err);
@@ -56,7 +50,7 @@ export async function syncAllOfflineEntities() {
     .filter(incident => incident.offline)
     .reduce((promise, incident) =>
       promise.then(async () => {
-        handleIncidentSync(incident);
+        await handleIncidentSync(incident);
       }),
     Promise.resolve()
     );
@@ -66,7 +60,7 @@ export async function syncAllOfflineEntities() {
   await offlineForms
     .reduce((promise, form) =>
       promise.then(async () => {
-        handleFormSync(form);
+        await handleFormSync(form);
       }),
     Promise.resolve()
     );
@@ -76,7 +70,7 @@ export async function syncAllOfflineEntities() {
   await offlineLogs
     .reduce((promise, log) =>
       promise.then(async () => {
-        handleLogSync(log);
+        await handleLogSync(log);
       }),
     Promise.resolve()
     );

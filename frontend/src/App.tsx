@@ -11,7 +11,6 @@ import { onlineManager, useQueryClient } from '@tanstack/react-query';
 // Local imports
 import AppWrapper from './components/AppWrapper';
 import Toasts from './components/Toasts';
-import { clearExpiredEntities } from './offline/db/indexedDb';
 import { useOfflineSync } from './hooks/useOfflineSync';
 
 // Styles
@@ -43,10 +42,6 @@ const App = () => {
       }),
     [queryClient]
   );
-
-  useEffect(() => {
-    clearExpiredEntities();
-  }, []);
 
   return (
     <AuthContextProvider>

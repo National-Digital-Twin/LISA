@@ -31,7 +31,7 @@ export async function create(req: Request, res: Response) {
     entry.dateTime = now.toISOString();
   }
 
-  const entryId = entry.id;
+  const entryId = entry.id ?? randomUUID();
   const entryIdNode = ns.data(entryId);
   const incidentIdNode = ns.data(incidentId);
   const authorNode = ns.data(res.locals.user.username);

@@ -41,23 +41,33 @@ export const useCreateFormInstance = (incidentId?: string) => {
     mutationFn: async ({ formTemplateId, formData, title }) => {
       if (!incidentId) throw new Error('No incident ID provided.');
 
+      const id = uuidV4();
+      const createdAt = new Date().toISOString();
+
       if (!isOnline) {
-        const id = uuidV4();
+        const logEntry = createLogEntryFromSubmittedForm(
+          title,
+          id,
+          incidentId,
+          createdAt
+        );
+
         const offlineForm: OfflineFormInstance = {
           id,
           title,
           formTemplateId,
           formData,
           incidentId,
-          createdAt: new Date().toISOString(),
+          createdAt,
           authorName: 'Offline',
+          pendingLogEntry: {...logEntry, id: uuidV4() }
         };
 
         await addForm(offlineForm);
         return { id };
       }
 
-      return post(`/incident/${incidentId}/form`, { formTemplateId, formData });
+      return post(`/incident/${incidentId}/form`, { formTemplateId, formData, createdAt, id });
     },
 
     onMutate: async ({ formTemplateId, formData, title }) => {

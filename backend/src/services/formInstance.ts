@@ -9,10 +9,10 @@ import * as ia from '../ia';
 
 export async function create(req: Request, res: Response) {
   try {
-    const { formData, formTemplateId, createdAt } = req.body;
+    const { formData, formTemplateId, createdAt, id } = req.body;
     const { incidentId } = req.params;
 
-    const formId = randomUUID();
+    const formId = id ?? randomUUID();
     const formNode = ns.data(formId);
     const formTemplateNode = ns.data(formTemplateId);
 
