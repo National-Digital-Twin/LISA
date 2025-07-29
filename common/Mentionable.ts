@@ -3,13 +3,17 @@
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
 // Global imports
-import { Literal, Object, Static, String, Union } from 'runtypes';
+import { Literal, Record, Static, String, Union } from 'runtypes';
 
-export const MentionableType = Union(Literal('User'), Literal('LogEntry'), Literal('File'));
+export const MentionableType = Union(
+  Literal('User'),
+  Literal('LogEntry'),
+  Literal('File'),
+);
 
 export type MentionableType = Static<typeof MentionableType>;
 
-export const Mentionable = Object({
+export const Mentionable = Record({
   id: String,
   label: String,
   type: MentionableType

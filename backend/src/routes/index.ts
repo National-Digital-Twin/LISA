@@ -3,7 +3,7 @@
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
 // Global imports
-import Router from 'express-promise-router';
+import { Router } from 'express';
 import multer from 'multer';
 
 // Local imports
@@ -28,10 +28,7 @@ const upload = multer({
   }
 });
 
-const router = Router();
-
 const apiRouter = Router();
-router.use('/api', apiRouter);
 
 apiRouter.get('/auth/logout-links', auth.logoutLinks);
 
@@ -50,7 +47,8 @@ apiRouter.post('/incident', incident.create);
 apiRouter.get('/incident/:incidentId', incident.getById);
 
 apiRouter.get('/incident/:incidentId/logEntries', logEntry.get);
-apiRouter.post('/incident/:incidentId/logEntry', upload.any(), logEntry.create);
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+apiRouter.post('/incident/:incidentId/logEntry', upload.any() as any, logEntry.create);
 
 apiRouter.get('/incident/:incidentId/attachments', incident.getAttachments);
 
@@ -77,4 +75,4 @@ apiRouter.head('/ping', (_, res) => res.sendStatus(200));
 
 apiRouter.use(errorsMiddleware);
 
-export default router;
+export default apiRouter;

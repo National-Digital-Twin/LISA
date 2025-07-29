@@ -4,24 +4,23 @@ import { LogEntry } from 'common/LogEntry';
 import { LogEntryTypes } from 'common/LogEntryTypes';
 import type { Field } from 'common/Field';
 import { Location } from 'common/Location';
-import { Failure, Object } from 'runtypes';
-import Validate, { extractErrors, hasValue } from '../index';
+import Validate, { getErrorText, extractErrors, hasValue } from '../index';
 
 jest.mock('common/Incident', () => ({
   Incident: {
-    inspect: jest.fn()
+    validate: jest.fn()
   },
   ReferralWithSupport: {
-    inspect: jest.fn()
+    validate: jest.fn()
   },
   ReferralWithoutSupport: {
-    inspect: jest.fn()
+    validate: jest.fn()
   }
 }));
 
 jest.mock('common/LogEntry', () => ({
   LogEntry: {
-    inspect: jest.fn()
+    validate: jest.fn()
   }
 }));
 
@@ -46,70 +45,45 @@ jest.mock('../../Format', () => ({
 }));
 
 describe('Helper functions', () => {
+  describe('getErrorText', () => {
+    it('should return the trimmed message after the colon when error starts with "Failed constraint check"', () => {
+      const error = 'Failed constraint check: Some specific error occurred';
+      expect(getErrorText(error)).toBe('Some specific error occurred');
+    });
+
+    it('should return "Field required" when error does not start with the expected text', () => {
+      expect(getErrorText('Other error')).toBe('Field required');
+    });
+
+    it('should return "Field required" when provided an empty string', () => {
+      expect(getErrorText('')).toBe('Field required');
+    });
+  });
+
   describe('extractErrors', () => {
     it('should extract errors from a flat details object', () => {
-      const details: Failure.Details = {
-        field1: {
-          success: false,
-          code: 'PROPERTY_MISSING',
-          message: ''
-        } as Failure,
-        field2: {
-          success: false,
-          code: 'INSTANCEOF_FAILED',
-          message: ''
-        } as Failure,
-        field3: {
-          success: false,
-          code: 'CONTENT_INCORRECT',
-          message: '',
-          expected: Object({}),
-          received: '',
-          details: {
-            field1: {
-              success: false,
-              code: 'PROPERTY_MISSING',
-              message: ''
-            } as Failure
-          } as Failure.Details
-        },
-        field4: {
-          success: false,
-          code: 'TYPE_INCORRECT',
-          message: '',
-          expected: Object({}),
-          received: '',
-          detail: {
-            success: false,
-            code: 'PROPERTY_MISSING',
-            message: ''
-          } as Failure
-        },
-        field5: {
-          success: false,
-          code: 'CONSTRAINT_FAILED',
-          message: '',
-          thrown: 'Some constraint failed.',
-          expected: Object({}),
-          received: ''
-        },
-        field6: {
-          success: false,
-          code: 'CONSTRAINT_FAILED',
-          message: '',
-          thrown: false,
-          expected: Object({}),
-          received: ''
+      const details = {
+        field1: 'Failed constraint check: Missing value',
+        field2: 'Some other error'
+      };
+      const errors = extractErrors(details);
+      expect(errors).toEqual([
+        { fieldId: 'field1', error: 'Missing value' },
+        { fieldId: 'field2', error: 'Field required' }
+      ]);
+    });
+
+    it('should extract errors recursively with proper path', () => {
+      const details = {
+        parent: {
+          child1: 'Failed constraint check: Invalid input',
+          child2: 'Error message'
         }
       };
       const errors = extractErrors(details);
       expect(errors).toEqual([
-        { fieldId: 'field1', error: 'Field required.' },
-        { fieldId: 'field2', error: 'Unknown error.' },
-        { fieldId: 'field3.field1', error: 'Field required.' },
-        { fieldId: 'field4', error: 'Field required.' },
-        { fieldId: 'field5', error: 'Some constraint failed.' },
-        { fieldId: 'field6', error: 'Unknown error.' }
+        { fieldId: 'parent.child1', error: 'Invalid input' },
+        { fieldId: 'parent.child2', error: 'Field required' }
       ]);
     });
   });
@@ -166,34 +140,18 @@ describe('Validate functions', () => {
     it('should return errors for incident and referrer validations', () => {
       // Arrange:
       const fakeIncidentError = {
-        success: false,
-        code: 'CONTENT_INCORRECT',
-        message: '',
-        details: {
-          incidentName: {
-            success: false,
-            code: 'PROPERTY_MISSING',
-            message: ''
-          } as Failure
-        } as Failure.Details
-      } as Failure;
+        details: { incidentField: 'Failed constraint check: Incident missing' },
+        success: false
+      };
       const fakeReferralError = {
-        success: false,
-        code: 'CONTENT_INCORRECT',
-        message: '',
-        details: {
-          supportDescription: {
-            success: false,
-            code: 'PROPERTY_MISSING',
-            message: ''
-          } as Failure
-        } as Failure.Details
-      } as Failure;
+        details: { ref_error: 'Failed constraint check: Referrer error' },
+        success: false
+      };
 
       // Set up mocks.
-      (Incident.inspect as jest.Mock).mockReturnValueOnce(fakeIncidentError);
+      (Incident.validate as jest.Mock).mockReturnValueOnce(fakeIncidentError);
       // Test when support is requested, so use ReferralWithSupport.
-      (ReferralWithSupport.inspect as jest.Mock).mockReturnValueOnce(fakeReferralError);
+      (ReferralWithSupport.validate as jest.Mock).mockReturnValueOnce(fakeReferralError);
 
       const incidentData = {
         someProperty: 'value',
@@ -207,28 +165,20 @@ describe('Validate functions', () => {
 
       // Assert:
       expect(errors).toEqual([
-        { fieldId: 'incidentName', error: 'Field required.' },
-        { fieldId: 'referrer.supportDescription', error: 'Field required.' }
+        { fieldId: 'incidentField', error: 'Incident missing' },
+        { fieldId: 'referrer.ref_error', error: 'Referrer error' }
       ]);
     });
 
     it('should use ReferralWithoutSupport when support is not requested', () => {
       const fakeIncidentError = { details: {}, success: true };
       const fakeReferralError = {
-        success: false,
-        code: 'CONTENT_INCORRECT',
-        message: '',
-        details: {
-          supportDescription: {
-            success: false,
-            code: 'PROPERTY_MISSING',
-            message: ''
-          } as Failure
-        } as Failure.Details
-      } as Failure;
+        details: { ref_error: 'Failed constraint check: No support error' },
+        success: false
+      };
 
-      (Incident.inspect as jest.Mock).mockReturnValueOnce(fakeIncidentError);
-      (ReferralWithoutSupport.inspect as jest.Mock).mockReturnValueOnce(fakeReferralError);
+      (Incident.validate as jest.Mock).mockReturnValueOnce(fakeIncidentError);
+      (ReferralWithoutSupport.validate as jest.Mock).mockReturnValueOnce(fakeReferralError);
 
       const incidentData = {
         referrer: {
@@ -237,28 +187,18 @@ describe('Validate functions', () => {
       } as unknown as Partial<Incident>;
 
       const errors = Validate.incident(incidentData);
-      expect(errors).toEqual([
-        { fieldId: 'referrer.supportDescription', error: 'Field required.' }
-      ]);
+      expect(errors).toEqual([{ fieldId: 'referrer.ref_error', error: 'No support error' }]);
     });
   });
 
   describe('Validate.entry', () => {
-    it('should return errors based on LogEntry.inspect and missing content field', () => {
+    it('should return errors based on LogEntry.validate and missing content field', () => {
       // Arrange:
       const fakeEntryError = {
-        success: false,
-        code: 'CONTENT_INCORRECT',
-        message: '',
-        details: {
-          content: {
-            success: false,
-            code: 'PROPERTY_MISSING',
-            message: ''
-          } as Failure
-        } as Failure.Details
-      } as Failure;
-      (LogEntry.inspect as jest.Mock).mockReturnValueOnce(fakeEntryError);
+        details: { entryField: 'Failed constraint check: Invalid entry' },
+        success: false
+      };
+      (LogEntry.validate as jest.Mock).mockReturnValueOnce(fakeEntryError);
 
       // Override the type association for the test entry.
       const entryData = {
@@ -274,15 +214,15 @@ describe('Validate functions', () => {
       // Assert:
       // Expect the error from LogEntry.validate and missing description.
       expect(errors).toEqual([
-        { fieldId: 'content', error: 'Field required.' },
+        { fieldId: 'entryField', error: 'Invalid entry' },
         { fieldId: 'content', error: 'Description required' }
       ]);
     });
 
     it('should validate custom fields and mentions when provided', () => {
       // Arrange:
-      // In this test, LogEntry.inspect succeeds.
-      (LogEntry.inspect as jest.Mock).mockReturnValueOnce({ success: true });
+      // In this test, LogEntry.validate succeeds.
+      (LogEntry.validate as jest.Mock).mockReturnValueOnce({ success: true });
 
       // Fake type for the entry.
       const fakeField = { id: 'customField', type: 'Text' };

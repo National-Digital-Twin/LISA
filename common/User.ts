@@ -3,9 +3,9 @@
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
 // Global imports
-import { Object, Static, String } from 'runtypes';
+import { Record, Static, String } from 'runtypes';
 
-export const User = Object({
+export const User = Record({
   username: String,
   displayName: String
 });

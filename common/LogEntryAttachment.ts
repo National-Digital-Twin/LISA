@@ -2,7 +2,7 @@
 // © Crown Copyright 2025. This work has been developed by the National Digital Twin Programme
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
-import { Union, Literal, Static, Object, Number, String } from 'runtypes';
+import { Union, Literal, Static, Record, Number, String, Optional } from 'runtypes';
 
 export const LogEntryAttachmentType = Union(
   Literal('Recording'),
@@ -12,13 +12,13 @@ export const LogEntryAttachmentType = Union(
 
 export type LogEntryAttachmentType = Static<typeof LogEntryAttachmentType>;
 
-export const LogEntryAttachment = Object({
+export const LogEntryAttachment = Record({
   name: String,
   type: LogEntryAttachmentType,
-  key: String.optional(),
-  size: Number.optional(),
-  mimeType: String.optional(),
-  scanResult: String.optional()
+  key: Optional(String),
+  size: Optional(Number),
+  mimeType: Optional(String),
+  scanResult: Optional(String)
 });
 
 export type LogEntryAttachment = Static<typeof LogEntryAttachment>;

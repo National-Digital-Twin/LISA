@@ -54,7 +54,7 @@
     "react-media-recorder": "1.7.1",
     "react-router-dom": "7.7.1",
     "react-select": "5.10.2",
-    "runtypes": "7.0.4",
+    "runtypes": "6.7.0",
     "typescript-eslint": "^8.38.0",
     "uuid": "11.1.0",
     "vite-plugin-svgr": "4.3.0"

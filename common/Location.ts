@@ -3,7 +3,7 @@
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
 // Global imports
-import { Literal, Number, Static, String, Union, Array } from 'runtypes';
+import { Literal, Number, Record, Static, String, Union, Array } from 'runtypes';
 
 const LocationType = Union(
   Literal('none'),
@@ -12,29 +12,34 @@ const LocationType = Union(
   Literal('both')
 );
 
-export const Coordinates = Object({
+export const Coordinates = Record({
   latitude: Number,
   longitude: Number
 });
 
-const NoLocation = Object({
+const NoLocation = Record({
   type: Literal('none')
 });
-const DescriptionLocation = Object({
+const DescriptionLocation = Record({
   type: Literal('description'),
   description: String
 });
-const CoordinatesLocation = Object({
+const CoordinatesLocation = Record({
   type: Literal('coordinates'),
   coordinates: Array(Coordinates)
 });
-const FullLocation = Object({
+const FullLocation = Record({
   type: Literal('both'),
   description: String,
   coordinates: Array(Coordinates)
 });
 
-export const Location = Union(NoLocation, DescriptionLocation, CoordinatesLocation, FullLocation);
+export const Location = Union(
+  NoLocation,
+  DescriptionLocation,
+  CoordinatesLocation,
+  FullLocation,
+);
 
 export type Location = Static<typeof Location>;
 
@@ -43,7 +48,7 @@ export type Coordinates = Static<typeof Coordinates>;
 export type LocationType = Static<typeof LocationType>;
 
 type LocationTypesDict = {
-  [key in LocationType]: string;
+  [key in LocationType]: string
 };
 
 export const LocationTypes: LocationTypesDict = {

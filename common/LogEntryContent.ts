@@ -3,11 +3,11 @@
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
 // Global imports
-import { Object, Static, String } from 'runtypes';
+import { Optional, Record, Static, String } from 'runtypes';
 
-export const LogEntryContent = Object({
-  json: String.optional(),
-  text: String.optional()
+export const LogEntryContent = Record({
+  json: Optional(String),
+  text: Optional(String)
 });
 
 export type LogEntryContent = Static<typeof LogEntryContent>;

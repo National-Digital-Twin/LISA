@@ -9,37 +9,34 @@ import { Incident, ReferralWithSupport, ReferralWithoutSupport } from 'common/In
 import { Location } from 'common/Location';
 import { LogEntry } from 'common/LogEntry';
 import { LogEntryTypes } from 'common/LogEntryTypes';
-import { Task } from 'common/Task';
+import { Task } from 'common/Task'
 /* eslint-enable import/no-extraneous-dependencies */
-import { Failure } from 'runtypes';
 import { type ValidationError } from '../types';
 import Format from '../Format';
 
-function extractErrors(details: Failure.Details, path?: string): Array<ValidationError> {
-  const errors: Array<ValidationError> = [];
-  errors.push(
-    ...Object.keys(details).flatMap((key) => {
-      const failure = details[key];
+type Details = {
+  [key in string | number | symbol]: string | Details;
+};
+
+function getErrorText(error: string): string {
+  if (error?.startsWith('Failed constraint check')) {
+    return error.split(':').pop()?.trim() ?? '';
+  }
+  return 'Field required';
+}
+
+function extractErrors(details: Details, path?: string): Array<ValidationError> {
+  const errors = [];
+  if (details) {
+    errors.push(...Object.keys(details).flatMap((key) => {
+      const error = details[key];
       const fieldId = path ? `${path}.${key}` : key;
-
-      if (failure.code === 'CONTENT_INCORRECT') {
-        return extractErrors(failure.details, fieldId);
+      if (typeof error === 'string') {
+        return { fieldId, error: getErrorText(error) };
       }
-
-      if (failure.code === 'PROPERTY_MISSING' || failure.code === 'TYPE_INCORRECT') {
-        return { fieldId, error: `Field required.` };
-      }
-
-      if (failure.code === 'CONSTRAINT_FAILED') {
-        if (typeof failure.thrown === 'string') {
-          return { fieldId, error: failure.thrown };
-        }
-      }
-
-      return { fieldId, error: 'Unknown error.' };
-    })
-  );
-
+      return extractErrors(error, fieldId);
+    }));
+  }
   return errors;
 }
 
@@ -53,21 +50,21 @@ function hasValue(value: unknown): boolean {
 const Validate = {
   incident: (incident: Partial<Incident>): Array<ValidationError> => {
     const errors = [];
-    const incidentValidation = Incident.inspect(incident);
-    if (!incidentValidation.success && incidentValidation.code === 'CONTENT_INCORRECT') {
+    const incidentValidation = Incident.validate(incident);
+    if (!incidentValidation.success && incidentValidation.details) {
       const { details } = incidentValidation;
-      errors.push(...extractErrors(details));
+      errors.push(...extractErrors(details as Details));
     }
 
     let referrerValidation;
     if (incident.referrer?.supportRequested === 'Yes') {
-      referrerValidation = ReferralWithSupport.inspect(incident.referrer);
+      referrerValidation = ReferralWithSupport.validate(incident.referrer);
     } else {
-      referrerValidation = ReferralWithoutSupport.inspect(incident.referrer);
+      referrerValidation = ReferralWithoutSupport.validate(incident.referrer);
     }
-    if (!referrerValidation.success && referrerValidation.code === 'CONTENT_INCORRECT') {
+    if (!referrerValidation.success && referrerValidation.details) {
       const { details } = referrerValidation;
-      errors.push(...extractErrors(details, 'referrer'));
+      errors.push(...extractErrors(details as Details, 'referrer'));
     }
 
     return errors;
@@ -76,10 +73,10 @@ const Validate = {
     const errors: Array<ValidationError> = [];
 
     // Validate the top-level fields.
-    const entryValidation = LogEntry.inspect(entry);
-    if (!entryValidation.success && entryValidation.code === 'CONTENT_INCORRECT') {
+    const entryValidation = LogEntry.validate(entry);
+    if (!entryValidation.success && entryValidation.details) {
       const { details } = entryValidation;
-      errors.push(...extractErrors(details));
+      errors.push(...extractErrors(details as Details));
     }
 
     if (entry.type) {
@@ -93,20 +90,18 @@ const Validate = {
 
       // Check any mentions are valid
       if (!noContent && hasValue(entry.content?.json)) {
-        errors.push(...Validate.mentions(entry.content?.json ?? '{}', files));
+        errors.push(...Validate.mentions((entry.content?.json ?? '{}'), files));
       }
 
       // Check the fields if they're supposed to be there...
       const fields = type.fields(entry);
       if (fields.length > 0) {
-        fields
-          .filter((f) => f.type !== 'Location')
-          .forEach((field) => {
-            // ... but only if it's editable and not optional.
-            if (!Validate.field(field, entry.fields)) {
-              errors.push({ fieldId: field.id, error: 'Field required' });
-            }
-          });
+        fields.filter((f) => f.type !== 'Location').forEach((field) => {
+          // ... but only if it's editable and not optional.
+          if (!Validate.field(field, entry.fields)) {
+            errors.push({ fieldId: field.id, error: 'Field required' });
+          }
+        });
       }
 
       // Validate the location.
@@ -139,7 +134,8 @@ const Validate = {
     return [];
   },
   mentions: (jsonContent: string, files: File[]): Array<ValidationError> => {
-    const mentionables = Format.lexical.mentionables(jsonContent).filter((m) => m.type === 'File');
+    const mentionables = Format.lexical.mentionables(jsonContent)
+      .filter((m) => m.type === 'File');
     const isMissing = mentionables.some((mention) => {
       const [owningEntry, fileName] = mention.id.split('::');
       return owningEntry === 'this' && !files.find((f) => f.name === fileName);
@@ -151,8 +147,8 @@ const Validate = {
   },
   task: (task: Task | undefined): Array<ValidationError> => {
     const taskValidationErrors: ValidationError[] = [];
-
-    if (task?.include !== 'Yes') {
+    
+    if (task?.include !== "Yes") {
       return taskValidationErrors;
     }
 
@@ -172,6 +168,6 @@ const Validate = {
   }
 };
 
-export { extractErrors, hasValue };
+export { getErrorText, extractErrors, hasValue };
 
 export default Validate;

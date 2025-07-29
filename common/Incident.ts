@@ -3,7 +3,7 @@
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
 // Global imports
-import { Object, type Static, String, Boolean, Literal, Union } from 'runtypes';
+import { Optional, Record, Static, String, Boolean, Literal, Union } from 'runtypes';
 
 // Local imports
 import { nonFuture } from './constraints';
@@ -11,7 +11,7 @@ import { IncidentStage } from './IncidentStage';
 import { IncidentType } from './IncidentType';
 import { User } from './User';
 
-export const ReferralWithSupport = Object({
+export const ReferralWithSupport = Record({
   name: String,
   organisation: String,
   telephone: String,
@@ -20,25 +20,28 @@ export const ReferralWithSupport = Object({
   supportDescription: String
 });
 
-export const ReferralWithoutSupport = Object({
+export const ReferralWithoutSupport = Record({
   name: String,
   organisation: String,
   telephone: String,
   email: String,
   supportRequested: Literal('No'),
-  supportDescription: String.optional()
+  supportDescription: Optional(String)
 });
 
-export const Referrer = Union(ReferralWithSupport, ReferralWithoutSupport);
+export const Referrer = Union(
+  ReferralWithSupport,
+  ReferralWithoutSupport
+);
 
-export const Incident = Object({
-  id: String.optional(), // System-generated
+export const Incident = Record({
+  id: Optional(String), // System-generated
 
   // Can only be set at the point of creation:
   type: IncidentType, // User-selected
   startedAt: String.withConstraint(nonFuture), // User-entered, ISO-format
-  createdAt: String.optional(), // system generated
-  reportedBy: User.optional(), // user id
+  createdAt: Optional(String), // system generated
+  reportedBy: Optional(User), // user id
   referrer: Referrer,
 
   // Can be changed after creation.
@@ -48,7 +51,7 @@ export const Incident = Object({
 
   // This allows for determining if the Incident has been synced to the server during
   // offline operation.
-  offline: Boolean.optional()
+  offline: Optional(Boolean)
 });
 
 export type Incident = Static<typeof Incident>;

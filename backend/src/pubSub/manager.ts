@@ -34,13 +34,13 @@ export default class PubSubManager {
   public processMessage(id: string, user: User, ws: WebSocket, message: string) {
     const [action, topic, subject] = message.split('::');
 
-    const actionResult = MessagingAction.inspect(action);
+    const actionResult = MessagingAction.validate(action);
     if (!actionResult.success) {
       console.warn('invalid messaging action', action, 'received - ignoring');
       return;
     }
 
-    const eventResult = MessagingTopic.inspect(topic);
+    const eventResult = MessagingTopic.validate(topic);
     if (!eventResult.success) {
       console.warn('invalid messaging topic', topic, 'received - ignoring');
       return;
