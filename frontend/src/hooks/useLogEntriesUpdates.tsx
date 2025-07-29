@@ -37,6 +37,14 @@ export function useLogEntriesUpdates(incidentId: string) {
             unmatchedEntries.push(cachedEntry);
           }
         });
+
+        entries.forEach((entry) => {
+          const matchedEntry = cachedEntries.find((cachedEntry) => cachedEntry.id === entry.id);
+
+          if (!matchedEntry) {
+            unmatchedEntries.push(entry);
+          }
+        });
       } else {
         unmatchedEntries = entries;
       }
