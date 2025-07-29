@@ -9,9 +9,9 @@ on:
     branches:
       - 'develop'
     paths:
-      - "backend/**"
-      - ".github/workflows/backend-ci-pr.yml"
-      - ".github/workflows/backend-ci-pr-merge.yml"
+      - 'backend/**'
+      - '.github/workflows/backend-ci-pr.yml'
+      - '.github/workflows/backend-ci-pr-merge.yml'
   workflow_dispatch:
 
 permissions:
@@ -33,7 +33,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "23.x"
+          node-version: '24.x'
 
       - name: Install Dependencies
         run: npm ci
@@ -56,7 +56,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "23.x"
+          node-version: '24.x'
 
       - name: Install Dependencies
         run: npm ci
@@ -77,12 +77,12 @@ jobs:
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@0.28.0
         with:
-          scan-type: "fs"
+          scan-type: 'fs'
           scan-ref: backend
-          format: "table"
-          exit-code: "1"
+          format: 'table'
+          exit-code: '1'
           ignore-unfixed: true
-          severity: "CRITICAL,HIGH"
+          severity: 'CRITICAL,HIGH'
 
   docker-build-test-scan:
     name: Build, Docker Build, Test & Scan
@@ -99,13 +99,13 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "23.x"
+          node-version: '24.x'
 
       - name: Install Dependencies
         run: npm ci
 
       - name: Build backend
-        run: | 
+        run: |
           (cd ./backend && npm run build)
           (cd ./backend && npm run bundle)
 
@@ -122,10 +122,9 @@ jobs:
       - name: Run Trivy Scan on Docker Image
         uses: aquasecurity/trivy-action@0.28.0
         with:
-          image-ref: "lisa/api:latest"
-          format: "table"
-          exit-code: "1"
+          image-ref: 'lisa/api:latest'
+          format: 'table'
+          exit-code: '1'
           ignore-unfixed: true
-          vuln-type: "os,library"
-          severity: "CRITICAL,HIGH"
-
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
