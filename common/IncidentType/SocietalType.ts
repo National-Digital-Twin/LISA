@@ -11,5 +11,4 @@ export const SocietalType = Union(
   Literal('BritishNationalArrival')
 );
 
-// eslint-disable-next-line no-redeclare
 export type SocietalType = Static<typeof SocietalType>;

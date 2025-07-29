@@ -26,7 +26,6 @@ export const IncidentType = TerrorismType
   .Or(ConflictType)
   .Or(LegacyType);
 
-// eslint-disable-next-line no-redeclare
 export type IncidentType = Static<typeof IncidentType>;
 
 export function addIncidentSuffix(type: IncidentType): string {

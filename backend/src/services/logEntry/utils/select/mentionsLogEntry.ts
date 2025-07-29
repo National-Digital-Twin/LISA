@@ -14,4 +14,3 @@ export function mentionsLogEntryInLogContent(incidentId: string) {
     ]
   });
 }
-

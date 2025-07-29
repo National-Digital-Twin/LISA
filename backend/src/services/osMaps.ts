@@ -22,7 +22,7 @@ export async function searchLocation(req: Request<object, object, object, Query>
     url.searchParams.set('query', req.query.searchTerm);
     url.searchParams.set('output_srs', 'WGS84');
   }
-  url.searchParams.set('lr', 'EN'); 
+  url.searchParams.set('lr', 'EN');
   url.searchParams.set('key', key);
 
   const osResp = await fetch(url, {
@@ -37,10 +37,12 @@ export async function searchLocation(req: Request<object, object, object, Query>
 
   const osData = await osResp.json();
 
-  res.json(osData.results?.map((result) => ({
-    value: result.DPA.UPRN,
-    label: result.DPA.ADDRESS,
-    lat: result.DPA.LAT,
-    lon: result.DPA.LNG,
-  })));
+  res.json(
+    osData.results?.map((result) => ({
+      value: result.DPA.UPRN,
+      label: result.DPA.ADDRESS,
+      lat: result.DPA.LAT,
+      lon: result.DPA.LNG
+    }))
+  );
 }

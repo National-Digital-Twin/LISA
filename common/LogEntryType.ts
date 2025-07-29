@@ -25,5 +25,4 @@ export const LogEntryType = Union(
   Literal('FormSubmitted')
 );
 
-// eslint-disable-next-line no-redeclare
 export type LogEntryType = Static<typeof LogEntryType>;

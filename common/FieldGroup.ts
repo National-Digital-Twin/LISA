@@ -14,5 +14,4 @@ export const FieldGroup = Record({
   className: Optional(String)
 });
 
-// eslint-disable-next-line no-redeclare
 export type FieldGroup = Static<typeof FieldGroup>;

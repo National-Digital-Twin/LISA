@@ -5,11 +5,11 @@
 export class User {
   private readonly usernameInternal: string;
 
-  private readonly displayNameInternal : string;
-  
+  private readonly displayNameInternal: string;
+
   private readonly emailInternal: string;
 
-  constructor(username: string, email: string, displayName : string) {
+  constructor(username: string, email: string, displayName: string) {
     this.usernameInternal = username;
     this.emailInternal = email;
     this.displayNameInternal = displayName;

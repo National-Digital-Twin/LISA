@@ -38,7 +38,5 @@ export const Field = Record({
   rows: Optional(Number)
 });
 
-/* eslint-disable no-redeclare */
 export type Field = Static<typeof Field>;
 export type FieldOption = Static<typeof FieldOption>;
-/* eslint-enable no-redeclare */

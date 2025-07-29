@@ -41,11 +41,10 @@ export const Location = Union(
   FullLocation,
 );
 
-// eslint-disable-next-line no-redeclare
 export type Location = Static<typeof Location>;
-// eslint-disable-next-line no-redeclare
+
 export type Coordinates = Static<typeof Coordinates>;
-// eslint-disable-next-line no-redeclare
+
 export type LocationType = Static<typeof LocationType>;
 
 type LocationTypesDict = {

@@ -10,7 +10,6 @@ export const LogEntryAttachmentType = Union(
   Literal('File')
 );
 
-// eslint-disable-next-line no-redeclare
 export type LogEntryAttachmentType = Static<typeof LogEntryAttachmentType>;
 
 export const LogEntryAttachment = Record({
@@ -22,5 +21,4 @@ export const LogEntryAttachment = Record({
   scanResult: Optional(String)
 });
 
-// eslint-disable-next-line no-redeclare
 export type LogEntryAttachment = Static<typeof LogEntryAttachment>;

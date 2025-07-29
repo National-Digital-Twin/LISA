@@ -86,13 +86,21 @@ export async function create(req: Request, res: Response) {
     if (entry.location.type === 'coordinates' || entry.location.type === 'both') {
       coordinates = entry.location.coordinates;
     }
-    
-    if (coordinates.length > 0) {
+
+    if (coordinates) {
       coordinates.forEach((coordinate, index) => {
         locationIdNode = `${randomUUID()}-${index}`;
         triples.push([ns.data(locationIdNode), ns.rdf.type, ns.ies.Location]);
-        triples.push([ns.data(locationIdNode), ns.ies.Latitude, literalDecimal(coordinate.latitude)]);
-        triples.push([ns.data(locationIdNode), ns.ies.Longitude, literalDecimal(coordinate.longitude)]);
+        triples.push([
+          ns.data(locationIdNode),
+          ns.ies.Latitude,
+          literalDecimal(coordinate.latitude)
+        ]);
+        triples.push([
+          ns.data(locationIdNode),
+          ns.ies.Longitude,
+          literalDecimal(coordinate.longitude)
+        ]);
         triples.push([entryIdNode, ns.ies.inLocation, ns.data(locationIdNode)]);
       });
     }

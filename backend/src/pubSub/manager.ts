@@ -19,7 +19,7 @@ export default class PubSubManager {
 
   private subscribers: Subscriber[] = [];
 
-  // eslint-disable-next-line no-useless-constructor, no-empty-function
+  // eslint-disable-next-line no-empty-function
   private constructor() {}
 
   public publish(topic: MessagingTopicType, subject: string, performer?: string) {
