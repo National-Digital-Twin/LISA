@@ -32,7 +32,7 @@
     "multer": "2.0.2",
     "rdf-sparql-builder": "0.2.5",
     "rdflib": "2.2.37",
-    "runtypes": "7.0.4",
+    "runtypes": "6.7.0",
     "typescript-eslint": "^8.38.0",
     "ws": "8.18.3"
   },
