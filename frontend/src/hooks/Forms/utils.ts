@@ -10,12 +10,13 @@ export function createLogEntryFromSubmittedForm(
   formTitle: string,
   formId: string,
   incidentId: string,
+  dateTime?: string,
   entry?: Partial<LogEntry>
 ): Partial<LogEntry> {
   const logEntry: Partial<LogEntry> = entry ?? {
     type: 'FormSubmitted',
     incidentId,
-    dateTime: new Date().toISOString(),
+    dateTime: dateTime ?? new Date().toISOString(),
     content: {},
     fields: [],
     sequence: createSequenceNumber(),

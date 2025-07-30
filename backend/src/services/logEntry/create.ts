@@ -16,6 +16,49 @@ import { literalDate, literalDecimal, literalString, ns } from '../../rdfutil';
 import { create as createNotification } from '../notifications';
 import { attachments, details, fields, mentions, tasks } from './utils';
 
+function addLocationTriples(entry : LogEntry, entryIdNode : string): unknown[] {
+  let coordinates: Coordinates[];
+  let description: string;
+  let locationIdNode: string | undefined;
+  const triples: unknown[] = [];
+
+  if (entry.location.type === 'description' || entry.location.type === 'both') {
+    description = entry.location.description;
+  }
+  if (entry.location.type === 'coordinates' || entry.location.type === 'both') {
+    coordinates = entry.location.coordinates;
+  }
+
+  if (coordinates) {
+    coordinates.forEach((coordinate, index) => {
+      locationIdNode = `${randomUUID()}-${index}`;
+      triples.push([ns.data(locationIdNode), ns.rdf.type, ns.ies.Location]);
+      triples.push([
+        ns.data(locationIdNode),
+        ns.ies.Latitude,
+        literalDecimal(coordinate.latitude)
+      ]);
+      triples.push([
+        ns.data(locationIdNode),
+        ns.ies.Longitude,
+        literalDecimal(coordinate.longitude)
+      ]);
+      triples.push([entryIdNode, ns.ies.inLocation, ns.data(locationIdNode)]);
+    });
+  }
+
+  if (description) {
+    if (!locationIdNode) {
+      locationIdNode = randomUUID();
+      triples.push([ns.data(locationIdNode), ns.rdf.type, ns.ies.Location]);
+      triples.push([entryIdNode, ns.ies.inLocation, ns.data(locationIdNode)]);
+    }
+    triples.push([ns.data(locationIdNode), ns.lisa.hasDescription, literalString(description)]);
+  }
+
+  return triples;
+}
+
 export async function create(req: Request, res: Response) {
   const { incidentId } = req.params;
 
@@ -31,7 +74,7 @@ export async function create(req: Request, res: Response) {
     entry.dateTime = now.toISOString();
   }
 
-  const entryId = entry.id;
+  const entryId = entry.id ?? randomUUID();
   const entryIdNode = ns.data(entryId);
   const incidentIdNode = ns.data(incidentId);
   const authorNode = ns.data(res.locals.user.username);
@@ -76,43 +119,7 @@ export async function create(req: Request, res: Response) {
   }
 
   if (entry.location) {
-    let coordinates: Coordinates[];
-    let description: string;
-    let locationIdNode: string | undefined;
-
-    if (entry.location.type === 'description' || entry.location.type === 'both') {
-      description = entry.location.description;
-    }
-    if (entry.location.type === 'coordinates' || entry.location.type === 'both') {
-      coordinates = entry.location.coordinates;
-    }
-
-    if (coordinates) {
-      coordinates.forEach((coordinate, index) => {
-        locationIdNode = `${randomUUID()}-${index}`;
-        triples.push([ns.data(locationIdNode), ns.rdf.type, ns.ies.Location]);
-        triples.push([
-          ns.data(locationIdNode),
-          ns.ies.Latitude,
-          literalDecimal(coordinate.latitude)
-        ]);
-        triples.push([
-          ns.data(locationIdNode),
-          ns.ies.Longitude,
-          literalDecimal(coordinate.longitude)
-        ]);
-        triples.push([entryIdNode, ns.ies.inLocation, ns.data(locationIdNode)]);
-      });
-    }
-
-    if (description) {
-      if (!locationIdNode) {
-        locationIdNode = randomUUID();
-        triples.push([ns.data(locationIdNode), ns.rdf.type, ns.ies.Location]);
-        triples.push([entryIdNode, ns.ies.inLocation, ns.data(locationIdNode)]);
-      }
-      triples.push([ns.data(locationIdNode), ns.lisa.hasDescription, literalString(description)]);
-    }
+    triples.push(...addLocationTriples(entry, entryIdNode));
   }
 
   await ia.insertData(triples);

@@ -11,15 +11,20 @@ import { onlineManager, useQueryClient } from '@tanstack/react-query';
 // Local imports
 import AppWrapper from './components/AppWrapper';
 import Toasts from './components/Toasts';
+import { useOfflineSync } from './hooks/useOfflineSync';
 
 // Styles
 import './App.scss';
 import MessagingProvider from './providers/MessagingProvider';
 import ToastProvider from './providers/ToastProvider';
-import AuthContextProvider from './providers/AuthContextProvider';
-import { useUsers } from './hooks';
+import AuthContextProvider from './providers/AuthContextProvider'
+import { useOfflineBootstrap } from './hooks/useOfflineBootstrap';
 
 const App = () => {
+
+  useOfflineSync();
+  useOfflineBootstrap();
+
   useRegisterSW({
     immediate: true
   });
@@ -37,14 +42,6 @@ const App = () => {
       }),
     [queryClient]
   );
-
-  // Pre-warm users cache here
-  useUsers({
-    enabled: true,
-    staleTime: Infinity,
-    retry: false,
-    refetchOnWindowFocus: false,
-  });
 
   return (
     <AuthContextProvider>
