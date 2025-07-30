@@ -127,28 +127,4 @@
       padding: 10px 8px;
     }
   }
-  .user-mention-name {
-    display: block;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-  .user-mention-info {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 1rem;
-    padding-top: 14px;
-    span {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-    img,
-    svg {
-      color: colors.$grey-dark;
-      height: 15px;
-      width: auto;
-    }
-  }
 }

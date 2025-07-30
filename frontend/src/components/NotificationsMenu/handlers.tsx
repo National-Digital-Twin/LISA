@@ -80,24 +80,32 @@ function assignedTask(notification: Notification, navigate: NavigateFunction): H
     title: "You've been assigned a new Task",
     Content: (
       <>
-        <span className="user-mention-name">
-          <span>{`#${entry.sequence} - `}</span>
-          <span>{(entry.task.name ?? '').substring(0, 100)}</span>
-        </span>
-        <span className="user-mention-info">
-          <span>
+        <Box>
+          <Typography component="span" variant="body1">{`#${entry.sequence} - `}</Typography>
+          <Typography component="span" variant="body1">
+            {(entry.task.name ?? '').substring(0, 100)}
+          </Typography>
+        </Box>
+        <Box display="flex" flexDirection="row" gap={2} alignItems="center">
+          <Box display="flex" gap={1} alignItems="center">
             <PersonIcon fontSize="small" />
-            {Format.user(entry.author)}
-          </span>
-          <span>
+            <Typography fontSize="small" variant="body1">
+              {Format.user(entry.author)}
+            </Typography>
+          </Box>
+          <Box display="flex" gap={1} alignItems="center">
             <CalendarMonthIcon fontSize="small" />
-            {Format.date(entry.dateTime)}
-          </span>
-          <span>
+            <Typography fontSize="small" variant="body1">
+              {Format.date(entry.dateTime)}
+            </Typography>
+          </Box>
+          <Box display="flex" gap={1} alignItems="center">
             <AccessTimeFilledIcon fontSize="small" />
-            {Format.time(entry.dateTime)}
-          </span>
-        </span>
+            <Typography fontSize="small" variant="body1">
+              {Format.time(entry.dateTime)}
+            </Typography>
+          </Box>
+        </Box>
       </>
     ),
     clickHandler: (item) => {
