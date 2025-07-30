@@ -2,19 +2,16 @@
 // © Crown Copyright 2025. This work has been developed by the National Digital Twin Programme
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
+// Global imports
 import { ReactNode } from 'react';
 import { NavigateFunction } from 'react-router-dom';
+import { Box, Typography } from '@mui/material';
 import PersonIcon from '@mui/icons-material/Person';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import AccessTimeFilledIcon from '@mui/icons-material/AccessTimeFilled';
 
-// eslint-disable-next-line import/no-extraneous-dependencies
-import {
-  type Notification,
-  TaskAssignedNotification,
-  UserMentionNotification
-} from 'common/Notification';
-import { Box, Typography } from '@mui/material';
+// Local imports
+import { type Notification, UserMentionNotification, TaskAssignedNotification } from 'common/Notification';
 import { Format } from '../../utils';
 
 type Handler = {
@@ -25,6 +22,48 @@ type Handler = {
 
 type HandlerFunction = (notification: Notification, navigate: NavigateFunction) => Handler | null;
 
+// Reusable components to eliminate duplication
+const NotificationContent = ({ 
+  sequence, 
+  text, 
+  author, 
+  dateTime 
+}: { 
+  sequence: string; 
+  text: string; 
+  author: any; 
+  dateTime: string; 
+}) => (
+  <>
+    <Box>
+      <Typography component="span" variant="body1">{`#${sequence} - `}</Typography>
+      <Typography component="span" variant="body1">
+        {text.substring(0, 100)}
+      </Typography>
+    </Box>
+    <Box display="flex" flexDirection="row" gap={2} alignItems="center">
+      <Box display="flex" gap={1} alignItems="center">
+        <PersonIcon fontSize="small" />
+        <Typography fontSize="small" variant="body1">
+          {Format.user(author)}
+        </Typography>
+      </Box>
+      <Box display="flex" gap={1} alignItems="center">
+        <CalendarMonthIcon fontSize="small" />
+        <Typography fontSize="small" variant="body1">
+          {Format.date(dateTime)}
+        </Typography>
+      </Box>
+      <Box display="flex" gap={1} alignItems="center">
+        <AccessTimeFilledIcon fontSize="small" />
+        <Typography fontSize="small" variant="body1">
+          {Format.time(dateTime)}
+        </Typography>
+      </Box>
+    </Box>
+  </>
+);
+
 function userMention(notification: Notification, navigate: NavigateFunction): Handler | null {
   if (!UserMentionNotification.guard(notification)) {
     return null;
@@ -34,34 +73,12 @@ function userMention(notification: Notification, navigate: NavigateFunction): Ha
   return {
     title: "You've been mentioned in a Log Entry",
     Content: (
-      <>
-        <Box>
-          <Typography component="span" variant="body1">{`#${entry.sequence} - `}</Typography>
-          <Typography component="span" variant="body1">
-            {(entry.content.text ?? '').substring(0, 100)}
-          </Typography>
-        </Box>
-        <Box display="flex" flexDirection="row" gap={2} alignItems="center">
-          <Box display="flex" gap={1} alignItems="center">
-            <PersonIcon fontSize="small" />
-            <Typography fontSize="small" variant="body1">
-              {Format.user(entry.author)}
-            </Typography>
-          </Box>
-          <Box display="flex" gap={1} alignItems="center">
-            <CalendarMonthIcon fontSize="small" />
-            <Typography fontSize="small" variant="body1">
-              {Format.date(entry.dateTime)}
-            </Typography>
-          </Box>
-          <Box display="flex" gap={1} alignItems="center">
-            <AccessTimeFilledIcon fontSize="small" />
-            <Typography fontSize="small" variant="body1">
-              {Format.time(entry.dateTime)}
-            </Typography>
-          </Box>
-        </Box>
-      </>
+      <NotificationContent
+        sequence={entry.sequence ?? ''}
+        text={entry.content.text ?? ''}
+        author={entry.author}
+        dateTime={entry.dateTime}
+      />
     ),
     clickHandler: (item) => {
       navigate(`logbook/${item.entry.incidentId}#${item.entry.id}`);
@@ -79,34 +96,12 @@ function assignedTask(notification: Notification, navigate: NavigateFunction): H
   return {
     title: "You've been assigned a new Task",
     Content: (
-      <>
-        <Box>
-          <Typography component="span" variant="body1">{`#${entry.sequence} - `}</Typography>
-          <Typography component="span" variant="body1">
-            {(entry.task.name ?? '').substring(0, 100)}
-          </Typography>
-        </Box>
-        <Box display="flex" flexDirection="row" gap={2} alignItems="center">
-          <Box display="flex" gap={1} alignItems="center">
-            <PersonIcon fontSize="small" />
-            <Typography fontSize="small" variant="body1">
-              {Format.user(entry.author)}
-            </Typography>
-          </Box>
-          <Box display="flex" gap={1} alignItems="center">
-            <CalendarMonthIcon fontSize="small" />
-            <Typography fontSize="small" variant="body1">
-              {Format.date(entry.dateTime)}
-            </Typography>
-          </Box>
-          <Box display="flex" gap={1} alignItems="center">
-            <AccessTimeFilledIcon fontSize="small" />
-            <Typography fontSize="small" variant="body1">
-              {Format.time(entry.dateTime)}
-            </Typography>
-          </Box>
-        </Box>
-      </>
+      <NotificationContent
+        sequence={entry.sequence ?? ''}
+        text={entry.task.name ?? ''}
+        author={entry.author}
+        dateTime={entry.dateTime}
+      />
     ),
     clickHandler: (item) => {
       const taskAssignedNotif = item as TaskAssignedNotification;
@@ -122,20 +117,18 @@ export default function getHandler(
   navigate: NavigateFunction
 ): Handler {
   const handler: Handler | null = handlerFunctions.reduce(
-    (result: Handler | null, fn: HandlerFunction) => {
-      if (result) {
-        return result;
+    (acc, handlerFunction) => {
+      if (acc !== null) {
+        return acc;
       }
-      return fn(notification, navigate);
+      return handlerFunction(notification, navigate);
     },
-    null
+    null as Handler | null
   );
 
-  return (
-    handler || {
-      title: 'Error: Unhandled notification type',
-      clickHandler: () => {},
-      Content: <span>what</span>
-    }
-  );
+  if (handler === null) {
+    throw new Error(`No handler found for notification`);
+  }
+
+  return handler;
 }
