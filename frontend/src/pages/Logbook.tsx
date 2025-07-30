@@ -30,6 +30,7 @@ import { type OnCreateEntry } from '../utils/handlers';
 import { type FieldValueType, type FilterType, type SpanType } from '../utils/types';
 import { useResponsive } from '../hooks/useResponsiveHook';
 import { useIsOnline } from '../hooks/useIsOnline';
+import { logInfo } from '../utils/logger';
 
 const Logbook = () => {
   const { incidentId } = useParams();
@@ -107,7 +108,7 @@ const Logbook = () => {
 
   const onMentionClick = (mention: Mentionable) => {
     if (mention.type === 'User') {
-      console.log(`Clicked on user ${mention.id}:`, mention.label);
+      logInfo(`Clicked on user ${mention.id}: ${mention.label}`);
       navigate('#');
     } else if (mention.type === 'File') {
       navigate('#');
