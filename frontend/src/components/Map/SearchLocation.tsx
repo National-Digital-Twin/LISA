@@ -13,6 +13,7 @@ import {
   TextField
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
+import { matchSorter } from 'match-sorter';
 
 // Local imports
 import { type Coordinates } from 'common/Location';
@@ -62,6 +63,11 @@ const SearchLocation = ({ location, onSelectLocation }: Props) => {
         loading={loading}
         sx={{ backgroundColor: 'white' }}
         getOptionLabel={(option) => option.label}
+        filterOptions={(options, { inputValue }) =>
+          matchSorter(options, inputValue, {
+            keys: [(option) => option.label]
+          })
+        }
         // renderOption={(props, option) => <li>{option.label}</li>}
         renderInput={(params) => (
           <TextField
