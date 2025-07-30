@@ -39,5 +39,4 @@ export const AccidentType = Union(
   Literal('MajorFire')
 );
 
-// eslint-disable-next-line no-redeclare
 export type AccidentType = Static<typeof AccidentType>;

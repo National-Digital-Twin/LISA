@@ -10,5 +10,4 @@ export const LogEntryContent = Record({
   text: Optional(String)
 });
 
-// eslint-disable-next-line no-redeclare
 export type LogEntryContent = Static<typeof LogEntryContent>;

@@ -3,19 +3,24 @@
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
 // Local imports
-import { type Location, type LocationType } from 'common/Location';
+import { type Coordinates, type Location, type LocationType } from 'common/Location';
 import { FullLocationType } from '../types';
+
+function normalizeCoordinates(coordinates: Coordinates | Coordinates[] | undefined): Coordinates[] {
+  if (!coordinates) return [];
+  return Array.isArray(coordinates) ? coordinates : [coordinates];
+}
 
 export function getNewLocation(type: LocationType, prev: FullLocationType): Location {
   const { description, coordinates } = prev;
-  // Indentation looks off... but that's what lint insists on
+
   switch (type) {
     case 'description':
       return { type, description } as Location;
     case 'coordinates':
-      return { type, coordinates } as Location;
+      return { type, coordinates: normalizeCoordinates(coordinates) } as Location;
     case 'both':
-      return { type, description, coordinates } as Location;
+      return { type, description, coordinates: normalizeCoordinates(coordinates) } as Location;
     default:
       return { type: 'none' };
   }

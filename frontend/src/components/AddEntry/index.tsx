@@ -60,7 +60,7 @@ const AddEntry = ({
     type: 'General',
     content: {}
   });
-  const [validationErrors, setValidationErrors] = useState<ValidationError[]>([]);
+  const [validationErrors, setValidationErrors] = useState<Array<ValidationError>>([]);
   const [showValidationErrors, setShowValidationErrors] = useState<boolean>(false);
   const [recordings, setRecordings] = useState<File[]>([]);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);

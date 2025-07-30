@@ -11,7 +11,6 @@ export const MentionableType = Union(
   Literal('File'),
 );
 
-// eslint-disable-next-line no-redeclare
 export type MentionableType = Static<typeof MentionableType>;
 
 export const Mentionable = Record({
@@ -20,5 +19,4 @@ export const Mentionable = Record({
   type: MentionableType
 });
 
-// eslint-disable-next-line no-redeclare
 export type Mentionable = Static<typeof Mentionable>;

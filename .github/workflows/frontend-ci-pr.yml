@@ -33,7 +33,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '23.x'
+          node-version: '24.x'
 
       - name: Install Dependencies
         run: npm ci
@@ -56,7 +56,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '23.x'
+          node-version: '24.x'
 
       - name: Install Dependencies
         run: npm ci
@@ -100,15 +100,15 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '23.x'
+          node-version: '24.x'
 
       - name: Install Dependencies
         run: npm ci
 
       - name: Build Frontend
         run: |
-          npm run build
-          npm run bundle
+          (cd ./frontend && npm run build)
+          (cd ./frontend && npm run bundle)
 
       - name: List files in dist dir
         if: success()

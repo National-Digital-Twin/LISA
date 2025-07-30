@@ -16,9 +16,7 @@ export function fields(incidentId: string) {
       ['?entryId', ns.lisa.hasField, '?fieldId'],
       ['?fieldId', ns.ies.hasName, '?fieldName'],
       ['?fieldId', ns.ies.hasValue, '?fieldValue'],
-      optional([
-        ['?fieldId', ns.lisa.hasFieldType, '?fieldType'],
-      ])
+      optional([['?fieldId', ns.lisa.hasFieldType, '?fieldType']])
     ]
   });
 }

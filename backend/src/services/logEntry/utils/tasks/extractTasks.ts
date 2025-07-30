@@ -2,11 +2,15 @@
 // © Crown Copyright 2025. This work has been developed by the National Digital Twin Programme
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
-import { randomUUID } from "crypto";
-import { LogEntry } from "common/LogEntry";
-import { literalDate, literalString, ns } from "../../../../rdfutil";
+import { randomUUID } from 'crypto';
+import { LogEntry } from 'common/LogEntry';
+import { literalDate, literalString, ns } from '../../../../rdfutil';
 
-export function extractTasks(entry: LogEntry, entryIdNode: unknown, taskNode: unknown): Array<unknown> {
+export function extractTasks(
+  entry: LogEntry,
+  entryIdNode: unknown,
+  taskNode: unknown
+): Array<unknown> {
   if (!entry.task) return [];
 
   const triples: unknown[] = [];

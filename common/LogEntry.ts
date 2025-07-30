@@ -44,5 +44,4 @@ export const LogEntry = Record({
   details: Optional(LogEntryChangeDetails)
 });
 
-// eslint-disable-next-line no-redeclare
 export type LogEntry = Static<typeof LogEntry>;

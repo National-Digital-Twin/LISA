@@ -17,5 +17,4 @@ export interface UserListItem {
 
 export type UserList = UserListItem[];
 
-// eslint-disable-next-line no-redeclare
 export type User = Static<typeof User>;

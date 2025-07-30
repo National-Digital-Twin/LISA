@@ -3,26 +3,26 @@
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
 // Global imports
-import 'maplibre-gl/dist/maplibre-gl.css';
-import { FitBoundsOptions } from 'maplibre-gl';
-import { MouseEvent, ReactElement, useEffect, useMemo, useRef, useState } from 'react';
-import Map, { Marker, MapRef, NavigationControl, LngLatBoundsLike } from 'react-map-gl/maplibre';
-import { useNavigate } from 'react-router-dom';
 import CloseIcon from '@mui/icons-material/Close';
 import ImportContactsIcon from '@mui/icons-material/ImportContacts';
+import { FitBoundsOptions } from 'maplibre-gl';
+import 'maplibre-gl/dist/maplibre-gl.css';
+import { MouseEvent, ReactElement, useEffect, useMemo, useRef, useState } from 'react';
+import Map, { LngLatBoundsLike, MapRef, Marker, NavigationControl } from 'react-map-gl/maplibre';
+import { useNavigate } from 'react-router-dom';
 
 // Local imports
+import { Box, IconButton } from '@mui/material';
 import { type Coordinates } from 'common/Location';
 import { type LogEntry } from 'common/LogEntry';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { LogEntryTypes } from 'common/LogEntryTypes';
 import { type MentionableType } from 'common/Mentionable';
-import { Box, IconButton } from '@mui/material';
+import { useResponsive } from '../../hooks/useResponsiveHook';
 import { bem, Icons, MapUtils } from '../../utils';
 import { type FullLocationType, type SpanType } from '../../utils/types';
 import EntryItem from '../EntryList/EntryItem';
 import { INITIAL_VIEW_STATE, MAP_BOUNDS, MAP_STYLE } from './config';
-import { useResponsive } from '../../hooks/useResponsiveHook';
 
 type LogEntryMarkerType = {
   id: string;
@@ -62,48 +62,30 @@ export default function IncidentMap({ logEntries, highlightId = undefined }: Rea
   const mapRef = useRef<MapRef>(null);
   const navigate = useNavigate();
   const highlighted = logEntries?.find((entry) => entry.id === highlightId);
-  const showLogList = Boolean(logEntries?.length && highlighted);
 
   const logListRef = useRef<HTMLDivElement>(null);
 
-  const FOOTER_HEIGHT = 50;
-
-  const [mapHeight, setMapHeight] = useState<number>(window.innerHeight - FOOTER_HEIGHT);
-
-  useEffect(() => {
-    const updateMapHeight = () => {
-      let newHeight = window.innerHeight - FOOTER_HEIGHT;
-      if (showLogList && logListRef.current) {
-        // Subtract the log list height from the window height (or any container height)
-        newHeight -= logListRef.current.clientHeight;
-      }
-      setMapHeight(newHeight);
-    };
-
-    updateMapHeight();
-    window.addEventListener('resize', updateMapHeight);
-
-    return () => {
-      window.removeEventListener('resize', updateMapHeight);
-    };
-  }, [showLogList]);
-
   const markers: LogEntryMarkerType[] = useMemo(() => {
     if (!logEntries) return [];
-    return logEntries
-      .map((entry) => {
-        const { coordinates } = (entry.location || {}) as FullLocationType;
-        if (coordinates) {
-          return {
-            id: entry.id,
-            coordinates,
+    const allMarkers: LogEntryMarkerType[] = [];
+
+    logEntries.forEach((entry) => {
+      const { coordinates } = (entry.location || {}) as FullLocationType;
+
+      if (coordinates && Array.isArray(coordinates)) {
+        coordinates.forEach((coordinate, index) => {
+          const marker = {
+            id: `${entry.id}-${index}`,
+            coordinates: coordinate,
             highlighted: entry.id === highlightId,
             colour: LogEntryTypes[entry.type]?.colour
           };
-        }
-        return null;
-      })
-      .filter((m) => !!m) as LogEntryMarkerType[];
+          allMarkers.push(marker);
+        });
+      }
+    });
+
+    return allMarkers;
   }, [logEntries, highlightId]);
 
   const mapBounds: LngLatBoundsLike | undefined = useMemo(
@@ -113,15 +95,39 @@ export default function IncidentMap({ logEntries, highlightId = undefined }: Rea
 
   const zoomMap = (bounds: LngLatBoundsLike | undefined, focus?: LogEntry) => {
     if (mapRef.current) {
-      const options: FitBoundsOptions = { padding: 60, duration: 250 };
       const { coordinates } = (focus?.location || {}) as FullLocationType;
-      if (coordinates) {
-        options.center = [coordinates.longitude, coordinates.latitude];
-      }
-      if (bounds) {
-        mapRef.current.fitBounds(bounds, options);
-      } else {
-        mapRef.current.getMap().flyTo(options);
+
+      const baseOptions: FitBoundsOptions = { padding: 60, duration: 250 };
+
+      if (coordinates && Array.isArray(coordinates) && coordinates.length > 1) {
+        const entryBounds: LngLatBoundsLike = [
+          [
+            Math.min(...coordinates.map((c) => c.longitude)),
+            Math.min(...coordinates.map((c) => c.latitude))
+          ],
+          [
+            Math.max(...coordinates.map((c) => c.longitude)),
+            Math.max(...coordinates.map((c) => c.latitude))
+          ]
+        ];
+
+        const options: FitBoundsOptions = {
+          ...baseOptions,
+          maxZoom: 15
+        };
+
+        mapRef.current.fitBounds(entryBounds, options);
+      } else if (coordinates && Array.isArray(coordinates) && coordinates.length === 1) {
+        const options: FitBoundsOptions = { ...baseOptions };
+        options.center = [coordinates[0].longitude, coordinates[0].latitude];
+
+        if (bounds) {
+          mapRef.current.fitBounds(bounds, options);
+        } else {
+          mapRef.current.getMap().flyTo(options);
+        }
+      } else if (bounds) {
+        mapRef.current.fitBounds(bounds, baseOptions);
       }
     }
   };
@@ -145,10 +151,12 @@ export default function IncidentMap({ logEntries, highlightId = undefined }: Rea
 
   const onClickMarker = (marker: LogEntryMarkerType) => {
     const { id } = marker;
-    if (highlightId === id) {
+    const entryId = id.includes('-') ? id.substring(0, id.lastIndexOf('-')) : id;
+
+    if (highlightId === entryId) {
       navigate('#');
     } else {
-      navigate(`#${id}`);
+      navigate(`#${entryId}`);
     }
     if (mapRef.current) {
       zoomMap(mapBounds, highlighted);
@@ -181,7 +189,7 @@ export default function IncidentMap({ logEntries, highlightId = undefined }: Rea
   return (
     <Box
       className="container--location map-container"
-      sx={{ position: 'relative', height: mapHeight }}
+      sx={{ position: 'relative', height: '100%', display: 'flex', flexDirection: 'column' }}
     >
       <Map
         ref={mapRef}
@@ -204,11 +212,15 @@ export default function IncidentMap({ logEntries, highlightId = undefined }: Rea
           ref={logListRef}
           sx={{
             position: 'absolute',
-            bottom: 2,
-            left: 5,
-            width: 'calc(100% - 53px)',
-            maxWidth: 1600,
-            p: 1
+            bottom: 0,
+            left: 0,
+            right: 0,
+            width: '100%',
+            maxWidth: '100%',
+            p: isMobile ? 1 : 2,
+            backgroundColor: 'white',
+            borderTop: '1px solid #e0e0e0',
+            boxShadow: '0 -2px 4px rgba(0,0,0,0.1)'
           }}
           className="log-entry-list"
         >
@@ -218,16 +230,18 @@ export default function IncidentMap({ logEntries, highlightId = undefined }: Rea
             disableScrollTo
             onContentClick={onEntryContentClick}
             onMentionClick={() => {}}
-            metaItems={[
-              !isMobile && (
-                <IconButton key="incident-log" onClick={onVisitLog} title="See in incident log">
-                  <ImportContactsIcon fontSize="small" />
+            metaItems={
+              [
+                !isMobile && (
+                  <IconButton key="incident-log" onClick={onVisitLog} title="See in incident log">
+                    <ImportContactsIcon fontSize="small" />
+                  </IconButton>
+                ),
+                <IconButton key="close-info" onClick={onCloseInfo} title="Close information">
+                  <CloseIcon fontSize="small" />
                 </IconButton>
-              ),
-              <IconButton key="close-info" onClick={onCloseInfo} title="Close information">
-                <CloseIcon fontSize="small" />
-              </IconButton>
-            ].filter(Boolean) as ReactElement[]}
+              ].filter(Boolean) as ReactElement[]
+            }
           />
         </Box>
       )}

@@ -32,3 +32,10 @@ services:
     image: lisa/secure-agent-graph
     ports:
       - 3030:3030
+  transparent-proxy:
+    container_name: lisa-transparent-proxy
+    environment:
+      OS_RASTER_API_KEY: 'REPLACE ME'
+    image: lisa/transparent-proxy
+    ports:
+      - 8000:80

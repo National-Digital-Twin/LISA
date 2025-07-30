@@ -5,7 +5,7 @@
 // Global imports
 import { format } from 'date-fns';
 
-export function time(dateStr: string): string {
+export function time(dateStr: string | undefined): string {
   if (dateStr) {
     return format(dateStr, 'HH:mm');
   }

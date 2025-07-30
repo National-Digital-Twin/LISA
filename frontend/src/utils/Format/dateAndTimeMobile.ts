@@ -4,7 +4,7 @@
 
 import { format } from 'date-fns';
 
-export function dateAndTimeMobile(dateStr: string): string {
+export function dateAndTimeMobile(dateStr: string | undefined): string {
   if (dateStr) {
     return `${format(dateStr, 'd MMM yyyy')} @ ${format(dateStr, 'HH:mm')}`;
   }

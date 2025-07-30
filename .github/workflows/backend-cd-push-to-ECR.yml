@@ -9,37 +9,37 @@ on:
       aws_account_number:
         type: string
         required: true
-        description: "AWS Account Number for ECR"
+        description: 'AWS Account Number for ECR'
       repo_name:
         type: string
         required: true
-        description: "Name of the repository in ECR"
+        description: 'Name of the repository in ECR'
       app_name:
         type: string
         required: true
-        description: "Name of app - frontend, backend or transparent-proxy"
+        description: 'Name of app - frontend, backend or transparent-proxy'
       version:
         type: string
         required: true
-        description: "Version number passed from main workflow"
+        description: 'Version number passed from main workflow'
   workflow_dispatch:
     inputs:
       aws_account_number:
         type: string
         required: true
-        description: "AWS Account Number for ECR"
+        description: 'AWS Account Number for ECR'
       repo_name:
         type: string
         required: true
-        description: "Name of the repository in ECR"
+        description: 'Name of the repository in ECR'
       app_name:
         type: string
         required: true
-        description: "Name of app - frontend, backend or transparent-proxy"
+        description: 'Name of app - frontend, backend or transparent-proxy'
       version:
         type: string
         required: true
-        description: "Version number passed from main workflow"
+        description: 'Version number passed from main workflow'
 
 permissions:
   id-token: write
@@ -73,7 +73,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "23.x"
+          node-version: '24.x'
 
       - name: Install Dependencies
         run: npm ci

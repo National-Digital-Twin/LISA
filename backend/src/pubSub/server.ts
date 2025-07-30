@@ -62,11 +62,7 @@ wss.on('close', () => {
   broker.clear();
 });
 
-export async function handleUpgrade(
-  request: IncomingMessage,
-  socket: Duplex,
-  head: Buffer,
-) {
+export async function handleUpgrade(request: IncomingMessage, socket: Duplex, head: Buffer) {
   wss.handleUpgrade(request, socket, head, (ws) => {
     wss.emit('connection', ws, request);
   });

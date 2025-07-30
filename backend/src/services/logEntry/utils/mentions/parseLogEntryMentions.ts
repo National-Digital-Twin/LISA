@@ -10,7 +10,9 @@ import { nodeValue } from '../../../../rdfutil';
 export function parseLogEntryMentions(results: ResultRow[], mentionedBy = false) {
   return results.reduce((map, result) => {
     const entryId = nodeValue(result.entryId.value);
-    const id = nodeValue(mentionedBy ? result.mentionedByLogEntry.value : result.mentionsLogEntry.value);
+    const id = nodeValue(
+      mentionedBy ? result.mentionedByLogEntry.value : result.mentionsLogEntry.value
+    );
     const mention: Mentionable = { id, type: 'LogEntry', label: '' };
     const mentions = map[entryId] || [];
     mentions.push(mention);

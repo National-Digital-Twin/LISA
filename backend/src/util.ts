@@ -7,7 +7,7 @@ export function tryParseJSONArray(str: string) {
     try {
       return JSON.parse(str) as string[];
     } catch (e) {
-      console.info('Could not parse string as JSON', str);
+      console.info(`'Could not parse string as JSON: ${e}`, str);
     }
   }
   return str;
