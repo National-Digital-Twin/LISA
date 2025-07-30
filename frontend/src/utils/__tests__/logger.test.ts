@@ -3,34 +3,63 @@
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
 /* eslint-disable no-console */
-import { logError } from '../logger';
 
-describe('logError', () => {
+import { logError, logInfo } from '../logger';
+
+describe('logger', () => {
   const originalEnv = process.env;
   const originalConsoleError = console.error;
+  const originalConsoleLog = console.log;
 
   beforeEach(() => {
     process.env = { ...originalEnv };
     console.error = jest.fn();
+    console.log = jest.fn();
   });
 
   afterEach(() => {
     process.env = originalEnv;
     console.error = originalConsoleError;
+    console.log = originalConsoleLog;
     jest.clearAllMocks();
   });
 
-  it('should log error in non-production environments', () => {
-    process.env.NODE_ENV = 'development';
-    logError('TestContext', new Error('Test error'));
+  describe('logError', () => {
+    it('should log error in non-production environments', () => {
+      process.env.NODE_ENV = 'development';
+      logError('TestContext', new Error('Test error'));
 
-    expect(console.error).toHaveBeenCalledWith('[TestContext]', expect.any(Error));
+      expect(console.error).toHaveBeenCalledWith('[TestContext]', expect.any(Error));
+    });
+
+    it('should not log error in production environment', () => {
+      process.env.NODE_ENV = 'production';
+      logError('TestContext', new Error('Test error'));
+
+      expect(console.error).not.toHaveBeenCalled();
+    });
   });
 
-  it('should not log error in production environment', () => {
-    process.env.NODE_ENV = 'production';
-    logError('TestContext', new Error('Test error'));
+  describe('logInfo', () => {
+    it('should log message in non-production environments', () => {
+      process.env.NODE_ENV = 'development';
+      logInfo('This is an info message');
 
-    expect(console.error).not.toHaveBeenCalled();
+      expect(console.log).toHaveBeenCalledWith('This is an info message');
+    });
+
+    it('should not log message in production environment', () => {
+      process.env.NODE_ENV = 'production';
+      logInfo('This is an info message');
+
+      expect(console.log).not.toHaveBeenCalled();
+    });
+
+    it('should handle empty messages gracefully', () => {
+      process.env.NODE_ENV = 'development';
+      logInfo('');
+
+      expect(console.log).toHaveBeenCalledWith('');
+    });
   });
 });

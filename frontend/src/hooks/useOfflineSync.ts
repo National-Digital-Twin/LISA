@@ -6,6 +6,7 @@ import { useEffect } from 'react';
 import { syncAllOfflineEntities } from '../offline/db/dbSync';
 import { clearExpiredEntities } from '../offline/db/indexedDb';
 import { useIsOnline } from "./useIsOnline";
+import { logInfo } from '../utils/logger';
 
 export function useOfflineSync() {
   const isOnline = useIsOnline();
@@ -14,7 +15,7 @@ export function useOfflineSync() {
     if (!isOnline) return;
 
     const sync = async () => {
-      console.log('Back online. Starting offline data sync...');
+      logInfo('Back online. Starting offline data sync...');
       await clearExpiredEntities();
       await syncAllOfflineEntities();
     };

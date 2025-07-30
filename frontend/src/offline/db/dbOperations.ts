@@ -38,7 +38,7 @@ export async function addLog(log: OfflineDB['logs']['value']) {
   await db.put('logs', {...log, expiresAt: getExpiry()});
 }
 
-export async function getLogsByIncident(incidentId: string) {
+export async function getLogsByIncidentId(incidentId: string) {
   const db = await dbPromise;
   return db.getAllFromIndex('logs', 'by-incidentId', incidentId);
 }
@@ -69,7 +69,7 @@ export async function getAllForms() {
   return db.getAll('forms');
 }
 
-export async function deleteForms(id: string) {
+export async function deleteForm(id: string) {
   const db = await dbPromise;
   await db.delete('forms', id);
 }

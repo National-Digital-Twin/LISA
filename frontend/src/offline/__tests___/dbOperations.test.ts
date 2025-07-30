@@ -13,13 +13,13 @@ import {
   deleteIncident,
   getAllIncidents,
   addLog,
-  getLogsByIncident,
+  getLogsByIncidentId,
   getAllLogs,
   deleteLog,
   addForm,
   getForm,
   getAllForms,
-  deleteForms,
+  deleteForm,
 } from '../db/dbOperations';
 
 global.structuredClone = global.structuredClone || ((obj) => JSON.parse(JSON.stringify(obj)));
@@ -82,7 +82,7 @@ describe('IndexedDB Operations', () => {
     it('adds, retrieves by incident, and deletes a log', async () => {
       await addLog(mockLog);
 
-      const byIncident = await getLogsByIncident(mockLog.incidentId);
+      const byIncident = await getLogsByIncidentId(mockLog.incidentId);
       expect(byIncident.length).toBe(1);
       expect(byIncident[0]).toMatchObject(mockLog);
 
@@ -105,7 +105,7 @@ describe('IndexedDB Operations', () => {
       const all = await getAllForms();
       expect(all.length).toBe(1);
 
-      await deleteForms(mockForm.id);
+      await deleteForm(mockForm.id);
       const afterDelete = await getForm(mockForm.id);
       expect(afterDelete).toBeUndefined();
     });

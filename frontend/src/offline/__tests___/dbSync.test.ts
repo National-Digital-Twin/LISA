@@ -66,7 +66,7 @@ describe('syncAllOfflineEntities', () => {
 
     jest.spyOn(api, 'post').mockResolvedValue({});
     jest.spyOn(dbOps, 'deleteIncident').mockResolvedValue();
-    jest.spyOn(dbOps, 'deleteForms').mockResolvedValue();
+    jest.spyOn(dbOps, 'deleteForm').mockResolvedValue();
     jest.spyOn(dbOps, 'deleteLog').mockResolvedValue();
 
     (formUtils.createLogEntryFromSubmittedForm as jest.Mock).mockReturnValue({
@@ -84,8 +84,8 @@ describe('syncAllOfflineEntities', () => {
     expect(dbOps.deleteIncident).toHaveBeenCalledWith('i1');
 
     expect(api.post).toHaveBeenCalledWith('/incident/i1/form', mockForm);
-    expect(api.post).toHaveBeenCalledWith('/incident/i1/logEntry', expect.any(Object));
-    expect(dbOps.deleteForms).toHaveBeenCalledWith('f1');
+    expect(api.post).toHaveBeenCalledWith('/incident/i1/logEntry', mockLog);
+    expect(dbOps.deleteForm).toHaveBeenCalledWith('f1');
 
     expect(api.post).toHaveBeenCalledWith('/incident/i1/logEntry', mockLog);
     expect(dbOps.deleteLog).toHaveBeenCalledWith('l1');
