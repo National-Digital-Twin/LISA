@@ -2,17 +2,15 @@
 // © Crown Copyright 2025. This work has been developed by the National Digital Twin Programme
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
-// Global imports
+// eslint-disable-next-line import/no-extraneous-dependencies
+import {
+  type Notification,
+  TaskAssignedNotification,
+  UserMentionNotification
+} from 'common/Notification';
 import { ReactNode } from 'react';
 import { NavigateFunction } from 'react-router-dom';
-import { Box, Typography } from '@mui/material';
-import PersonIcon from '@mui/icons-material/Person';
-import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
-import AccessTimeFilledIcon from '@mui/icons-material/AccessTimeFilled';
-
-// Local imports
-import { type Notification, UserMentionNotification, TaskAssignedNotification } from 'common/Notification';
-import { Format } from '../../utils';
+import { NotificationContent } from './NotificationContent';
 
 type Handler = {
   title: string;
@@ -22,60 +20,25 @@ type Handler = {
 
 type HandlerFunction = (notification: Notification, navigate: NavigateFunction) => Handler | null;
 
-// Reusable components to eliminate duplication
-const NotificationContent = ({ 
-  sequence, 
-  text, 
-  author, 
-  dateTime 
-}: { 
-  sequence: string; 
-  text: string; 
-  author: any; 
-  dateTime: string; 
-}) => (
-  <>
-    <Box>
-      <Typography component="span" variant="body1">{`#${sequence} - `}</Typography>
-      <Typography component="span" variant="body1">
-        {text.substring(0, 100)}
-      </Typography>
-    </Box>
-    <Box display="flex" flexDirection="row" gap={2} alignItems="center">
-      <Box display="flex" gap={1} alignItems="center">
-        <PersonIcon fontSize="small" />
-        <Typography fontSize="small" variant="body1">
-          {Format.user(author)}
-        </Typography>
-      </Box>
-      <Box display="flex" gap={1} alignItems="center">
-        <CalendarMonthIcon fontSize="small" />
-        <Typography fontSize="small" variant="body1">
-          {Format.date(dateTime)}
-        </Typography>
-      </Box>
-      <Box display="flex" gap={1} alignItems="center">
-        <AccessTimeFilledIcon fontSize="small" />
-        <Typography fontSize="small" variant="body1">
-          {Format.time(dateTime)}
-        </Typography>
-      </Box>
-    </Box>
-  </>
-);
-
 function userMention(notification: Notification, navigate: NavigateFunction): Handler | null {
   if (!UserMentionNotification.guard(notification)) {
     return null;
   }
 
   const { entry } = notification;
+  const sequence = entry.sequence ?? '';
+  const text = entry.content.text ?? '';
+
+  if (!sequence || !text) {
+    return null;
+  }
+
   return {
     title: "You've been mentioned in a Log Entry",
     Content: (
       <NotificationContent
-        sequence={entry.sequence ?? ''}
-        text={entry.content.text ?? ''}
+        sequence={sequence}
+        text={text}
         author={entry.author}
         dateTime={entry.dateTime}
       />
@@ -92,13 +55,19 @@ function assignedTask(notification: Notification, navigate: NavigateFunction): H
   }
 
   const { entry } = notification;
+  const sequence = entry.sequence ?? '';
+  const text = entry.task.name ?? '';
+
+  if (!sequence || !text) {
+    return null;
+  }
 
   return {
     title: "You've been assigned a new Task",
     Content: (
       <NotificationContent
-        sequence={entry.sequence ?? ''}
-        text={entry.task.name ?? ''}
+        sequence={sequence}
+        text={text}
         author={entry.author}
         dateTime={entry.dateTime}
       />
