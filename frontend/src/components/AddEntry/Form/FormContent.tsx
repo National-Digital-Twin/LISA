@@ -6,7 +6,8 @@
 import parse from 'html-react-parser';
 import { useEffect, useMemo, useState, useCallback, useRef } from 'react';
 import { useReactMediaRecorder } from 'react-media-recorder';
-import { Box, InputLabel, Typography, Grid2 as Grid } from '@mui/material';
+import { Box, InputLabel, Typography, Grid2 as Grid, Tooltip, IconButton } from '@mui/material';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 
 // Local imports
 import { type Field } from 'common/Field';
@@ -157,9 +158,36 @@ export default function FormContent({
           gap={1}
           className={`full-width field-type--Lexical ${contentError ? 'in-error' : ''}`}
         >
-          <InputLabel htmlFor="content" sx={{ color: 'text.primary', fontWeight: 'bold' }}>
-            {descriptionLabel}
-          </InputLabel>
+          <Box display="flex" alignItems="center" gap={1}>
+            <InputLabel htmlFor="content" sx={{ color: 'text.primary', fontWeight: 'bold' }}>
+              {descriptionLabel}
+            </InputLabel>
+            <Tooltip
+              title={
+                <Box>
+                  <Typography variant="body2" sx={{ fontWeight: 'bold', mb: 1 }}>
+                    How to use mentions:
+                  </Typography>
+                  <Typography variant="body2" sx={{ mb: 0.5 }}>
+                    <strong>@</strong> - Tag users (e.g., @john.smith)
+                    <br />
+                    <strong>#</strong> - Tag log entries (e.g., #12345)
+                    <br />
+                    <strong>$</strong> - Tag files (e.g., $document.pdf)
+                  </Typography>
+                  <Typography variant="body2" sx={{ mt: 1, fontSize: '0.875rem' }}>
+                    Type any symbol from above for suggestions.
+                  </Typography>
+                </Box>
+              }
+              placement="top"
+              arrow
+            >
+              <IconButton size="small" sx={{ p: 0.5 }}>
+                <HelpOutlineIcon fontSize="small" />
+              </IconButton>
+            </Tooltip>
+          </Box>
           <EntryContent
             id="content"
             json={typeof entry.content === 'object' ? entry.content.json : undefined}
