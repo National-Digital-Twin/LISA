@@ -23,29 +23,29 @@ export function getCreateData(idNode: unknown, input: NotificationInput): unknow
   const logEntryIdNode = ns.data(input.entryId);
 
   switch (input.type) {
-  case 'UserMentionNotification':
-    return [
-      [idNode, ns.lisa.hasLogEntry, logEntryIdNode],
-      [idNode, ns.lisa.hasIncident, ns.data(input.incidentId)]
-    ];
+    case 'UserMentionNotification':
+      return [
+        [idNode, ns.lisa.hasLogEntry, logEntryIdNode],
+        [idNode, ns.lisa.hasIncident, ns.data(input.incidentId)]
+      ];
 
-  case 'TaskAssignedNotification':
-    return [
-      [idNode, ns.lisa.hasLogEntry, logEntryIdNode],
-      [idNode, ns.lisa.hasIncident, ns.data(input.incidentId)],
-      [idNode, ns.lisa.hasTask, ns.data(input.taskId)]
-    ];
+    case 'TaskAssignedNotification':
+      return [
+        [idNode, ns.lisa.hasLogEntry, logEntryIdNode],
+        [idNode, ns.lisa.hasIncident, ns.data(input.incidentId)],
+        [idNode, ns.lisa.hasTask, ns.data(input.taskId)]
+      ];
 
-  default:
-    return [];
+    default:
+      return [];
   }
 }
 
 export function getFetchOptionals(): unknown[] {
   return [
+    sparql.optional([['?incidentId', ns.ies.hasName, '?incidentName']]),
     // user mention
     sparql.optional([
-      ['?entryId', ns.lisa.contentText, '?contentText'],
       ['?author', ns.ies.isParticipantIn, '?entryId'],
       ['?author', ns.ies.hasName, '?authorName']
     ]),
@@ -62,6 +62,7 @@ function getUserMentionNotification(
   recipient: string,
   dateTime: string,
   read: boolean,
+  incidentTitle: string,
   row: ResultRow
 ): UserMentionNotification {
   return {
@@ -70,14 +71,10 @@ function getUserMentionNotification(
     recipient,
     dateTime,
     read,
+    incidentTitle,
     entry: {
       id: nodeValue(row.entryId.value),
       incidentId: nodeValue(row.incidentId.value),
-      dateTime: row.dateTime.value,
-      sequence: row.sequence.value,
-      content: {
-        text: row.contentText?.value
-      },
       author: {
         username: row.authorName?.value,
         displayName: row.authorName?.value
@@ -92,6 +89,7 @@ function getTaskAssignedNotification(
   recipient: string,
   dateTime: string,
   read: boolean,
+  incidentTitle: string,
   row: ResultRow
 ): TaskAssignedNotification {
   return {
@@ -100,11 +98,10 @@ function getTaskAssignedNotification(
     recipient,
     dateTime,
     read,
+    incidentTitle,
     entry: {
       id: nodeValue(row.entryId.value),
       incidentId: nodeValue(row.incidentId.value),
-      dateTime: row.dateTime.value,
-      sequence: row.sequence.value,
       author: {
         username: row.authorName?.value,
         displayName: row.authorName?.value
@@ -123,15 +120,16 @@ export function parseNotification(row: ResultRow): Notification {
   const recipient = row.recipient.value;
   const dateTime = row.createdAt.value;
   const read = row.read?.value !== undefined;
+  const incidentTitle = row.incidentName.value;
 
   switch (type) {
-  case 'UserMentionNotification':
-    return getUserMentionNotification(id, type, recipient, dateTime, read, row);
+    case 'UserMentionNotification':
+      return getUserMentionNotification(id, type, recipient, dateTime, read, incidentTitle, row);
 
-  case 'TaskAssignedNotification':
-    return getTaskAssignedNotification(id, type, recipient, dateTime, read, row);
+    case 'TaskAssignedNotification':
+      return getTaskAssignedNotification(id, type, recipient, dateTime, read, incidentTitle, row);
 
-  default:
-    throw new ApplicationError(`unknown notification type ${type} could not be parsed`);
+    default:
+      throw new ApplicationError(`unknown notification type ${type} could not be parsed`);
   }
 }

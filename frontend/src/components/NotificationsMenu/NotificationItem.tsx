@@ -8,6 +8,7 @@ import { type Notification } from 'common/Notification';
 import { Box, Typography } from '@mui/material';
 import getHandler from './handlers';
 import { bem } from '../../utils';
+import { time } from '../../utils/Format/date';
 
 interface Props {
   notification: Notification;
@@ -17,7 +18,7 @@ export default function NotificationItem({ notification, onClick }: Readonly<Pro
   const navigate = useNavigate();
   const { read } = notification;
 
-  const { title, Content, clickHandler } = getHandler(notification, navigate);
+  const { title, dateTime, Content, footer, clickHandler } = getHandler(notification, navigate);
 
   const onItemClick = () => {
     clickHandler(notification);
@@ -37,12 +38,20 @@ export default function NotificationItem({ notification, onClick }: Readonly<Pro
       onClick={onItemClick}
       className={classes('item', read ? 'read' : undefined)}
     >
-      <Box display="flex" width="100%" justifyContent="space-between" alignItems="center">
-        <Typography>{title}</Typography>
+      <Box display="flex" gap={1}>
         {!read && <span className={classes('item-unread')} />}
-      </Box>
-      <Box display="flex" flexDirection="column" width="100%" gap={1}>
-        {Content}
+        <Box display="flex" flexDirection="column" width="100%" gap="5px" marginTop="-7px">
+          <Box display="flex" width="100%" justifyContent="space-between" alignItems="center">
+            <Typography>{title}</Typography>
+            <Typography>{time(dateTime)}</Typography>
+          </Box>
+          <Box display="flex" flexDirection="column" width="100%" gap={1}>
+            {Content}
+          </Box>
+          <Box display="flex" flexDirection="column" width="100%" gap={1}>
+            {footer}
+          </Box>
+        </Box>
       </Box>
     </Box>
   );
