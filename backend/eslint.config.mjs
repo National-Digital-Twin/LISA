@@ -42,7 +42,7 @@ export default tsEslint.config(js.configs.recommended, tsEslint.configs.recommen
     'no-unused-vars': 'off',
     'prefer-destructuring': 'off',
     '@typescript-eslint/no-unused-vars': ['error'],
-    indent: ['error', 2],
+    indent: ['error', 2, { SwitchCase: 1 }],
     'max-len': ['error', 180],
     'comma-dangle': ['error', 'only-multiline'],
 

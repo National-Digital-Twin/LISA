@@ -6,12 +6,10 @@ export const previousTestNotifications: Notification[] = [
     dateTime: '1970-01-01',
     read: true,
     recipient: 'local.user',
+    incidentTitle: 'Incident 0',
     entry: {
       id: 'entry-0',
-      dateTime: '1970-01-01',
-      content: { text: '#1234 - Testing 01' },
-      incidentId: 'incident-0',
-      sequence: '0'
+      incidentId: 'incident-0'
     }
   }
 ];
@@ -23,11 +21,9 @@ export const newNotificationGenerator: (notificationId: string) => Notification 
   dateTime: '1970-01-01',
   recipient: 'local.user',
   read: false,
+  incidentTitle: 'Incident 0',
   entry: {
     id: 'entry-0',
-    dateTime: '1970-01-01',
-    content: { text: '#1235 - Testing 02' },
-    incidentId: 'incident-0',
-    sequence: '0'
+    incidentId: 'incident-0'
   }
 });

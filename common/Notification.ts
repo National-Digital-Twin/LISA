@@ -15,15 +15,16 @@ export const BaseNotification = Record({
   id: String,
   recipient: String,
   read: Boolean,
-  dateTime: String
+  dateTime: String,
+  incidentTitle: String
 });
 
 export const UserMentionNotification = BaseNotification.extend({
-  entry: LogEntry.pick('id', 'incidentId', 'author', 'dateTime', 'sequence', 'content')
+  entry: LogEntry.pick('id', 'incidentId', 'author')
 });
 
 export const TaskAssignedNotification = BaseNotification.extend({
-  entry: LogEntry.pick('id', 'incidentId', 'author', 'dateTime', 'sequence').extend({
+  entry: LogEntry.pick('id', 'incidentId', 'author').extend({
     task: Task.pick('id', 'name')
   })
 });

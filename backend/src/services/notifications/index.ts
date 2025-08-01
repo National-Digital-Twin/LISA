@@ -52,7 +52,7 @@ export async function markRead(req: Request, res: Response) {
   res.json({ id });
 }
 
-export async function get(req: Request, res: Response) {
+export async function get(_: Request, res: Response) {
   const { username } = res.locals.user;
   const optionals = getFetchOptionals();
 
@@ -64,7 +64,6 @@ export async function get(req: Request, res: Response) {
       ['?id', ns.lisa.hasLogEntry, '?entryId'],
       ['?id', ns.lisa.hasIncident, '?incidentId'],
       ['?entryId', ns.ies.inPeriod, '?dateTime'],
-      ['?entryId', ns.lisa.hasSequence, '?sequence'],
       sparql.optional([['?id', ns.lisa.readAt, '?read']]),
       ...optionals
     ],

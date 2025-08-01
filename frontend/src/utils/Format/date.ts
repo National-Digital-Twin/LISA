@@ -11,3 +11,11 @@ export function date(dateStr: string | undefined): string {
   }
   return '';
 }
+
+export function time(dateStr: string | undefined): string {
+  if (dateStr) {
+    return format(dateStr, 'hh:MM');
+  }
+
+  return '';
+}

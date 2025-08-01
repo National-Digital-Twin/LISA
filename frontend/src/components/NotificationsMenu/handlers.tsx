@@ -14,35 +14,30 @@ import { NotificationContent } from './NotificationContent';
 
 type Handler = {
   title: string;
+  dateTime: string;
   Content: ReactNode;
+  footer: string;
   clickHandler: (notification: Notification) => void;
 };
 
 type HandlerFunction = (notification: Notification, navigate: NavigateFunction) => Handler | null;
 
 function userMention(notification: Notification, navigate: NavigateFunction): Handler | null {
-  if (!UserMentionNotification.guard(notification)) {
+  if (
+    !UserMentionNotification.guard(notification) ||
+    TaskAssignedNotification.guard(notification)
+  ) {
     return null;
   }
 
-  const { entry } = notification;
-  const sequence = entry.sequence ?? '';
-  const text = entry.content.text ?? '';
-
-  if (!sequence || !text) {
-    return null;
-  }
+  const { incidentTitle, entry, dateTime } = notification;
+  const content = `You have been mentioned by ${entry.author!.displayName}`;
 
   return {
-    title: "You've been mentioned in a Log Entry",
-    Content: (
-      <NotificationContent
-        sequence={sequence}
-        text={text}
-        author={entry.author}
-        dateTime={entry.dateTime}
-      />
-    ),
+    title: 'Tagged in a log entry',
+    dateTime,
+    Content: <NotificationContent content={content} />,
+    footer: `INCIDENT: ${incidentTitle}`,
     clickHandler: (item) => {
       navigate(`logbook/${item.entry.incidentId}#${item.entry.id}`);
     }
@@ -54,24 +49,14 @@ function assignedTask(notification: Notification, navigate: NavigateFunction): H
     return null;
   }
 
-  const { entry } = notification;
-  const sequence = entry.sequence ?? '';
-  const text = entry.task.name ?? '';
-
-  if (!sequence || !text) {
-    return null;
-  }
+  const { incidentTitle, entry, dateTime } = notification;
+  const content = `You have been assigned "${entry.task!.name}" by ${entry.author!.displayName}`;
 
   return {
-    title: "You've been assigned a new Task",
-    Content: (
-      <NotificationContent
-        sequence={sequence}
-        text={text}
-        author={entry.author}
-        dateTime={entry.dateTime}
-      />
-    ),
+    title: 'New task assigned to you',
+    dateTime,
+    Content: <NotificationContent content={content} />,
+    footer: `INCIDENT: ${incidentTitle}`,
     clickHandler: (item) => {
       const taskAssignedNotif = item as TaskAssignedNotification;
       navigate(`tasks/${item.entry.incidentId}#${taskAssignedNotif.entry.task.id}`);
