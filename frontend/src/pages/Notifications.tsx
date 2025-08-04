@@ -8,7 +8,7 @@ import { Box, List, ListItem, Tab, Tabs, Typography } from '@mui/material';
 import { type Notification } from 'common/Notification';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import getHandler from '../components/NotificationsMenu/handlers';
+import getHandler from '../components/Notifications/handlers';
 import { useNotifications, useReadNotification } from '../hooks';
 import { Format } from '../utils';
 
