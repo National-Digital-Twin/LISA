@@ -13,9 +13,9 @@ import { useNotifications, useReadNotification } from '../hooks';
 import { Format } from '../utils';
 
 interface TabPanelProps {
-  children?: React.ReactNode;
-  index: number;
-  value: number;
+  readonly children?: React.ReactNode;
+  readonly index: number;
+  readonly value: number;
 }
 
 function TabPanel({ children = null, value, index }: TabPanelProps) {
@@ -31,13 +31,15 @@ function TabPanel({ children = null, value, index }: TabPanelProps) {
   );
 }
 
+interface EmptyStateProps {
+  readonly icon: React.ComponentType<{ sx?: Record<string, unknown> }>;
+  readonly title: string;
+}
+
 function EmptyState({
   icon: Icon,
   title
-}: {
-  icon: React.ComponentType<{ sx?: Record<string, unknown> }>;
-  title: string;
-}) {
+}: EmptyStateProps) {
   return (
     <Box
       sx={{

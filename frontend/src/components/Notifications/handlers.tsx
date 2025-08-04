@@ -59,8 +59,9 @@ function assignedTask(notification: Notification, navigate: NavigateFunction): H
     Content: <NotificationContent text={`You have been assigned "${taskName}" by ${authorName}`} />,
     footer: `INCIDENT: ${incidentTitle}`,
     clickHandler: (item) => {
-      const taskAssignedNotif = item as TaskAssignedNotification;
-      navigate(`/tasks/${item.entry.incidentId}#${taskAssignedNotif.entry.task.id}`);
+      if (TaskAssignedNotification.guard(item)) {
+        navigate(`/tasks/${item.entry.incidentId}#${item.entry.task.id}`);
+      }
     }
   };
 }
