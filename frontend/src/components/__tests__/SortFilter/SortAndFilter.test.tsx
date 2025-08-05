@@ -3,41 +3,24 @@ import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
 import { SortAndFilter } from '../../SortFilter/SortAndFilter';
 import { FilterTree, QueryState } from '../../SortFilter/filter-types';
+import { makeGroup, makeOptions } from '../../SortFilter/schemas/schema-utils';
 
 const sampleTree: FilterTree = {
   title: 'Filters',
   items: [
-    {
-      id: 'sort',
-      type: 'group',
-      label: 'Sort by',
-      selection: 'single',
-      children: [
-        { id: 'date_desc', type: 'option', label: 'Newest first' },
-        { id: 'date_asc', type: 'option', label: 'Oldest first' },
-      ]
-    },
-    {
-      id: 'author',
-      type: 'group',
-      label: 'Author',
-      selection: 'multi',
-      children: [
-        { id: 'alice', type: 'option', label: 'Alice' },
-        { id: 'bob', type: 'option', label: 'Bob' },
-      ]
-    },
-    {
-      id: 'time',
-      type: 'group',
-      label: 'Time',
-      selection: 'single',
-      children: [
-        { id: 'last30min', type: 'option', label: 'Last 30 minutes' },
-        { id: 'custom', type: 'option', label: 'Custom date range' },
-      ]
-    },
-  ]
+    makeGroup('sort', 'Sort by', 'single', makeOptions([
+      { id: 'date_desc', label: 'Newest first' },
+      { id: 'date_asc', label: 'Oldest first' },
+    ])),
+    makeGroup('author', 'Author', 'multi', makeOptions([
+      { id: 'alice', label: 'Alice' },
+      { id: 'bob', label: 'Bob' },
+    ])),
+    makeGroup('time', 'Time', 'single', makeOptions([
+      { id: 'last30min', label: 'Last 30 minutes' },
+      { id: 'custom', label: 'Custom date range' },
+    ])),
+  ],
 };
 
 const initialState: QueryState = {
