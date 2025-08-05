@@ -12,17 +12,21 @@ jest.mock('react-router-dom', () => ({
   useNavigate: () => mockNavigate
 }));
 
+const hour = 60 * 60 * 1000;
+const day = 24 * hour;
+const week = 7 * day;
+
 const sampleNotifications: Notification[] = [
   { ...newNotificationGenerator('1'), read: false, dateTime: new Date().toISOString() },
   {
     ...newNotificationGenerator('2'),
     read: true,
-    dateTime: new Date(Date.now() - 86400000).toISOString()
+    dateTime: new Date(Date.now() - day).toISOString()
   },
   {
     ...newNotificationGenerator('3'),
     read: false,
-    dateTime: new Date(Date.now() - 604800000).toISOString()
+    dateTime: new Date(Date.now() - week).toISOString()
   }
 ];
 
