@@ -16,22 +16,23 @@ import {
   Divider,
   Tabs,
   Tab,
-  Modal
+  Modal,
+  Badge
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
 import AccountBoxOutlinedIcon from '@mui/icons-material/AccountBoxOutlined';
 import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
+import NotificationsNoneOutlinedIcon from '@mui/icons-material/NotificationsNoneOutlined';
 
 // Local imports
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { User } from 'common/User';
 // eslint-disable-next-line import/no-webpack-loader-syntax
 import LisaLogo from '../assets/images/L!SA_logo.svg';
-import { useAuth, useIncidents } from '../hooks';
+import { useAuth, useIncidents, useNotifications } from '../hooks';
 import { useResponsive } from '../hooks/useResponsiveHook';
-import { NotificationsMenu } from './NotificationsMenu';
 import { Format } from '../utils';
 
 const HEADER_ITEMS = [
@@ -118,11 +119,16 @@ const NavigationItems = ({ isBelowMd = false, pathname, handleLink }: Navigation
 };
 
 const Header = () => {
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [accountAnchorEl, setAccountAnchorEl] = useState<null | HTMLElement>(null);
+  const headerRef = useRef<HTMLDivElement>(null);
+  const { isBelowMd } = useResponsive();
+  const { user } = useAuth();
+  const { notifications } = useNotifications();
   const { pathname } = useLocation();
   const { incidentId } = useParams();
-  const { user } = useAuth();
-  const query = useIncidents();
-  const headerRef = useRef<null | HTMLElement>(null);
+
+  const unreadCount = notifications?.filter(n => !n.read).length ?? 0;
 
   const getInitialActive = () => {
     const matched = HEADER_ITEMS.flatMap(item =>
@@ -132,14 +138,12 @@ const Header = () => {
     return matched ?? '';
   };
 
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [accountAnchorEl, setAccountAnchorEl] = useState<null | HTMLElement>(null);
   const [active, setActive] = useState(getInitialActive);
   const [openGuide, setOpenGuide] = useState(false);
   const openNav = Boolean(anchorEl);
   const openAccount = Boolean(accountAnchorEl);
 
-  const incident = query.data?.find((inc) => inc.id === incidentId);
+  const incident = useIncidents().data?.find((inc) => inc.id === incidentId);
 
   const cPage = HEADER_ITEMS.find(({ to }) => pathname.includes(to));
   const hasSubItems = Array.isArray(cPage?.subItems) && cPage.subItems.length > 0 && incident;
@@ -169,8 +173,6 @@ const Header = () => {
     event.preventDefault();
     user.logout();
   };
-
-  const { isBelowMd } = useResponsive();
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const [showScrollHint, setShowScrollHint] = useState(isBelowMd);
@@ -274,7 +276,15 @@ const Header = () => {
             )}
           </Box>
           <Box display="flex" gap={1}>
-            <NotificationsMenu />
+            <IconButton component={Link} to="/notifications">
+              <Badge badgeContent={pathname === '/notifications' ? 0 : unreadCount} color="error">
+                <NotificationsNoneOutlinedIcon 
+                  sx={{ 
+                    color: pathname === '/notifications' ? 'accent.main' : 'white' 
+                  }} 
+                />
+              </Badge>
+            </IconButton>
             <IconButton onClick={(event) => setAccountAnchorEl(event.currentTarget)}>
               {accountAnchorEl ? (
                 <AccountCircleIcon sx={{ color: 'accent.main' }} />

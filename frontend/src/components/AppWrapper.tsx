@@ -12,6 +12,7 @@ import Files from '../pages/Files';
 import Home from '../pages/Home';
 import Location from '../pages/Location';
 import Logbook from '../pages/Logbook';
+import Notifications from '../pages/Notifications';
 import Overview from '../pages/Overview';
 import Layout from './Layout';
 import Tasks from '../pages/Tasks';
@@ -35,6 +36,7 @@ const AppWrapper = () => {
         { path: 'forms/:incidentId', element: <LogForms/>},
         { path: 'location/:incidentId', element: <Location /> },
         { path: 'files/:incidentId', element: <Files /> },
+        { path: 'notifications', element: <Notifications /> },
         { path: '*', element: <Error404 /> }
       ]
     }

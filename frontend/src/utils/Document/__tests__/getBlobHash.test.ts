@@ -1,7 +1,8 @@
 import crypto from 'crypto';
+
 import { getBlobHash } from '../getBlobHash';
-// Ignored while resolve this issue: https://github.com/vitest-dev/vitest/issues/5365
-describe.skip('getBlobHash', () => {
+
+describe('getBlobHash', () => {
   class FileReaderMock {
     DONE = FileReader.DONE;
 

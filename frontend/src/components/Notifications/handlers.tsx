@@ -30,16 +30,16 @@ function userMention(notification: Notification, navigate: NavigateFunction): Ha
     return null;
   }
 
-  const { incidentTitle, entry, dateTime } = notification;
-  const content = `You have been mentioned by ${entry.author!.displayName}`;
+  const { entry, dateTime, incidentTitle } = notification;
+  const authorName = entry.author?.displayName || entry.author?.username || 'Unknown User';
 
   return {
     title: 'Tagged in a log entry',
     dateTime,
-    Content: <NotificationContent content={content} />,
+    Content: <NotificationContent text={`You were mentioned by ${authorName}`} />,
     footer: `INCIDENT: ${incidentTitle}`,
     clickHandler: (item) => {
-      navigate(`logbook/${item.entry.incidentId}#${item.entry.id}`);
+      navigate(`/logbook/${item.entry.incidentId}#${item.entry.id}`);
     }
   };
 }
@@ -49,17 +49,19 @@ function assignedTask(notification: Notification, navigate: NavigateFunction): H
     return null;
   }
 
-  const { incidentTitle, entry, dateTime } = notification;
-  const content = `You have been assigned "${entry.task!.name}" by ${entry.author!.displayName}`;
+  const { entry, dateTime, incidentTitle } = notification;
+  const taskName = entry.task.name ?? '';
+  const authorName = entry.author?.displayName || entry.author?.username || 'Unknown User';
 
   return {
     title: 'New task assigned to you',
     dateTime,
-    Content: <NotificationContent content={content} />,
+    Content: <NotificationContent text={`You have been assigned "${taskName}" by ${authorName}`} />,
     footer: `INCIDENT: ${incidentTitle}`,
     clickHandler: (item) => {
-      const taskAssignedNotif = item as TaskAssignedNotification;
-      navigate(`tasks/${item.entry.incidentId}#${taskAssignedNotif.entry.task.id}`);
+      if (TaskAssignedNotification.guard(item)) {
+        navigate(`/tasks/${item.entry.incidentId}#${item.entry.task.id}`);
+      }
     }
   };
 }
