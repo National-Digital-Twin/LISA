@@ -218,6 +218,19 @@ const Logbook = () => {
       return ids;
     };
 
+    const matchesAttachmentFilter = (entry: LogEntry, selected: Set<string>): boolean => {
+      if (selected.size === 0) return true;
+    
+      return Array.from(selected).some((type) => {
+        if (type === 'location') return !!entry.location;
+        if (type === 'file') return entry.attachments?.some((a) => a.type === 'File');
+        if (type === 'sketch') return entry.attachments?.some((a) => a.type === 'Sketch');
+        if (type === 'recording') return entry.attachments?.some((a) => a.type === 'Recording');
+        return false;
+      });
+    };
+    
+
     // Attachment
     const selectedAttachments = new Set<string>((v.attachment as string[]) ?? []);
 
@@ -248,23 +261,7 @@ const Logbook = () => {
 
     const filtered = items.filter((e) => {
       // attachment
-      if (selectedAttachments.size > 0) {
-        const anyMatch = Array.from(selectedAttachments).some((attType) => {
-          switch (attType) {
-            case 'location':
-              return !!e.location;
-            case 'file':
-              return e.attachments?.some((a) => a.type === 'File');
-            case 'sketch':
-              return e.attachments?.some((a) => a.type === 'Sketch');
-            case 'recording':
-              return e.attachments?.some((a) => a.type === 'Recording');
-            default:
-              return false;
-          }
-        });
-        if (!anyMatch) return false;
-      }
+      if (!matchesAttachmentFilter(e, selectedAttachments)) return false;
 
       // author
       if (selectedAuthors.size > 0 && !selectedAuthors.has(getAuthor(e).toLowerCase().replace(/\s+/g, '-'))) {

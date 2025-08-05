@@ -44,7 +44,7 @@ export function SortAndFilter({
   onApply,
   onClear,
   tree,
-}: SortAndFilterProps) {
+}: Readonly<SortAndFilterProps>) {
 
   const initialState: QueryState = useMemo(() => ({
     sort: initial?.sort ?? (sort?.length ? { by: sort[0].id, direction: 'desc' } : undefined),
@@ -153,9 +153,15 @@ export function SortAndFilter({
   const renderSelectPage = (group: GroupNode) => {
     const isMulti = group.selection === 'multi';
 
-    const current = group.id === 'sort'
-      ? local.sort?.by
-      : local.values[group.id] ?? (group.selection === 'multi' ? [] : undefined);
+    let current;
+
+    if (group.id === 'sort') {
+      current = local.sort?.by;
+    } else if (group.selection === 'multi') {
+      current = local.values[group.id] ?? [];
+    } else {
+      current = local.values[group.id];
+    }
 
   
     const showCustomRange = group.id === 'time' && current === 'custom';
@@ -207,7 +213,9 @@ export function SortAndFilter({
                 </ListItemButton>
               </ListItem>
             );
-          } if (c.type === 'date-range') {
+          } 
+          
+          if (c.type === 'date-range') {
             return (
               <ListItemButton key={c.id} onClick={() => push({ kind: 'date-range', title: c.label, node: c })}>
                 <ListItemText primary={c.label} secondary={c.helperText} />
