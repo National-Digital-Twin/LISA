@@ -16,7 +16,8 @@ import SortIcon from '@mui/icons-material/Sort';
 
 import {
   SortAndFilterProps, QueryState, FilterNode, GroupNode,
-  TextLeaf, DateRangeLeaf
+  TextLeaf, DateRangeLeaf,
+  OptionLeaf
 } from './filter-types';
 
 type Page =
@@ -52,7 +53,7 @@ export function SortAndFilter({
   }), [initial, sort]);
 
   const [local, setLocal] = useState<QueryState>(initialState);
-  useEffect(() => setLocal(initialState), [open, initialState]);
+  useEffect(() => setLocal(initialState), [initialState]);
 
   // Navigation stack
   const [stack, setStack] = useState<Page[]>([]);
@@ -163,6 +164,16 @@ export function SortAndFilter({
       current = local.values[group.id];
     }
 
+    const selected = new Set(Array.isArray(current) ? current : []);
+    const options = group.children.filter((c): c is OptionLeaf => c.type === 'option');
+
+    const implied = new Set<string>();
+    options
+      .filter((opt) => selected.has(opt.id) && Array.isArray(opt.implies))
+      .flatMap((opt) => opt.implies ?? [])
+      .forEach((id) => implied.add(id));
+
+    const effectiveSelection = new Set([...selected, ...implied]);
   
     const showCustomRange = group.id === 'time' && current === 'custom';
   
@@ -177,9 +188,13 @@ export function SortAndFilter({
 
     const handleMultiToggle = (key: string, id: string) => {
       const existing = (local.values[key] as string[] | undefined) ?? [];
-      const updated = existing.includes(id)
-        ? existing.filter((v) => v !== id)
-        : [...existing, id];
+  
+      let updated: string[];
+      if (existing.includes(id)) {
+        updated = existing.filter((v) => v !== id);
+      } else {
+        updated = [...existing, id];
+      }
       setValue(key, updated);
     };
   
@@ -187,29 +202,35 @@ export function SortAndFilter({
       <List>
         {nodes.map((c) => {
           if (c.type === 'option') {
-            const selected = isMulti
-              ? (Array.isArray(current) && current.includes(c.id))
+            const isImplied = implied.has(c.id);
+            const isSelected = isMulti
+              ? effectiveSelection.has(c.id)
               : current === c.id;
             return (
               <ListItem key={c.id} disablePadding>
                 <ListItemButton
+                  disabled={isImplied}
                   onClick={() => {
-                    if (isMulti) handleMultiToggle(group.id, c.id);
-                    else setSingleSelect(group.id, c.id);
+                    if (isMulti && !implied.has(c.id)) {
+                      handleMultiToggle(group.id, c.id);
+                    } else if (!isMulti) {
+                      setSingleSelect(group.id, c.id);
+                    }
                   }}
                 >
                   {isMulti ? (
                     <Checkbox
-                      checked={selected}
+                      checked={isSelected}
                       tabIndex={-1}
                       disableRipple
                       edge="start"
+                      disabled={isImplied}
                       slotProps={{ input: { 'aria-label': c.label } }}
                     />
                   ) : (
-                    <Radio checked={selected} tabIndex={-1} disableRipple edge="start" />
+                    <Radio checked={isSelected} tabIndex={-1} disableRipple edge="start" />
                   )}
-                  <ListItemText primary={c.label} secondary={c.helperText} />
+                  <ListItemText primary={c.label} secondary={c.helperText} sx={isImplied ? { color: 'text.disabled' } : undefined}/>
                 </ListItemButton>
               </ListItem>
             );

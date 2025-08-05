@@ -6,7 +6,6 @@ import { MouseEvent, useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Box, Button, Typography } from '@mui/material';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
-import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import { v4 as uuidV4 } from 'uuid';
 
 import { type Mentionable, type MentionableType } from 'common/Mentionable';
@@ -32,6 +31,7 @@ import { SortAndFilter } from '../components/SortFilter/SortAndFilter';
 import { buildLogFilters, logSort } from '../components/SortFilter/schemas/log-schema';
 import { type QueryState } from '../components/SortFilter/filter-types';
 import { useFormTemplates } from '../hooks/Forms/useFormTemplates';
+import { resolveTimeRange } from '../components/SortFilter/filter-utils';
 
 const Logbook = () => {
   const { incidentId } = useParams();
@@ -156,48 +156,6 @@ const Logbook = () => {
   };
 
   const toId = (s: string) => s.toLowerCase().replace(/[\s_()/\-.:]+/g, '');
-
-  const resolveTimeRange = (preset: string | undefined): { from?: number; to?: number } => {
-    const now = new Date();
-    const today = new Date(now.toDateString());
-    switch (preset) {
-      case 'last30min': {
-        const from = new Date(now);
-        from.setMinutes(from.getMinutes() - 30);
-        return { from: from.getTime(), to: now.getTime() };
-      }
-      case 'last7hr': {
-        const from = new Date(now);
-        from.setHours(from.getHours() - 7);
-        return { from: from.getTime(), to: now.getTime() };
-      }
-      case 'today':
-        return { from: today.getTime(), to: now.getTime() };
-      case 'yesterday': {
-        const y = new Date(today);
-        y.setDate(y.getDate() - 1);
-        const end = new Date(today);
-        end.setMilliseconds(-1);
-        return { from: y.getTime(), to: end.getTime() };
-      }
-      case 'last7': {
-        const from = new Date(today);
-        from.setDate(from.getDate() - 6);
-        return { from: from.getTime(), to: now.getTime() };
-      }
-      case 'last30': {
-        const from = new Date(today);
-        from.setDate(from.getDate() - 29);
-        return { from: from.getTime(), to: now.getTime() };
-      }
-      case 'thisMonth': {
-        const from = new Date(today.getFullYear(), today.getMonth(), 1);
-        return { from: from.getTime(), to: now.getTime() };
-      }
-      default:
-        return {};
-    }
-  };
 
   const visibleEntries = useMemo(() => {
     const items = (logEntries ?? []).slice();
@@ -359,12 +317,11 @@ const Logbook = () => {
             >
               <Box display="flex" flexDirection="row" flexGrow={1} gap={2}>
                 <Button
-                  variant="outlined"
-                  color="secondary"
-                  endIcon={<FilterAltIcon color={filtersOpen ? 'primary' : 'secondary'} />}
+                  type="button"
+                  variant="contained"
                   onClick={handleOpenFilters}
                 >
-                  Filter
+                  Sort & Filter
                 </Button>
               </Box>
             </Box>

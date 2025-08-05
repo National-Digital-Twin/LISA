@@ -4,12 +4,14 @@
 
 import { FilterNode, GroupNode } from "../filter-types";
 
-export const makeOptions = (opts: { id: string; label: string }[]): FilterNode[] =>
-  opts.map((opt) => ({
-    id: opt.id,
-    label: opt.label,
+export function makeOptions<T extends { id: string; label: string; implies?: string[] }>(items: T[]) {
+  return items.map((item) => ({
+    id: item.id,
+    label: item.label,
     type: 'option' as const,
+    ...(item.implies ? { implies: item.implies } : {}),
   }));
+}
   
 export const makeGroup = (
   id: string,

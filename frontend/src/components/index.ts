@@ -5,7 +5,7 @@
 import AddEntry from './AddEntry';
 import ChangeStage from './ChangeStage';
 import DateTimeInput from './DateTimeInput';
-import { EntryList, Filter, Search } from './EntryList';
+import { EntryList } from './EntryList';
 import FormField from './Form/FormField';
 import Footer from './Footer';
 import Header from './Header';
@@ -20,7 +20,6 @@ export {
   ChangeStage,
   DateTimeInput,
   EntryList,
-  Filter,
   FormField,
   Footer,
   Header,
@@ -28,6 +27,5 @@ export {
   NotificationsBanner,
   PageTitle,
   Readonly,
-  Search,
   SelectField
 };
