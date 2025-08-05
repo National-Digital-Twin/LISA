@@ -2,35 +2,36 @@
 // © Crown Copyright 2025. This work has been developed by the National Digital Twin Programme
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
-// Global imports
-import { MouseEvent, useEffect, useState } from 'react';
+import { MouseEvent, useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Box, Button, InputAdornment, Popover, TextField, Typography } from '@mui/material';
-import SearchIcon from '@mui/icons-material/Search';
-import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
-import FilterAltIcon from '@mui/icons-material/FilterAlt';
+import { Box, Button, Typography } from '@mui/material';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
-import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
-
-// Local imports
-import { type LogEntry } from 'common/LogEntry';
-import { type Mentionable, type MentionableType } from 'common/Mentionable';
+import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import { v4 as uuidV4 } from 'uuid';
-import { AddEntry, EntryList, Filter, PageTitle } from '../components';
+
+import { type Mentionable, type MentionableType } from 'common/Mentionable';
+import { type LogEntry } from 'common/LogEntry';
+
+import { AddEntry, EntryList, PageTitle } from '../components';
 import PageWrapper from '../components/PageWrapper';
 import {
-  useAuth,
   useCreateLogEntry,
   useIncidents,
   useLogEntries,
-  useLogEntriesUpdates
+  useLogEntriesUpdates,
 } from '../hooks';
-import { Format, Search as SearchUtil } from '../utils';
+import { Format } from '../utils';
 import { type OnCreateEntry } from '../utils/handlers';
-import { type FieldValueType, type FilterType, type SpanType } from '../utils/types';
+import { type SpanType } from '../utils/types';
 import { useResponsive } from '../hooks/useResponsiveHook';
 import { useIsOnline } from '../hooks/useIsOnline';
 import { logInfo } from '../utils/logger';
+
+// Sort & Filter schema + types
+import { SortAndFilter } from '../components/SortFilter/SortAndFilter';
+import { buildLogFilters, logSort } from '../components/SortFilter/schemas/log-schema';
+import { type QueryState } from '../components/SortFilter/filter-types';
+import { useFormTemplates } from '../hooks/Forms/useFormTemplates';
 
 const Logbook = () => {
   const { incidentId } = useParams();
@@ -39,53 +40,56 @@ const Logbook = () => {
   const { createLogEntry } = useCreateLogEntry(incidentId);
   const { startPolling, clearPolling } = useLogEntriesUpdates(incidentId!);
   const isOnline = useIsOnline();
-  const { user } = useAuth();
+  const { forms } = useFormTemplates();
   const [adding, setAdding] = useState<boolean>(false);
-  const [sortAsc, setSortAsc] = useState<boolean>(false);
-  const [appliedFilters, setAppliedFilters] = useState<FilterType>({ author: [], category: [] });
-  const [searchText, setSearchText] = useState<string>('');
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const openFilters = Boolean(anchorEl);
   const { isMobile } = useResponsive();
   const navigate = useNavigate();
 
-  const handleOpenFilters = (event: MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(anchorEl ? null : event.currentTarget);
-  };
+  
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const [queryState, setQueryState] = useState<QueryState>({
+    values: {},
+    sort: { by: "date_desc", direction: 'desc' },
+  });
 
+  const allAuthors = useMemo(() => {
+    const seen = new Set<string>();
+    return (logEntries ?? [])
+      .map((e) => {
+        const a = e.author;
+        if (!a) return null;
+        const name = typeof a === 'string' ? a : a.displayName ?? '';
+        return name.trim();
+      })
+      .filter((name): name is string => {
+        if (!name || seen.has(name)) return false;
+        seen.add(name);
+        return true;
+      })
+      .sort((a, b) => a.localeCompare(b));
+  }, [logEntries]);
+  
+  const logFilters = useMemo(() => {
+    const templates = forms ?? [];
+    return buildLogFilters(templates, allAuthors);
+  }, [allAuthors, forms]);
+  
   useEffect(() => {
     const preventRefresh = (ev: BeforeUnloadEvent) => {
       const lastEntry = logEntries?.at(-1);
       const hasOffline = lastEntry?.offline === true;
-
-      if (hasOffline || adding) {
-        ev.preventDefault();
-      }
+      if (hasOffline || adding) ev.preventDefault();
     };
-
     window.addEventListener('beforeunload', preventRefresh);
-
-    return () => {
-      window.removeEventListener('beforeunload', preventRefresh);
-    };
+    return () => window.removeEventListener('beforeunload', preventRefresh);
   }, [adding, logEntries]);
 
   useEffect(() => {
-    if (isOnline) {
-      startPolling();
-    } else {
-      clearPolling();
-    }
+    if (isOnline) startPolling();
+    else clearPolling();
   }, [isOnline, startPolling, clearPolling]);
 
   const incident = query?.data?.find((inc) => inc.id === incidentId);
-  const filterAuthors = Format.incident.authors(user.current, logEntries);
-  const filterCategories = Format.incident.categories(logEntries);
-
-  const onSort = (evt: MouseEvent<HTMLButtonElement>) => {
-    evt.preventDefault();
-    setSortAsc((prev) => !prev);
-  };
 
   const onCancel = () => {
     document.documentElement.scrollTo(0, 0);
@@ -132,27 +136,182 @@ const Logbook = () => {
       onMentionClick({
         id: target.getAttribute('data-lexical-mention') as string,
         type: target.getAttribute('data-lexical-mention-type') as MentionableType,
-        label: target.textContent ?? ''
+        label: target.textContent ?? '',
       });
     } else if (target.tagName !== 'A') {
       navigate('#');
     }
   };
 
-  const onFilterChange = (id: string, value: FieldValueType) => {
-    setAppliedFilters((prev) => ({ ...prev, [id]: value }));
+  const getTs = (e: LogEntry) => {
+    const raw = e.dateTime;
+    return raw ? new Date(raw).getTime() : 0;
   };
 
-  const onSearch = (value: string) => {
-    setSearchText(value.trim());
+  const getAuthor = (e: LogEntry) => {
+    const a = e.author;
+    if (!a) return '';
+    if (typeof a === 'string') return a;
+    return a.displayName ?? '';
   };
 
-  const filterEntries = (e: LogEntry): boolean => SearchUtil.entries(e, appliedFilters, searchText);
+  const toId = (s: string) => s.toLowerCase().replace(/[\s_()/\-.:]+/g, '');
 
-  const sortIcon = () => {
-    const style = { transform: sortAsc ? 'rotate(180deg)' : 'rotate(0deg)' };
-    return isMobile ? <ArrowUpwardIcon sx={style} /> : <KeyboardArrowUpIcon sx={style} />;
+  const resolveTimeRange = (preset: string | undefined): { from?: number; to?: number } => {
+    const now = new Date();
+    const today = new Date(now.toDateString());
+    switch (preset) {
+      case 'last30min': {
+        const from = new Date(now);
+        from.setMinutes(from.getMinutes() - 30);
+        return { from: from.getTime(), to: now.getTime() };
+      }
+      case 'last7hr': {
+        const from = new Date(now);
+        from.setHours(from.getHours() - 7);
+        return { from: from.getTime(), to: now.getTime() };
+      }
+      case 'today':
+        return { from: today.getTime(), to: now.getTime() };
+      case 'yesterday': {
+        const y = new Date(today);
+        y.setDate(y.getDate() - 1);
+        const end = new Date(today);
+        end.setMilliseconds(-1);
+        return { from: y.getTime(), to: end.getTime() };
+      }
+      case 'last7': {
+        const from = new Date(today);
+        from.setDate(from.getDate() - 6);
+        return { from: from.getTime(), to: now.getTime() };
+      }
+      case 'last30': {
+        const from = new Date(today);
+        from.setDate(from.getDate() - 29);
+        return { from: from.getTime(), to: now.getTime() };
+      }
+      case 'thisMonth': {
+        const from = new Date(today.getFullYear(), today.getMonth(), 1);
+        return { from: from.getTime(), to: now.getTime() };
+      }
+      default:
+        return {};
+    }
   };
+
+  const visibleEntries = useMemo(() => {
+    const items = (logEntries ?? []).slice();
+    const v = queryState.values;
+
+    // memo helpers
+
+    const getTypeIds = (e: LogEntry): string[] => {
+      const t = e.type;
+      if (!t) return [];
+  
+      const raw = (typeof t === 'string' && t) || '';
+      if (!raw) return [];
+  
+      const id = toId(raw);
+      const ids: string[] = [id];
+  
+      return ids;
+    };
+
+    const matchesAttachmentFilter = (entry: LogEntry, selected: Set<string>): boolean => {
+      if (selected.size === 0) return true;
+    
+      return Array.from(selected).some((type) => {
+        if (type === 'location') return !!entry.location;
+        if (type === 'file') return entry.attachments?.some((a) => a.type === 'File');
+        if (type === 'sketch') return entry.attachments?.some((a) => a.type === 'Sketch');
+        if (type === 'recording') return entry.attachments?.some((a) => a.type === 'Recording');
+        return false;
+      });
+    };
+    
+
+    // Attachment
+    const selectedAttachments = new Set<string>((v.attachment as string[]) ?? []);
+
+    // Author
+    const selectedAuthors = new Set<string>((v.author as string[]) ?? []);
+
+    // Categories from Form/Task/Update
+    const selectedTypes = new Set<string>([
+      ...((v['logType.form'] as string[]) ?? []),
+      ...((v['logType.task'] as string[]) ?? []),
+      ...((v['logType.update'] as string[]) ?? []),
+    ]);
+
+    // Date range
+    const preset = v.time as string | undefined;
+    let from: number | undefined;
+    let to: number | undefined;
+
+    if (preset === 'custom') {
+      const dr = v.timeRange as { from?: string; to?: string } | undefined;
+      from = dr?.from ? new Date(dr.from).getTime() : undefined;
+      to = dr?.to ? new Date(dr.to).getTime() : undefined;
+    } else {
+      const resolved = resolveTimeRange(preset);
+      from = resolved.from;
+      to = resolved.to;
+    }
+
+    const filtered = items.filter((e) => {
+      // attachment
+      if (!matchesAttachmentFilter(e, selectedAttachments)) return false;
+
+      // author
+      if (selectedAuthors.size > 0 && !selectedAuthors.has(getAuthor(e).toLowerCase().replace(/\s+/g, '-'))) {
+        return false;
+      }
+
+      // types
+      if (selectedTypes.size > 0) {
+        const types = getTypeIds(e);
+      
+        const isTaskMatch = selectedTypes.has('task') && e.task;
+        const isFormMatch = selectedTypes.has(`form::${(e.details?.submittedFormTemplateId ?? '')}`) ?? false;
+        const hasAny = types.some((t) => selectedTypes.has(t));
+      
+        if (!isTaskMatch && !isFormMatch && !hasAny) return false;
+      }
+
+      // date range
+      const ts = getTs(e);
+      if (from != null && ts < from) return false;
+      if (to != null && ts > to) return false;
+
+      return true;
+    });
+
+    // sort
+    const sortKey = queryState.sort?.by ?? logSort[0].id;
+    filtered.sort((a, b) => {
+      switch (sortKey) {
+        case 'author_asc':
+        case 'author_desc': {
+          const aa = getAuthor(a).toLowerCase();
+          const bb = getAuthor(b).toLowerCase();
+          return sortKey === 'author_asc' ? aa.localeCompare(bb) : bb.localeCompare(aa);
+        }
+        case 'date_asc':
+        case 'date_desc':
+        default: {
+          const ta = getTs(a);
+          const tb = getTs(b);
+          return sortKey === 'date_asc' ? ta - tb : tb - ta;
+        }
+      }
+    });
+
+    return filtered;
+  }, [logEntries, queryState.sort?.by, queryState.values]);
+
+  // Button handler
+  const handleOpenFilters = () => setFiltersOpen(true);
 
   return (
     <PageWrapper>
@@ -162,11 +321,6 @@ const Logbook = () => {
         stage={incident?.stage}
       >
         <Box display="flex" flexDirection="row" justifyContent="space-between">
-          {isMobile && !adding && (
-            <Button variant="text" onClick={onSort} endIcon={sortIcon()} color="secondary">
-              Sort
-            </Button>
-          )}
           {!adding && (
             <Button
               type="button"
@@ -180,6 +334,7 @@ const Logbook = () => {
           )}
         </Box>
       </PageTitle>
+
       {adding && (
         <AddEntry
           incident={incident}
@@ -188,8 +343,9 @@ const Logbook = () => {
           onCancel={onCancel}
         />
       )}
+
       <Box display="flex" flexDirection="column" width="100%">
-        {logEntries !== undefined && logEntries.length > 0 ? (
+        {logEntries && logEntries.length > 0 ? (
           <>
             <Box
               display="flex"
@@ -197,142 +353,32 @@ const Logbook = () => {
               justifyContent="space-between"
               flexWrap="wrap"
               width="100%"
-              component="form"
               mb="1.6rem"
               gap={1}
               displayPrint="none"
             >
               <Box display="flex" flexDirection="row" flexGrow={1} gap={2}>
-                <TextField
-                  size={isMobile ? 'small' : 'medium'}
-                  fullWidth={isMobile}
-                  id="search-bar"
+                <Button
                   variant="outlined"
-                  label="Search"
-                  placeholder="Search..."
-                  onChange={(e) => onSearch(e.target.value)}
-                  slotProps={{
-                    input: {
-                      endAdornment: (
-                        <InputAdornment position="end">
-                          <SearchIcon color="primary" />
-                        </InputAdornment>
-                      )
-                    }
-                  }}
-                  sx={{ minWidth: '30%' }}
-                />
-                {!isMobile ? (
-                  <Filter
-                    isMobile={isMobile}
-                    appliedFilters={appliedFilters}
-                    onChange={onFilterChange}
-                    filters={[
-                      {
-                        id: 'author',
-                        label: 'Author',
-                        hintText: 'Everyone',
-                        type: 'multiselect',
-                        options: filterAuthors
-                      },
-                      {
-                        id: 'category',
-                        label: 'Category',
-                        type: 'multiselect',
-                        options: filterCategories
-                      }
-                    ]}
-                  />
-                ) : (
-                  <>
-                    <Button
-                      variant="outlined"
-                      color="secondary"
-                      endIcon={<FilterAltIcon color={anchorEl ? 'primary' : 'secondary'} />}
-                      onClick={handleOpenFilters}
-                    >
-                      Filter
-                    </Button>
-
-                    <Popover
-                      open={openFilters}
-                      anchorEl={anchorEl}
-                      onClose={() => setAnchorEl(null)}
-                      anchorOrigin={{
-                        vertical: 'bottom',
-                        horizontal: 'left'
-                      }}
-                      transformOrigin={{
-                        vertical: -10,
-                        horizontal: 'left'
-                      }}
-                      slotProps={{
-                        paper: {
-                          sx: {
-                            width: '100%',
-                            padding: '1rem',
-                            borderRadius: 0
-                          }
-                        }
-                      }}
-                    >
-                      <Box display="flex" flexDirection="column" gap={1} width="100%">
-                        <Filter
-                          isMobile={isMobile}
-                          appliedFilters={appliedFilters}
-                          onChange={onFilterChange}
-                          filters={[
-                            {
-                              id: 'author',
-                              label: 'Author',
-                              hintText: 'Everyone',
-                              type: 'multiselect',
-                              options: filterAuthors
-                            },
-                            {
-                              id: 'category',
-                              label: 'Category',
-                              hintText: 'Any',
-                              type: 'multiselect',
-                              options: filterCategories
-                            }
-                          ]}
-                        />
-                      </Box>
-                    </Popover>
-                  </>
-                )}
+                  color="secondary"
+                  endIcon={<FilterAltIcon color={filtersOpen ? 'primary' : 'secondary'} />}
+                  onClick={handleOpenFilters}
+                >
+                  Filter
+                </Button>
               </Box>
-              {!isMobile && (
-                <Box display="flex" width="auto" alignItems="center">
-                  <Button
-                    fullWidth
-                    variant="outlined"
-                    onClick={onSort}
-                    color="secondary"
-                    endIcon={sortIcon()}
-                  >
-                    <Typography fontWeight="bold" color="text.primary">
-                      MOST RECENT AT
-                      <Typography fontWeight="bold" component="span" color="primary">
-                        {sortAsc ? ' BOTTOM' : ' TOP'}
-                      </Typography>
-                    </Typography>
-                  </Button>
-                </Box>
-              )}
             </Box>
-            {(logEntries ?? []).filter(filterEntries).length > 0 ? (
+
+            {visibleEntries.length > 0 ? (
               <EntryList
-                entries={(logEntries ?? []).filter(filterEntries)}
-                sortAsc={sortAsc}
+                entries={visibleEntries}
                 onContentClick={onContentClick}
                 onMentionClick={onMentionClick}
               />
             ) : (
               <Box p={2} bgcolor="background.default">
                 <Typography variant="h6">No results found.</Typography>
-                <Typography mt={1}>Try adjusting your filters to see more log entries.</Typography>
+                <Typography mt={1}>Try adjusting your filters.</Typography>
               </Box>
             )}
           </>
@@ -343,6 +389,21 @@ const Logbook = () => {
           </Box>
         )}
       </Box>
+
+      <SortAndFilter
+        open={filtersOpen}
+        onClose={() => setFiltersOpen(false)}
+        sort={logSort}
+        tree={logFilters}
+        initial={queryState}
+        onApply={(next) => {
+          setQueryState(next);
+          setFiltersOpen(false);
+        }}
+        onClear={() => {
+          setQueryState({ values: {}, sort: { by: 'date_desc', direction: 'desc' } });
+        }}
+      />
     </PageWrapper>
   );
 };

@@ -25,6 +25,7 @@ export async function parseDetails(
       ? nodeValue(result?.submittedFormId?.value)
       : undefined;
     const submittedFormTitle = result?.submittedFormTitle?.value;
+    const submittedFormTemplateId = result?.submittedFormTemplateId?.value ? nodeValue(result?.submittedFormTemplateId?.value) : undefined;
 
     if (!detailsByEntry.has(entryId)) {
       const details: LogEntryChangeDetails = {
@@ -33,7 +34,8 @@ export async function parseDetails(
         changedAssignee,
         changedStatus,
         submittedFormId,
-        submittedFormTitle
+        submittedFormTitle,
+        submittedFormTemplateId
       };
 
       detailsByEntry.set(entryId, details);

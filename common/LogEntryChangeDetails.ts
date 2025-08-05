@@ -11,6 +11,7 @@ export const LogEntryChangeDetails = Record({
   changedTaskName: Optional(String), // Only applicable to type ChangeTaskStatus/ChangeTaskAssignee
   changedTaskId: Optional(String), // Only applicable to type ChangeTaskStatus/ChangeTaskAssignee
   submittedFormId: Optional(String), // Only applicable to type FormSubmitted
+  submittedFormTemplateId: Optional(String), // Only applicable to type FormSubmitted
   submittedFormTitle: Optional(String) // Only applicable to type FormSubmitted
 });
 

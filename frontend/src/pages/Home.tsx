@@ -30,7 +30,7 @@ import {
 } from '@mui/material';
 
 import AddCircleIcon from '@mui/icons-material/AddCircle';
-import Filter from '../components/Filter/Filter';
+import Filter from '../components/SortFilter/Filter';
 import type { FieldValueType } from '../utils/types';
 import { useIncidents } from '../hooks';
 import { Format } from '../utils';
