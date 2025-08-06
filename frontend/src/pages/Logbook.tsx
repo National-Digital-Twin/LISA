@@ -195,12 +195,17 @@ const Logbook = () => {
     // Author
     const selectedAuthors = new Set<string>((v.author as string[]) ?? []);
 
-    // Categories from Form/Task/Update
-    const selectedTypes = new Set<string>([
-      ...((v['logType.form'] as string[]) ?? []),
-      ...((v['logType.task'] as string[]) ?? []),
-      ...((v['logType.update'] as string[]) ?? []),
-    ]);
+    // Types from Form/Task/Update
+    const selectedTypes = new Set<string>(
+      Object.entries(v)
+        .filter(([key, val]) => key === 'logType' && Array.isArray(val))
+        .flatMap(([, val]) => val as string[])
+        .concat(
+          Object.entries(v)
+            .filter(([key, val]) => key.startsWith('logType.') && Array.isArray(val))
+            .flatMap(([, val]) => val as string[])
+        )
+    );
 
     // Date range
     const customTimeRange = v.timeRange as { from?: string; to?: string } | undefined;

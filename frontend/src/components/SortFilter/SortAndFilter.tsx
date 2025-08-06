@@ -27,13 +27,17 @@ type Page =
   | { kind: 'date-range'; title: string; node: DateRangeLeaf };
 
 function countActive(values: QueryState['values']) {
-  return Object.entries(values).reduce((count, [key, v]) => {
-    if (key === 'sort') return count;
-    if (Array.isArray(v)) return v.length > 0 ? count + 1 : count;
-    if (v == null || v === '') return count;
-    if (typeof v === 'object') return Object.values(v).some(Boolean) ? count + 1 : count;
-    return count + 1;
-  }, 0);
+  return Object.entries(values)
+    .filter(([key, v]) => {
+      if (key === 'sort') return false;
+      if (Array.isArray(v)) return v.length > 0;
+      if (v == null || v === '') return false;
+      if (typeof v === 'object') return Object.values(v).some(Boolean);
+      return true;
+    })
+    .map(([key]) => key.split('.')[0])
+    .filter((v, i, arr) => arr.indexOf(v) === i)
+    .length;
 }
 
 export function SortAndFilter({
@@ -234,7 +238,18 @@ export function SortAndFilter({
                 </ListItemButton>
               </ListItem>
             );
-          } 
+          }
+          
+          if (c.type === 'group') {
+            return (
+              <ListItem key={c.id} disablePadding>
+                <ListItemButton onClick={() => push({ kind: 'select', title: c.label, group: c })}>
+                  <ListItemText primary={c.label} secondary={c.helperText} />
+                  <ChevronRightIcon />
+                </ListItemButton>
+              </ListItem>
+            );
+          }
           
           if (c.type === 'date-range') {
             return (

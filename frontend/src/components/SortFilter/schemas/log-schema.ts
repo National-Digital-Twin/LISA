@@ -31,7 +31,7 @@ export const buildLogFilters = (
         label: name,
       }))
     )),
-    makeGroup('logType', 'Log type', 'none', [
+    makeGroup('logType', 'Log type', 'multi', [
       makeGroup('logType.form', 'Form', 'multi', [
         ...makeOptions([
           { id: 'action', label: 'Action' },
@@ -47,12 +47,10 @@ export const buildLogFilters = (
           label: f.title,
         })),
       ]),
-      makeGroup('logType.task', 'Task', 'multi', makeOptions([
+      ...makeOptions([
         { id: 'task', label: 'Task' },
-      ])),
-      makeGroup('logType.update', 'Update', 'multi', makeOptions([
         { id: 'general', label: 'Update' },
-      ])),
+      ]),
     ]),
     makeGroup('time', 'Time', 'single', makeOptions([
       { id: 'last30min', label: 'Last 30 minutes' },

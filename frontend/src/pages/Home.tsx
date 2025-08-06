@@ -48,7 +48,9 @@ const Home = () => {
 
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [queryState, setQueryState] = useState<QueryState>({
-    values: {},
+    values: {
+      stage: ['active'],
+    },
     sort: { by: "date_desc", direction: 'desc' },
   });
 
@@ -266,7 +268,7 @@ const Home = () => {
           setFiltersOpen(false);
         }}
         onClear={() => {
-          setQueryState({ values: {}, sort: { by: 'date_desc', direction: 'desc' } });
+          setQueryState({ values: { stage: ['active']}, sort: { by: 'date_desc', direction: 'desc' } });
         }}
       />
     </PageWrapper>
