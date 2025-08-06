@@ -31,7 +31,7 @@ import { SortAndFilter } from '../components/SortFilter/SortAndFilter';
 import { buildLogFilters, logSort } from '../components/SortFilter/schemas/log-schema';
 import { type QueryState } from '../components/SortFilter/filter-types';
 import { useFormTemplates } from '../hooks/Forms/useFormTemplates';
-import { resolveTimeRange } from '../components/SortFilter/filter-utils';
+import { getFromAndToFromTimeSelection } from '../components/SortFilter/filter-utils';
 
 const Logbook = () => {
   const { incidentId } = useParams();
@@ -203,19 +203,10 @@ const Logbook = () => {
     ]);
 
     // Date range
+    const customTimeRange = v.timeRange as { from?: string; to?: string } | undefined;
     const preset = v.time as string | undefined;
-    let from: number | undefined;
-    let to: number | undefined;
-
-    if (preset === 'custom') {
-      const dr = v.timeRange as { from?: string; to?: string } | undefined;
-      from = dr?.from ? new Date(dr.from).getTime() : undefined;
-      to = dr?.to ? new Date(dr.to).getTime() : undefined;
-    } else {
-      const resolved = resolveTimeRange(preset);
-      from = resolved.from;
-      to = resolved.to;
-    }
+    
+    const {from, to} = getFromAndToFromTimeSelection(preset, customTimeRange);
 
     const filtered = items.filter((e) => {
       // attachment

@@ -33,7 +33,7 @@ import { useResponsive } from '../hooks/useResponsiveHook';
 import { QueryState } from '../components/SortFilter/filter-types';
 import { SortAndFilter } from '../components/SortFilter/SortAndFilter';
 import { buildIncidentFilters, incidentSort } from '../components/SortFilter/schemas/incident-schema';
-import { applyImpliedSelections, resolveTimeRange } from '../components/SortFilter/filter-utils';
+import { applyImpliedSelections, getFromAndToFromTimeSelection } from '../components/SortFilter/filter-utils';
 
 const Home = () => {
   const { isMobile } = useResponsive();
@@ -109,19 +109,10 @@ const Home = () => {
     const selectedStages = new Set<string>((v.stage as string[]) ?? []);
     const selectedTypes = new Set<string>((v.type as string[]) ?? []);
 
+    const customTimeRange = v.timeRange as { from?: string; to?: string } | undefined;
     const preset = v.time as string | undefined;
-    let from: number | undefined;
-    let to: number | undefined;
-    
-    if (preset === 'custom') {
-      const dr = v.timeRange as { from?: string; to?: string } | undefined;
-      from = dr?.from ? new Date(dr.from).getTime() : undefined;
-      to = dr?.to ? new Date(dr.to).getTime() : undefined;
-    } else {
-      const resolved = resolveTimeRange(preset);
-      from = resolved.from;
-      to = resolved.to;
-    }
+
+    const {from, to} = getFromAndToFromTimeSelection(preset, customTimeRange);
 
     const filtered = incidents.filter((incident) => {
       const authorKey = (incident.reportedBy?.displayName ?? '').toLowerCase().replace(/\s+/g, '-');

@@ -4,7 +4,7 @@
 
 import { FilterTree, GroupNode, OptionLeaf } from "./filter-types";
 
-export const resolveTimeRange = (preset: string | undefined): { from?: number; to?: number } => {
+const resolveTimeRange = (preset: string | undefined): { from?: number; to?: number } => {
   const now = new Date();
   const today = new Date(now.toDateString());
   switch (preset) {
@@ -44,6 +44,23 @@ export const resolveTimeRange = (preset: string | undefined): { from?: number; t
     default:
       return {};
   }
+};
+
+export const getFromAndToFromTimeSelection = (preset : string | undefined, timeRange? : {from?: string; to?: string;}) 
+: {from : number | undefined, to : number | undefined} => {
+  let from: number | undefined;
+  let to: number | undefined;
+  
+  if (preset === 'custom') {
+    from = timeRange?.from ? new Date(timeRange.from).getTime() : undefined;
+    to = timeRange?.to ? new Date(timeRange.to).getTime() : undefined;
+  } else {
+    const resolved = resolveTimeRange(preset);
+    from = resolved.from;
+    to = resolved.to;
+  }
+
+  return { from, to };
 };
 
 export const applyImpliedSelections = (
