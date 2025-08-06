@@ -12,7 +12,7 @@ const REVIEW_FIELD: Field = {
   id: 'Review',
   label: 'Risk assessment to review',
   type: 'SelectLogEntry',
-  linkableTypes: ['RiskAssessment', 'RiskAssessmentReview']
+  linkableTypes: ['riskAssessment', 'riskAssessmentReview']
 };
 
 function fields(entry: Partial<LogEntry>) {
@@ -28,8 +28,5 @@ export const RiskAssessmentReview: LogEntryTypesDictItem = {
   label: 'Risk assessment review',
   dateLabel: 'Date and time reviewed',
   fields,
-  groups: [
-    { id: 'review', fieldIds: [REVIEW_FIELD.id] },
-    ...(RiskAssessment.groups || [])
-  ]
+  groups: [{ id: 'review', fieldIds: [REVIEW_FIELD.id] }, ...(RiskAssessment.groups || [])]
 };

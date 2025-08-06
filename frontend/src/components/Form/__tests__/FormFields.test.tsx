@@ -17,7 +17,7 @@ describe('FormFields Tests', () => {
         entry={{
           incidentId: 'Incident Id',
           dateTime: '',
-          type: 'Action',
+          type: 'action',
           content: { json: '', text: '' }
         }}
         validationErrors={[]}
@@ -36,7 +36,7 @@ describe('FormFields Tests', () => {
         entry={{
           incidentId: 'Incident Id',
           dateTime: '',
-          type: 'Action',
+          type: 'action',
           content: { json: '', text: '' }
         }}
         validationErrors={[]}
@@ -57,7 +57,7 @@ describe('FormFields Tests', () => {
         entry={{
           incidentId: 'Incident Id',
           dateTime: '',
-          type: 'Action',
+          type: 'action',
           content: { json: '', text: '' }
         }}
         validationErrors={[]}

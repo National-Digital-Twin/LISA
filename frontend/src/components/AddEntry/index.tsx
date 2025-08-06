@@ -35,10 +35,12 @@ import { useAttachments } from '../../hooks/useAttachments';
 import { getSortedEntriesWithDisplaySequence } from '../../utils/sortEntries';
 import Task from './Task';
 import { createSequenceNumber } from '../../utils/Form/sequence';
+import { Form as CustomForm } from '../CustomForms/FormTemplates/types';
 
 type AddEntryProps = {
   incident?: Incident;
   entries: Array<LogEntry>;
+  forms: CustomForm[];
   onCreateEntry: OnCreateEntry;
   onCancel: () => void;
   loading?: boolean;
@@ -47,6 +49,7 @@ type AddEntryProps = {
 const AddEntry = ({
   incident = undefined,
   entries,
+  forms,
   onCreateEntry,
   onCancel,
   loading = false
@@ -57,7 +60,7 @@ const AddEntry = ({
   const [entry, setEntry] = useState<Partial<LogEntry>>({
     incidentId: incident?.id,
     sequence: createSequenceNumber(),
-    type: 'General',
+    type: 'general',
     content: {}
   });
   const [validationErrors, setValidationErrors] = useState<Array<ValidationError>>([]);
@@ -196,7 +199,8 @@ const AddEntry = ({
               active={!hash || hash.includes(TABS.FORM)}
               entry={entry}
               entries={entries}
-              incident={incident}
+              forms={forms}
+              selectedForm={forms.find((form) => form.id === entry.type?.toLowerCase())}
               mentionables={mentionables}
               validationErrors={validationErrors}
               onFieldChange={onFieldChange}

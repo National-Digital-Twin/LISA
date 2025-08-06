@@ -43,7 +43,7 @@ describe('useLogEntries', () => {
         offline: false,
         incidentId: '',
         dateTime: '',
-        type: 'Action',
+        type: 'action',
         content: {
           text: 'Test log entry'
         }

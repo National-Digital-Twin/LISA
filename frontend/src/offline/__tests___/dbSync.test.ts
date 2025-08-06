@@ -3,7 +3,7 @@
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { LogEntryType } from 'common/LogEntryType';
+import { LogEntryTypeV2 } from 'common/LogEntryType';
 import 'fake-indexeddb/auto';
 import { syncAllOfflineEntities } from '../db/dbSync';
 import * as dbOps from '../db/dbOperations';
@@ -28,22 +28,22 @@ describe('syncAllOfflineEntities', () => {
       organisation: 'Org',
       telephone: '000',
       email: 'ref@example.com',
-      supportRequested: 'No',
+      supportRequested: 'No'
     },
     startedAt: new Date().toISOString(),
     createdAt: new Date().toISOString(),
     offline: true,
-    expiresAt: '',
+    expiresAt: ''
   };
 
   const mockLog: OfflineLogEntry = {
     id: 'l1',
     incidentId: 'i1',
-    type: 'General' as LogEntryType,
+    type: 'general' as LogEntryTypeV2,
     dateTime: new Date().toISOString(),
     content: { text: 'test' },
     offline: true,
-    expiresAt: '',
+    expiresAt: ''
   };
 
   const mockForm: OfflineFormInstance = {
@@ -73,7 +73,7 @@ describe('syncAllOfflineEntities', () => {
       type: 'FormSubmitted',
       dateTime: new Date().toISOString(),
       incidentId: 'i1',
-      content: { text: 'mock log entry' },
+      content: { text: 'mock log entry' }
     });
   });
 
@@ -92,9 +92,7 @@ describe('syncAllOfflineEntities', () => {
   });
 
   it('skips incident if not marked offline', async () => {
-    (dbOps.getAllIncidents as jest.Mock).mockResolvedValue([
-      { ...mockIncident, offline: false },
-    ]);
+    (dbOps.getAllIncidents as jest.Mock).mockResolvedValue([{ ...mockIncident, offline: false }]);
 
     await syncAllOfflineEntities();
 

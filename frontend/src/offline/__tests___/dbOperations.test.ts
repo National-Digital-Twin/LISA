@@ -6,7 +6,7 @@
 import 'fake-indexeddb/auto';
 import { IncidentType } from 'common/IncidentType';
 import { IncidentStage } from 'common/IncidentStage';
-import { LogEntryType } from 'common/LogEntryType';
+import { LogEntryTypeV2 } from 'common/LogEntryType';
 import {
   addIncident,
   getIncident,
@@ -19,7 +19,7 @@ import {
   addForm,
   getForm,
   getAllForms,
-  deleteForm,
+  deleteForm
 } from '../db/dbOperations';
 
 global.structuredClone = global.structuredClone || ((obj) => JSON.parse(JSON.stringify(obj)));
@@ -27,14 +27,14 @@ global.structuredClone = global.structuredClone || ((obj) => JSON.parse(JSON.str
 const mockIncident = {
   id: 'incident-1',
   name: 'Mock Incident',
-  stage: "Monitoring" as IncidentStage,
+  stage: 'Monitoring' as IncidentStage,
   type: 'CBRNMedium' as IncidentType,
   referrer: {
     name: 'Test',
     organisation: 'TestOrg',
     telephone: '123456789',
     email: 'test@example.com',
-    supportRequested: "No" as const
+    supportRequested: 'No' as const
   },
   startedAt: new Date().toISOString(),
   createdAt: new Date().toISOString(),
@@ -44,10 +44,10 @@ const mockIncident = {
 const mockLog = {
   id: 'log-1',
   incidentId: 'incident-1',
-  type: 'General' as LogEntryType,
+  type: 'general' as LogEntryTypeV2,
   dateTime: new Date().toISOString(),
   content: {
-    text: 'This is a test log',
+    text: 'This is a test log'
   },
   offline: true as const
 };
@@ -59,7 +59,7 @@ const mockForm = {
   formData: { field1: 'value1' },
   incidentId: 'incident-1',
   createdAt: new Date().toISOString(),
-  pendingLogEntry: mockLog,
+  pendingLogEntry: mockLog
 };
 
 describe('IndexedDB Operations', () => {

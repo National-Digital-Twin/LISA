@@ -1,0 +1,25 @@
+@prefix ies: <http://ies.data.gov.uk/ontology/ies4#>
+@prefix lisa: <http://ndtp.co.uk/ontology/lisa#>
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>
+
+#Action
+
+lisa:action rdf:type lisa:Form .
+lisa:action ies:hasName "Action"^^xsd:string .
+lisa:action lisa:createdAt "1970-01-01T00:00:00.000Z"^^xsd:dateTime .
+lisa:action lisa:hasData $FORM_DATA^^xsd:string .
+
+#Communication
+
+lisa:communication rdf:type lisa:Form .
+lisa:communication ies:hasName "Communication"^^xsd:string .
+lisa:communication lisa:createdAt "1970-01-01T00:00:00.000Z"^^xsd:dateTime .
+lisa:communication lisa:hasData $FORM_DATA^^xsd:string .
+
+#Decision
+
+lisa:decision rdf:type lisa:Form .
+lisa:decision ies:hasName "Decision"^^xsd:string .
+lisa:decision lisa:createdAt "1970-01-01T00:00:00.000Z"^^xsd:dateTime .
+lisa:decision lisa:hasData $FORM_DATA^^xsd:string .

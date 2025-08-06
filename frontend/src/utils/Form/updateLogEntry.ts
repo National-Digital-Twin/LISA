@@ -4,13 +4,17 @@
 
 // Local imports
 import { type LogEntry } from 'common/LogEntry';
-import { type LogEntryType } from 'common/LogEntryType';
+import { type LogEntryTypeV2 } from 'common/LogEntryType';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { LogEntryTypes } from 'common/LogEntryTypes';
 import { type FieldValueType } from '../types';
 
-export function getUpdatedFields(entry: Partial<LogEntry>, fieldId?: string, fieldValue?: FieldValueType) {
-  const type = LogEntryTypes[entry.type as LogEntryType];
+export function getUpdatedFields(
+  entry: Partial<LogEntry>,
+  fieldId?: string,
+  fieldValue?: FieldValueType
+) {
+  const type = LogEntryTypes[entry.type as LogEntryTypeV2];
   let fields = entry.fields ?? [];
   // Update the fields first.
   if (fields && fieldId) {
@@ -29,13 +33,15 @@ export function getUpdatedFields(entry: Partial<LogEntry>, fieldId?: string, fie
     // Remove any fields that aren't in the set of fields for this type
     // and make sure all of the fields are appropriately set up.
     const typeFields = type?.fields({ ...entry, fields }) ?? [];
-    return fields.map((f) => {
-      const typeField = typeFields.find((tf) => tf.id === f.id);
-      if (typeField) {
-        return { ...typeField, value: f.value };
-      }
-      return undefined;
-    }).filter((f) => !!f);
+    return fields
+      .map((f) => {
+        const typeField = typeFields.find((tf) => tf.id === f.id);
+        if (typeField) {
+          return { ...typeField, value: f.value };
+        }
+        return undefined;
+      })
+      .filter((f) => !!f);
   }
 
   return fields;

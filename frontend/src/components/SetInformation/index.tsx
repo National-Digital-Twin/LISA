@@ -38,7 +38,7 @@ export default function SetInformation({ incident, onSetInformation, onCancel }:
   useEffect(() => {
     if (!incident || !entry.type) return;
 
-    const type = LogEntryTypes.SetIncidentInformation;
+    const type = LogEntryTypes.setIncidentInformation;
     setFields(type?.fields(entry) || []);
     setValidationErrors(validate(entry, incident));
   }, [entry, incident]);

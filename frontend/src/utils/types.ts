@@ -8,7 +8,7 @@ import { ReactNode } from 'react';
 import { type Field } from 'common/Field';
 import { type Incident } from 'common/Incident';
 import { type Coordinates, type LocationType } from 'common/Location';
-import { type LogEntryType } from 'common/LogEntryType';
+import { type LogEntryTypeV2 } from 'common/LogEntryType';
 import { type MessagingTopicType } from 'common/Messaging';
 import { type User } from 'common/User';
 
@@ -87,4 +87,4 @@ export type ValidationError = {
   error: string;
 };
 
-export type Linkable = { type: LogEntryType; id: string };
+export type Linkable = { type: LogEntryTypeV2; id: string };

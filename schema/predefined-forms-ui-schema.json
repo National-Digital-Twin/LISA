@@ -1,0 +1,52 @@
+{
+  "forms": [
+    {
+      "type": "action",
+      "uiSchema": {
+        "ui:order": [
+          "communicatedBy",
+          "correspondentsName",
+          "fromEmailAddress",
+          "toEmailAddress",
+          "telephoneNumberOfCaller",
+          "telephoneNumberCalled"
+        ],
+        "ui:submitButtonOptions": {
+          "norender": true
+        }
+      }
+    },
+    {
+      "type": "communication",
+      "uiSchema": {
+        "ui:order": [
+          "communicatedBy",
+          "correspondentsName",
+          "fromEmailAddress",
+          "toEmailAddress",
+          "telephoneNumberOfCaller",
+          "telephoneNumberCalled"
+        ],
+        "ui:submitButtonOptions": {
+          "norender": true
+        }
+      }
+    },
+    {
+      "type": "decision",
+      "uiSchema": {
+        "ui:order": [
+          "communicatedBy",
+          "correspondentsName",
+          "fromEmailAddress",
+          "toEmailAddress",
+          "telephoneNumberOfCaller",
+          "telephoneNumberCalled"
+        ],
+        "ui:submitButtonOptions": {
+          "norender": true
+        }
+      }
+    }
+  ]
+}

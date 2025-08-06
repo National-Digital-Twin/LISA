@@ -13,7 +13,7 @@ describe('updateLogEntry', () => {
   const dummyLogEntry: Partial<LogEntry> = {
     id: 'test-id',
     fields: [{ id: 'field1', type: 'YesNo', value: 'defaultValue' }],
-    type: 'AvianFlu'
+    type: 'avianFlu'
   };
 
   it('should update the field entry when a field property is provided with a new value', () => {
@@ -27,7 +27,7 @@ describe('updateLogEntry', () => {
       field1: 'updatedFieldValue',
       fields: [],
       id: 'test-id',
-      type: 'AvianFlu'
+      type: 'avianFlu'
     });
   });
 

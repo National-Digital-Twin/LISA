@@ -3,13 +3,18 @@
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
 /* eslint-disable import/no-extraneous-dependencies */
-import { TaskStatus } from "common/Task";
-import { LogEntry } from "common/LogEntry";
-import { createSequenceNumber } from "../Form/sequence";
+import { TaskStatus } from 'common/Task';
+import { LogEntry } from 'common/LogEntry';
+import { createSequenceNumber } from '../Form/sequence';
 
-export function createLogEntryFromTaskStatusUpdate(taskId : string, status : TaskStatus, incidentId : string, entry? : Partial<LogEntry>): Partial<LogEntry> {
+export function createLogEntryFromTaskStatusUpdate(
+  taskId: string,
+  status: TaskStatus,
+  incidentId: string,
+  entry?: Partial<LogEntry>
+): Partial<LogEntry> {
   const logEntry: Partial<LogEntry> = entry ?? {
-    type: 'ChangeTaskStatus',
+    type: 'changeTaskStatus',
     incidentId,
     dateTime: new Date().toISOString(),
     content: {},
@@ -24,9 +29,14 @@ export function createLogEntryFromTaskStatusUpdate(taskId : string, status : Tas
   return logEntry;
 }
 
-export function createLogEntryFromTaskAssigneeUpdate(taskId : string, assigneeName : string, incidentId : string, entry? : Partial<LogEntry>): Partial<LogEntry> {
+export function createLogEntryFromTaskAssigneeUpdate(
+  taskId: string,
+  assigneeName: string,
+  incidentId: string,
+  entry?: Partial<LogEntry>
+): Partial<LogEntry> {
   const logEntry: Partial<LogEntry> = entry ?? {
-    type: 'ChangeTaskAssignee',
+    type: 'changeTaskAssignee',
     incidentId,
     dateTime: new Date().toISOString(),
     content: {},
@@ -37,6 +47,6 @@ export function createLogEntryFromTaskAssigneeUpdate(taskId : string, assigneeNa
       changedTaskId: taskId
     }
   };
-  
+
   return logEntry;
 }

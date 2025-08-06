@@ -1,5 +1,5 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import { LogEntryType } from 'common/LogEntryType';
+import { LogEntryTypeV2 } from 'common/LogEntryType';
 import type { LogEntry } from 'common/LogEntry';
 import { Coordinates } from 'common/Location';
 import { location, VIEW_LOCATION } from '../location';
@@ -14,7 +14,7 @@ type FullLocationType = {
 interface FakeLogEntry {
   id?: string;
   incidentId: string;
-  type: LogEntryType;
+  type: LogEntryTypeV2;
   dateTime: string;
   location: FullLocationType;
 }
@@ -23,7 +23,7 @@ describe('location', () => {
   it('returns the description when provided', () => {
     const fakeEntry: FakeLogEntry = {
       incidentId: '123',
-      type: 'General',
+      type: 'general',
       dateTime: '2021-01-01T00:00:00Z',
       location: {
         type: 'coordinates',
@@ -43,7 +43,7 @@ describe('location', () => {
     const fakeEntry: FakeLogEntry = {
       dateTime: '',
       incidentId: '',
-      type: 'Action',
+      type: 'action',
       location: {
         type: 'address',
         // description is undefined
@@ -70,7 +70,7 @@ describe('location', () => {
     const fakeEntry: FakeLogEntry = {
       dateTime: '',
       incidentId: '',
-      type: 'Action',
+      type: 'action',
       location: {
         type: 'none',
         description: 'Should not be returned',

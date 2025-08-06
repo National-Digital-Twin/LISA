@@ -6,7 +6,7 @@
 import 'fake-indexeddb/auto';
 import { IncidentType } from 'common/IncidentType';
 import { IncidentStage } from 'common/IncidentStage';
-import { LogEntryType } from 'common/LogEntryType';
+import { LogEntryTypeV2 } from 'common/LogEntryType';
 import { clearExpiredEntities, dbPromise } from '../db/indexedDb';
 import { OfflineIncident } from '../types/OfflineIncident';
 import { OfflineFormInstance } from '../types/OfflineForm';
@@ -26,7 +26,7 @@ describe('IndexedDB clearExpiredEntities()', () => {
     await Promise.all([
       tx.objectStore('incidents').clear(),
       tx.objectStore('forms').clear(),
-      tx.objectStore('logs').clear(),
+      tx.objectStore('logs').clear()
     ]);
     await tx.done;
   });
@@ -48,20 +48,20 @@ describe('IndexedDB clearExpiredEntities()', () => {
         organisation: 'TestOrg',
         telephone: '123456789',
         email: 'test@example.com',
-        supportRequested: 'No',
+        supportRequested: 'No'
       },
       offline: true,
-      expiresAt: expiredDate,
+      expiresAt: expiredDate
     };
 
     const expiredLog: OfflineLogEntry = {
       id: 'l1',
       incidentId: 'i1',
-      type: 'General' as LogEntryType,
+      type: 'general' as LogEntryTypeV2,
       dateTime: new Date().toISOString(),
       content: { text: 'Expired log' },
       offline: true,
-      expiresAt: expiredDate,
+      expiresAt: expiredDate
     };
 
     const futureForm: OfflineFormInstance = {
@@ -72,14 +72,14 @@ describe('IndexedDB clearExpiredEntities()', () => {
       incidentId: 'i1',
       createdAt: new Date().toISOString(),
       pendingLogEntry: expiredLog,
-      expiresAt: futureDate,
+      expiresAt: futureDate
     };
 
     const tx = db.transaction(['incidents', 'forms', 'logs'], 'readwrite');
     await Promise.all([
       tx.objectStore('incidents').put(expiredIncident),
       tx.objectStore('forms').put(futureForm),
-      tx.objectStore('logs').put(expiredLog),
+      tx.objectStore('logs').put(expiredLog)
     ]);
     await tx.done;
 
@@ -92,7 +92,7 @@ describe('IndexedDB clearExpiredEntities()', () => {
     const remainingLogs = await tx2.objectStore('logs').getAll();
 
     expect(remainingIncidents).toHaveLength(0); // Expired = removed
-    expect(remainingForms).toHaveLength(1);     // Future = kept
-    expect(remainingLogs).toHaveLength(0);      // Expired = removed
+    expect(remainingForms).toHaveLength(1); // Future = kept
+    expect(remainingLogs).toHaveLength(0); // Expired = removed
   });
 });

@@ -11,24 +11,26 @@ import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 
 // Local imports
 import { type Field } from 'common/Field';
-import { type FieldGroup } from 'common/FieldGroup';
-import { type Incident } from 'common/Incident';
+// import { type FieldGroup } from 'common/FieldGroup';
 import { type LogEntry } from 'common/LogEntry';
-import { type LogEntryType } from 'common/LogEntryType';
+import { type LogEntryTypeV2 } from 'common/LogEntryType';
 import { type Mentionable } from 'common/Mentionable';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { LogEntryTypes } from 'common/LogEntryTypes';
 import { bem, Document, Form, Format } from '../../../utils';
 import { type OnFieldChange } from '../../../utils/handlers';
-import { ValidationError, type FieldValueType } from '../../../utils/types';
-import { FormField, FormFields } from '../../Form';
+import { ValidationError } from '../../../utils/types';
+import { FormField } from '../../Form';
 import EntryContent from '../../lexical/EntryContent';
+import { Form as CustomForm } from '../../CustomForms/FormTemplates/types';
+import EntryForm from '../../Form/EntryForm';
 
 interface Props {
   readonly active: boolean;
   readonly entry: Partial<LogEntry>;
   readonly entries: Array<Partial<LogEntry>> | undefined;
-  readonly incident: Incident;
+  readonly forms: CustomForm[];
+  readonly selectedForm: CustomForm | undefined;
   readonly mentionables: Array<Mentionable>;
   readonly validationErrors: Array<ValidationError>;
   readonly onFieldChange: OnFieldChange;
@@ -40,7 +42,8 @@ export default function FormContent({
   active,
   entry,
   entries,
-  incident,
+  forms,
+  selectedForm,
   mentionables,
   validationErrors,
   onFieldChange,
@@ -51,14 +54,14 @@ export default function FormContent({
   const [noContent, setNoContent] = useState<boolean>(false);
   const [description, setDescription] = useState<string | undefined>();
   const [descriptionLabel, setDescriptionLabel] = useState<string>('Description');
-  const [fields, setFields] = useState<Array<Field>>([]);
-  const [groups, setGroups] = useState<Array<FieldGroup>>([]);
+  // const [fields, setFields] = useState<Array<Field>>([]);
+  // const [groups, setGroups] = useState<Array<FieldGroup>>([]);
   const [processedRecordings, setProcessedRecordings] = useState<Array<string>>([]);
   const hasStoppedRef = useRef(false);
 
   const baseFields: Array<Field> = useMemo(
-    () => Form.getBaseLogEntryFields(incident, entry),
-    [incident, entry]
+    () => Form.getBaseLogEntryFieldsV2(forms, entry),
+    [entry, forms]
   );
   const contentError: ValidationError | undefined = useMemo(
     () => Form.getError({ id: 'content' }, validationErrors),
@@ -66,17 +69,17 @@ export default function FormContent({
   );
 
   useEffect(() => {
-    const type = LogEntryTypes[entry.type as LogEntryType];
+    const type = LogEntryTypes[entry.type as LogEntryTypeV2];
     setNoContent(type ? (type.noContent ?? false) : true);
     setDescriptionLabel(type?.descriptionLabel ?? 'Description');
     setDescription(type?.description);
-    setFields(type?.fields(entry) ?? []);
-    setGroups(type?.groups ?? []);
+    // setFields(type?.fields(entry) ?? []);
+    // setGroups(type?.groups ?? []);
   }, [entry]);
 
-  const onNestedFieldChange = (id: string, value: FieldValueType) => {
-    onFieldChange(id, value, true);
-  };
+  // const onNestedFieldChange = (id: string, value: FieldValueType) => {
+  //   onFieldChange(id, value, true);
+  // };
 
   const onContentChange = (id: string, json: string, text: string) => {
     onFieldChange(id, { json, text });
@@ -231,16 +234,19 @@ export default function FormContent({
           </div>
         </Box>
       )}
-      <FormFields
-        component="li"
-        fields={fields}
-        validationErrors={validationErrors}
-        groups={groups}
-        entry={entry}
-        entries={entries}
-        onFieldChange={onNestedFieldChange}
-        showValidationErrors={showValidationErrors}
-      />
+      {/* <FormFields */}
+      {/*   component="li" */}
+      {/*   fields={fields} */}
+      {/*   validationErrors={validationErrors} */}
+      {/*   groups={groups} */}
+      {/*   entry={entry} */}
+      {/*   entries={entries} */}
+      {/*   onFieldChange={onNestedFieldChange} */}
+      {/*   showValidationErrors={showValidationErrors} */}
+      {/* /> */}
+      {selectedForm && (
+        <EntryForm showValidationErrors={showValidationErrors} selectedForm={selectedForm} />
+      )}
     </Box>
   );
 }

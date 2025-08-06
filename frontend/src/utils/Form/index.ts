@@ -3,7 +3,7 @@
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
 import { copyIntoLogEntry } from './copyIntoLogEntry';
-import { getBaseLogEntryFields } from './getBaseLogEntryFields';
+import { getBaseLogEntryFields, getBaseLogEntryFieldsV2 } from './getBaseLogEntryFields';
 import { getError } from './getError';
 import { getFieldValue } from './getFieldValue';
 import { groupHasFields } from './groupHasFields';
@@ -14,6 +14,7 @@ import { updateLogEntry } from './updateLogEntry';
 const Form = {
   copyIntoLogEntry,
   getBaseLogEntryFields,
+  getBaseLogEntryFieldsV2,
   getError,
   getFieldValue,
   groupHasFields,

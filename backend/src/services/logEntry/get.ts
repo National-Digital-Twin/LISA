@@ -7,7 +7,7 @@ import { Request, Response } from 'express';
 import { type IncidentStage } from 'common/IncidentStage';
 import { type Coordinates, type Location } from 'common/Location';
 import { LogEntry, type LogEntry as LogEntryType } from 'common/LogEntry';
-import { type LogEntryType as LogEntryTypeEnum } from 'common/LogEntryType';
+import { type LogEntryTypeV2 as LogEntryTypeEnum } from 'common/LogEntryType';
 import { nodeValue } from '../../rdfutil';
 import { attachments, details, fields, mentions, select, tasks } from './utils';
 
@@ -118,8 +118,14 @@ export async function get(req: Request, res: Response) {
     const location = buildLocation(entry.coordinates, entry.locationDescription);
 
     // Remove temporary properties and add final location
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { coordinates: _coordinates, locationDescription: _locationDescription, ...entryWithoutTempProps } = entry;
+     
+    const {
+      //  eslint-disable-next-line @typescript-eslint/no-unused-vars 
+      coordinates: _coordinates,
+      //  eslint-disable-next-line @typescript-eslint/no-unused-vars 
+      locationDescription: _locationDescription,
+      ...entryWithoutTempProps
+    } = entry;
     return {
       ...entryWithoutTempProps,
       location

@@ -70,7 +70,7 @@ export async function create(req: Request, res: Response) {
   const entry = LogEntry.check(req.files?.length ? JSON.parse(req.body.logEntry) : req.body);
   const now = new Date();
 
-  if (entry.type === 'SetIncidentInformation') {
+  if (entry.type === 'setIncidentInformation') {
     entry.dateTime = now.toISOString();
   }
 

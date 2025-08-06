@@ -14,7 +14,7 @@ export function createLogEntryFromSubmittedForm(
   entry?: Partial<LogEntry>
 ): Partial<LogEntry> {
   const logEntry: Partial<LogEntry> = entry ?? {
-    type: 'FormSubmitted',
+    type: 'formSubmitted',
     incidentId,
     dateTime: dateTime ?? new Date().toISOString(),
     content: {},

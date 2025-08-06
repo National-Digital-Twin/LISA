@@ -7,7 +7,7 @@ import { type Incident } from 'common/Incident';
 import { type Field } from '../Field';
 import { type FieldGroup } from '../FieldGroup';
 import { type LogEntry } from '../LogEntry';
-import { type LogEntryType } from '../LogEntryType';
+import { type LogEntryTypeV2 } from '../LogEntryType';
 
 export type LogEntryTypesDictItem = {
   label: string;
@@ -24,5 +24,5 @@ export type LogEntryTypesDictItem = {
 };
 
 export type LogEntryTypesDict = {
-  [key in LogEntryType]: LogEntryTypesDictItem;
+  [key in LogEntryTypeV2]: LogEntryTypesDictItem;
 };

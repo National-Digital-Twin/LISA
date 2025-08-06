@@ -34,8 +34,8 @@ describe('linkableEntries', () => {
     };
 
     const entries: Array<Linkable> = [
-      { id: '1', type: 'General' },
-      { id: '2', type: 'Decision' }
+      { id: '1', type: 'general' },
+      { id: '2', type: 'decision' }
     ];
 
     const result: Array<FieldOption> = linkableEntries(field, entries);
@@ -49,14 +49,14 @@ describe('linkableEntries', () => {
       value: '',
       optional: false,
       options: undefined,
-      linkableTypes: ['Communication', 'General', 'Action'],
+      linkableTypes: ['communication', 'general', 'action'],
       label: 'Test Field'
     };
 
     const entries: Array<Linkable> = [
-      { id: '1', type: 'General' },
-      { id: '2', type: 'Decision' },
-      { id: '3', type: 'Communication' }
+      { id: '1', type: 'general' },
+      { id: '2', type: 'decision' },
+      { id: '3', type: 'communication' }
     ];
 
     const result: Array<FieldOption> = linkableEntries(field, entries);

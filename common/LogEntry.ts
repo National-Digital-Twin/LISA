@@ -12,7 +12,7 @@ import { IncidentStage } from './IncidentStage';
 import { Location } from './Location';
 import { LogEntryAttachment } from './LogEntryAttachment';
 import { LogEntryContent } from './LogEntryContent';
-import { LogEntryType } from './LogEntryType';
+import { LogEntryTypeV2 } from './LogEntryType';
 import { User } from './User';
 import { Mentionable } from './Mentionable';
 import { FieldGroup } from './FieldGroup';
@@ -24,7 +24,7 @@ export const LogEntry = Record({
   incidentId: String, // Should this be a link to the Incident itself?
   dateTime: String.withConstraint(nonFuture), // User-entered, ISO-format
   createdAt: Optional(String), // system generated
-  type: LogEntryType,
+  type: LogEntryTypeV2,
   content: LogEntryContent,
   fields: Optional(Array(Field)),
   groups: Optional(Array(FieldGroup)),

@@ -6,22 +6,25 @@
 import { type Field } from 'common/Field';
 import { type Incident } from 'common/Incident';
 import { type LogEntry } from 'common/LogEntry';
-import { type LogEntryType } from 'common/LogEntryType';
+import { type LogEntryTypeV2 } from 'common/LogEntryType';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { LogEntryTypes } from 'common/LogEntryTypes';
 import { type OptionType } from '../types';
+import { Form } from '../../components/CustomForms/FormTemplates/types';
 
 function getLogEntryTypes(incident?: Partial<Incident>) {
-  return Object.keys(LogEntryTypes).map((value: string) => {
-    const type = LogEntryTypes[value as LogEntryType];
-    if (type.unselectable?.(incident)) {
-      return undefined;
-    }
-    return {
-      value,
-      label: LogEntryTypes[value as LogEntryType]?.label ?? LogEntryTypes.General.label
-    };
-  }).filter((t) => !!t) as Array<OptionType>;
+  return Object.keys(LogEntryTypes)
+    .map((value: string) => {
+      const type = LogEntryTypes[value as LogEntryTypeV2];
+      if (type.unselectable?.(incident)) {
+        return undefined;
+      }
+      return {
+        value,
+        label: LogEntryTypes[value as LogEntryTypeV2]?.label ?? LogEntryTypes.general.label
+      };
+    })
+    .filter((t) => !!t) as Array<OptionType>;
 }
 
 const DATE_TIME_FIELD: Field = {
@@ -38,6 +41,32 @@ function getDateTime(logEntry?: Partial<LogEntry>): Field {
     }
   }
   return { ...DATE_TIME_FIELD };
+}
+
+export function getBaseLogEntryFieldsV2(forms: Form[], entry?: Partial<LogEntry>): Array<Field> {
+  const mappedForms = forms.map((form) => ({ value: form.id, label: form.title }));
+  const options = [
+    { value: 'general', label: 'General' },
+    { value: 'hotDebrief', label: 'Hot Debrief' },
+    { value: 'shiftHandover', label: 'Shift Handover' },
+    ...mappedForms
+  ];
+  options.sort((a, b) => {
+    const normalizedA = a.value.toUpperCase();
+    const normalizedB = b.value.toUpperCase();
+
+    return normalizedA > normalizedB ? 1 : -1;
+  });
+
+  return [
+    {
+      id: 'type',
+      type: 'Select',
+      label: 'Category',
+      options
+    },
+    getDateTime(entry)
+  ];
 }
 
 export function getBaseLogEntryFields(

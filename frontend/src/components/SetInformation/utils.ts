@@ -28,14 +28,14 @@ function getIncidentValue(incident: Incident, field: Field): string | undefined 
 
 function makeEntryFromIncident(incident: Incident, entry?: Partial<LogEntry>): Partial<LogEntry> {
   const logEntry: Partial<LogEntry> = entry ?? {
-    type: 'SetIncidentInformation',
+    type: 'setIncidentInformation',
     incidentId: incident.id,
     dateTime: '',
     content: {},
     fields: [],
     sequence: createSequenceNumber()
   };
-  const type = LogEntryTypes.SetIncidentInformation;
+  const type = LogEntryTypes.setIncidentInformation;
   type?.fields(logEntry).forEach((field) => {
     const incidentValue = getIncidentValue(incident, field);
     if (!logEntry.fields?.find((f) => f.id === field.id)) {
@@ -57,7 +57,7 @@ export function getInitialEntry(incident: Incident): Partial<LogEntry> {
 
 export function getDirtyEntry(entry: Partial<LogEntry>, incident: Incident): Partial<LogEntry> {
   const dirtyEntry: Partial<LogEntry> = {
-    ...entry,
+    ...entry
   };
   dirtyEntry.fields = [];
 

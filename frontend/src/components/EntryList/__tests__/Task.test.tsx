@@ -17,7 +17,7 @@ describe('Task Component', () => {
     author: { username: 'author', displayName: 'Author Name' },
     dateTime: '2025-04-02T12:00:00Z',
     content: { text: '', json: '' },
-    type: 'General'
+    type: 'general'
   };
 
   it('renders task name, description, and assignee', () => {

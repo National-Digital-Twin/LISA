@@ -14,12 +14,7 @@ import { type LogEntry } from 'common/LogEntry';
 
 import { AddEntry, EntryList, PageTitle } from '../components';
 import PageWrapper from '../components/PageWrapper';
-import {
-  useCreateLogEntry,
-  useIncidents,
-  useLogEntries,
-  useLogEntriesUpdates,
-} from '../hooks';
+import { useCreateLogEntry, useIncidents, useLogEntries, useLogEntriesUpdates } from '../hooks';
 import { Format } from '../utils';
 import { type OnCreateEntry } from '../utils/handlers';
 import { type SpanType } from '../utils/types';
@@ -45,11 +40,10 @@ const Logbook = () => {
   const { isMobile } = useResponsive();
   const navigate = useNavigate();
 
-  
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [queryState, setQueryState] = useState<QueryState>({
     values: {},
-    sort: { by: "date_desc", direction: 'desc' },
+    sort: { by: 'date_desc', direction: 'desc' }
   });
 
   const allAuthors = useMemo(() => {
@@ -58,7 +52,7 @@ const Logbook = () => {
       .map((e) => {
         const a = e.author;
         if (!a) return null;
-        const name = typeof a === 'string' ? a : a.displayName ?? '';
+        const name = typeof a === 'string' ? a : (a.displayName ?? '');
         return name.trim();
       })
       .filter((name): name is string => {
@@ -68,12 +62,12 @@ const Logbook = () => {
       })
       .sort((a, b) => a.localeCompare(b));
   }, [logEntries]);
-  
+
   const logFilters = useMemo(() => {
     const templates = forms ?? [];
     return buildLogFilters(templates, allAuthors);
   }, [allAuthors, forms]);
-  
+
   useEffect(() => {
     const preventRefresh = (ev: BeforeUnloadEvent) => {
       const lastEntry = logEntries?.at(-1);
@@ -136,7 +130,7 @@ const Logbook = () => {
       onMentionClick({
         id: target.getAttribute('data-lexical-mention') as string,
         type: target.getAttribute('data-lexical-mention-type') as MentionableType,
-        label: target.textContent ?? '',
+        label: target.textContent ?? ''
       });
     } else if (target.tagName !== 'A') {
       navigate('#');
@@ -208,19 +202,19 @@ const Logbook = () => {
     const getTypeIds = (e: LogEntry): string[] => {
       const t = e.type;
       if (!t) return [];
-  
+
       const raw = (typeof t === 'string' && t) || '';
       if (!raw) return [];
-  
+
       const id = toId(raw);
       const ids: string[] = [id];
-  
+
       return ids;
     };
 
     const matchesAttachmentFilter = (entry: LogEntry, selected: Set<string>): boolean => {
       if (selected.size === 0) return true;
-    
+
       return Array.from(selected).some((type) => {
         if (type === 'location') return !!entry.location;
         if (type === 'file') return entry.attachments?.some((a) => a.type === 'File');
@@ -229,7 +223,6 @@ const Logbook = () => {
         return false;
       });
     };
-    
 
     // Attachment
     const selectedAttachments = new Set<string>((v.attachment as string[]) ?? []);
@@ -241,7 +234,7 @@ const Logbook = () => {
     const selectedTypes = new Set<string>([
       ...((v['logType.form'] as string[]) ?? []),
       ...((v['logType.task'] as string[]) ?? []),
-      ...((v['logType.update'] as string[]) ?? []),
+      ...((v['logType.update'] as string[]) ?? [])
     ]);
 
     // Date range
@@ -264,18 +257,22 @@ const Logbook = () => {
       if (!matchesAttachmentFilter(e, selectedAttachments)) return false;
 
       // author
-      if (selectedAuthors.size > 0 && !selectedAuthors.has(getAuthor(e).toLowerCase().replace(/\s+/g, '-'))) {
+      if (
+        selectedAuthors.size > 0 &&
+        !selectedAuthors.has(getAuthor(e).toLowerCase().replace(/\s+/g, '-'))
+      ) {
         return false;
       }
 
       // types
       if (selectedTypes.size > 0) {
         const types = getTypeIds(e);
-      
+
         const isTaskMatch = selectedTypes.has('task') && e.task;
-        const isFormMatch = selectedTypes.has(`form::${(e.details?.submittedFormTemplateId ?? '')}`) ?? false;
+        const isFormMatch =
+          selectedTypes.has(`form::${e.details?.submittedFormTemplateId ?? ''}`) ?? false;
         const hasAny = types.some((t) => selectedTypes.has(t));
-      
+
         if (!isTaskMatch && !isFormMatch && !hasAny) return false;
       }
 
@@ -339,6 +336,7 @@ const Logbook = () => {
         <AddEntry
           incident={incident}
           entries={logEntries ?? []}
+          forms={forms ?? []}
           onCreateEntry={onAddEntry}
           onCancel={onCancel}
         />

@@ -25,4 +25,25 @@ export const LogEntryType = Union(
   Literal('FormSubmitted')
 );
 
+export const LogEntryTypeV2 = Union(
+  Literal('action'),
+  Literal('avianFlu'),
+  Literal('communication'),
+  Literal('decision'),
+  Literal('general'),
+  Literal('hotDebrief'),
+  // Literal('Casualty'),
+  // Literal('Debrief'),
+  Literal('riskAssessment'),
+  Literal('riskAssessmentReview'),
+  Literal('situationReport'),
+  Literal('shiftHandover'),
+  Literal('changeStage'),
+  Literal('setIncidentInformation'),
+  Literal('changeTaskAssignee'),
+  Literal('changeTaskStatus'),
+  Literal('formSubmitted')
+);
+
 export type LogEntryType = Static<typeof LogEntryType>;
+export type LogEntryTypeV2 = Static<typeof LogEntryTypeV2>;

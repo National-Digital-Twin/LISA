@@ -2,24 +2,24 @@
 import { LogEntryTypes } from 'common/LogEntryTypes';
 import type { Incident } from 'common/Incident';
 import { LogEntry } from 'common/LogEntry';
-import { LogEntryType } from 'common/LogEntryType';
+import { LogEntryTypeV2 } from 'common/LogEntryType';
 import { getBaseLogEntryFields } from '../getBaseLogEntryFields';
 
 // We mock the LogEntryTypes module to control its behaviour in the tests.
 jest.mock('common/LogEntryTypes', () => ({
   LogEntryTypes: {
-    General: {
+    general: {
       label: 'General',
       dateLabel: 'Occurred at'
     },
-    Specific: {
+    specific: {
       label: 'Specific Log',
       dateLabel: 'Event time',
       unselectable: (incident?: Partial<Incident>) =>
         // If the incident has a property "offline" set to true, mark this type as unselectable.
         !!incident?.offline
     },
-    Extra: {
+    extra: {
       label: 'Extra Log'
       // No dateLabel is defined so defaults should be used.
     }
@@ -45,7 +45,7 @@ describe('getBaseLogEntryFields', () => {
 
     const expectedOptions = Object.keys(LogEntryTypes).map((key) => ({
       value: key,
-      label: LogEntryTypes[key as LogEntryType]?.label ?? LogEntryTypes.General.label
+      label: LogEntryTypes[key as LogEntryTypeV2]?.label ?? LogEntryTypes.general.label
     }));
     expect(options).toEqual(expectedOptions);
 
@@ -101,7 +101,7 @@ describe('getBaseLogEntryFields', () => {
 
   it('should use default dateTime field when entry type does not have a dateLabel', () => {
     // Provide entry with type "Extra" which does not define a dateLabel.
-    const entry = { incidentId: 'id-1', type: 'Action' as const, dateTime: '2021-01-01T00:00:00Z' };
+    const entry = { incidentId: 'id-1', type: 'action' as const, dateTime: '2021-01-01T00:00:00Z' };
     const fields = getBaseLogEntryFields(undefined, entry);
 
     const dateTimeField = fields[1];

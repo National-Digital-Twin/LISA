@@ -14,7 +14,7 @@ import { user } from '../user';
 
 function getLabel(logEntry: LogEntry, noType: boolean): string {
   const index = `#${logEntry.sequence?.toString()} - `;
-  if (logEntry.type === 'RiskAssessment' || logEntry.type === 'RiskAssessmentReview') {
+  if (logEntry.type === 'riskAssessment' || logEntry.type === 'riskAssessmentReview') {
     const d = date(logEntry.dateTime);
     const t = time(logEntry.dateTime);
     if (noType) {

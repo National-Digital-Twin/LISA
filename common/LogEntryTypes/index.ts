@@ -21,21 +21,21 @@ import { ChangeTaskAssignee } from './ChangeTaskAssignee';
 import { FormSubmitted } from './FormSubmitted';
 
 export const LogEntryTypes: LogEntryTypesDict = {
-  AvianFlu,
-  Action,
-  Communication,
-  Decision,
-  General,
-  HotDebrief,
+  avianFlu: AvianFlu,
+  action: Action,
+  communication: Communication,
+  decision: Decision,
+  general: General,
+  hotDebrief: HotDebrief,
   // Casualty: { label: 'Casualty', colour: 'red' },
   // Debrief: { label: 'Debrief', colour: 'light-grey' },
-  RiskAssessment,
-  RiskAssessmentReview,
-  ShiftHandover,
-  SituationReport,
-  ChangeStage,
-  SetIncidentInformation,
-  ChangeTaskStatus,
-  ChangeTaskAssignee,
-  FormSubmitted
+  riskAssessment: RiskAssessment,
+  riskAssessmentReview: RiskAssessmentReview,
+  shiftHandover: ShiftHandover,
+  situationReport: SituationReport,
+  changeStage: ChangeStage,
+  setIncidentInformation: SetIncidentInformation,
+  changeTaskStatus: ChangeTaskStatus,
+  changeTaskAssignee: ChangeTaskAssignee,
+  formSubmitted: FormSubmitted
 };

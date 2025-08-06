@@ -7,19 +7,23 @@ import { Array, Boolean, Optional, Record, Static, String, Number, Union } from 
 
 // Local imports
 import { FieldType } from './FieldType';
-import { LogEntryType } from './LogEntryType';
+import { LogEntryTypeV2 } from './LogEntryType';
 
 export const FieldOption = Record({
   index: Optional(String),
   subIndex: Optional(String),
   value: String,
   label: String,
-  options: Optional(Array(Record({
-    index: Optional(String),
-    subIndex: Optional(String),
-    value: String,
-    label: String
-  })))
+  options: Optional(
+    Array(
+      Record({
+        index: Optional(String),
+        subIndex: Optional(String),
+        value: String,
+        label: String
+      })
+    )
+  )
 });
 
 export const Field = Record({
@@ -28,7 +32,7 @@ export const Field = Record({
   value: Optional(Union(String, Array(String))),
   optional: Optional(Boolean),
   options: Optional(Array(FieldOption)),
-  linkableTypes: Optional(Array(LogEntryType)),
+  linkableTypes: Optional(Array(LogEntryTypeV2)),
 
   // These properties are only needed for the UI.
   label: Optional(String),

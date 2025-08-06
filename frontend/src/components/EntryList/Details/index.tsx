@@ -21,19 +21,19 @@ export default function Details({ entry, onContentClick }: Readonly<Props>) {
   const { type } = entry;
   let detail = null;
   switch (type) {
-    case 'ChangeStage':
+    case 'changeStage':
       detail = <ChangeStage entry={entry} />;
       break;
-    case 'SetIncidentInformation':
+    case 'setIncidentInformation':
       detail = <SetInformation entry={entry} />;
       break;
-    case 'ChangeTaskStatus':
+    case 'changeTaskStatus':
       detail = <ChangeTaskStatus entry={entry} />;
       break;
-    case 'ChangeTaskAssignee':
+    case 'changeTaskAssignee':
       detail = <ChangeTaskAssignee entry={entry} />;
       break;
-    case 'FormSubmitted':
+    case 'formSubmitted':
       detail = <FormSubmitted entry={entry} />;
       break;
     default:

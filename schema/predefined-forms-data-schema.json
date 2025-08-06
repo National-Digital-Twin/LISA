@@ -1,0 +1,139 @@
+{
+  "forms": [
+    {
+      "type": "action",
+      "dataSchema": {
+        "title": "Action",
+        "type": "object",
+        "properties": {
+          "communicatedBy": {
+            "title": "Communicated By",
+            "type": "string",
+            "enum": [
+              "Email received",
+              "Email sent",
+              "Telephone call received",
+              "Telephone call made",
+              "Provided to me in person",
+              "Provided by me in person"
+            ]
+          },
+          "correspondentsName": {
+            "title": "Correspondent's name",
+            "type": "string"
+          },
+          "fromEmailAddress": {
+            "title": "From email address",
+            "type": "string"
+          },
+          "toEmailAddress": {
+            "title": "To email address",
+            "type": "string"
+          },
+          "telephoneNumberOfCaller": {
+            "title": "Telepone number of caller",
+            "type": "string"
+          },
+          "telephoneNumberCalled": {
+            "title": "Telephone number called",
+            "type": "string"
+          }
+        },
+        "required": [
+          "communicatedBy",
+          "correspondentsName"
+        ]
+      }
+    },
+    {
+      "type": "communication",
+      "dataSchema": {
+        "title": "Communication",
+        "type": "object",
+        "properties": {
+          "communicatedBy": {
+            "title": "Communicated By",
+            "type": "string",
+            "enum": [
+              "Email received",
+              "Email sent",
+              "Telephone call received",
+              "Telephone call made",
+              "Provided to me in person",
+              "Provided by me in person"
+            ]
+          },
+          "correspondentsName": {
+            "title": "Correspondent's name",
+            "type": "string"
+          },
+          "fromEmailAddress": {
+            "title": "From email address",
+            "type": "string"
+          },
+          "toEmailAddress": {
+            "title": "To email address",
+            "type": "string"
+          },
+          "telephoneNumberOfCaller": {
+            "title": "Telepone number of caller",
+            "type": "string"
+          },
+          "telephoneNumberCalled": {
+            "title": "Telephone number called",
+            "type": "string"
+          }
+        },
+        "required": [
+          "communicatedBy",
+          "correspondentsName"
+        ]
+      }
+    },
+    {
+      "type": "decision",
+      "dataSchema": {
+        "title": "Decision",
+        "type": "object",
+        "properties": {
+          "communicatedBy": {
+            "title": "How was the decision communicated?",
+            "type": "string",
+            "enum": [
+              "Email received",
+              "Email sent",
+              "Telephone call received",
+              "Telephone call made",
+              "Provided to me in person",
+              "Provided by me in person"
+            ]
+          },
+          "correspondentsName": {
+            "title": "Correspondent's name",
+            "type": "string"
+          },
+          "fromEmailAddress": {
+            "title": "From email address",
+            "type": "string"
+          },
+          "toEmailAddress": {
+            "title": "To email address",
+            "type": "string"
+          },
+          "telephoneNumberOfCaller": {
+            "title": "Telepone number of caller",
+            "type": "string"
+          },
+          "telephoneNumberCalled": {
+            "title": "Telephone number called",
+            "type": "string"
+          }
+        },
+        "required": [
+          "communicatedBy",
+          "correspondentsName"
+        ]
+      }
+    }
+  ]
+}
