@@ -1,4 +1,4 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
+ 
 import { User } from 'common/User';
 import { WebSocketClient } from '../ws';
 
@@ -13,7 +13,7 @@ describe('WebSocketClient', () => {
    
   let webSocketInstances: MockWebSocket[];
 
-  const user: User = { username: 'testUser', displayName: 'Test User' };
+  const user: User = { username: 'testUser', displayName: 'Test User', email: 'test@test.com', groups: [] };
 
   // A mock WebSocket class to simulate behaviour
   class MockWebSocket {

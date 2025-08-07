@@ -2,10 +2,11 @@
 // © Crown Copyright 2025. This work has been developed by the National Digital Twin Programme
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
- 
-import { LogEntry as BaseLogEntry } from 'common/LogEntry';
+import { User } from "common/User";
 
-export type OfflineLogEntry = BaseLogEntry & {
-    expiresAt?: string;
-  };
-  
+export function isAdmin(userObj?: User): boolean {
+  if (userObj?.groups) {
+    return userObj.groups?.includes('lisa_admin');
+  }
+  return false;
+}

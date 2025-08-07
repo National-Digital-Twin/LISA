@@ -15,7 +15,7 @@ import { useNavigate } from 'react-router-dom';
 import { Box, IconButton } from '@mui/material';
 import { type Coordinates } from 'common/Location';
 import { type LogEntry } from 'common/LogEntry';
-// eslint-disable-next-line import/no-extraneous-dependencies
+ 
 import { LogEntryTypes } from 'common/LogEntryTypes';
 import { type MentionableType } from 'common/Mentionable';
 import { useResponsive } from '../../hooks/useResponsiveHook';

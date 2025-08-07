@@ -4,7 +4,7 @@
 
 // Local imports
 import { type Field } from 'common/Field';
-// eslint-disable-next-line import/no-extraneous-dependencies
+ 
 import { LocationTypes } from 'common/Location';
 import { type LogEntry } from 'common/LogEntry';
 import Format, { VIEW_LOCATION } from '../Format';

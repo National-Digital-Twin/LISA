@@ -16,7 +16,7 @@ import { type Incident } from 'common/Incident';
 import { type LogEntry } from 'common/LogEntry';
 import { type LogEntryType } from 'common/LogEntryType';
 import { type Mentionable } from 'common/Mentionable';
-// eslint-disable-next-line import/no-extraneous-dependencies
+ 
 import { LogEntryTypes } from 'common/LogEntryTypes';
 import { bem, Document, Form, Format } from '../../../utils';
 import { type OnFieldChange } from '../../../utils/handlers';

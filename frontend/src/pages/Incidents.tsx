@@ -3,7 +3,6 @@
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
 // Global imports
-/* eslint-disable import/no-extraneous-dependencies */
 import { Incident } from 'common/Incident';
 import { IncidentTypes } from 'common/IncidentTypes';
 import { useMemo, useState } from 'react';

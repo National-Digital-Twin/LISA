@@ -6,7 +6,7 @@ const mockOnMenuClick = jest.fn();
 
 jest.mock('../../hooks', () => ({
   useAuth: jest.fn(() => ({
-    user: { current: { username: 'testUser', displayName: 'Test User' } },
+    user: { current: { username: 'testUser', displayName: 'Test User', email: 'test@test.com', groups: [] } },
     logout: jest.fn()
   })),
   useNotifications: jest.fn(() => ({

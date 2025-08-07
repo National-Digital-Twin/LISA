@@ -13,7 +13,7 @@ import { type Incident } from 'common/Incident';
 import { type Location as LocationType } from 'common/Location';
 import { type LogEntry } from 'common/LogEntry';
 import { type LogEntryAttachment } from 'common/LogEntryAttachment';
-// eslint-disable-next-line import/no-extraneous-dependencies
+ 
 import { LogEntryTypes } from 'common/LogEntryTypes';
 import { type Mentionable } from 'common/Mentionable';
 import { useUsers } from '../../hooks';

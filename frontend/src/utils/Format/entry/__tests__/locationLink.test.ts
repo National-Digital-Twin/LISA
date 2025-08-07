@@ -1,4 +1,4 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
+ 
 import { LogEntry } from 'common/LogEntry';
 import { locationLink } from '../locationLink';
 

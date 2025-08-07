@@ -1,4 +1,4 @@
-/* eslint-disable import/no-extraneous-dependencies */
+ 
 import { LogEntryType } from 'common/LogEntryType';
 import type { LogEntry } from 'common/LogEntry';
 import { Coordinates } from 'common/Location';

@@ -8,6 +8,7 @@ import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined
 import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
 import MenuIcon from '@mui/icons-material/Menu';
 import NotificationsNoneOutlinedIcon from '@mui/icons-material/NotificationsNoneOutlined';
+import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
 import {
   AppBar,
   Badge,
@@ -27,7 +28,6 @@ import React, { MouseEvent, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 
 // Local imports
-// eslint-disable-next-line import/no-extraneous-dependencies
 import { User } from 'common/User';
 import LisaLogo from '../assets/images/lisa_logo.svg';
 import LisaLogoMobile from '../assets/images/lisa_logo_mobile.svg';
@@ -197,6 +197,17 @@ const Header = ({ onMenuClick }: HeaderProps) => {
               <AccountBoxOutlinedIcon sx={{ mr: 1, fontSize: '1.25rem' }} />
               <Typography variant="body2" color="secondary">
                 User guide
+              </Typography>
+            </MenuItem>
+            <MenuItem
+              component={Link}
+              to="/settings"
+              onClick={handleLink}
+              sx={{ padding: '8px 12px' }}
+            >
+              <SettingsOutlinedIcon sx={{ mr: 1, fontSize: '1.25rem' }} />
+              <Typography variant="body2" color="secondary">
+                Settings
               </Typography>
             </MenuItem>
             <MenuItem onClick={signOut} sx={{ padding: '8px 12px' }}>
