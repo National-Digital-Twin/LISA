@@ -1,4 +1,3 @@
-
 // SPDX-License-Identifier: Apache-2.0
 // © Crown Copyright 2025. This work has been developed by the National Digital Twin Programme
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
@@ -9,12 +8,8 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 // Local imports
-import { type Incident } from 'common/Incident';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
-import { IncidentStages } from 'common/IncidentStage';
-import { IncidentTypes } from 'common/IncidentTypes';
-import type { FieldOption } from 'common/Field';
 import {
   Box,
   Button,
@@ -28,23 +23,26 @@ import {
   TableRow,
   Typography
 } from '@mui/material';
+import type { FieldOption } from 'common/Field';
+import { type Incident } from 'common/Incident';
+import { IncidentStages } from 'common/IncidentStage';
+import { IncidentTypes } from 'common/IncidentTypes';
 
 import AddCircleIcon from '@mui/icons-material/AddCircle';
-import Filter from '../components/SortFilter/Filter';
-import type { FieldValueType } from '../utils/types';
-import { useIncidents } from '../hooks';
-import { Format } from '../utils';
 import { PageTitle } from '../components';
-import Stage from '../components/Stage';
 import PageWrapper from '../components/PageWrapper';
+import Filter from '../components/SortFilter/Filter';
+import Stage from '../components/Stage';
+import { useIncidents } from '../hooks';
 import { useResponsive } from '../hooks/useResponsiveHook';
+import { Format } from '../utils';
+import type { FieldValueType } from '../utils/types';
 
 function open(incident: Incident) {
   return incident.stage !== 'Closed';
 }
 
-
-const Home = () => {
+const Indidents = () => {
   const { isMobile } = useResponsive();
   const query = useIncidents();
   const navigate = useNavigate();
@@ -64,7 +62,6 @@ const Home = () => {
     stage: 'Active'
   });
 
-
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const openFilters = Boolean(anchorEl);
 
@@ -72,12 +69,11 @@ const Home = () => {
     setAnchorEl(anchorEl ? null : event.currentTarget);
   };
 
-  
   const onFilterChange = (id: string, value: FieldValueType) => {
     setIncidentFilters((prev) => ({ ...prev, [id]: value }));
   };
 
-  function checkStageAgainstFilter(incident : Incident, stage : FieldValueType) : boolean {
+  function checkStageAgainstFilter(incident: Incident, stage: FieldValueType): boolean {
     if (stage) {
       if (stage === 'Active') {
         if (incident.stage === 'Closed') {
@@ -90,18 +86,17 @@ const Home = () => {
 
     return true;
   }
-  
 
   const buildFilterOptions = (field: 'reportedBy') => {
     const values = (incidents ?? [])
       .map((i) => (field === 'reportedBy' ? i.reportedBy?.username : i.type))
       .filter(Boolean) as string[];
-  
+
     const counts = values.reduce<Record<string, number>>((acc, val) => {
       acc[val] = (acc[val] ?? 0) + 1;
       return acc;
     }, {});
-  
+
     return Object.entries(counts).map(([value, count]) => ({
       value,
       label: `${value} (${count})`
@@ -109,7 +104,7 @@ const Home = () => {
   };
 
   const buildTypeFilterOptions = (): FieldOption[] => {
-    if(!incidents) return [];
+    if (!incidents) return [];
 
     const typeCounts = incidents.reduce<Record<string, number>>((acc, incident) => {
       const typeKey = incident.type;
@@ -118,12 +113,12 @@ const Home = () => {
       }
       return acc;
     }, {});
-  
+
     return Object.entries(typeCounts)
       .map(([key, count]) => {
         const typeDef = IncidentTypes[key as keyof typeof IncidentTypes];
         if (!typeDef || typeDef.legacy) return null;
-  
+
         return {
           value: key,
           label: `${typeDef.label} (${count})`
@@ -131,7 +126,7 @@ const Home = () => {
       })
       .filter((item): item is FieldOption => item !== null);
   };
-  
+
   const stageOptions: FieldOption[] = [
     { value: 'Active', label: 'Active' },
     ...Object.entries(IncidentStages).map(([stageKey, { label }]) => ({
@@ -139,26 +134,26 @@ const Home = () => {
       label
     }))
   ];
-  
+
   const matchesFilters = (incident: Incident): boolean => {
     const { name, author, type, stage } = incidentFilters;
-  
+
     if (name && !incident.name.toLowerCase().includes((name as string).toLowerCase())) {
       return false;
     }
-  
+
     if (Array.isArray(author) && author.length > 0) {
       if (!author.includes(incident.reportedBy?.username ?? '')) {
         return false;
       }
     }
-    
+
     if (Array.isArray(type) && type.length > 0) {
       if (!type.includes(incident.type)) {
         return false;
       }
     }
-  
+
     return checkStageAgainstFilter(incident, stage);
   };
 
@@ -190,7 +185,6 @@ const Home = () => {
       return sortAsc ? dateA - dateB : dateB - dateA;
     });
 
-
   const tableHeaders = isMobile ? ['Incident'] : ['Incident name', 'Reported by', 'Date', 'Stage'];
 
   return (
@@ -207,13 +201,8 @@ const Home = () => {
           {/* Sort (left) only on mobile */}
           {isMobile ? (
             <Box display="flex" justifyContent="space-between" width="100%">
-              <Button
-                variant="text"
-                onClick={onSortClick}
-                endIcon={sortIcon}
-                color="secondary"
-              >
-          Sort
+              <Button variant="text" onClick={onSortClick} endIcon={sortIcon} color="secondary">
+                Sort
               </Button>
               <Button
                 type="button"
@@ -223,11 +212,10 @@ const Home = () => {
                 onClick={onAddIncident}
                 color="primary"
               >
-          Add New Incident
+                Add New Incident
               </Button>
             </Box>
           ) : (
-          // Desktop: Only show Add button aligned right
             <Box
               display="flex"
               justifyContent="end"
@@ -246,24 +234,17 @@ const Home = () => {
                 onClick={onAddIncident}
                 color="primary"
               >
-          Add New Incident
+                Add New Incident
               </Button>
             </Box>
           )}
         </Box>
       </PageTitle>
 
-
       <Box display="flex" flexDirection="column" gap={2}>
         {/* Top row: Search + Filter (mobile) OR all filters (desktop) */}
         {isMobile ? (
-          <Box
-            display="flex"
-            flexDirection="row"
-            alignItems="stretch"
-            gap={1}
-            width="100%"
-          >
+          <Box display="flex" flexDirection="row" alignItems="stretch" gap={1} width="100%">
             {/* Search input */}
             <Box flexGrow={1} minWidth={0}>
               <Filter
@@ -292,7 +273,7 @@ const Home = () => {
                 whiteSpace: 'nowrap'
               }}
             >
-        Filter
+              Filter
             </Button>
 
             {/* Popover for mobile filters */}
@@ -335,13 +316,7 @@ const Home = () => {
             </Popover>
           </Box>
         ) : (
-          <Box
-            display="flex"
-            alignItems="flex-start"
-            flexWrap="wrap"
-            gap={2}
-            width="100%"
-          >
+          <Box display="flex" alignItems="flex-start" flexWrap="wrap" gap={2} width="100%">
             {/* Each filter rendered individually to stay in one row */}
             <Filter
               isMobile={false}
@@ -356,7 +331,7 @@ const Home = () => {
                 }
               ]}
             />
-        
+
             <Filter
               isMobile={false}
               appliedFilters={incidentFilters}
@@ -371,7 +346,7 @@ const Home = () => {
                 }
               ]}
             />
-        
+
             <Filter
               isMobile={false}
               appliedFilters={incidentFilters}
@@ -387,15 +362,14 @@ const Home = () => {
                 }
               ]}
             />
-        
+
             {/* Sort button aligned right */}
             <Box sx={{ marginLeft: 'auto' }}>
               <Button variant="text" onClick={onSortClick} endIcon={sortIcon} color="secondary">
-              Sort
+                Sort
               </Button>
             </Box>
           </Box>
-        
         )}
 
         {/* Stage chips always visible below, scrollable on mobile */}
@@ -510,4 +484,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default Indidents;
