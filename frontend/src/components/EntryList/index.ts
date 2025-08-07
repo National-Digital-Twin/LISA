@@ -3,7 +3,5 @@
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
 import EntryList from './EntryList';
-import Filter from '../SortFilter/Filter';
-import Search from '../SortFilter/Search';
 
-export { EntryList, Filter, Search };
+export { EntryList };

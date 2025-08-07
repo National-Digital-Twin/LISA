@@ -3,15 +3,20 @@
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
 import { Box } from '@mui/material';
-import { ReactNode } from 'react';
+import { PropsWithChildren } from 'react';
 
-const PageWrapper = ({ children }: { children: ReactNode }) => (
+type PageWrapperProps = PropsWithChildren & {
+  backgroundColor?: string;
+};
+
+const PageWrapper = ({ children, backgroundColor = 'transparent' }: PageWrapperProps) => (
   <Box
     display="flex"
     flexDirection="column"
     gap={4}
     paddingY="2rem"
     sx={{
+      backgroundColor,
       '@media print': {
         padding: 0,
         marginTop: '1rem'

@@ -20,7 +20,7 @@ export type GroupNode = FilterNodeBase & {
   children: FilterNode[];
 };
 
-export type OptionLeaf = FilterNodeBase & { type: 'option' };
+export type OptionLeaf = FilterNodeBase & { type: 'option', implies?: string[] };
 export type TextLeaf   = FilterNodeBase & { type: 'text'; placeholder?: string; };
 export type DateRangeLeaf = FilterNodeBase & { type: 'date-range' };
 

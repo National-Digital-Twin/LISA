@@ -7,12 +7,12 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
 // Local imports
 import CreateLog from '../pages/CreateLog';
-import Dashboard from '../pages/Dashboard';
 import Error404 from '../pages/Error404';
 import Files from '../pages/Files';
 import CreateForms from '../pages/Forms/CreateFormTemplates';
 import LogForms from '../pages/Forms/FormInstances';
 import Forms from '../pages/Forms/FormTemplates';
+import Home from '../pages/Home';
 import Incidents from '../pages/Incidents';
 import Location from '../pages/Location';
 import Logbook from '../pages/Logbook';
@@ -26,7 +26,7 @@ const AppWrapper = () => {
     {
       element: <Layout />,
       children: [
-        { path: '', element: <Dashboard /> },
+        { path: '', element: <Home /> },
         { path: 'incidents', element: <Incidents /> },
         { path: 'forms', element: <Forms /> },
         { path: 'forms/create', element: <CreateForms /> },
