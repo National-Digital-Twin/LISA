@@ -19,7 +19,7 @@ import { type Mentionable } from 'common/Mentionable';
 import { LogEntryTypes } from 'common/LogEntryTypes';
 import { bem, Document, Form, Format } from '../../../utils';
 import { type OnFieldChange } from '../../../utils/handlers';
-import { ValidationError } from '../../../utils/types';
+import { FieldValueType, ValidationError } from '../../../utils/types';
 import { FormField } from '../../Form';
 import EntryContent from '../../lexical/EntryContent';
 import { Form as CustomForm } from '../../CustomForms/FormTemplates/types';
@@ -77,9 +77,9 @@ export default function FormContent({
     // setGroups(type?.groups ?? []);
   }, [entry]);
 
-  // const onNestedFieldChange = (id: string, value: FieldValueType) => {
-  //   onFieldChange(id, value, true);
-  // };
+  const onNestedFieldChange = (id: string, value: FieldValueType) => {
+    onFieldChange(id, value, true);
+  };
 
   const onContentChange = (id: string, json: string, text: string) => {
     onFieldChange(id, { json, text });
@@ -245,7 +245,11 @@ export default function FormContent({
       {/*   showValidationErrors={showValidationErrors} */}
       {/* /> */}
       {selectedForm && (
-        <EntryForm showValidationErrors={showValidationErrors} selectedForm={selectedForm} />
+        <EntryForm
+          showValidationErrors={showValidationErrors}
+          selectedForm={selectedForm}
+          onFieldChange={onNestedFieldChange}
+        />
       )}
     </Box>
   );

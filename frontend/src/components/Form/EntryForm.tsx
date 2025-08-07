@@ -1,19 +1,22 @@
 import { useEffect, useRef } from 'react';
-import { withTheme } from '@rjsf/core';
+import { IChangeEvent, withTheme } from '@rjsf/core';
 import { Theme as Mui5Theme } from '@rjsf/mui';
 import { Box } from '@mui/material';
 import validator from '@rjsf/validator-ajv8';
-import { RJSFValidationError } from '@rjsf/utils';
+import { RJSFSchema, RJSFValidationError } from '@rjsf/utils';
 import { Form } from '../CustomForms/FormTemplates/types';
+import { OnFieldChange } from '../../utils/handlers';
+import { FieldValueType } from '../../utils/types';
 
 type Props = {
   selectedForm: Form;
   showValidationErrors: boolean;
+  onFieldChange: OnFieldChange;
 };
 
 const RJSForm = withTheme(Mui5Theme);
 
-const EntryForm = ({ selectedForm, showValidationErrors }: Props) => {
+const EntryForm = ({ selectedForm, showValidationErrors, onFieldChange }: Props) => {
   const { schema, uiSchema } = selectedForm.formData;
   const transformErrors = (errors: RJSFValidationError[]) =>
     errors.map((error) => {
@@ -35,6 +38,17 @@ const EntryForm = ({ selectedForm, showValidationErrors }: Props) => {
     return () => clearTimeout(timeout);
   }, [showValidationErrors]);
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const onChange = (data: IChangeEvent<any, RJSFSchema, any>, id: string | undefined) => {
+    if (id) {
+      const { formData } = data;
+      const key = id.replace('root_', '');
+      if (formData && formData[key]) {
+        onFieldChange(key, data.formData[key] as FieldValueType);
+      }
+    }
+  };
+
   return (
     <Box>
       <RJSForm
@@ -45,6 +59,7 @@ const EntryForm = ({ selectedForm, showValidationErrors }: Props) => {
         schema={schema}
         uiSchema={uiSchema}
         validator={validator}
+        onChange={onChange}
       />
     </Box>
   );

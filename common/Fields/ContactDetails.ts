@@ -8,15 +8,12 @@ import { type LogEntry } from '../LogEntry';
 import { CommunicationMethod } from './CommunicationMethod';
 
 const ContactDetails: Field = {
-  id: 'ContactDetails',
+  id: 'contactDetails',
   label: 'Contact details',
   type: 'Input'
 };
 
-export function getContactDetails(
-  entry: Partial<LogEntry>,
-  className?: string
-): Field | undefined {
+export function getContactDetails(entry: Partial<LogEntry>, className?: string): Field | undefined {
   const method = entry.fields?.find((f) => f.id === CommunicationMethod.id)?.value;
   if (method === 'Email') {
     return { ...ContactDetails, label: 'From email address', className };

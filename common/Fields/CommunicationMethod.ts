@@ -15,7 +15,7 @@ const CommunicationMethods: Array<FieldOption> = [
 ];
 
 export const CommunicationMethod: Field = {
-  id: 'CommunicationMethod',
+  id: 'communicationMethod',
   label: 'Communicated by',
   type: 'Select',
   options: CommunicationMethods

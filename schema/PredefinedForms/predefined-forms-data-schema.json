@@ -6,43 +6,97 @@
         "title": "Action",
         "type": "object",
         "properties": {
-          "communicatedBy": {
+          "communicationMethod": {
             "title": "Communicated By",
             "type": "string",
-            "enum": [
+            "enumNames": [
               "Email received",
               "Email sent",
               "Telephone call received",
               "Telephone call made",
               "Provided to me in person",
               "Provided by me in person"
+            ],
+            "enum": [
+              "Email",
+              "EmailOutgoing",
+              "Telephone",
+              "TelephoneOutgoing",
+              "Provided to me in person",
+              "Provided by me in person"
             ]
           },
-          "correspondentsName": {
+          "contactName": {
             "title": "Correspondent's name",
-            "type": "string"
-          },
-          "fromEmailAddress": {
-            "title": "From email address",
-            "type": "string"
-          },
-          "toEmailAddress": {
-            "title": "To email address",
-            "type": "string"
-          },
-          "telephoneNumberOfCaller": {
-            "title": "Telepone number of caller",
-            "type": "string"
-          },
-          "telephoneNumberCalled": {
-            "title": "Telephone number called",
             "type": "string"
           }
         },
         "required": [
-          "communicatedBy",
-          "correspondentsName"
-        ]
+          "communicationMethod",
+          "contactName"
+        ],
+        "dependencies": {
+          "communicationMethod": {
+            "oneOf": [
+              {
+                "properties": {
+                  "communicationMethod": {
+                    "const": "Email"
+                  },
+                  "contactDetails": {
+                    "title": "From email address",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "contactDetails"
+                ]
+              },
+              {
+                "properties": {
+                  "communicationMethod": {
+                    "const": "EmailOutgoing"
+                  },
+                  "contactDetails": {
+                    "title": "To email address",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "contactDetails"
+                ]
+              },
+              {
+                "properties": {
+                  "communicationMethod": {
+                    "const": "Telephone"
+                  },
+                  "contactDetails": {
+                    "title": "Telepone number of caller",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "contactDetails"
+                ]
+              },
+              {
+                "properties": {
+                  "communicationMethod": {
+                    "const": "TelephoneOutgoing"
+                  },
+                  "contactDetails": {
+                    "title": "Telephone number called",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "contactDetails"
+                ]
+              }
+            ]
+          }
+        }
       }
     },
     {
@@ -51,43 +105,97 @@
         "title": "Communication",
         "type": "object",
         "properties": {
-          "communicatedBy": {
+          "communicationMethod": {
             "title": "Communicated By",
             "type": "string",
-            "enum": [
+            "enumNames": [
               "Email received",
               "Email sent",
               "Telephone call received",
               "Telephone call made",
               "Provided to me in person",
               "Provided by me in person"
+            ],
+            "enum": [
+              "Email",
+              "EmailOutgoing",
+              "Telephone",
+              "TelephoneOutgoing",
+              "Provided to me in person",
+              "Provided by me in person"
             ]
           },
-          "correspondentsName": {
+          "contactName": {
             "title": "Correspondent's name",
-            "type": "string"
-          },
-          "fromEmailAddress": {
-            "title": "From email address",
-            "type": "string"
-          },
-          "toEmailAddress": {
-            "title": "To email address",
-            "type": "string"
-          },
-          "telephoneNumberOfCaller": {
-            "title": "Telepone number of caller",
-            "type": "string"
-          },
-          "telephoneNumberCalled": {
-            "title": "Telephone number called",
             "type": "string"
           }
         },
         "required": [
-          "communicatedBy",
-          "correspondentsName"
-        ]
+          "communicationMethod",
+          "contactName"
+        ],
+        "dependencies": {
+          "communicationMethod": {
+            "oneOf": [
+              {
+                "properties": {
+                  "communicationMethod": {
+                    "const": "Email"
+                  },
+                  "contactDetails": {
+                    "title": "From email address",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "contactDetails"
+                ]
+              },
+              {
+                "properties": {
+                  "communicationMethod": {
+                    "const": "EmailOutgoing"
+                  },
+                  "contactDetails": {
+                    "title": "To email address",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "contactDetails"
+                ]
+              },
+              {
+                "properties": {
+                  "communicationMethod": {
+                    "const": "Telephone"
+                  },
+                  "contactDetails": {
+                    "title": "Telepone number of caller",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "contactDetails"
+                ]
+              },
+              {
+                "properties": {
+                  "communicationMethod": {
+                    "const": "TelephoneOutgoing"
+                  },
+                  "contactDetails": {
+                    "title": "Telephone number called",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "contactDetails"
+                ]
+              }
+            ]
+          }
+        }
       }
     },
     {
@@ -96,43 +204,97 @@
         "title": "Decision",
         "type": "object",
         "properties": {
-          "communicatedBy": {
+          "communicationMethod": {
             "title": "How was the decision communicated?",
             "type": "string",
-            "enum": [
+            "enumNames": [
               "Email received",
               "Email sent",
               "Telephone call received",
               "Telephone call made",
               "Provided to me in person",
               "Provided by me in person"
+            ],
+            "enum": [
+              "Email",
+              "EmailOutgoing",
+              "Telephone",
+              "TelephoneOutgoing",
+              "Provided to me in person",
+              "Provided by me in person"
             ]
           },
-          "correspondentsName": {
+          "contactName": {
             "title": "Correspondent's name",
-            "type": "string"
-          },
-          "fromEmailAddress": {
-            "title": "From email address",
-            "type": "string"
-          },
-          "toEmailAddress": {
-            "title": "To email address",
-            "type": "string"
-          },
-          "telephoneNumberOfCaller": {
-            "title": "Telepone number of caller",
-            "type": "string"
-          },
-          "telephoneNumberCalled": {
-            "title": "Telephone number called",
             "type": "string"
           }
         },
         "required": [
-          "communicatedBy",
-          "correspondentsName"
-        ]
+          "communicationMethod",
+          "contactName"
+        ],
+        "dependencies": {
+          "communicationMethod": {
+            "oneOf": [
+              {
+                "properties": {
+                  "communicationMethod": {
+                    "const": "Email"
+                  },
+                  "contactDetails": {
+                    "title": "From email address",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "contactDetails"
+                ]
+              },
+              {
+                "properties": {
+                  "communicationMethod": {
+                    "const": "EmailOutgoing"
+                  },
+                  "contactDetails": {
+                    "title": "To email address",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "contactDetails"
+                ]
+              },
+              {
+                "properties": {
+                  "communicationMethod": {
+                    "const": "Telephone"
+                  },
+                  "contactDetails": {
+                    "title": "Telepone number of caller",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "contactDetails"
+                ]
+              },
+              {
+                "properties": {
+                  "communicationMethod": {
+                    "const": "TelephoneOutgoing"
+                  },
+                  "contactDetails": {
+                    "title": "Telephone number called",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "contactDetails"
+                ]
+              }
+            ]
+          }
+        }
       }
     }
   ]
