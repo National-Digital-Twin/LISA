@@ -17,10 +17,10 @@ export class User {
     email?: string,
     groups?: string[],
   ) {
-    this.usernameInternal   = username;
+    this.usernameInternal    = username;
     this.displayNameInternal = displayName;
-    this.emailInternal      = email;
-    this.groupsInternal     = groups;
+    this.emailInternal       = email;
+    this.groupsInternal      = groups;
   }
 
   get username(): string {
@@ -31,12 +31,10 @@ export class User {
     return this.displayNameInternal;
   }
 
-  // Now returns string | undefined
   get email(): string | undefined {
     return this.emailInternal;
   }
 
-  // Now returns string[] | undefined
   get groups(): string[] | undefined {
     return this.groupsInternal;
   }

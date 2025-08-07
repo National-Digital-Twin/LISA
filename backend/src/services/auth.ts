@@ -21,7 +21,7 @@ async function fetchUserDetails(accessToken: string) {
 
 export async function getUserDetails(req: Request): Promise<User> {
   if (settings.NODE_ENV === 'development') {
-    return new User('local.user', 'local.user@example.com', 'Local User', ['lisa_user', 'lisa_admin']);
+    return new User('local.user', 'Local User', 'local.user@example.com', ['lisa_user', 'lisa_admin']);
   } 
 
   const accessToken = req.header('X-Auth-Request-Access-Token');
@@ -36,7 +36,7 @@ export async function getUserDetails(req: Request): Promise<User> {
     throw new ApplicationError('Error: invalid response recieved when getting user details.');
   }
 
-  return response.json().then((value) => new User(value.content.username, value.content.email, value.content.displayName, value.content.groups));
+  return response.json().then((value) => new User(value.content.username, value.content.displayName, value.content.email, value.content.groups));
 }
 
 export async function user(_req: Request, res: Response) {
