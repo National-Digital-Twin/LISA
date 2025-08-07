@@ -9,7 +9,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import CreateLog from '../pages/CreateLog';
 import Error404 from '../pages/Error404';
 import Files from '../pages/Files';
-import Home from '../pages/Home';
+import Incidents from '../pages/Incidents';
 import Location from '../pages/Location';
 import Logbook from '../pages/Logbook';
 import Notifications from '../pages/Notifications';
@@ -20,6 +20,7 @@ import Forms from '../pages/Forms/FormTemplates';
 import CreateForms from '../pages/Forms/CreateFormTemplates';
 import LogForms from '../pages/Forms/FormInstances';
 import Settings from '../pages/Settings';
+import Home from '../pages/Home';
 
 const AppWrapper = () => {
   const router = createBrowserRouter([
@@ -27,6 +28,7 @@ const AppWrapper = () => {
       element: <Layout />,
       children: [
         { path: '', element: <Home /> },
+        { path: 'incidents', element: <Incidents /> },
         { path: 'forms', element: <Forms/>},
         { path: 'forms/create', element: <CreateForms/>},
         { path: 'forms/preview', element: <CreateForms/>},
