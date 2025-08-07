@@ -29,9 +29,7 @@ export async function create(req: Request, res: Response) {
 
   incident.reportedBy = {
     username: res.locals.user.username,
-    displayName: res.locals.user.displayName,
-    email: '',
-    groups: []
+    displayName: res.locals.user.displayName
   };
 
   const incidentBoundingState = randomUUID();

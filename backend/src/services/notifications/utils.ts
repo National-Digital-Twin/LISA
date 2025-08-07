@@ -77,9 +77,7 @@ function getUserMentionNotification(
       incidentId: nodeValue(row.incidentId.value),
       author: {
         username: row.authorName?.value,
-        displayName: row.authorName?.value,
-        email: '',
-        groups: []
+        displayName: row.authorName?.value
       }
     }
   } as UserMentionNotification;
@@ -106,9 +104,7 @@ function getTaskAssignedNotification(
       incidentId: nodeValue(row.incidentId.value),
       author: {
         username: row.authorName?.value,
-        displayName: row.authorName?.value,
-        email: '',
-        groups: []
+        displayName: row.authorName?.value
       },
       task: {
         id: nodeValue(row.taskId.value),
