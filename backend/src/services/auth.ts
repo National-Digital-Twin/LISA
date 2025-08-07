@@ -21,7 +21,7 @@ async function fetchUserDetails(accessToken: string) {
 
 export async function getUserDetails(req: Request): Promise<User> {
   if (settings.NODE_ENV === 'development') {
-    return new User('local.user', 'local.user@example.com', 'Local User');
+    return new User('local.user', 'local.user@example.com', 'Local User', ['lisa_user']);
   } 
 
   const accessToken = req.header('X-Auth-Request-Access-Token');
@@ -36,7 +36,7 @@ export async function getUserDetails(req: Request): Promise<User> {
     throw new ApplicationError('Error: invalid response recieved when getting user details.');
   }
 
-  return response.json().then((value) => new User(value.content.username, value.content.email, value.content.displayName));
+  return response.json().then((value) => new User(value.content.username, value.content.email, value.content.displayName, value.content.groups));
 }
 
 export async function user(_req: Request, res: Response) {
@@ -46,7 +46,7 @@ export async function user(_req: Request, res: Response) {
     throw new ApplicationError('Error: the user is not set.');
   }
 
-  res.json({ username: user.username, email: user.email, displayName: user.displayName });
+  res.json({ username: user.username, email: user.email, displayName: user.displayName, groups: user.groups });
 }
 
 export async function logoutLinks(_req: Request, res: Response) {

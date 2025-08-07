@@ -1,0 +1,54 @@
+// SPDX-License-Identifier: Apache-2.0
+// © Crown Copyright 2025. This work has been developed by the National Digital Twin Programme
+// and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
+
+import { Link } from 'react-router-dom'
+import {
+  Box,
+  List,
+  ListItemButton,
+  ListItemText,
+  Divider,
+} from '@mui/material'
+import ChevronRightIcon from '@mui/icons-material/ChevronRight'
+import { PageTitle } from '../components'
+import PageWrapper from '../components/PageWrapper'
+import { useAuth } from '../hooks'
+
+const Settings = () => {
+  const { user } = useAuth();
+  return (
+    <PageWrapper>
+      <PageTitle title="Settings" />
+      <Box>
+        <List disablePadding>
+          {user.current?.groups?.includes('lisa_admin') && (
+            <>
+              <ListItemButton sx={{ pl: 0 }} component={Link} to="/manage-users">
+                <ListItemText primary="Manage users" />
+                <ChevronRightIcon />
+              </ListItemButton>
+              <Divider />
+
+              <ListItemButton sx={{ pl: 0 }} component={Link} to="/manage-incidents">
+                <ListItemText primary="Manage incidents" />
+                <ChevronRightIcon />
+              </ListItemButton>
+              <Divider />
+            </>
+          )}
+          <ListItemButton sx={{ pl: 0 }} disabled>
+            <ListItemText primary="Manage notifications (coming soon)" />
+          </ListItemButton>
+          <Divider />
+
+          <ListItemButton sx={{ pl: 0 }} disabled>
+            <ListItemText primary="Send feedback (coming soon)" />
+          </ListItemButton>
+        </List>
+      </Box>
+    </PageWrapper>
+  )
+}
+
+export default Settings

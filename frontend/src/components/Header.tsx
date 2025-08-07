@@ -3,7 +3,7 @@
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
 // Global imports
-import React, { MouseEvent, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Link, useLocation, useParams } from 'react-router-dom';
 import {
   Box,
@@ -14,10 +14,14 @@ import {
   Typography,
   Button,
   Divider,
+  List,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
   Tabs,
   Tab,
   Modal,
-  Badge
+  Badge,
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
@@ -25,6 +29,7 @@ import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined
 import AccountBoxOutlinedIcon from '@mui/icons-material/AccountBoxOutlined';
 import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
 import NotificationsNoneOutlinedIcon from '@mui/icons-material/NotificationsNoneOutlined';
+import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
 
 // Local imports
 // eslint-disable-next-line import/no-extraneous-dependencies
@@ -45,7 +50,7 @@ const HEADER_ITEMS = [
       { to: 'files', label: 'FILES' },
       { to: 'location', label: 'LOCATION' },
       { to: 'tasks', label: 'TASKS' },
-      { to: 'forms', label: 'FORMS'}
+      { to: 'forms', label: 'FORMS' }
     ]
   },
   {
@@ -134,7 +139,7 @@ const Header = () => {
     const matched = HEADER_ITEMS.flatMap(item =>
       item.subItems?.map(sub => `${sub.to}/${incidentId}`) || []
     ).find(route => pathname.includes(route));
-  
+
     return matched ?? '';
   };
 
@@ -169,7 +174,7 @@ const Header = () => {
     document.documentElement.scrollTo(0, 0);
   };
 
-  const signOut = (event: MouseEvent<HTMLButtonElement>) => {
+  const signOut = (event: React.MouseEvent<HTMLElement>) => {
     event.preventDefault();
     user.logout();
   };
@@ -188,12 +193,12 @@ const Header = () => {
 
   useEffect(() => {
     const el = scrollRef.current;
-  
+
     if (el && isBelowMd) {
       el.addEventListener('scroll', handleScroll);
       window.addEventListener('resize', handleScroll);
     }
-  
+
     return () => {
       if (el && isBelowMd) {
         el.removeEventListener('scroll', handleScroll);
@@ -201,8 +206,8 @@ const Header = () => {
       }
     };
   }, [isBelowMd]);
-  
-  
+
+
 
 
   return (
@@ -278,10 +283,10 @@ const Header = () => {
           <Box display="flex" gap={1}>
             <IconButton component={Link} to="/notifications">
               <Badge badgeContent={pathname === '/notifications' ? 0 : unreadCount} color="error">
-                <NotificationsNoneOutlinedIcon 
-                  sx={{ 
-                    color: pathname === '/notifications' ? 'accent.main' : 'white' 
-                  }} 
+                <NotificationsNoneOutlinedIcon
+                  sx={{
+                    color: pathname === '/notifications' ? 'accent.main' : 'white'
+                  }}
                 />
               </Badge>
             </IconButton>
@@ -306,35 +311,45 @@ const Header = () => {
               }}
             >
               <Box display="flex" flexDirection="column" minWidth={200}>
-                <Box borderBottom="1px solid" borderColor="border.main" padding={2}>
-                  <Typography variant="body1" color="textDisabled">
+                <Box padding={2} borderBottom={1} borderColor="divider">
+                  <Typography variant="body1" fontWeight="bold">
                     {Format.user(user.current as User)}
                   </Typography>
+                  <Typography variant="body1" color="textDisabled">
+                    {user.current?.email.split('@')[1] || ''}
+                  </Typography>
                 </Box>
-                <Box display="flex" flexDirection="column" gap={1} padding={1}>
-                  <Box display="flex" flexDirection="row" gap={1} width="100%">
-                    <Button
-                      variant="text"
-                      color="secondary"
-                      onClick={() => setOpenGuide(!openGuide)}
-                      startIcon={<AccountBoxOutlinedIcon />}
-                      sx={{ textTransform: 'none' }}
-                    >
-                      User guide
-                    </Button>
-                  </Box>
-                  <Box display="flex" flexGrow="row" gap={1}>
-                    <Button
-                      variant="text"
-                      color="secondary"
-                      onClick={signOut}
-                      startIcon={<LogoutOutlinedIcon />}
-                      sx={{ textTransform: 'none' }}
-                    >
-                      Sign out
-                    </Button>
-                  </Box>
-                </Box>
+                <List disablePadding>
+                  <ListItemButton
+                    onClick={() => {
+                      setOpenGuide(true)
+                      setAccountAnchorEl(null)
+                    }
+                    }
+                  >
+                    <ListItemIcon sx={{ minWidth: 32 }}>
+                      <AccountBoxOutlinedIcon />
+                    </ListItemIcon>
+                    <ListItemText primary="User guide" />
+                  </ListItemButton>
+                  <ListItemButton
+                    component={Link}
+                    to="/settings"
+                    onClick={() => setAccountAnchorEl(null)}
+                  >
+                    <ListItemIcon sx={{ minWidth: 32 }}>
+                      <SettingsOutlinedIcon />
+                    </ListItemIcon>
+                    <ListItemText primary="Settings" />
+                  </ListItemButton>
+                  <Divider component="li" />
+                  <ListItemButton onClick={signOut}>
+                    <ListItemIcon sx={{ minWidth: 32 }}>
+                      <LogoutOutlinedIcon />
+                    </ListItemIcon>
+                    <ListItemText primary="Sign out" />
+                  </ListItemButton>
+                </List>
               </Box>
             </Popover>
           </Box>

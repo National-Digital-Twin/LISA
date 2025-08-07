@@ -9,10 +9,13 @@ export class User {
 
   private readonly emailInternal: string;
 
-  constructor(username: string, email: string, displayName: string) {
+  private readonly groupsInternal: string[];  
+
+  constructor(username: string, email: string, displayName: string, groups: string[]) {
     this.usernameInternal = username;
     this.emailInternal = email;
     this.displayNameInternal = displayName;
+    this.groupsInternal = groups;
   }
 
   get username(): string {
@@ -25,5 +28,9 @@ export class User {
 
   get displayName(): string {
     return this.displayNameInternal;
+  }
+
+  get groups(): string[] {
+    return this.groupsInternal;
   }
 }
