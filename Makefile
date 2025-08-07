@@ -17,3 +17,6 @@ run-sonar-scan:
 		-e SONAR_SCANNER_OPTS="-Dsonar.projectKey=${SONAR_PROJECT_KEY}" \
 		-e SONAR_TOKEN="${SONAR_TOKEN}" \
 		sonarsource/sonar-scanner-cli
+
+upload-predefined-forms:
+	./schema/upload-predefined-forms.sh ./schema/predefined-forms.ttl ./schema/predefined-forms-data-schema.json ./schema/predefined-forms-ui-schema.json
