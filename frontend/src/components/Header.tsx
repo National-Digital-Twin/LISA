@@ -37,7 +37,7 @@ import { Format } from '../utils';
 
 const HEADER_ITEMS = [
   {
-    to: '/',
+    to: 'incidents',
     label: 'INCIDENTS',
     subItems: [
       { to: 'logbook', label: 'LOG' },
