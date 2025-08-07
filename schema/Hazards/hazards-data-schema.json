@@ -1,0 +1,2051 @@
+{
+  "hazards" :[
+    {
+        "type": "haz_floodwater",
+        "dataSchema": {
+            "title": "Flood / water",
+            "type": "object",
+            "properties": {
+              "briefingEcc": {
+                "title": "Briefing from Emergency Control Centre",
+                "type": "string",
+                "enum": ["Yes", "No"]
+              },
+              "briefingFcpc": {
+                "title": "Briefing from Forward Control Point Cordon",
+                "type": "string",
+                "enum": ["Yes", "No"]
+              },
+              "cordonUnsafe": {
+                "title": "Do not enter cordon/area(s) deemed unsafe by the Incident Commander",
+                "type": "string",
+                "enum": ["Yes", "No"]
+              },
+              "ppe": {
+                "title": "PPE",
+                "type": "string",
+                "enum": ["Yes", "No"]
+              },
+              "otherControls": {
+                "title": "Other controls in place",
+                "type": "string",
+                "enum": ["Yes", "No"]
+              },
+              "furtherAction": {
+                "title": "Any further action required or risks identified (optional)",
+                "type": "string"
+              }
+            },
+            "required": [
+              "briefingEcc",
+              "briefingFcpc",
+              "cordonUnsafe",
+              "ppe",
+              "otherControls"
+            ],
+            "dependencies": {
+              "briefingEcc": {
+                "oneOf": [
+                  {
+                    "properties": {
+                      "briefingEcc": { "const": "Yes" }
+                    }
+                  },
+                  {
+                    "properties": {
+                      "briefingEcc": { "const": "No" },
+                      "reasonEcc": {
+                        "title": "Reason why this is not in place",
+                        "type": "string"
+                      }
+                    },
+                    "required": ["reasonEcc"]
+                  }
+                ]
+              },
+              "briefingFcpc": {
+                "oneOf": [
+                  {
+                    "properties": {
+                      "briefingFcpc": { "const": "Yes" }
+                    }
+                  },
+                  {
+                    "properties": {
+                      "briefingFcpc": { "const": "No" },
+                      "reasonFcpc": {
+                        "title": "Reason why this is not in place",
+                        "type": "string"
+                      }
+                    },
+                    "required": ["reasonFcpc"]
+                  }
+                ]
+              },
+              "cordonUnsafe": {
+                "oneOf": [
+                  {
+                    "properties": {
+                      "cordonUnsafe": { "const": "Yes" }
+                    }
+                  },
+                  {
+                    "properties": {
+                      "cordonUnsafe": { "const": "No" },
+                      "reasonCordonUnsafe": {
+                        "title": "Reason why this is not in place",
+                        "type": "string"
+                      }
+                    },
+                    "required": ["reasonCordonUnsafe"]
+                  }
+                ]
+              },
+              "ppe": {
+                "oneOf": [
+                  {
+                    "properties": {
+                      "ppe": { "const": "Yes" }
+                    }
+                  },
+                  {
+                    "properties": {
+                      "ppe": { "const": "No" },
+                      "reasonPpe": {
+                        "title": "Reason why this is not in place",
+                        "type": "string"
+                      }
+                    },
+                    "required": ["reasonPpe"]
+                  }
+                ]
+              },
+              "otherControls": {
+                "oneOf": [
+                  {
+                    "properties": {
+                      "otherControls": { "const": "No" }
+                    }
+                  },
+                  {
+                    "properties": {
+                      "otherControls": { "const": "Yes" },
+                      "reasonOtherControls": {
+                        "title": "Describe other controls in place",
+                        "type": "string"
+                      }
+                    },
+                    "required": ["reasonOtherControls"]
+                  }
+                ]
+              }
+            }
+          }
+    },
+    {
+      "type": "haz_fire",
+      "dataSchema": {
+          "title": "Fire",
+          "type": "object",
+          "properties": {
+            "briefingEcc": {
+              "title": "Briefing from Emergency Control Centre",
+              "type": "string",
+              "enum": ["Yes", "No"]
+            },
+            "briefingFcpc": {
+              "title": "Briefing from Forward Control Point Cordon",
+              "type": "string",
+              "enum": ["Yes", "No"]
+            },
+            "windCordon": {
+              "title": "Wind direction cordon",
+              "type": "string",
+              "enum": ["Yes", "No"]
+            },
+            "otherControls": {
+              "title": "Other controls in place",
+              "type": "string",
+              "enum": ["Yes", "No"]
+            },
+            "furtherAction": {
+              "title": "Any further action required or risks identified (optional)",
+              "type": "string"
+            }
+          },
+          "required": [
+            "briefingEcc",
+            "briefingFcpc",
+            "windCordon",
+            "otherControls"
+          ],
+          "dependencies": {
+            "briefingEcc": {
+              "oneOf": [
+                {
+                  "properties": {
+                    "briefingEcc": { "const": "Yes" }
+                  }
+                },
+                {
+                  "properties": {
+                    "briefingEcc": { "const": "No" },
+                    "reasonEcc": {
+                      "title": "Reason why this is not in place",
+                      "type": "string"
+                    }
+                  },
+                  "required": ["reasonEcc"]
+                }
+              ]
+            },
+            "briefingFcpc": {
+              "oneOf": [
+                {
+                  "properties": {
+                    "briefingFcpc": { "const": "Yes" }
+                  }
+                },
+                {
+                  "properties": {
+                    "briefingFcpc": { "const": "No" },
+                    "reasonFcpc": {
+                      "title": "Reason why this is not in place",
+                      "type": "string"
+                    }
+                  },
+                  "required": ["reasonFcpc"]
+                }
+              ]
+            },
+            "windCordon": {
+              "oneOf": [
+                {
+                  "properties": {
+                    "windCordon": { "const": "Yes" }
+                  }
+                },
+                {
+                  "properties": {
+                    "windCordon": { "const": "No" },
+                    "reasonWindCordon": {
+                      "title": "Reason why this is not in place",
+                      "type": "string"
+                    }
+                  },
+                  "required": ["reasonWindCordon"]
+                }
+              ]
+            },
+            "otherControls": {
+              "oneOf": [
+                {
+                  "properties": {
+                    "otherControls": { "const": "No" }
+                  }
+                },
+                {
+                  "properties": {
+                    "otherControls": { "const": "Yes" },
+                    "reasonOtherControls": {
+                      "title": "Describe other controls in place",
+                      "type": "string"
+                    }
+                  },
+                  "required": ["reasonOtherControls"]
+                }
+              ]
+            }
+          }
+        }
+    },
+    {
+      "type": "haz_substances",
+      "dataSchema": {
+          "title": "Hazardous Substances",
+          "type": "object",
+          "properties": {
+            "briefingEcc": {
+              "title": "Briefing from Emergency Control Centre",
+              "type": "string",
+              "enum": ["Yes", "No"]
+            },
+            "briefingFcpc": {
+              "title": "Briefing from Forward Control Point Cordon",
+              "type": "string",
+              "enum": ["Yes", "No"]
+            },
+            "windCordon": {
+              "title": "Wind direction cordon",
+              "type": "string",
+              "enum": ["Yes", "No"]
+            },
+            "ppe": {
+              "title": "PPE - Face masks/goggles, etc",
+              "type": "string",
+              "enum": ["Yes", "No"]
+            },
+            "otherControls": {
+              "title": "Other controls in place",
+              "type": "string",
+              "enum": ["Yes", "No"]
+            },
+            "furtherAction": {
+              "title": "Any further action required or risks identified (optional)",
+              "type": "string"
+            }
+          },
+          "required": [
+            "briefingEcc",
+            "briefingFcpc",
+            "windCordon",
+            "ppe",
+            "otherControls"
+          ],
+          "dependencies": {
+            "briefingEcc": {
+              "oneOf": [
+                {
+                  "properties": {
+                    "briefingEcc": { "const": "Yes" }
+                  }
+                },
+                {
+                  "properties": {
+                    "briefingEcc": { "const": "No" },
+                    "reasonEcc": {
+                      "title": "Reason why this is not in place",
+                      "type": "string"
+                    }
+                  },
+                  "required": ["reasonEcc"]
+                }
+              ]
+            },
+            "briefingFcpc": {
+              "oneOf": [
+                {
+                  "properties": {
+                    "briefingFcpc": { "const": "Yes" }
+                  }
+                },
+                {
+                  "properties": {
+                    "briefingFcpc": { "const": "No" },
+                    "reasonFcpc": {
+                      "title": "Reason why this is not in place",
+                      "type": "string"
+                    }
+                  },
+                  "required": ["reasonFcpc"]
+                }
+              ]
+            },
+            "ppe": {
+              "oneOf": [
+                {
+                  "properties": {
+                    "ppe": { "const": "Yes" }
+                  }
+                },
+                {
+                  "properties": {
+                    "ppe": { "const": "No" },
+                    "reasonPpe": {
+                      "title": "Reason why this is not in place",
+                      "type": "string"
+                    }
+                  },
+                  "required": ["reasonPpe"]
+                }
+              ]
+            },
+            "windCordon": {
+              "oneOf": [
+                {
+                  "properties": {
+                    "windCordon": { "const": "Yes" }
+                  }
+                },
+                {
+                  "properties": {
+                    "windCordon": { "const": "No" },
+                    "reasonWindCordon": {
+                      "title": "Reason why this is not in place",
+                      "type": "string"
+                    }
+                  },
+                  "required": ["reasonWindCordon"]
+                }
+              ]
+            },
+            "otherControls": {
+              "oneOf": [
+                {
+                  "properties": {
+                    "otherControls": { "const": "No" }
+                  }
+                },
+                {
+                  "properties": {
+                    "otherControls": { "const": "Yes" },
+                    "reasonOtherControls": {
+                      "title": "Describe other controls in place",
+                      "type": "string"
+                    }
+                  },
+                  "required": ["reasonOtherControls"]
+                }
+              ]
+            }
+          }
+        }
+    },
+    {
+      "type": "haz_slipstripsfalls",
+      "dataSchema": {
+          "title": "Slips, trips and falls",
+          "type": "object",
+          "properties": {
+            "briefingEcc": {
+              "title": "Briefing from Emergency Control Centre",
+              "type": "string",
+              "enum": ["Yes", "No"]
+            },
+            "briefingFcpc": {
+              "title": "Briefing from Forward Control Point Cordon",
+              "type": "string",
+              "enum": ["Yes", "No"]
+            },
+            "ppe": {
+              "title": "PPE - Safety boots",
+              "type": "string",
+              "enum": ["Yes", "No"]
+            },
+            "torch": {
+              "title": "Torch",
+              "type": "string",
+              "enum": ["Yes", "No"]
+            },
+            "planRoute": {
+              "title": "Plan route",
+              "type": "string",
+              "enum": ["Yes", "No"]
+            },
+            "otherControls": {
+              "title": "Other controls in place",
+              "type": "string",
+              "enum": ["Yes", "No"]
+            },
+            "furtherAction": {
+              "title": "Any further action required or risks identified (optional)",
+              "type": "string"
+            }
+          },
+          "required": [
+            "briefingEcc",
+            "briefingFcpc",
+            "ppe",
+            "torch",
+            "planRoute",
+            "otherControls"
+          ],
+          "dependencies": {
+            "briefingEcc": {
+              "oneOf": [
+                {
+                  "properties": {
+                    "briefingEcc": { "const": "Yes" }
+                  }
+                },
+                {
+                  "properties": {
+                    "briefingEcc": { "const": "No" },
+                    "reasonEcc": {
+                      "title": "Reason why this is not in place",
+                      "type": "string"
+                    }
+                  },
+                  "required": ["reasonEcc"]
+                }
+              ]
+            },
+            "briefingFcpc": {
+              "oneOf": [
+                {
+                  "properties": {
+                    "briefingFcpc": { "const": "Yes" }
+                  }
+                },
+                {
+                  "properties": {
+                    "briefingFcpc": { "const": "No" },
+                    "reasonFcpc": {
+                      "title": "Reason why this is not in place",
+                      "type": "string"
+                    }
+                  },
+                  "required": ["reasonFcpc"]
+                }
+              ]
+            },
+            "ppe": {
+              "oneOf": [
+                {
+                  "properties": {
+                    "ppe": { "const": "Yes" }
+                  }
+                },
+                {
+                  "properties": {
+                    "ppe": { "const": "No" },
+                    "reasonPpe": {
+                      "title": "Reason why this is not in place",
+                      "type": "string"
+                    }
+                  },
+                  "required": ["reasonPpe"]
+                }
+              ]
+            },
+            "torch": {
+              "oneOf": [
+                {
+                  "properties": {
+                    "torch": { "const": "Yes" }
+                  }
+                },
+                {
+                  "properties": {
+                    "torch": { "const": "No" },
+                    "reasonTorch": {
+                      "title": "Reason why this is not in place",
+                      "type": "string"
+                    }
+                  },
+                  "required": ["reasonTorch"]
+                }
+              ]
+            },
+            "planRoute": {
+              "oneOf": [
+                {
+                  "properties": {
+                    "planRoute": { "const": "Yes" }
+                  }
+                },
+                {
+                  "properties": {
+                    "planRoute": { "const": "No" },
+                    "reasonPlanRoute": {
+                      "title": "Reason why this is not in place",
+                      "type": "string"
+                    }
+                  },
+                  "required": ["reasonPlanRoute"]
+                }
+              ]
+            },
+            "otherControls": {
+              "oneOf": [
+                {
+                  "properties": {
+                    "otherControls": { "const": "No" }
+                  }
+                },
+                {
+                  "properties": {
+                    "otherControls": { "const": "Yes" },
+                    "reasonOtherControls": {
+                      "title": "Describe other controls in place",
+                      "type": "string"
+                    }
+                  },
+                  "required": ["reasonOtherControls"]
+                }
+              ]
+            }
+          }
+        }
+    },
+    {
+      "type": "haz_vehicles",
+      "dataSchema": {
+          "title": "Vehicles",
+          "type": "object",
+          "properties": {
+            "briefingEcc": {
+              "title": "Briefing from Emergency Control Centre",
+              "type": "string",
+              "enum": ["Yes", "No"]
+            },
+            "briefingFcpc": {
+              "title": "Briefing from Forward Control Point Cordon",
+              "type": "string",
+              "enum": ["Yes", "No"]
+            },
+            "ppe": {
+              "title": "PPE - Hi Viz vest, safety boots",
+              "type": "string",
+              "enum": ["Yes", "No"]
+            },
+            "otherControls": {
+              "title": "Other controls in place",
+              "type": "string",
+              "enum": ["Yes", "No"]
+            },
+            "furtherAction": {
+              "title": "Any further action required or risks identified (optional)",
+              "type": "string"
+            }
+          },
+          "required": [
+            "briefingEcc",
+            "briefingFcpc",
+            "ppe",
+            "otherControls"
+          ],
+          "dependencies": {
+            "briefingEcc": {
+              "oneOf": [
+                {
+                  "properties": {
+                    "briefingEcc": { "const": "Yes" }
+                  }
+                },
+                {
+                  "properties": {
+                    "briefingEcc": { "const": "No" },
+                    "reasonEcc": {
+                      "title": "Reason why this is not in place",
+                      "type": "string"
+                    }
+                  },
+                  "required": ["reasonEcc"]
+                }
+              ]
+            },
+            "briefingFcpc": {
+              "oneOf": [
+                {
+                  "properties": {
+                    "briefingFcpc": { "const": "Yes" }
+                  }
+                },
+                {
+                  "properties": {
+                    "briefingFcpc": { "const": "No" },
+                    "reasonFcpc": {
+                      "title": "Reason why this is not in place",
+                      "type": "string"
+                    }
+                  },
+                  "required": ["reasonFcpc"]
+                }
+              ]
+            },
+            "ppe": {
+              "oneOf": [
+                {
+                  "properties": {
+                    "ppe": { "const": "Yes" }
+                  }
+                },
+                {
+                  "properties": {
+                    "ppe": { "const": "No" },
+                    "reasonPpe": {
+                      "title": "Reason why this is not in place",
+                      "type": "string"
+                    }
+                  },
+                  "required": ["reasonPpe"]
+                }
+              ]
+            },
+            "otherControls": {
+              "oneOf": [
+                {
+                  "properties": {
+                    "otherControls": { "const": "No" }
+                  }
+                },
+                {
+                  "properties": {
+                    "otherControls": { "const": "Yes" },
+                    "reasonOtherControls": {
+                      "title": "Describe other controls in place",
+                      "type": "string"
+                    }
+                  },
+                  "required": ["reasonOtherControls"]
+                }
+              ]
+            }
+          }
+        }
+    },
+    {
+      "type": "haz_fallingobjects",
+      "dataSchema": {
+          "title": "Falling Objects",
+          "type": "object",
+          "properties": {
+            "briefingEcc": {
+              "title": "Briefing from Emergency Control Centre",
+              "type": "string",
+              "enum": ["Yes", "No"]
+            },
+            "briefingFcpc": {
+              "title": "Briefing from Forward Control Point Cordon",
+              "type": "string",
+              "enum": ["Yes", "No"]
+            },
+            "ppe": {
+              "title": "PPE - Safety helmet",
+              "type": "string",
+              "enum": ["Yes", "No"]
+            },
+            "otherControls": {
+              "title": "Other controls in place",
+              "type": "string",
+              "enum": ["Yes", "No"]
+            },
+            "furtherAction": {
+              "title": "Any further action required or risks identified (optional)",
+              "type": "string"
+            }
+          },
+          "required": [
+            "briefingEcc",
+            "briefingFcpc",
+            "ppe",
+            "otherControls"
+          ],
+          "dependencies": {
+            "briefingEcc": {
+              "oneOf": [
+                {
+                  "properties": {
+                    "briefingEcc": { "const": "Yes" }
+                  }
+                },
+                {
+                  "properties": {
+                    "briefingEcc": { "const": "No" },
+                    "reasonEcc": {
+                      "title": "Reason why this is not in place",
+                      "type": "string"
+                    }
+                  },
+                  "required": ["reasonEcc"]
+                }
+              ]
+            },
+            "briefingFcpc": {
+              "oneOf": [
+                {
+                  "properties": {
+                    "briefingFcpc": { "const": "Yes" }
+                  }
+                },
+                {
+                  "properties": {
+                    "briefingFcpc": { "const": "No" },
+                    "reasonFcpc": {
+                      "title": "Reason why this is not in place",
+                      "type": "string"
+                    }
+                  },
+                  "required": ["reasonFcpc"]
+                }
+              ]
+            },
+            "ppe": {
+              "oneOf": [
+                {
+                  "properties": {
+                    "ppe": { "const": "Yes" }
+                  }
+                },
+                {
+                  "properties": {
+                    "ppe": { "const": "No" },
+                    "reasonPpe": {
+                      "title": "Reason why this is not in place",
+                      "type": "string"
+                    }
+                  },
+                  "required": ["reasonPpe"]
+                }
+              ]
+            },
+            "otherControls": {
+              "oneOf": [
+                {
+                  "properties": {
+                    "otherControls": { "const": "No" }
+                  }
+                },
+                {
+                  "properties": {
+                    "otherControls": { "const": "Yes" },
+                    "reasonOtherControls": {
+                      "title": "Describe other controls in place",
+                      "type": "string"
+                    }
+                  },
+                  "required": ["reasonOtherControls"]
+                }
+              ]
+            }
+          }
+        }
+    },
+    {
+      "type": "haz_biological",
+      "dataSchema": {
+          "title": "Biological",
+          "type": "object",
+          "properties": {
+            "briefingEcc": {
+              "title": "Briefing from Emergency Control Centre",
+              "type": "string",
+              "enum": ["Yes", "No"]
+            },
+            "briefingFcpc": {
+              "title": "Briefing from Forward Control Point",
+              "type": "string",
+              "enum": ["Yes", "No"]
+            },
+            "needles": {
+              "title": "Do not touch needles, etc.",
+              "type": "string",
+              "enum": ["Yes", "No"]
+            },
+            "ppe": {
+              "title": "PPE - Gloves, etc.",
+              "type": "string",
+              "enum": ["Yes", "No"]
+            },
+            "otherControls": {
+              "title": "Other controls in place",
+              "type": "string",
+              "enum": ["Yes", "No"]
+            },
+            "furtherAction": {
+              "title": "Any further action required or risks identified (optional)",
+              "type": "string"
+            }
+          },
+          "required": [
+            "briefingEcc",
+            "briefingFcpc",
+            "needles",
+            "ppe",
+            "otherControls"
+          ],
+          "dependencies": {
+            "briefingEcc": {
+              "oneOf": [
+                {
+                  "properties": {
+                    "briefingEcc": { "const": "Yes" }
+                  }
+                },
+                {
+                  "properties": {
+                    "briefingEcc": { "const": "No" },
+                    "reasonEcc": {
+                      "title": "Reason why this is not in place",
+                      "type": "string"
+                    }
+                  },
+                  "required": ["reasonEcc"]
+                }
+              ]
+            },
+            "briefingFcpc": {
+              "oneOf": [
+                {
+                  "properties": {
+                    "briefingFcpc": { "const": "Yes" }
+                  }
+                },
+                {
+                  "properties": {
+                    "briefingFcpc": { "const": "No" },
+                    "reasonFcpc": {
+                      "title": "Reason why this is not in place",
+                      "type": "string"
+                    }
+                  },
+                  "required": ["reasonFcpc"]
+                }
+              ]
+            },
+            "needles": {
+              "oneOf": [
+                {
+                  "properties": {
+                    "needles": { "const": "Yes" }
+                  }
+                },
+                {
+                  "properties": {
+                    "needles": { "const": "No" },
+                    "reasonNeedles": {
+                      "title": "Reason why this is not in place",
+                      "type": "string"
+                    }
+                  },
+                  "required": ["reasonNeedles"]
+                }
+              ]
+            },
+            "ppe": {
+              "oneOf": [
+                {
+                  "properties": {
+                    "ppe": { "const": "Yes" }
+                  }
+                },
+                {
+                  "properties": {
+                    "ppe": { "const": "No" },
+                    "reasonPpe": {
+                      "title": "Reason why this is not in place",
+                      "type": "string"
+                    }
+                  },
+                  "required": ["reasonPpe"]
+                }
+              ]
+            },
+            "otherControls": {
+              "oneOf": [
+                {
+                  "properties": {
+                    "otherControls": { "const": "No" }
+                  }
+                },
+                {
+                  "properties": {
+                    "otherControls": { "const": "Yes" },
+                    "reasonOtherControls": {
+                      "title": "Describe other controls in place",
+                      "type": "string"
+                    }
+                  },
+                  "required": ["reasonOtherControls"]
+                }
+              ]
+            }
+          }
+        }
+    },
+    {
+      "type": "haz_environment",
+      "dataSchema": {
+          "title": "Environment",
+          "type": "object",
+          "properties": {
+            "briefingEcc": {
+              "title": "Briefing from Emergency Control Centre",
+              "type": "string",
+              "enum": ["Yes", "No"]
+            },
+            "briefingFcpc": {
+              "title": "Briefing from Forward Control Point",
+              "type": "string",
+              "enum": ["Yes", "No"]
+            },
+            "ppe": {
+              "title": "PPE - Safety boots",
+              "type": "string",
+              "enum": ["Yes", "No"]
+            },
+            "otherControls": {
+              "title": "Other controls in place",
+              "type": "string",
+              "enum": ["Yes", "No"]
+            },
+            "furtherAction": {
+              "title": "Any further action required or risks identified (optional)",
+              "type": "string"
+            }
+          },
+          "required": [
+            "briefingEcc",
+            "briefingFcpc",
+            "ppe",
+            "otherControls"
+          ],
+          "dependencies": {
+            "briefingEcc": {
+              "oneOf": [
+                {
+                  "properties": {
+                    "briefingEcc": { "const": "Yes" }
+                  }
+                },
+                {
+                  "properties": {
+                    "briefingEcc": { "const": "No" },
+                    "reasonEcc": {
+                      "title": "Reason why this is not in place",
+                      "type": "string"
+                    }
+                  },
+                  "required": ["reasonEcc"]
+                }
+              ]
+            },
+            "briefingFcpc": {
+              "oneOf": [
+                {
+                  "properties": {
+                    "briefingFcpc": { "const": "Yes" }
+                  }
+                },
+                {
+                  "properties": {
+                    "briefingFcpc": { "const": "No" },
+                    "reasonFcpc": {
+                      "title": "Reason why this is not in place",
+                      "type": "string"
+                    }
+                  },
+                  "required": ["reasonFcpc"]
+                }
+              ]
+            },
+            "ppe": {
+              "oneOf": [
+                {
+                  "properties": {
+                    "ppe": { "const": "Yes" }
+                  }
+                },
+                {
+                  "properties": {
+                    "ppe": { "const": "No" },
+                    "reasonPpe": {
+                      "title": "Reason why this is not in place",
+                      "type": "string"
+                    }
+                  },
+                  "required": ["reasonPpe"]
+                }
+              ]
+            },
+            "otherControls": {
+              "oneOf": [
+                {
+                  "properties": {
+                    "otherControls": { "const": "No" }
+                  }
+                },
+                {
+                  "properties": {
+                    "otherControls": { "const": "Yes" },
+                    "reasonOtherControls": {
+                      "title": "Describe other controls in place",
+                      "type": "string"
+                    }
+                  },
+                  "required": ["reasonOtherControls"]
+                }
+              ]
+            }
+          }
+        }
+    },
+    {
+      "type": "haz_manualhandling",
+      "dataSchema": {
+          "title": "Manual Handling",
+          "type": "object",
+          "properties": {
+            "briefingEcc": {
+              "title": "Briefing from Emergency Control Centre",
+              "type": "string",
+              "enum": ["Yes", "No"]
+            },
+            "briefingFcpc": {
+              "title": "Briefing from Forward Control Point",
+              "type": "string",
+              "enum": ["Yes", "No"]
+            },
+            "training": {
+              "title": "Manual handling training",
+              "type": "string",
+              "enum": ["Yes", "No"]
+            },
+            "ppe": {
+              "title": "PPE - Safety boots",
+              "type": "string",
+              "enum": ["Yes", "No"]
+            },
+            "equipment": {
+              "title": "Use of manual handling equipment if available and if trained to do so",
+              "type": "string",
+              "enum": ["Yes", "No"]
+            },
+            "otherControls": {
+              "title": "Other controls in place",
+              "type": "string",
+              "enum": ["Yes", "No"]
+            },
+            "furtherAction": {
+              "title": "Any further action required or risks identified (optional)",
+              "type": "string"
+            }
+          },
+          "required": [
+            "briefingEcc",
+            "briefingFcpc",
+            "training",
+            "ppe",
+            "equipment",
+            "otherControls"
+          ],
+          "dependencies": {
+            "briefingEcc": {
+              "oneOf": [
+                {
+                  "properties": {
+                    "briefingEcc": { "const": "Yes" }
+                  }
+                },
+                {
+                  "properties": {
+                    "briefingEcc": { "const": "No" },
+                    "reasonEcc": {
+                      "title": "Reason why this is not in place",
+                      "type": "string"
+                    }
+                  },
+                  "required": ["reasonEcc"]
+                }
+              ]
+            },
+            "briefingFcpc": {
+              "oneOf": [
+                {
+                  "properties": {
+                    "briefingFcpc": { "const": "Yes" }
+                  }
+                },
+                {
+                  "properties": {
+                    "briefingFcpc": { "const": "No" },
+                    "reasonFcpc": {
+                      "title": "Reason why this is not in place",
+                      "type": "string"
+                    }
+                  },
+                  "required": ["reasonFcpc"]
+                }
+              ]
+            },
+            "training": {
+              "oneOf": [
+                {
+                  "properties": {
+                    "training": { "const": "Yes" }
+                  }
+                },
+                {
+                  "properties": {
+                    "training": { "const": "No" },
+                    "reasonTraining": {
+                      "title": "Reason why this is not in place",
+                      "type": "string"
+                    }
+                  },
+                  "required": ["reasonTraining"]
+                }
+              ]
+            },
+            "ppe": {
+              "oneOf": [
+                {
+                  "properties": {
+                    "ppe": { "const": "Yes" }
+                  }
+                },
+                {
+                  "properties": {
+                    "ppe": { "const": "No" },
+                    "reasonPpe": {
+                      "title": "Reason why this is not in place",
+                      "type": "string"
+                    }
+                  },
+                  "required": ["reasonPpe"]
+                }
+              ]
+            },
+            "equipment": {
+              "oneOf": [
+                {
+                  "properties": {
+                    "equipment": { "const": "Yes" }
+                  }
+                },
+                {
+                  "properties": {
+                    "equipment": { "const": "No" },
+                    "reasonEquipment": {
+                      "title": "Reason why this is not in place",
+                      "type": "string"
+                    }
+                  },
+                  "required": ["reasonEquipment"]
+                }
+              ]
+            },
+            "otherControls": {
+              "oneOf": [
+                {
+                  "properties": {
+                    "otherControls": { "const": "No" }
+                  }
+                },
+                {
+                  "properties": {
+                    "otherControls": { "const": "Yes" },
+                    "reasonOtherControls": {
+                      "title": "Describe other controls in place",
+                      "type": "string"
+                    }
+                  },
+                  "required": ["reasonOtherControls"]
+                }
+              ]
+            }
+          }
+        }
+    },
+    {
+      "type": "haz_weather",
+      "dataSchema": {
+          "title": "Weather Conditions",
+          "type": "object",
+          "properties": {
+            "briefingEcc": {
+              "title": "Briefing from Emergency Control Centre",
+              "type": "string",
+              "enum": ["Yes", "No"]
+            },
+            "briefingFcpc": {
+              "title": "Briefing from Forward Control Point",
+              "type": "string",
+              "enum": ["Yes", "No"]
+            },
+            "ppe": {
+              "title": "PPE - Waterproof coat, gloves, hat, bottled water",
+              "type": "string",
+              "enum": ["Yes", "No"]
+            },
+            "otherControls": {
+              "title": "Other controls in place",
+              "type": "string",
+              "enum": ["Yes", "No"]
+            },
+            "furtherAction": {
+              "title": "Any further action required or risks identified (optional)",
+              "type": "string"
+            }
+          },
+          "required": [
+            "briefingEcc",
+            "briefingFcpc",
+            "ppe",
+            "otherControls"
+          ],
+          "dependencies": {
+            "briefingEcc": {
+              "oneOf": [
+                {
+                  "properties": {
+                    "briefingEcc": { "const": "Yes" }
+                  }
+                },
+                {
+                  "properties": {
+                    "briefingEcc": { "const": "No" },
+                    "reasonEcc": {
+                      "title": "Reason why this is not in place",
+                      "type": "string"
+                    }
+                  },
+                  "required": ["reasonEcc"]
+                }
+              ]
+            },
+            "briefingFcpc": {
+              "oneOf": [
+                {
+                  "properties": {
+                    "briefingFcpc": { "const": "Yes" }
+                  }
+                },
+                {
+                  "properties": {
+                    "briefingFcpc": { "const": "No" },
+                    "reasonFcpc": {
+                      "title": "Reason why this is not in place",
+                      "type": "string"
+                    }
+                  },
+                  "required": ["reasonFcpc"]
+                }
+              ]
+            },
+            "ppe": {
+              "oneOf": [
+                {
+                  "properties": {
+                    "ppe": { "const": "Yes" }
+                  }
+                },
+                {
+                  "properties": {
+                    "ppe": { "const": "No" },
+                    "reasonPpe": {
+                      "title": "Reason why this is not in place",
+                      "type": "string"
+                    }
+                  },
+                  "required": ["reasonPpe"]
+                }
+              ]
+            },
+            "otherControls": {
+              "oneOf": [
+                {
+                  "properties": {
+                    "otherControls": { "const": "No" }
+                  }
+                },
+                {
+                  "properties": {
+                    "otherControls": { "const": "Yes" },
+                    "reasonOtherControls": {
+                      "title": "Describe other controls in place",
+                      "type": "string"
+                    }
+                  },
+                  "required": ["reasonOtherControls"]
+                }
+              ]
+            }
+          }
+        }
+    },
+    {
+      "type": "haz_contamination",
+      "dataSchema": {
+          "title": "Hygeine / Welfare - Contamination",
+          "type": "object",
+          "properties": {
+            "briefingEcc": {
+              "title": "Briefing from Emergency Control Centre",
+              "type": "string",
+              "enum": ["Yes", "No"]
+            },
+            "briefingFcpc": {
+              "title": "Briefing from Forward Control Point",
+              "type": "string",
+              "enum": ["Yes", "No"]
+            },
+            "ppe": {
+              "title": "PPE - gloves",
+              "type": "string",
+              "enum": ["Yes", "No"]
+            },
+            "washhands": {
+              "title": "Wash hands before eating, drinking or smoking",
+              "type": "string",
+              "enum": ["Yes", "No"]
+            },
+            "otherControls": {
+              "title": "Other controls in place",
+              "type": "string",
+              "enum": ["Yes", "No"]
+            },
+            "furtherAction": {
+              "title": "Any further action required or risks identified (optional)",
+              "type": "string"
+            }
+          },
+          "required": [
+            "briefingEcc",
+            "briefingFcpc",
+            "ppe",
+            "washhands",
+            "otherControls"
+          ],
+          "dependencies": {
+            "briefingEcc": {
+              "oneOf": [
+                {
+                  "properties": {
+                    "briefingEcc": { "const": "Yes" }
+                  }
+                },
+                {
+                  "properties": {
+                    "briefingEcc": { "const": "No" },
+                    "reasonEcc": {
+                      "title": "Reason why this is not in place",
+                      "type": "string"
+                    }
+                  },
+                  "required": ["reasonEcc"]
+                }
+              ]
+            },
+            "briefingFcpc": {
+              "oneOf": [
+                {
+                  "properties": {
+                    "briefingFcpc": { "const": "Yes" }
+                  }
+                },
+                {
+                  "properties": {
+                    "briefingFcpc": { "const": "No" },
+                    "reasonFcpc": {
+                      "title": "Reason why this is not in place",
+                      "type": "string"
+                    }
+                  },
+                  "required": ["reasonFcpc"]
+                }
+              ]
+            },
+            "ppe": {
+              "oneOf": [
+                {
+                  "properties": {
+                    "ppe": { "const": "Yes" }
+                  }
+                },
+                {
+                  "properties": {
+                    "ppe": { "const": "No" },
+                    "reasonPpe": {
+                      "title": "Reason why this is not in place",
+                      "type": "string"
+                    }
+                  },
+                  "required": ["reasonPpe"]
+                }
+              ]
+            },
+            "washhands": {
+              "oneOf": [
+                {
+                  "properties": {
+                    "washhands": { "const": "Yes" }
+                  }
+                },
+                {
+                  "properties": {
+                    "washhands": { "const": "No" },
+                    "reasonWashHands": {
+                      "title": "Reason why this is not in place",
+                      "type": "string"
+                    }
+                  },
+                  "required": ["reasonWashHands"]
+                }
+              ]
+            },
+            "otherControls": {
+              "oneOf": [
+                {
+                  "properties": {
+                    "otherControls": { "const": "No" }
+                  }
+                },
+                {
+                  "properties": {
+                    "otherControls": { "const": "Yes" },
+                    "reasonOtherControls": {
+                      "title": "Describe other controls in place",
+                      "type": "string"
+                    }
+                  },
+                  "required": ["reasonOtherControls"]
+                }
+              ]
+            }
+          }
+        }
+    },
+    {
+      "type": "haz_fatigue",
+      "dataSchema": {
+          "title": "Hygeine / Welfare - Fatigue",
+          "type": "object",
+          "properties": {
+            "briefingEcc": {
+              "title": "Briefing from Emergency Control Centre, maintaining contact with Emergency Control Centre Shift changes",
+              "type": "string",
+              "enum": ["Yes", "No"]
+            },
+            "guidance": {
+              "title": "Guidance from Incident Commander",
+              "type": "string",
+              "enum": ["Yes", "No"]
+            },
+            "otherControls": {
+              "title": "Other controls in place",
+              "type": "string",
+              "enum": ["Yes", "No"]
+            },
+            "furtherAction": {
+              "title": "Any further action required or risks identified (optional)",
+              "type": "string"
+            }
+          },
+          "required": [
+            "briefingEcc",
+            "guidance",
+            "otherControls"
+          ],
+          "dependencies": {
+            "briefingEcc": {
+              "oneOf": [
+                {
+                  "properties": {
+                    "briefingEcc": { "const": "Yes" }
+                  }
+                },
+                {
+                  "properties": {
+                    "briefingEcc": { "const": "No" },
+                    "reasonEcc": {
+                      "title": "Reason why this is not in place",
+                      "type": "string"
+                    }
+                  },
+                  "required": ["reasonEcc"]
+                }
+              ]
+            },
+            "guidance": {
+              "oneOf": [
+                {
+                  "properties": {
+                    "guidance": { "const": "Yes" }
+                  }
+                },
+                {
+                  "properties": {
+                    "guidance": { "const": "No" },
+                    "reasonGuidance": {
+                      "title": "Reason why this is not in place",
+                      "type": "string"
+                    }
+                  },
+                  "required": ["reasonGuidance"]
+                }
+              ]
+            },
+            "otherControls": {
+              "oneOf": [
+                {
+                  "properties": {
+                    "otherControls": { "const": "No" }
+                  }
+                },
+                {
+                  "properties": {
+                    "otherControls": { "const": "Yes" },
+                    "reasonOtherControls": {
+                      "title": "Describe other controls in place",
+                      "type": "string"
+                    }
+                  },
+                  "required": ["reasonOtherControls"]
+                }
+              ]
+            }
+          }
+        }
+    },
+    {
+      "type": "haz_workingatheight",
+      "dataSchema": {
+          "title": "Working at height",
+          "type": "object",
+          "properties": {
+            "briefingEcc": {
+              "title": "Briefing from Emergency Control Centre",
+              "type": "string",
+              "enum": ["Yes", "No"]
+            },
+            "briefingFcpc": {
+              "title": "Briefing from Forward Control Point",
+              "type": "string",
+              "enum": ["Yes", "No"]
+            },
+            "unsafeCordon": {
+              "title": "Do not enter cordon/area(s) deemed unsafe by the Incident Commander",
+              "type": "string",
+              "enum": ["Yes", "No"]
+            },
+            "otherControls": {
+              "title": "Other controls in place",
+              "type": "string",
+              "enum": ["Yes", "No"]
+            },
+            "furtherAction": {
+              "title": "Any further action required or risks identified (optional)",
+              "type": "string"
+            }
+          },
+          "required": [
+            "briefingEcc",
+            "briefingFcpc",
+            "unsafeCordon",
+            "otherControls"
+          ],
+          "dependencies": {
+            "briefingEcc": {
+              "oneOf": [
+                {
+                  "properties": {
+                    "briefingEcc": { "const": "Yes" }
+                  }
+                },
+                {
+                  "properties": {
+                    "briefingEcc": { "const": "No" },
+                    "reasonEcc": {
+                      "title": "Reason why this is not in place",
+                      "type": "string"
+                    }
+                  },
+                  "required": ["reasonEcc"]
+                }
+              ]
+            },
+            "briefingFcpc": {
+              "oneOf": [
+                {
+                  "properties": {
+                    "briefingFcpc": { "const": "Yes" }
+                  }
+                },
+                {
+                  "properties": {
+                    "briefingFcpc": { "const": "No" },
+                    "reasonFcpc": {
+                      "title": "Reason why this is not in place",
+                      "type": "string"
+                    }
+                  },
+                  "required": ["reasonFcpc"]
+                }
+              ]
+            },
+            "unsafeCordon": {
+              "oneOf": [
+                {
+                  "properties": {
+                    "unsafeCordon": { "const": "Yes" }
+                  }
+                },
+                {
+                  "properties": {
+                    "unsafeCordon": { "const": "No" },
+                    "reasonUnsafeCordon": {
+                      "title": "Reason why this is not in place",
+                      "type": "string"
+                    }
+                  },
+                  "required": ["reasonUnsafeCordon"]
+                }
+              ]
+            },
+            "otherControls": {
+              "oneOf": [
+                {
+                  "properties": {
+                    "otherControls": { "const": "No" }
+                  }
+                },
+                {
+                  "properties": {
+                    "otherControls": { "const": "Yes" },
+                    "reasonOtherControls": {
+                      "title": "Describe other controls in place",
+                      "type": "string"
+                    }
+                  },
+                  "required": ["reasonOtherControls"]
+                }
+              ]
+            }
+          }
+        }
+    },
+    {
+      "type": "haz_enclosedSpaces",
+      "dataSchema": {
+          "title": "Enclosed Spaces",
+          "type": "object",
+          "properties": {
+            "briefingEcc": {
+              "title": "Briefing from Emergency Control Centre",
+              "type": "string",
+              "enum": ["Yes", "No"]
+            },
+            "briefingFcpc": {
+              "title": "Briefing from Forward Control Point",
+              "type": "string",
+              "enum": ["Yes", "No"]
+            },
+            "unsafeCordon": {
+              "title": "Do not enter cordon/area(s) deemed unsafe by the Incident Commander",
+              "type": "string",
+              "enum": ["Yes", "No"]
+            },
+            "otherControls": {
+              "title": "Other controls in place",
+              "type": "string",
+              "enum": ["Yes", "No"]
+            },
+            "furtherAction": {
+              "title": "Any further action required or risks identified (optional)",
+              "type": "string"
+            }
+          },
+          "required": [
+            "briefingEcc",
+            "briefingFcpc",
+            "unsafeCordon",
+            "otherControls"
+          ],
+          "dependencies": {
+            "briefingEcc": {
+              "oneOf": [
+                {
+                  "properties": {
+                    "briefingEcc": { "const": "Yes" }
+                  }
+                },
+                {
+                  "properties": {
+                    "briefingEcc": { "const": "No" },
+                    "reasonEcc": {
+                      "title": "Reason why this is not in place",
+                      "type": "string"
+                    }
+                  },
+                  "required": ["reasonEcc"]
+                }
+              ]
+            },
+            "briefingFcpc": {
+              "oneOf": [
+                {
+                  "properties": {
+                    "briefingFcpc": { "const": "Yes" }
+                  }
+                },
+                {
+                  "properties": {
+                    "briefingFcpc": { "const": "No" },
+                    "reasonFcpc": {
+                      "title": "Reason why this is not in place",
+                      "type": "string"
+                    }
+                  },
+                  "required": ["reasonFcpc"]
+                }
+              ]
+            },
+            "unsafeCordon": {
+              "oneOf": [
+                {
+                  "properties": {
+                    "unsafeCordon": { "const": "Yes" }
+                  }
+                },
+                {
+                  "properties": {
+                    "unsafeCordon": { "const": "No" },
+                    "reasonUnsafeCordon": {
+                      "title": "Reason why this is not in place",
+                      "type": "string"
+                    }
+                  },
+                  "required": ["reasonUnsafeCordon"]
+                }
+              ]
+            },
+            "otherControls": {
+              "oneOf": [
+                {
+                  "properties": {
+                    "otherControls": { "const": "No" }
+                  }
+                },
+                {
+                  "properties": {
+                    "otherControls": { "const": "Yes" },
+                    "reasonOtherControls": {
+                      "title": "Describe other controls in place",
+                      "type": "string"
+                    }
+                  },
+                  "required": ["reasonOtherControls"]
+                }
+              ]
+            }
+          }
+        }
+    },
+    {
+      "type": "haz_newmothers",
+      "dataSchema": {
+          "title": "New and Expectant Mothers",
+          "type": "object",
+          "properties": {
+            "briefingEcc": {
+              "title": "Briefing from Emergency Control Centre",
+              "type": "string",
+              "enum": ["Yes", "No"]
+            },
+            "briefingFcpc": {
+              "title": "Briefing from Forward Control Point",
+              "type": "string",
+              "enum": ["Yes", "No"]
+            },
+            "unsafeAreas": {
+              "title": "Do not enter areas deemed unsafe",
+              "type": "string",
+              "enum": ["Yes", "No"]
+            },
+            "otherControls": {
+              "title": "Other controls in place",
+              "type": "string",
+              "enum": ["Yes", "No"]
+            },
+            "furtherAction": {
+              "title": "Any further action required or risks identified (optional)",
+              "type": "string"
+            }
+          },
+          "required": [
+            "briefingEcc",
+            "briefingFcpc",
+            "unsafeAreas",
+            "otherControls"
+          ],
+          "dependencies": {
+            "briefingEcc": {
+              "oneOf": [
+                {
+                  "properties": {
+                    "briefingEcc": { "const": "Yes" }
+                  }
+                },
+                {
+                  "properties": {
+                    "briefingEcc": { "const": "No" },
+                    "reasonEcc": {
+                      "title": "Reason why this is not in place",
+                      "type": "string"
+                    }
+                  },
+                  "required": ["reasonEcc"]
+                }
+              ]
+            },
+            "briefingFcpc": {
+              "oneOf": [
+                {
+                  "properties": {
+                    "briefingFcpc": { "const": "Yes" }
+                  }
+                },
+                {
+                  "properties": {
+                    "briefingFcpc": { "const": "No" },
+                    "reasonFcpc": {
+                      "title": "Reason why this is not in place",
+                      "type": "string"
+                    }
+                  },
+                  "required": ["reasonFcpc"]
+                }
+              ]
+            },
+            "unsafeAreas": {
+              "oneOf": [
+                {
+                  "properties": {
+                    "unsafeAreas": { "const": "Yes" }
+                  }
+                },
+                {
+                  "properties": {
+                    "unsafeAreas": { "const": "No" },
+                    "reasonUnsafeAreas": {
+                      "title": "Reason why this is not in place",
+                      "type": "string"
+                    }
+                  },
+                  "required": ["reasonUnsafeAreas"]
+                }
+              ]
+            },
+            "otherControls": {
+              "oneOf": [
+                {
+                  "properties": {
+                    "otherControls": { "const": "No" }
+                  }
+                },
+                {
+                  "properties": {
+                    "otherControls": { "const": "Yes" },
+                    "reasonOtherControls": {
+                      "title": "Describe other controls in place",
+                      "type": "string"
+                    }
+                  },
+                  "required": ["reasonOtherControls"]
+                }
+              ]
+            }
+          }
+        }
+    },
+    {
+      "type": "haz_lasupportstaff",
+      "dataSchema": {
+          "title": "Local Authority Support Staff",
+          "type": "object",
+          "properties": {
+            "briefingLiaison": {
+              "title": "Briefing from Liaison Officer",
+              "type": "string",
+              "enum": ["Yes", "No"]
+            },
+            "ppe": {
+              "title": "PPE - Hi Viz vest",
+              "type": "string",
+              "enum": ["Yes", "No"]
+            },
+            "staffregister": {
+              "title": "Register of staff on site",
+              "type": "string",
+              "enum": ["Yes", "No"]
+            },
+            "otherControls": {
+              "title": "Other controls in place",
+              "type": "string",
+              "enum": ["Yes", "No"]
+            },
+            "furtherAction": {
+              "title": "Any further action required or risks identified (optional)",
+              "type": "string"
+            }
+          },
+          "required": [
+            "briefingLiaison",
+            "ppe",
+            "staffregister",
+            "otherControls"
+          ],
+          "dependencies": {
+            "briefingLiaison": {
+              "oneOf": [
+                {
+                  "properties": {
+                    "briefingLiaison": { "const": "Yes" }
+                  }
+                },
+                {
+                  "properties": {
+                    "briefingLiaison": { "const": "No" },
+                    "reasonLiaison": {
+                      "title": "Reason why this is not in place",
+                      "type": "string"
+                    }
+                  },
+                  "required": ["reasonLiaison"]
+                }
+              ]
+            },
+            "ppe": {
+              "oneOf": [
+                {
+                  "properties": {
+                    "ppe": { "const": "Yes" }
+                  }
+                },
+                {
+                  "properties": {
+                    "ppe": { "const": "No" },
+                    "reasonPpe": {
+                      "title": "Reason why this is not in place",
+                      "type": "string"
+                    }
+                  },
+                  "required": ["reasonPpe"]
+                }
+              ]
+            },
+            "staffregister": {
+              "oneOf": [
+                {
+                  "properties": {
+                    "staffregister": { "const": "Yes" }
+                  }
+                },
+                {
+                  "properties": {
+                    "staffregister": { "const": "No" },
+                    "reasonStaffRegister": {
+                      "title": "Reason why this is not in place",
+                      "type": "string"
+                    }
+                  },
+                  "required": ["reasonStaffRegister"]
+                }
+              ]
+            },
+            "otherControls": {
+              "oneOf": [
+                {
+                  "properties": {
+                    "otherControls": { "const": "No" }
+                  }
+                },
+                {
+                  "properties": {
+                    "otherControls": { "const": "Yes" },
+                    "reasonOtherControls": {
+                      "title": "Describe other controls in place",
+                      "type": "string"
+                    }
+                  },
+                  "required": ["reasonOtherControls"]
+                }
+              ]
+            }
+          }
+        }
+    }
+]
+}
