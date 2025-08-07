@@ -4,8 +4,8 @@
       "type": "action",
       "uiSchema": {
         "ui:order": [
-          "communicatedBy",
-          "correspondentsName",
+          "communicationMethod",
+          "contactName",
           "fromEmailAddress",
           "toEmailAddress",
           "telephoneNumberOfCaller",
@@ -20,8 +20,8 @@
       "type": "communication",
       "uiSchema": {
         "ui:order": [
-          "communicatedBy",
-          "correspondentsName",
+          "communicationMethod",
+          "contactName",
           "fromEmailAddress",
           "toEmailAddress",
           "telephoneNumberOfCaller",
@@ -36,8 +36,8 @@
       "type": "decision",
       "uiSchema": {
         "ui:order": [
-          "communicatedBy",
-          "correspondentsName",
+          "communicationMethod",
+          "contactName",
           "fromEmailAddress",
           "toEmailAddress",
           "telephoneNumberOfCaller",

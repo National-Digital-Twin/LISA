@@ -6,7 +6,7 @@
 import { type Field } from '../Field';
 
 const ContactName: Field = {
-  id: 'ContactName',
+  id: 'contactName',
   // eslint-disable-next-line quotes
   label: `Correspondent's name`,
   type: 'Input'

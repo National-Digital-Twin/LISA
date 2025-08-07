@@ -6,7 +6,7 @@
         "title": "Action",
         "type": "object",
         "properties": {
-          "communicatedBy": {
+          "communicationMethod": {
             "title": "Communicated By",
             "type": "string",
             "enum": [
@@ -18,7 +18,7 @@
               "Provided by me in person"
             ]
           },
-          "correspondentsName": {
+          "contactName": {
             "title": "Correspondent's name",
             "type": "string"
           },
@@ -40,8 +40,8 @@
           }
         },
         "required": [
-          "communicatedBy",
-          "correspondentsName"
+          "communicationMethod",
+          "contactName"
         ]
       }
     },
@@ -51,7 +51,7 @@
         "title": "Communication",
         "type": "object",
         "properties": {
-          "communicatedBy": {
+          "communicationMethod": {
             "title": "Communicated By",
             "type": "string",
             "enum": [
@@ -63,7 +63,7 @@
               "Provided by me in person"
             ]
           },
-          "correspondentsName": {
+          "contactName": {
             "title": "Correspondent's name",
             "type": "string"
           },
@@ -85,8 +85,8 @@
           }
         },
         "required": [
-          "communicatedBy",
-          "correspondentsName"
+          "communicationMethod",
+          "contactName"
         ]
       }
     },
@@ -96,7 +96,7 @@
         "title": "Decision",
         "type": "object",
         "properties": {
-          "communicatedBy": {
+          "communicationMethod": {
             "title": "How was the decision communicated?",
             "type": "string",
             "enum": [
@@ -108,7 +108,7 @@
               "Provided by me in person"
             ]
           },
-          "correspondentsName": {
+          "contactName": {
             "title": "Correspondent's name",
             "type": "string"
           },
@@ -130,8 +130,8 @@
           }
         },
         "required": [
-          "communicatedBy",
-          "correspondentsName"
+          "communicationMethod",
+          "contactName"
         ]
       }
     }
