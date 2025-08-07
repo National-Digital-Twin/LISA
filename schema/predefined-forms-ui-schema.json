@@ -6,10 +6,7 @@
         "ui:order": [
           "communicationMethod",
           "contactName",
-          "fromEmailAddress",
-          "toEmailAddress",
-          "telephoneNumberOfCaller",
-          "telephoneNumberCalled"
+          "contactDetails"
         ],
         "ui:submitButtonOptions": {
           "norender": true
@@ -22,10 +19,7 @@
         "ui:order": [
           "communicationMethod",
           "contactName",
-          "fromEmailAddress",
-          "toEmailAddress",
-          "telephoneNumberOfCaller",
-          "telephoneNumberCalled"
+          "contactDetails"
         ],
         "ui:submitButtonOptions": {
           "norender": true
@@ -38,10 +32,7 @@
         "ui:order": [
           "communicationMethod",
           "contactName",
-          "fromEmailAddress",
-          "toEmailAddress",
-          "telephoneNumberOfCaller",
-          "telephoneNumberCalled"
+          "contactDetails"
         ],
         "ui:submitButtonOptions": {
           "norender": true

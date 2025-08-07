@@ -6,6 +6,7 @@ import validator from '@rjsf/validator-ajv8';
 import { RJSFSchema, RJSFValidationError } from '@rjsf/utils';
 import { Form } from '../CustomForms/FormTemplates/types';
 import { OnFieldChange } from '../../utils/handlers';
+import { FieldValueType } from '../../utils/types';
 
 type Props = {
   selectedForm: Form;
@@ -43,7 +44,7 @@ const EntryForm = ({ selectedForm, showValidationErrors, onFieldChange }: Props)
       const { formData } = data;
       const key = id.replace('root_', '');
       if (formData && formData[key]) {
-        onFieldChange(key, data.formData[key]);
+        onFieldChange(key, data.formData[key] as FieldValueType);
       }
     }
   };
