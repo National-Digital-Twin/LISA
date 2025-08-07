@@ -8,7 +8,7 @@ import { Box, Typography, Grid2 as Grid } from '@mui/material';
 import { type Field } from 'common/Field';
 import { type Incident } from 'common/Incident';
 import { type LogEntry } from 'common/LogEntry';
-// eslint-disable-next-line import/no-extraneous-dependencies
+ 
 import { LogEntryTypes } from 'common/LogEntryTypes';
 import { Form } from '../../utils';
 import { MODAL_KEY } from '../../utils/constants';

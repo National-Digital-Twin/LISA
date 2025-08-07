@@ -4,7 +4,7 @@
 
 // Local imports
 import { type LogEntry } from 'common/LogEntry';
-// eslint-disable-next-line import/no-extraneous-dependencies
+ 
 import { LogEntryTypes } from 'common/LogEntryTypes';
 import { type Mentionable } from 'common/Mentionable';
 import { date } from '../date';

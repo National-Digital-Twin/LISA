@@ -1,7 +1,7 @@
 import React from 'react';
 import { renderHook, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-// eslint-disable-next-line import/no-extraneous-dependencies
+ 
 import { LogEntry } from 'common/LogEntry';
 import { useLogEntries } from '../useLogEntries';
 import * as api from '../../api';

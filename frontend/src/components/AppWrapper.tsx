@@ -19,6 +19,7 @@ import Tasks from '../pages/Tasks';
 import Forms from '../pages/Forms/FormTemplates';
 import CreateForms from '../pages/Forms/CreateFormTemplates';
 import LogForms from '../pages/Forms/FormInstances';
+import Settings from '../pages/Settings';
 import Home from '../pages/Home';
 
 const AppWrapper = () => {
@@ -39,6 +40,7 @@ const AppWrapper = () => {
         { path: 'location/:incidentId', element: <Location /> },
         { path: 'files/:incidentId', element: <Files /> },
         { path: 'notifications', element: <Notifications /> },
+        { path: 'settings', element: <Settings /> },
         { path: '*', element: <Error404 /> }
       ]
     }

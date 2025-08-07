@@ -3,7 +3,7 @@
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
 import { type LogEntry } from 'common/LogEntry';
-// eslint-disable-next-line import/no-extraneous-dependencies
+ 
 import { TaskStatus } from 'common/Task';
 import { Link } from 'react-router-dom';
 import { Box, Typography } from '@mui/material';

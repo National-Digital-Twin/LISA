@@ -6,7 +6,7 @@ import { Box, Grid2 as Grid } from '@mui/material';
 import { type LogEntry } from 'common/LogEntry';
 import { useEffect, useState } from 'react';
 import { type User } from 'common/User';
-// eslint-disable-next-line import/no-extraneous-dependencies
+ 
 import { Task } from 'common/Task';
 import { FormField } from '../../Form';
 

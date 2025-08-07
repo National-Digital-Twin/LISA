@@ -19,7 +19,7 @@ describe('user', () => {
   });
 
   it('should return displayName when provided on the user object', () => {
-    const userObj = { username: 'jdoe', displayName: 'John Doe' };
+    const userObj = { username: 'jdoe', displayName: 'John Doe', email: 'test@test.com', groups: [] };
     expect(user(userObj)).toBe('John Doe');
   });
 
@@ -35,7 +35,7 @@ describe('userInitials', () => {
   });
 
   it('should return initials based on displayName when provided', () => {
-    const userObj = { username: 'jdoe', displayName: 'John Doe' };
+    const userObj = { username: 'jdoe', displayName: 'John Doe', email: 'test@test.com', groups: [] };
     // Using the mocked implementation which returns the initials by taking the first letters of each word.
     // "John Doe" should give "JD".
     expect(userInitials(userObj)).toBe('JD');

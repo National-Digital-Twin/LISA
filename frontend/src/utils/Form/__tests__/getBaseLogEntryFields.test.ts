@@ -1,4 +1,4 @@
-/* eslint-disable import/no-extraneous-dependencies */
+ 
 import { LogEntryTypes } from 'common/LogEntryTypes';
 import type { Incident } from 'common/Incident';
 import { LogEntry } from 'common/LogEntry';

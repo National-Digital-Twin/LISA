@@ -3,7 +3,7 @@
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
 // Global imports
-/* eslint-disable import/no-extraneous-dependencies */
+ 
 import { IncidentTypes } from 'common/IncidentTypes';
 import { Incident } from 'common/Incident';
 import { Link, useNavigate } from 'react-router-dom';

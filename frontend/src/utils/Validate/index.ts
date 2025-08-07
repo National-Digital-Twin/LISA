@@ -3,14 +3,14 @@
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
 // Local imports
-/* eslint-disable import/no-extraneous-dependencies */
+ 
 import { type Field } from 'common/Field';
 import { Incident, ReferralWithSupport, ReferralWithoutSupport } from 'common/Incident';
 import { Location } from 'common/Location';
 import { LogEntry } from 'common/LogEntry';
 import { LogEntryTypes } from 'common/LogEntryTypes';
 import { Task } from 'common/Task'
-/* eslint-enable import/no-extraneous-dependencies */
+ 
 import { type ValidationError } from '../types';
 import Format from '../Format';
 

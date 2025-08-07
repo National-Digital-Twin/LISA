@@ -7,7 +7,7 @@ import { type Field } from 'common/Field';
 import { type Incident } from 'common/Incident';
 import { type LogEntry } from 'common/LogEntry';
 import { type LogEntryType } from 'common/LogEntryType';
-// eslint-disable-next-line import/no-extraneous-dependencies
+ 
 import { LogEntryTypes } from 'common/LogEntryTypes';
 import { type OptionType } from '../types';
 

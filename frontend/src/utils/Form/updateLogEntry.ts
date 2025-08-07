@@ -5,7 +5,7 @@
 // Local imports
 import { type LogEntry } from 'common/LogEntry';
 import { type LogEntryType } from 'common/LogEntryType';
-// eslint-disable-next-line import/no-extraneous-dependencies
+ 
 import { LogEntryTypes } from 'common/LogEntryTypes';
 import { type FieldValueType } from '../types';
 

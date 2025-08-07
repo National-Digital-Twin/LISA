@@ -4,7 +4,7 @@
 
 import { type Field } from 'common/Field';
 import { type LogEntry } from 'common/LogEntry';
-// eslint-disable-next-line import/no-extraneous-dependencies
+ 
 import { LogEntryTypes } from 'common/LogEntryTypes';
 import { FieldItem } from '../../../utils/Format/entry/fields/FieldItem';
 import { bem } from '../../../utils';

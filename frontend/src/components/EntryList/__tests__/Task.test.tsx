@@ -11,10 +11,10 @@ describe('Task Component', () => {
       id: 'task-1',
       name: 'Investigate issue',
       description: 'Look into the failing pipeline',
-      assignee: { username: 'jdoe', displayName: 'John Doe' },
+      assignee: { username: 'jdoe', displayName: 'John Doe', email: 'jdoe@test.com', groups: [] },
       status: 'ToDo'
     },
-    author: { username: 'author', displayName: 'Author Name' },
+    author: { username: 'author', displayName: 'Author Name', email: 'author@test.com', groups: [] },
     dateTime: '2025-04-02T12:00:00Z',
     content: { text: '', json: '' },
     type: 'General'

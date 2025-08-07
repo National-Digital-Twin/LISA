@@ -4,7 +4,7 @@
 
 import { Box, Typography } from '@mui/material';
 import { PropsWithChildren } from 'react';
-// eslint-disable-next-line import/no-extraneous-dependencies
+ 
 import { Incident } from 'common/Incident';
 import Stage from './Stage';
 import { Format } from '../utils';
