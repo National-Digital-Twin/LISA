@@ -15,7 +15,6 @@ export const User = Record({
 export interface UserListItem {
   username: string;
   displayName?: string;
-  email: string;
 }
 
 export type UserList = UserListItem[];

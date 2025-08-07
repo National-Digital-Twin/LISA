@@ -21,7 +21,7 @@ async function fetchUserDetails(accessToken: string) {
 
 export async function getUserDetails(req: Request): Promise<User> {
   if (settings.NODE_ENV === 'development') {
-    return new User('local.user', 'local.user@example.com', 'Local User', ['lisa_user']);
+    return new User('local.user', 'local.user@example.com', 'Local User', ['lisa_user', 'lisa_admin']);
   } 
 
   const accessToken = req.header('X-Auth-Request-Access-Token');

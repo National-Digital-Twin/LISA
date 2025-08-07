@@ -32,7 +32,7 @@ import NotificationsNoneOutlinedIcon from '@mui/icons-material/NotificationsNone
 import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
 
 // Local imports
-// eslint-disable-next-line import/no-extraneous-dependencies
+ 
 import { User } from 'common/User';
 // eslint-disable-next-line import/no-webpack-loader-syntax
 import LisaLogo from '../assets/images/L!SA_logo.svg';

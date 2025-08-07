@@ -1,4 +1,4 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
+ 
 import { User } from 'common/User';
 import { WebSocketClient } from '../ws';
 

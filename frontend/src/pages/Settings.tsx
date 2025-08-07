@@ -13,30 +13,33 @@ import {
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
 import { PageTitle } from '../components'
 import PageWrapper from '../components/PageWrapper'
+import { isAdmin } from '../utils/userRoles'
 import { useAuth } from '../hooks'
 
 const Settings = () => {
-  const { user } = useAuth();
+  const { user } = useAuth()
+
   return (
     <PageWrapper>
       <PageTitle title="Settings" />
       <Box>
         <List disablePadding>
-          {user.current?.groups?.includes('lisa_admin') && (
+          {isAdmin(user.current) && (
             <>
-              <ListItemButton sx={{ pl: 0 }} component={Link} to="/manage-users">
+              <ListItemButton sx={{ pl: 0 }} component={Link} to="/">
                 <ListItemText primary="Manage users" />
                 <ChevronRightIcon />
               </ListItemButton>
               <Divider />
 
-              <ListItemButton sx={{ pl: 0 }} component={Link} to="/manage-incidents">
+              <ListItemButton sx={{ pl: 0 }} component={Link} to="/">
                 <ListItemText primary="Manage incidents" />
                 <ChevronRightIcon />
               </ListItemButton>
               <Divider />
             </>
           )}
+
           <ListItemButton sx={{ pl: 0 }} disabled>
             <ListItemText primary="Manage notifications (coming soon)" />
           </ListItemButton>

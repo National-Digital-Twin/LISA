@@ -5,7 +5,7 @@
 // Local imports
 import { type FieldOption } from 'common/Field';
 import { type IncidentType } from 'common/IncidentType';
-// eslint-disable-next-line import/no-extraneous-dependencies
+ 
 import { IncidentTypes as ITypes } from 'common/IncidentTypes';
 
 /**

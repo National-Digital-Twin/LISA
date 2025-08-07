@@ -3,7 +3,7 @@
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
 // Local imports
-// eslint-disable-next-line import/no-extraneous-dependencies
+ 
 import { Field } from "common/Field";
 
 export const INCLUDE_FIELD: Field = {

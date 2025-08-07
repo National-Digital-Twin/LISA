@@ -4,7 +4,7 @@
 
 // Local imports
 import { type Field } from 'common/Field';
-// eslint-disable-next-line import/no-extraneous-dependencies
+ 
 import { IncidentStages, type IncidentStage } from 'common/IncidentStage';
 import { Format } from '../../utils';
 

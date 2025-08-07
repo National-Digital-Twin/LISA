@@ -3,7 +3,7 @@
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
 // Local imports
-/* eslint-disable import/no-extraneous-dependencies */
+ 
 import { type LocationType, LocationTypes } from 'common/Location';
 
 type LocationDict = { value: LocationType, label: string };

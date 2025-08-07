@@ -1,8 +1,8 @@
 import React from 'react';
 import { fireEvent, screen } from '@testing-library/react';
-// eslint-disable-next-line import/no-extraneous-dependencies
+ 
 import { Incident } from 'common/Incident';
-// eslint-disable-next-line import/no-extraneous-dependencies
+ 
 import { IncidentStage } from 'common/IncidentStage';
 import ChangeStage from './index';
 import { providersRender } from '../../test-utils';

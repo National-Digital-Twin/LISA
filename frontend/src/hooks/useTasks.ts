@@ -4,7 +4,7 @@
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { type Task } from 'common/Task';
-// eslint-disable-next-line import/no-extraneous-dependencies
+ 
 import { LogEntry } from 'common/LogEntry';
 import { patch } from '../api';
 import { useCreateLogEntry } from './useLogEntries';
