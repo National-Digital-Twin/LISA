@@ -3,13 +3,13 @@
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
 // Global imports
-import { Record, Static, String, Array } from 'runtypes';
+import { Record, Static, String, Array, Optional } from 'runtypes';
 
 export const User = Record({
   username: String,
   displayName: String,
-  email: String,
-  groups: Array(String)
+  email: Optional(String),
+  groups: Optional(Array(String))
 });
 
 export interface UserListItem {

@@ -316,7 +316,7 @@ const Header = () => {
                     {Format.user(user.current as User)}
                   </Typography>
                   <Typography variant="body1" color="textDisabled">
-                    {user.current?.email.split('@')[1] || ''}
+                    {user.current?.email?.split('@')[1] || ''}
                   </Typography>
                 </Box>
                 <List disablePadding>

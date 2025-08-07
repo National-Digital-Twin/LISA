@@ -5,8 +5,8 @@
 import { User } from "common/User";
 
 export function isAdmin(userObj?: User): boolean {
-  if (userObj) {
-    return userObj.groups.includes('lisa_admin');
+  if (userObj?.groups) {
+    return userObj.groups?.includes('lisa_admin');
   }
   return false;
 }

@@ -137,7 +137,7 @@ const Tasks = () => {
         ...updateTask,
         assignee: {
           ...updateTask.assignee,
-          value: { username: findAssignee.value, displayName: findAssignee.label, email: '', groups: [] },
+          value: { username: findAssignee.value, displayName: findAssignee.label },
           error
         }
       });

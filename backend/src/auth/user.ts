@@ -7,30 +7,38 @@ export class User {
 
   private readonly displayNameInternal: string;
 
-  private readonly emailInternal: string;
+  private readonly emailInternal?: string;
 
-  private readonly groupsInternal: string[];  
+  private readonly groupsInternal?: string[];
 
-  constructor(username: string, email: string, displayName: string, groups: string[]) {
-    this.usernameInternal = username;
-    this.emailInternal = email;
+  constructor(
+    username: string,
+    displayName: string,
+    email?: string,
+    groups?: string[],
+  ) {
+    this.usernameInternal   = username;
     this.displayNameInternal = displayName;
-    this.groupsInternal = groups;
+    this.emailInternal      = email;
+    this.groupsInternal     = groups;
   }
 
   get username(): string {
     return this.usernameInternal;
   }
 
-  get email(): string {
-    return this.emailInternal;
-  }
-
   get displayName(): string {
     return this.displayNameInternal;
   }
 
-  get groups(): string[] {
+  // Now returns string | undefined
+  get email(): string | undefined {
+    return this.emailInternal;
+  }
+
+  // Now returns string[] | undefined
+  get groups(): string[] | undefined {
     return this.groupsInternal;
   }
 }
+
