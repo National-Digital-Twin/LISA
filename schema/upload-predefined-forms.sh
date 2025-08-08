@@ -49,21 +49,29 @@ for ENTITY_TYPE in $ENTITIES; do
     COMBINED_JSON=$(jq -n --argjson schema "$SCHEMA_DATA" --argjson uiSchema "$UI_SCHEMA_DATA" '{"schema": $schema, "uiSchema": $uiSchema}' | jq '@json')
 
     # Process TTL content for current entity
-    sed -i "s/lisa:"$ENTITY_TYPE"\ lisa:hasData\ \$FORM_DATA/lisa:"$ENTITY_TYPE"\ lisa:hasData\ '$COMBINED_JSON'/g" "temp.ttl"
+    sed -i "s|lisa:"$ENTITY_TYPE"\ lisa:hasData\ \$FORM_DATA|lisa:"$ENTITY_TYPE"\ lisa:hasData\ '$COMBINED_JSON'|g" "temp.ttl"
 done
 
 # escape all "
-sed -i 's/"/\\"/g' "temp.ttl"
+sed -i 's|"|\\"|g' "temp.ttl"
 # replace starting '\" with "
-sed -i 's/\x27\\"/"/g' "temp.ttl"
+sed -i 's|\x27\\"|"|g' "temp.ttl"
 # replace ending \"' with "
-sed -i 's/\\"\x27/"/g' "temp.ttl"
+sed -i 's|\\"\x27|"|g' "temp.ttl"
 # replace \" that starts with hasName \" with hasName "
-sed -i 's/hasName \\"/hasName "/g' "temp.ttl"
+sed -i 's|hasName \\"|hasName "|g' "temp.ttl"
 # replace \" that starts with createdAt \" with createdAt "
-sed -i 's/createdAt \\"/createdAt "/g' "temp.ttl"
+sed -i 's|createdAt \\"|createdAt "|g' "temp.ttl"
 # replace \" that is next to ^ with "^
-sed -i 's/\\"^/"^/g' "temp.ttl"
+sed -i 's|\\"^|"^|g' "temp.ttl"
+# replace #lbrack# with (
+sed -i 's|#lbrack#|(|g' "temp.ttl"
+# replace #rbrack# with )
+sed -i 's|#rbrack#|)|g' "temp.ttl"
+# replace #amp# with &
+sed -i 's|#amp#|\&|g' "temp.ttl"
+# replace #newline# with &
+sed -i 's|#newline#|\\\\n|g' "temp.ttl"
 
 # Send POST request with proper Turtle MIME type
 RESPONSE=$(curl -X POST \

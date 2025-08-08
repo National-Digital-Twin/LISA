@@ -25,4 +25,11 @@ lisa-sag-down:
 	docker compose -f ./deployment/sag/docker-compose.yaml down
 
 upload-predefined-forms:
-	./schema/upload-predefined-forms.sh ./schema/predefined-forms.ttl ./schema/predefined-forms-data-schema.json ./schema/predefined-forms-ui-schema.json
+	./schema/upload-predefined-forms.sh ./schema/PredefinedForms/predefined-forms.ttl ./schema/PredefinedForms/predefined-forms-data-schema.json ./schema/PredefinedForms/predefined-forms-ui-schema.json
+
+upload-hazards:
+	./schema/upload-predefined-forms.sh ./schema/Hazards/hazards.ttl ./schema/Hazards/hazards-data-schema.json ./schema/Hazards/hazards-ui-schema.json
+
+upload-predefined-forms-and-hazards:
+	./schema/upload-predefined-forms.sh ./schema/PredefinedForms/predefined-forms.ttl ./schema/PredefinedForms/predefined-forms-data-schema.json ./schema/PredefinedForms/predefined-forms-ui-schema.json
+	./schema/upload-predefined-forms.sh ./schema/Hazards/hazards.ttl ./schema/Hazards/hazards-data-schema.json ./schema/Hazards/hazards-ui-schema.json
