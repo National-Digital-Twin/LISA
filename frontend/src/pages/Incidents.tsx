@@ -3,11 +3,10 @@
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
 // Global imports
- 
-import { IncidentTypes } from 'common/IncidentTypes';
 import { Incident } from 'common/Incident';
-import { Link, useNavigate } from 'react-router-dom';
+import { IncidentTypes } from 'common/IncidentTypes';
 import { useMemo, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 
 // Local imports
 import {
@@ -24,16 +23,22 @@ import {
 } from '@mui/material';
 
 import AddCircleIcon from '@mui/icons-material/AddCircle';
-import { useIncidents } from '../hooks';
-import { Format } from '../utils';
 import { PageTitle } from '../components';
-import Stage from '../components/Stage';
 import PageWrapper from '../components/PageWrapper';
-import { useResponsive } from '../hooks/useResponsiveHook';
 import { QueryState } from '../components/SortFilter/filter-types';
+import {
+  applyImpliedSelections,
+  getFromAndToFromTimeSelection
+} from '../components/SortFilter/filter-utils';
+import {
+  buildIncidentFilters,
+  incidentSort
+} from '../components/SortFilter/schemas/incident-schema';
 import { SortAndFilter } from '../components/SortFilter/SortAndFilter';
-import { buildIncidentFilters, incidentSort } from '../components/SortFilter/schemas/incident-schema';
-import { applyImpliedSelections, getFromAndToFromTimeSelection } from '../components/SortFilter/filter-utils';
+import Stage from '../components/Stage';
+import { useIncidents } from '../hooks';
+import { useResponsive } from '../hooks/useResponsiveHook';
+import { Format } from '../utils';
 
 const Incidents = () => {
   const { isMobile } = useResponsive();
@@ -49,9 +54,9 @@ const Incidents = () => {
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [queryState, setQueryState] = useState<QueryState>({
     values: {
-      stage: ['active'],
+      stage: ['active']
     },
-    sort: { by: "date_desc", direction: 'desc' },
+    sort: { by: 'date_desc', direction: 'desc' }
   });
 
   const allAuthors = useMemo(() => {
@@ -60,7 +65,7 @@ const Incidents = () => {
       .map((e) => {
         const a = e.reportedBy;
         if (!a) return null;
-        const name = typeof a === 'string' ? a : a.displayName ?? '';
+        const name = typeof a === 'string' ? a : (a.displayName ?? '');
         return name.trim();
       })
       .filter((name): name is string => {
@@ -76,20 +81,25 @@ const Incidents = () => {
 
     const seen = new Set<string>();
 
-    return incidents.reduce<{ id: string; label: string }[]>((acc, incident) => {
-      const key = incident.type;
-      const typeDef = key && IncidentTypes[key as keyof typeof IncidentTypes];
+    return incidents
+      .reduce<{ id: string; label: string }[]>((acc, incident) => {
+        const key = incident.type;
+        const typeDef = key && IncidentTypes[key as keyof typeof IncidentTypes];
 
-      if (key && typeDef && !typeDef.legacy && !seen.has(key)) {
-        seen.add(key);
-        acc.push({ id: key, label: typeDef.label });
-      }
+        if (key && typeDef && !typeDef.legacy && !seen.has(key)) {
+          seen.add(key);
+          acc.push({ id: key, label: typeDef.label });
+        }
 
-      return acc;
-    }, []).sort((a, b) => a.label.localeCompare(b.label));
+        return acc;
+      }, [])
+      .sort((a, b) => a.label.localeCompare(b.label));
   }, [incidents]);
 
-  const incidentFilters = useMemo(() => buildIncidentFilters(allTypes, allAuthors), [allTypes, allAuthors]);
+  const incidentFilters = useMemo(
+    () => buildIncidentFilters(allTypes, allAuthors),
+    [allTypes, allAuthors]
+  );
 
   const handleOpenFilters = () => setFiltersOpen(true);
 
@@ -114,16 +124,20 @@ const Incidents = () => {
     const customTimeRange = v.timeRange as { from?: string; to?: string } | undefined;
     const preset = v.time as string | undefined;
 
-    const {from, to} = getFromAndToFromTimeSelection(preset, customTimeRange);
+    const { from, to } = getFromAndToFromTimeSelection(preset, customTimeRange);
 
     const filtered = incidents.filter((incident) => {
       const authorKey = (incident.reportedBy?.displayName ?? '').toLowerCase().replace(/\s+/g, '-');
       if (selectedAuthors.size > 0 && !selectedAuthors.has(authorKey)) return false;
 
-      const { selected: impliedStages } =
-      applyImpliedSelections(selectedStages, 'stage', incidentFilters);
+      const { selected: impliedStages } = applyImpliedSelections(
+        selectedStages,
+        'stage',
+        incidentFilters
+      );
 
-      if (impliedStages.size > 0 && !impliedStages.has(incident.stage.toLocaleLowerCase())) return false;
+      if (impliedStages.size > 0 && !impliedStages.has(incident.stage.toLocaleLowerCase()))
+        return false;
 
       if (selectedTypes.size > 0 && !selectedTypes.has(incident.type)) return false;
 
@@ -154,18 +168,14 @@ const Incidents = () => {
           return new Date(b.startedAt).getTime() - new Date(a.startedAt).getTime();
       }
     });
-  
+
     return sorted;
   }, [incidentFilters, incidents, queryState.sort?.by, queryState.values]);
 
   return (
     <PageWrapper>
       <PageTitle title="Incidents">
-        <Box
-          display="flex"
-          width="100%"
-          gap={1}
-        >
+        <Box display="flex" width="100%" gap={1}>
           <Button
             variant="contained"
             startIcon={<AddCircleIcon />}
@@ -173,19 +183,13 @@ const Incidents = () => {
             color="primary"
             sx={{ flex: 1 }}
           >
-    Add New Incident
+            Add New Incident
           </Button>
 
-          <Button
-            variant="contained"
-            onClick={handleOpenFilters}
-            color="primary"
-            sx={{ flex: 1 }}
-          >
-    Sort & Filter
+          <Button variant="contained" onClick={handleOpenFilters} color="primary" sx={{ flex: 1 }}>
+            Sort & Filter
           </Button>
         </Box>
-
       </PageTitle>
 
       <TableContainer sx={{ boxShadow: 0 }} component={Paper}>
@@ -268,7 +272,10 @@ const Incidents = () => {
           setFiltersOpen(false);
         }}
         onClear={() => {
-          setQueryState({ values: { stage: ['active']}, sort: { by: 'date_desc', direction: 'desc' } });
+          setQueryState({
+            values: { stage: ['active'] },
+            sort: { by: 'date_desc', direction: 'desc' }
+          });
         }}
       />
     </PageWrapper>

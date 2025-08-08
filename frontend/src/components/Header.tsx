@@ -2,470 +2,239 @@
 // © Crown Copyright 2025. This work has been developed by the National Digital Twin Programme
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
-// Global imports
-import React, { useEffect, useRef, useState } from 'react';
-import { Link, useLocation, useParams } from 'react-router-dom';
-import {
-  Box,
-  AppBar,
-  Toolbar,
-  IconButton,
-  Popover,
-  Typography,
-  Button,
-  Divider,
-  List,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
-  Tabs,
-  Tab,
-  Modal,
-  Badge,
-} from '@mui/material';
-import MenuIcon from '@mui/icons-material/Menu';
+import AccountBoxOutlinedIcon from '@mui/icons-material/AccountBoxOutlined';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
-import AccountBoxOutlinedIcon from '@mui/icons-material/AccountBoxOutlined';
 import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
+import MenuIcon from '@mui/icons-material/Menu';
 import NotificationsNoneOutlinedIcon from '@mui/icons-material/NotificationsNoneOutlined';
 import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
+import {
+  AppBar,
+  Badge,
+  Box,
+  Button,
+  Divider,
+  IconButton,
+  Menu,
+  MenuItem,
+  Modal,
+  Toolbar,
+  Typography,
+  useMediaQuery,
+  useTheme
+} from '@mui/material';
+import React, { MouseEvent, useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 
 // Local imports
- 
 import { User } from 'common/User';
-// eslint-disable-next-line import/no-webpack-loader-syntax
-import LisaLogo from '../assets/images/L!SA_logo.svg';
-import { useAuth, useIncidents, useNotifications } from '../hooks';
-import { useResponsive } from '../hooks/useResponsiveHook';
+import LisaLogo from '../assets/images/lisa_logo.svg';
+import LisaLogoMobile from '../assets/images/lisa_logo_mobile.svg';
+import { useAuth, useNotifications } from '../hooks';
+import { useNavigation } from '../hooks/useNavigation';
 import { Format } from '../utils';
 
-const HEADER_ITEMS = [
-  {
-    to: 'incidents',
-    label: 'INCIDENTS',
-    subItems: [
-      { to: 'logbook', label: 'LOG' },
-      { to: 'incident', label: 'OVERVIEW' },
-      { to: 'files', label: 'FILES' },
-      { to: 'location', label: 'LOCATION' },
-      { to: 'tasks', label: 'TASKS' },
-      { to: 'forms', label: 'FORMS' }
-    ]
-  },
-  {
-    to: '/forms',
-    label: 'FORM TEMPLATES',
-    subItems: []
-  }
-];
+interface HeaderProps {
+  onMenuClick: () => void;
+}
 
-type NavigationItemsProps = {
-  isBelowMd?: boolean;
-  pathname: string;
-  handleLink: () => void;
-};
-
-const NavigationItems = ({ isBelowMd = false, pathname, handleLink }: NavigationItemsProps) => {
-  const flexDirection = isBelowMd ? 'column' : 'row';
-  const alignItems = isBelowMd ? 'flex-start' : 'center';
-  const gap = isBelowMd ? 3 : 4;
-  return (
-    <Box
-      display="flex"
-      flexDirection={flexDirection}
-      alignItems={alignItems}
-      justifyContent="space-between"
-      flexGrow={1}
-      gap={gap}
-    >
-      <Box
-        component="ul"
-        display="flex"
-        flexDirection={flexDirection}
-        alignItems={alignItems}
-        gap={gap}
-      >
-        <IconButton sx={{ paddingX: 0 }} component={Link} onClick={handleLink} to="/">
-          <Box
-            component="img"
-            width={100}
-            src={LisaLogo}
-            alt="Local Incident Services Application"
-          />
-        </IconButton>
-        {HEADER_ITEMS.map(({ to, label }) => {
-          const selected = pathname === to;
-          return (
-            <Box component="li" key={to} className={`${selected ? 'selected' : ''}`}>
-              <Typography
-                variant="body1"
-                sx={{
-                  color: selected ? 'accent.main' : 'white',
-                  textDecorationLine: selected ? 'underline !important' : '',
-                  textDecorationThickness: selected ? '2px' : 0,
-                  textUnderlineOffset: '0.5rem',
-                  transition: 'color 0.3s',
-                  '&:hover': { color: 'accent.main' },
-                  lineHeight: 0
-                }}
-                component={Link}
-                onClick={handleLink}
-                to={to}
-              >
-                {label}
-              </Typography>
-            </Box>
-          );
-        })}
-      </Box>
-    </Box>
-  );
-};
-
-const Header = () => {
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [accountAnchorEl, setAccountAnchorEl] = useState<null | HTMLElement>(null);
-  const headerRef = useRef<HTMLDivElement>(null);
-  const { isBelowMd } = useResponsive();
+const Header = ({ onMenuClick }: HeaderProps) => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const { user } = useAuth();
   const { notifications } = useNotifications();
   const { pathname } = useLocation();
-  const { incidentId } = useParams();
-
-  const unreadCount = notifications?.filter(n => !n.read).length ?? 0;
-
-  const getInitialActive = () => {
-    const matched = HEADER_ITEMS.flatMap(item =>
-      item.subItems?.map(sub => `${sub.to}/${incidentId}`) || []
-    ).find(route => pathname.includes(route));
-
-    return matched ?? '';
-  };
-
-  const [active, setActive] = useState(getInitialActive);
+  const { navigationItems, isActive, handleLink: sharedHandleLink } = useNavigation();
+  const [accountAnchorEl, setAccountAnchorEl] = useState<null | HTMLElement>(null);
   const [openGuide, setOpenGuide] = useState(false);
-  const openNav = Boolean(anchorEl);
+
+  const unreadCount = notifications?.filter((n) => !n.read).length ?? 0;
   const openAccount = Boolean(accountAnchorEl);
 
-  const incident = useIncidents().data?.find((inc) => inc.id === incidentId);
-
-  const cPage = HEADER_ITEMS.find(({ to }) => pathname.includes(to));
-  const hasSubItems = Array.isArray(cPage?.subItems) && cPage.subItems.length > 0 && incident;
-
-  useEffect(() => {
-    if (hasSubItems) {
-      const selected = cPage.subItems.find(({ to }) => pathname.includes(to));
-      if (selected) setActive(`${selected.to}/${incident.id}`);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [hasSubItems, cPage, pathname]);
-
-  const handleChange = (_: React.SyntheticEvent, newValue: string) => {
-    setActive(newValue);
+  const handleAccountClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAccountAnchorEl(event.currentTarget);
   };
 
-  const handleNavbutt = () => {
-    setAnchorEl(headerRef.current);
-  };
-
-  const handleLink = () => {
-    setAnchorEl(null);
-    document.documentElement.scrollTo(0, 0);
-  };
-
-  const signOut = (event: React.MouseEvent<HTMLElement>) => {
+  const signOut = (event: MouseEvent<HTMLElement>) => {
     event.preventDefault();
     user.logout();
   };
 
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const [showScrollHint, setShowScrollHint] = useState(isBelowMd);
-
-  const handleScroll = () => {
-    const el = scrollRef.current;
-    if (!el) return;
-
-    const isScrollable = el.scrollWidth > el.clientWidth;
-    const isScrolledToEnd = el.scrollLeft + el.clientWidth >= el.scrollWidth - 1;
-    setShowScrollHint(isScrollable && !isScrolledToEnd);
+  const handleLink = () => {
+    setAccountAnchorEl(null);
+    document.documentElement.scrollTo(0, 0);
   };
 
-  useEffect(() => {
-    const el = scrollRef.current;
-
-    if (el && isBelowMd) {
-      el.addEventListener('scroll', handleScroll);
-      window.addEventListener('resize', handleScroll);
-    }
-
-    return () => {
-      if (el && isBelowMd) {
-        el.removeEventListener('scroll', handleScroll);
-        window.removeEventListener('resize', handleScroll);
-      }
-    };
-  }, [isBelowMd]);
-
-
-
+  const handleUserGuideClick = () => {
+    setOpenGuide(true);
+    setAccountAnchorEl(null);
+  };
 
   return (
-    <Box>
-      <AppBar
-        ref={headerRef}
-        position="static"
+    <AppBar
+      position="static"
+      sx={{
+        height: 60,
+        backgroundColor: 'secondary.main',
+        borderColor: 'primary.main'
+      }}
+    >
+      <Toolbar
+        variant="dense"
         sx={{
-          height: 60,
-          backgroundColor: 'secondary.main',
-          borderColor: 'primary.main'
+          height: '100%',
+          display: 'flex',
+          paddingX: '1rem',
+          flexDirection: 'row',
+          justifyContent: 'space-between'
         }}
+        disableGutters
       >
-        <Toolbar
-          variant="dense"
-          sx={{ height: '100%', display: 'flex', paddingX: '1rem', flexDirection: 'row' }}
-          disableGutters
-        >
-          {isBelowMd && (
-            <IconButton
-              sx={{ padding: 0, display: { xs: 'inherit', md: 'none' } }}
-              onMouseDown={handleNavbutt}
-            >
-              <MenuIcon sx={{ color: 'accent.main' }} />
-            </IconButton>
-          )}
-          <Box
-            component="nav"
-            display="flex"
-            flexDirection="row"
-            justifyContent="space-between"
-            flexGrow={1}
-            gap="10px"
-            minHeight="55px"
-          >
-            {isBelowMd ? (
-              <Popover
-                open={openNav}
-                anchorEl={anchorEl}
-                onClose={() => setAnchorEl(null)}
-                anchorOrigin={{
-                  vertical: 'bottom',
-                  horizontal: 'left'
-                }}
-                transformOrigin={{
-                  vertical: 0,
-                  horizontal: 'left'
-                }}
-                marginThreshold={0}
-                slotProps={{
-                  paper: {
-                    elevation: 0,
-                    sx: {
-                      width: '100%',
-                      backgroundColor: 'secondary.main',
-                      border: 0,
-                      borderRadius: 0,
-                      paddingY: '2rem',
-                      paddingX: '1rem',
-                      maxWidth: 'none'
-                    }
-                  }
-                }}
-              >
-                <Box bgcolor="" width="100%">
-                  <NavigationItems isBelowMd pathname={pathname} handleLink={handleLink} />
-                </Box>
-              </Popover>
-            ) : (
-              <NavigationItems pathname={pathname} handleLink={handleLink} />
-            )}
-          </Box>
-          <Box display="flex" gap={1}>
-            <IconButton component={Link} to="/notifications">
-              <Badge badgeContent={pathname === '/notifications' ? 0 : unreadCount} color="error">
-                <NotificationsNoneOutlinedIcon
-                  sx={{
-                    color: pathname === '/notifications' ? 'accent.main' : 'white'
-                  }}
-                />
-              </Badge>
-            </IconButton>
-            <IconButton onClick={(event) => setAccountAnchorEl(event.currentTarget)}>
-              {accountAnchorEl ? (
-                <AccountCircleIcon sx={{ color: 'accent.main' }} />
-              ) : (
-                <AccountCircleOutlinedIcon sx={{ color: 'white' }} />
-              )}
-            </IconButton>
-            <Popover
-              open={openAccount}
-              anchorEl={accountAnchorEl}
-              onClose={() => setAccountAnchorEl(null)}
-              anchorOrigin={{
-                vertical: 'bottom',
-                horizontal: 'left'
-              }}
-              transformOrigin={{
-                vertical: -1,
-                horizontal: 'left'
-              }}
-            >
-              <Box display="flex" flexDirection="column" minWidth={200}>
-                <Box padding={2} borderBottom={1} borderColor="divider">
-                  <Typography variant="body1" fontWeight="bold">
-                    {Format.user(user.current as User)}
-                  </Typography>
-                  <Typography variant="body1" color="textDisabled">
-                    {user.current?.email?.split('@')[1] || ''}
-                  </Typography>
-                </Box>
-                <List disablePadding>
-                  <ListItemButton
-                    onClick={() => {
-                      setOpenGuide(true)
-                      setAccountAnchorEl(null)
-                    }
-                    }
-                  >
-                    <ListItemIcon sx={{ minWidth: 32 }}>
-                      <AccountBoxOutlinedIcon />
-                    </ListItemIcon>
-                    <ListItemText primary="User guide" />
-                  </ListItemButton>
-                  <ListItemButton
-                    component={Link}
-                    to="/settings"
-                    onClick={() => setAccountAnchorEl(null)}
-                  >
-                    <ListItemIcon sx={{ minWidth: 32 }}>
-                      <SettingsOutlinedIcon />
-                    </ListItemIcon>
-                    <ListItemText primary="Settings" />
-                  </ListItemButton>
-                  <Divider component="li" />
-                  <ListItemButton onClick={signOut}>
-                    <ListItemIcon sx={{ minWidth: 32 }}>
-                      <LogoutOutlinedIcon />
-                    </ListItemIcon>
-                    <ListItemText primary="Sign out" />
-                  </ListItemButton>
-                </List>
-              </Box>
-            </Popover>
-          </Box>
-        </Toolbar>
-      </AppBar>
-      {hasSubItems && (
-        <Box
-          bgcolor="background.default"
-          borderTop="3px solid"
-          borderColor="primary.main"
-          paddingLeft={isBelowMd ? 2 : '140px'}
-          paddingRight={2}
-        >
-          <Box sx={{ position: 'relative' }}>
-            <Box
-              ref={scrollRef}
-              sx={{
-                overflowX: 'auto',
-                whiteSpace: 'nowrap',
-                WebkitOverflowScrolling: 'touch',
-                scrollbarWidth: 'none',
-                '&::-webkit-scrollbar': {
-                  display: 'none'
-                }
-              }}
-              onScroll={handleScroll}
-            >
-              <Tabs
-                value={active}
-                onChange={handleChange}
-                variant="scrollable"
-                TabIndicatorProps={{ style: { display: 'none' } }}
-                color="text.primary"
-                sx={{ scrollBehavior: 'smooth', minWidth: 'max-content' }}
-              >
-                {cPage.subItems.map(({ to, label }, index) => {
-                  const isLastItem = index === cPage.subItems.length - 1;
-                  const value = `${to}/${incident.id}`;
-                  const selected = value === active;
-
-                  return (
-                    <Tab
-                      key={value}
-                      aria-controls={`log-tab-${label}`}
-                      label={
-                        <Box display="flex" gap={2}>
-                          <Typography
-                            variant="body1"
-                            fontWeight="bold"
-                            sx={{
-                              color: selected ? 'primary.main' : 'text.primary',
-                              textDecorationLine: selected ? 'underline !important' : '',
-                              textDecorationThickness: selected ? '2px !important' : 0,
-                              textUnderlineOffset: '0.5rem',
-                              transition: 'color 0.3s',
-                              '&:hover': { color: 'primary.main' }
-                            }}
-                            component={Link}
-                            onClick={handleLink}
-                            to={`${to}/${incident.id}`}
-                          >
-                            {label}
-                          </Typography>
-                          {!isLastItem && (
-                            <Divider
-                              orientation="vertical"
-                              flexItem
-                              sx={{ borderColor: 'text.primary' }}
-                            />
-                          )}
-                        </Box>
-                      }
-                      component={Link}
-                      to={value}
-                      value={value}
-                      sx={{ minWidth: 0, padding: 1 }}
-                      color="text.primary"
-                    />
-                  );
-                })}
-              </Tabs>
-            </Box>
-
-            {isBelowMd && showScrollHint && (
-              <Box
+        <Box display="flex" alignItems="center" gap={3}>
+          <Box display="flex" alignItems="center" gap={1}>
+            {isMobile && (
+              <IconButton
+                onClick={onMenuClick}
                 sx={{
-                  position: 'absolute',
-                  top: 0,
-                  right: 0,
-                  width: 30,
-                  height: '100%',
-                  pointerEvents: 'none',
-                  background: (theme) =>
-                    `linear-gradient(to left, ${theme.palette.background.default}, transparent)`
+                  padding: 0,
+                  display: { xs: 'inherit', md: 'none' },
+                  color: 'accent.main'
+                }}
+              >
+                <MenuIcon />
+              </IconButton>
+            )}
+
+            <IconButton component={Link} to="/" onClick={handleLink}>
+              <Box
+                component="img"
+                height={24}
+                width={100}
+                src={isMobile ? LisaLogoMobile : LisaLogo}
+                alt="Local Incident Services Application"
+              />
+            </IconButton>
+          </Box>
+
+          {!isMobile && (
+            <Box display="flex" gap={3}>
+              {navigationItems.map(({ to, label }) => {
+                const selected = isActive(to);
+                return (
+                  <Box
+                    key={to}
+                    component={Link}
+                    to={to}
+                    onClick={sharedHandleLink}
+                    className={selected ? 'selected' : ''}
+                    sx={{
+                      color: 'white',
+                      textDecoration: 'none',
+                      textTransform: 'uppercase',
+                      fontWeight: 'normal',
+                      '&:hover': {
+                        color: 'accent.main'
+                      },
+                      '&.selected': {
+                        color: 'accent.main',
+                        textDecoration: 'underline',
+                        textUnderlineOffset: '0.5rem',
+                        textDecorationThickness: '2px'
+                      }
+                    }}
+                  >
+                    {label}
+                  </Box>
+                );
+              })}
+            </Box>
+          )}
+        </Box>
+
+        <Box display="flex" gap={1} alignItems="center">
+          <IconButton component={Link} to="/notifications" onClick={handleLink}>
+            <Badge badgeContent={pathname === '/notifications' ? 0 : unreadCount} color="error">
+              <NotificationsNoneOutlinedIcon
+                sx={{
+                  color: pathname === '/notifications' ? 'accent.main' : 'white'
                 }}
               />
-            )}
-          </Box>
-        </Box>
-      )}
+            </Badge>
+          </IconButton>
 
-      <Modal open={openGuide} onClose={() => setOpenGuide(!openGuide)}>
+          <IconButton onClick={handleAccountClick}>
+            {accountAnchorEl ? (
+              <AccountCircleIcon sx={{ color: 'accent.main' }} />
+            ) : (
+              <AccountCircleOutlinedIcon sx={{ color: 'white' }} />
+            )}
+          </IconButton>
+
+          <Menu
+            open={openAccount}
+            anchorEl={accountAnchorEl}
+            onClose={() => setAccountAnchorEl(null)}
+            anchorOrigin={{
+              vertical: 'bottom',
+              horizontal: 'left'
+            }}
+            transformOrigin={{
+              vertical: -1,
+              horizontal: 'left'
+            }}
+            slotProps={{
+              paper: { sx: { minWidth: 200, padding: '4px' } }
+            }}
+          >
+            <MenuItem disabled sx={{ padding: '8px 12px', '&.Mui-disabled': { opacity: 1 } }}>
+              <Typography variant="body1" color="textDisabled">
+                {Format.user(user.current as User)}
+              </Typography>
+            </MenuItem>
+            <Divider />
+            <MenuItem onClick={handleUserGuideClick} sx={{ padding: '8px 12px' }}>
+              <AccountBoxOutlinedIcon sx={{ mr: 1, fontSize: '1.25rem' }} />
+              <Typography variant="body2" color="secondary">
+                User guide
+              </Typography>
+            </MenuItem>
+            <MenuItem
+              component={Link}
+              to="/settings"
+              onClick={handleLink}
+              sx={{ padding: '8px 12px' }}
+            >
+              <SettingsOutlinedIcon sx={{ mr: 1, fontSize: '1.25rem' }} />
+              <Typography variant="body2" color="secondary">
+                Settings
+              </Typography>
+            </MenuItem>
+            <MenuItem onClick={signOut} sx={{ padding: '8px 12px' }}>
+              <LogoutOutlinedIcon sx={{ mr: 1, fontSize: '1.25rem' }} />
+              <Typography variant="body2" color="secondary">
+                Sign out
+              </Typography>
+            </MenuItem>
+          </Menu>
+        </Box>
+      </Toolbar>
+
+      <Modal open={openGuide} onClose={() => setOpenGuide(false)}>
         <Box
           display="flex"
           flexDirection="column"
           gap={2}
           position="absolute"
-          top={isBelowMd ? 0 : '50%'}
-          left={isBelowMd ? 0 : '50%'}
+          top={isMobile ? 0 : '50%'}
+          left={isMobile ? 0 : '50%'}
           bgcolor="background.paper"
           sx={{
-            transform: isBelowMd ? 'translate(0, 0)' : 'translate(-50%, -50%)',
+            transform: isMobile ? 'translate(0, 0)' : 'translate(-50%, -50%)',
             borderRadius: 1
           }}
-          height={isBelowMd ? '100%' : 'auto'}
-          justifyContent={isBelowMd ? 'center' : 'none'}
+          height={isMobile ? '100%' : 'auto'}
+          justifyContent={isMobile ? 'center' : 'none'}
           maxWidth={600}
           padding={4}
           border={0}
@@ -486,7 +255,7 @@ const Header = () => {
             gap={1}
             mt={2}
           >
-            <Button variant="text" onClick={() => setOpenGuide(!openGuide)}>
+            <Button variant="text" onClick={() => setOpenGuide(false)}>
               Cancel
             </Button>
             <Button
@@ -495,14 +264,14 @@ const Header = () => {
               href="/documents/NDTP_L!SA User Guide.pdf"
               download="/documents/NDTP_L!SA User Guide.pdf"
               target="_blank"
-              rel="noopender noreferrer"
+              rel="noopener noreferrer"
             >
               Download user guide
             </Button>
           </Box>
         </Box>
       </Modal>
-    </Box>
+    </AppBar>
   );
 };
 
