@@ -187,9 +187,14 @@ const Header = ({ onMenuClick }: HeaderProps) => {
               paper: { sx: { minWidth: 200, padding: '4px' } }
             }}
           >
-            <MenuItem disabled sx={{ padding: '8px 12px', '&.Mui-disabled': { opacity: 1 } }}>
-              <Typography variant="body1" color="textDisabled">
+            <MenuItem disabled sx={{ paddingBottom: '2px','&.Mui-disabled': { opacity: 1 } }}>
+              <Typography variant="body2" fontWeight="bold">
                 {Format.user(user.current as User)}
+              </Typography>
+            </MenuItem>
+            <MenuItem disabled>
+              <Typography variant="body2" color="secondary">
+                {user.current?.email?.split('@')[1] || ''}
               </Typography>
             </MenuItem>
             <Divider />
@@ -210,6 +215,7 @@ const Header = ({ onMenuClick }: HeaderProps) => {
                 Settings
               </Typography>
             </MenuItem>
+            <Divider />
             <MenuItem onClick={signOut} sx={{ padding: '8px 12px' }}>
               <LogoutOutlinedIcon sx={{ mr: 1, fontSize: '1.25rem' }} />
               <Typography variant="body2" color="secondary">
