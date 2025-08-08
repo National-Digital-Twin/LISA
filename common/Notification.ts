@@ -24,9 +24,7 @@ export const UserMentionNotification = BaseNotification.extend({
 });
 
 export const TaskAssignedNotification = BaseNotification.extend({
-  entry: LogEntry.pick('id', 'incidentId', 'author').extend({
-    task: Task.pick('id', 'name')
-  })
+  task: Task.pick('id', 'name', 'author', 'incidentId')
 });
 
 export const Notification = Union(UserMentionNotification, TaskAssignedNotification);

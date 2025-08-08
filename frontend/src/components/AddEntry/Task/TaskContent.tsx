@@ -2,19 +2,9 @@
 // © Crown Copyright 2025. This work has been developed by the National Digital Twin Programme
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
-import { Box, Grid2 as Grid } from '@mui/material';
-import { type LogEntry } from 'common/LogEntry';
-import { useEffect, useState } from 'react';
-import { type User } from 'common/User';
- 
-import { Task } from 'common/Task';
-import { FormField } from '../../Form';
+import { Box } from '@mui/material';
 
-import { OnFieldChange } from '../../../utils/handlers';
-import { FieldValueType, ValidationError } from '../../../utils/types';
-import { Form, Format } from '../../../utils';
-import { ASSIGNEE_FIELD, DESC_FIELD, INCLUDE_FIELD, NAME_FIELD } from './constants';
-
+/*
 type TaskContentProps = {
   task: Partial<Task> | undefined;
   entries: Array<Partial<LogEntry>> | undefined;
@@ -23,15 +13,15 @@ type TaskContentProps = {
   validationErrors: Array<ValidationError>;
   showValidationErrors: boolean;
 };
+*/
 
-const TaskContent = ({
-  task,
-  entries,
-  onFieldChange,
-  users,
-  validationErrors,
-  showValidationErrors
-}: TaskContentProps) => {
+const TaskContent = () => (
+  <Box display="flex" flexDirection="column" gap={4}>
+    <p>This is moving to a dedicated tasks page and will be removed shortly...</p>
+  </Box>
+);
+
+/*
   const [includeTask, setIncludeTask] = useState<boolean>(false);
 
   const assignees = users?.map(Format.mentionable.user).map(({ id, label }) => ({
@@ -126,6 +116,6 @@ const TaskContent = ({
       </Grid>
     </Box>
   );
-};
+*/
 
 export default TaskContent;

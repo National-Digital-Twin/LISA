@@ -14,9 +14,9 @@ import PubSubManager from '../../pubSub/manager';
 import * as ia from '../../ia';
 import { literalDate, literalDecimal, literalString, ns } from '../../rdfutil';
 import { create as createNotification } from '../notifications';
-import { attachments, details, fields, mentions, tasks } from './utils';
+import { attachments, details, fields, mentions } from './utils';
 
-function addLocationTriples(entry : LogEntry, entryIdNode : string): unknown[] {
+function addLocationTriples(entry: LogEntry, entryIdNode: string): unknown[] {
   let coordinates: Coordinates[];
   let description: string;
   let locationIdNode: string | undefined;
@@ -33,11 +33,7 @@ function addLocationTriples(entry : LogEntry, entryIdNode : string): unknown[] {
     coordinates.forEach((coordinate, index) => {
       locationIdNode = `${randomUUID()}-${index}`;
       triples.push([ns.data(locationIdNode), ns.rdf.type, ns.ies.Location]);
-      triples.push([
-        ns.data(locationIdNode),
-        ns.ies.Latitude,
-        literalDecimal(coordinate.latitude)
-      ]);
+      triples.push([ns.data(locationIdNode), ns.ies.Latitude, literalDecimal(coordinate.latitude)]);
       triples.push([
         ns.data(locationIdNode),
         ns.ies.Longitude,
@@ -78,8 +74,6 @@ export async function create(req: Request, res: Response) {
   const entryIdNode = ns.data(entryId);
   const incidentIdNode = ns.data(incidentId);
   const authorNode = ns.data(res.locals.user.username);
-  const taskId = `${entryId}-Task`;
-  const taskNode = ns.data(taskId);
 
   const { triples: attachmentTriples, names: fileNameMappings } = await attachments.extract(
     req,
@@ -111,7 +105,7 @@ export async function create(req: Request, res: Response) {
       ...mentions.extractLogContent.logEntry(entry, entryIdNode),
       ...userLogMentions.map((mention) => mention.triple),
       ...attachmentTriples,
-      ...tasks.extract(entry, entryIdNode, taskNode),
+
       ...details.extract(entry, entryIdNode)
     ];
   } catch (err) {
@@ -132,16 +126,6 @@ export async function create(req: Request, res: Response) {
       incidentId: entry.incidentId
     });
   });
-
-  if (entry.task?.assignee) {
-    createNotification({
-      recipient: entry.task.assignee.username,
-      type: 'TaskAssignedNotification',
-      entryId: entry.id,
-      incidentId: entry.incidentId,
-      taskId
-    });
-  }
 
   PubSubManager.getInstance().publish('NewLogEntries', entry.incidentId, res.locals.user.username);
   res.json({ id: entryId });

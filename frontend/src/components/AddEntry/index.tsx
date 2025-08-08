@@ -128,12 +128,7 @@ const AddEntry = ({
     const attachments = [...fileAttachments, ...recordingAttachments, ...sketchAttachments];
     entry.attachments = attachments.length > 0 ? attachments : undefined;
 
-    let mutatedEntry = entry;
-    if (entry.task?.include === 'Yes') {
-      mutatedEntry = { ...entry, task: { ...entry.task, status: 'ToDo' } };
-    }
-
-    onCreateEntry({ ...mutatedEntry, dateTime } as LogEntry, [
+    onCreateEntry({ ...entry, dateTime } as LogEntry, [
       ...selectedFiles,
       ...recordings,
       ...sketches
@@ -176,10 +171,6 @@ const AddEntry = ({
 
   const onLocationChange = (location: Partial<LocationType>) => {
     setEntry((prev) => ({ ...prev, location }) as LogEntry);
-  };
-
-  const onTaskChange = (id: string, value: FieldValueType) => {
-    setEntry((prev) => ({ ...prev, task: { ...prev.task, [id]: value } }));
   };
 
   return (
@@ -233,14 +224,7 @@ const AddEntry = ({
             />
           </TabPanel>
           <TabPanel value={TABS.TASK} hash={hash}>
-            <Task.Content
-              task={entry.task}
-              entries={entries}
-              onFieldChange={onTaskChange}
-              users={users}
-              validationErrors={validationErrors}
-              showValidationErrors={showValidationErrors}
-            />
+            <Task.Content />
           </TabPanel>
 
           <Box mt={2}>

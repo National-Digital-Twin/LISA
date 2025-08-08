@@ -61,9 +61,7 @@ export async function get(_: Request, res: Response) {
       ['?id', ns.rdf.type, '?type'],
       ['?id', ns.lisa.hasRecipient, '?recipient'],
       ['?id', ns.lisa.createdAt, '?createdAt'],
-      ['?id', ns.lisa.hasLogEntry, '?entryId'],
       ['?id', ns.lisa.hasIncident, '?incidentId'],
-      ['?entryId', ns.ies.inPeriod, '?dateTime'],
       sparql.optional([['?id', ns.lisa.readAt, '?read']]),
       ...optionals
     ],
