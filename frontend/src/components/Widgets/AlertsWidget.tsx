@@ -4,7 +4,7 @@
 
 import { useNavigate } from 'react-router-dom';
 
-import { Typography } from '@mui/material';
+import { Button, Typography } from '@mui/material';
 import WidgetBase from './WidgetBase';
 import { useNotifications } from '../../hooks/useNotifications';
 
@@ -12,16 +12,46 @@ import { useNotifications } from '../../hooks/useNotifications';
 const AlertsWidget = () => {
   const navigate = useNavigate();
   const { notifications } = useNotifications();
-  const unreadCount = notifications?.filter((n) => !n.read).length;
-  const onNavigate = () => navigate('/notifications');
+  const unreadCount = notifications?.filter((n) => !n.read).length ?? 0;
+
+  const onNavigateAlertsHeader = () => navigate('/notifications');
+  const onNavigateUnread = () => navigate('/notifications#unread')
 
   return (
-    <WidgetBase title="Alerts" onAction={onNavigate} showArrow>
+    <WidgetBase title="Alerts" onAction={onNavigateAlertsHeader} showArrow>
       <Typography variant="body2">
-        You have <Typography component="span" color="primary" fontWeight="bold" variant="body2">{unreadCount} unread</Typography> notifications
+        You have{' '}
+        {unreadCount > 0 ? (
+          <Button
+            onClick={onNavigateUnread}
+            variant="text"
+            color="primary"
+            sx={{
+              padding: 0,
+              minWidth: 0,
+              textTransform: 'none',
+              fontWeight: 'bold',
+              fontSize: 'inherit',
+              verticalAlign: 'baseline',
+            }}
+            aria-label="View unread notifications"
+          >
+            {unreadCount} unread
+          </Button>
+        ) : (
+          <Typography
+            component="span"
+            fontWeight="bold"
+            variant="body2"
+            color="text.primary"
+          >
+            {unreadCount} unread
+          </Typography>
+        )}{' '}
+        notifications
       </Typography>
     </WidgetBase>
   );
-}
+};
 
 export default AlertsWidget;

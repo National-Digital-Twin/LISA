@@ -12,13 +12,30 @@ type WidgetBaseProps = PropsWithChildren & {
   showArrow?: boolean;
 }
 
-const WidgetBase = ({ title, onAction = undefined, showArrow = false, children } : WidgetBaseProps) => (
+const WidgetBase = ({ title, onAction = undefined, showArrow = false, children }: WidgetBaseProps) => (
   <Card variant="outlined" sx={{ borderRadius: 2 }}>
     <CardContent>
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
+      <Box
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
+        mb={3}
+        onClick={onAction}
+        sx={{
+          cursor: onAction ? 'pointer' : 'default',
+          userSelect: 'none'
+        }}
+      >
         <Typography variant="h5">{title}</Typography>
         {showArrow && onAction && (
-          <IconButton onClick={onAction} size="small">
+          <IconButton
+            color="primary"
+            onClick={(e) => {
+              e.stopPropagation();
+              onAction();
+            }}
+            size="small"
+          >
             <ArrowForwardIcon fontSize="small" />
           </IconButton>
         )}
