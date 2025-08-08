@@ -24,7 +24,14 @@ const TasksWidget = () => {
             onClick={onClick}
             color="primary"
             variant="text"
-            sx={{ fontSize: '1.5rem', fontWeight: 500 }}
+            sx={{
+              fontSize: '1.5rem',
+              fontWeight: 500,
+              padding: 0,
+              minWidth: 0,
+              minHeight: 0,
+              lineHeight: 1.2,
+            }}
           >
             {count}
           </Button>
