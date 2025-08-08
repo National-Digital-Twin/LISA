@@ -6,8 +6,8 @@ import NotificationsIcon from '@mui/icons-material/Notifications';
 import NotificationsNoneOutlinedIcon from '@mui/icons-material/NotificationsNoneOutlined';
 import { Box, List, ListItem, Tab, Tabs, Typography } from '@mui/material';
 import { type Notification } from 'common/Notification';
-import React, { useState, useMemo, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useMemo, useCallback, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import getHandler from '../components/Notifications/handlers';
 import { useNotifications, useReadNotification } from '../hooks';
 import { Format } from '../utils';
@@ -72,14 +72,22 @@ function NotificationSpacer() {
 }
 
 export default function Notifications() {
-  const [tabValue, setTabValue] = useState(0);
+  const location = useLocation();
   const { notifications } = useNotifications();
   const readNotification = useReadNotification();
   const navigate = useNavigate();
 
+  const [tabValue, setTabValue] = useState(0);
+
   const handleTabChange = (_: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
   };
+
+  useEffect(() => {
+    if (location.hash === '#unread') {
+      setTabValue(1); // Unread tab index
+    }
+  }, [location.hash]);
 
   const notificationsArray = useMemo(() => notifications ?? [], [notifications]);
   const unreadNotifications = useMemo(() => notificationsArray.filter((n) => !n.read), [notificationsArray]);
