@@ -31,7 +31,6 @@ export function getCreateData(idNode: unknown, input: NotificationInput): unknow
 
     case 'TaskAssignedNotification':
       return [
-        [idNode, ns.lisa.hasLogEntry, logEntryIdNode],
         [idNode, ns.lisa.hasIncident, ns.data(input.incidentId)],
         [idNode, ns.lisa.hasTask, ns.data(input.taskId)]
       ];
@@ -44,14 +43,28 @@ export function getCreateData(idNode: unknown, input: NotificationInput): unknow
 export function getFetchOptionals(): unknown[] {
   return [
     sparql.optional([['?incidentId', ns.ies.hasName, '?incidentName']]),
+
     // user mention
     sparql.optional([
+      ['?id', ns.rdf.type, ns.lisa('UserMentionNotification')],
+      ['?id', ns.lisa.hasLogEntry, '?entryId'],
+      ['?entryId', ns.ies.inPeriod, '?dateTime']
+    ]),
+    sparql.optional([
+      ['?id', ns.rdf.type, ns.lisa('UserMentionNotification')],
+      ['?id', ns.lisa.hasLogEntry, '?entryId'],
       ['?author', ns.ies.isParticipantIn, '?entryId'],
       ['?author', ns.ies.hasName, '?authorName']
     ]),
+
+    // task assigned
     sparql.optional([
+      ['?id', ns.rdf.type, ns.lisa('TaskAssignedNotification')],
       ['?id', ns.lisa.hasTask, '?taskId'],
-      ['?taskId', ns.ies.hasName, '?taskName']
+      ['?taskId', ns.ies.hasName, '?taskName'],
+      ['?taskAuthor', ns.ies.isParticipantIn, '?taskId'],
+      ['?taskAuthor', ns.rdf.type, ns.ies.Creator],
+      ['?taskAuthor', ns.ies.hasName, '?taskAuthorName']
     ])
   ];
 }
@@ -99,17 +112,14 @@ function getTaskAssignedNotification(
     dateTime,
     read,
     incidentTitle,
-    entry: {
-      id: nodeValue(row.entryId.value),
-      incidentId: nodeValue(row.incidentId.value),
+    task: {
+      id: nodeValue(row.taskId.value),
+      name: row.taskName.value,
       author: {
-        username: row.authorName?.value,
-        displayName: row.authorName?.value
+        username: row.taskAuthorName?.value,
+        displayName: row.taskAuthorName?.value
       },
-      task: {
-        id: nodeValue(row.taskId.value),
-        name: row.taskName.value
-      }
+      incidentId: nodeValue(row.incidentId.value)
     }
   } as TaskAssignedNotification;
 }

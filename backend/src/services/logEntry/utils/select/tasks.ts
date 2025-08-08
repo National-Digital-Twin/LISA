@@ -21,10 +21,16 @@ export function tasks(incidentId: string) {
 
   return select({
     clause: [
-      [ns.data(incidentId), ns.lisa.hasLogEntry, '?entryId'],
-      ['?entryId', ns.lisa.hasTask, '?taskId'],
+      [ns.data(incidentId), ns.lisa.hasTask, '?taskId'],
       ['?taskId', ns.ies.hasName, '?taskName'],
-      optional([['?taskId', ns.lisa.hasDescription, '?description']]),
+      ['?taskId', ns.lisa.hasDescription, '?description'],
+      ['?taskId', ns.lisa.hasSequence, '?sequence'],
+      ['?taskId', ns.lisa.createdAt, '?createdAt'],
+
+      // Author
+      ['?author', ns.ies.isParticipantIn, '?taskId'],
+      ['?author', ns.rdf.type, ns.ies.Creator],
+      ['?author', ns.ies.hasName, '?authorName'],
 
       // Latest Status
       optional([
@@ -40,12 +46,13 @@ export function tasks(incidentId: string) {
       optional([
         ['?assigneeNode', ns.rdf.type, ns.lisa.assignee],
         ['?assigneeNode', ns.ies.isStateOf, '?taskId'],
-        ['?assigneeNode', ns.ies.relatesTo, '?user'],
-        ['?user', ns.ies.hasName, '?assigneeName'],
+        ['?assigneeNode', ns.ies.relatesTo, '?assignee'],
+        ['?assignee', ns.ies.hasName, '?assigneeName'],
         ['?assigneeBounding', ns.ies.isStartOf, '?assigneeNode'],
         ['?assigneeBounding', ns.ies.inPeriod, '?assigneeStart'],
         `FILTER NOT EXISTS {${assigneeNotExistsFilter}}`
       ])
-    ]
+    ],
+    orderBy: [['?createdAt', 'DESC']]
   });
 }

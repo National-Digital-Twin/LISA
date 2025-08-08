@@ -9,6 +9,6 @@ type BaseInput = {
 export type NotificationInput = BaseInput & {
   type: 'UserMentionNotification' | 'TaskAssignedNotification';
   incidentId: string;
-  entryId: string;
+  entryId?: string;
   taskId?: string;
 };

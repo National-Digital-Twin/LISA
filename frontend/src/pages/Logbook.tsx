@@ -226,11 +226,10 @@ const Logbook = () => {
       if (selectedTypes.size > 0) {
         const types = getTypeIds(e);
       
-        const isTaskMatch = selectedTypes.has('task') && e.task;
         const isFormMatch = selectedTypes.has(`form::${(e.details?.submittedFormTemplateId ?? '')}`) ?? false;
         const hasAny = types.some((t) => selectedTypes.has(t));
-      
-        if (!isTaskMatch && !isFormMatch && !hasAny) return false;
+
+        if (!isFormMatch && !hasAny) return false;
       }
 
       // date range

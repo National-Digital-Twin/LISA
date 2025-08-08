@@ -9,7 +9,7 @@ import { type Coordinates, type Location } from 'common/Location';
 import { LogEntry, type LogEntry as LogEntryType } from 'common/LogEntry';
 import { type LogEntryType as LogEntryTypeEnum } from 'common/LogEntryType';
 import { nodeValue } from '../../rdfutil';
-import { attachments, details, fields, mentions, select, tasks } from './utils';
+import { attachments, details, fields, mentions, select } from './utils';
 
 type TempEntryData = Omit<LogEntryType, 'location'> & {
   coordinates: Coordinates[];
@@ -57,7 +57,6 @@ export async function get(req: Request, res: Response) {
     mentionsResults,
     mentionsUsersResults,
     attachmentResults,
-    taskResults,
     detailResults
   ] = await Promise.all(select(incidentId));
 
@@ -67,7 +66,6 @@ export async function get(req: Request, res: Response) {
   const mentionedUsersByEntry = mentions.parse.user(mentionsUsersResults);
   const attachmentsByEntry = await attachments.parse(attachmentResults);
   const detailsByEntry = await details.parse(detailResults);
-  const tasksByEntry = await tasks.parse(taskResults);
 
   const entriesByEntryId = new Map<string, TempEntryData>();
 
@@ -98,7 +96,6 @@ export async function get(req: Request, res: Response) {
         coordinates: [],
         locationDescription: row.locationDescription?.value,
         attachments: attachmentsByEntry[id],
-        task: tasksByEntry.get(id),
         details: detailsByEntry.get(id)
       };
 

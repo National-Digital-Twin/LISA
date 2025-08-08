@@ -3,14 +3,12 @@
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
 // Local imports
- 
 import { type Field } from 'common/Field';
 import { Incident, ReferralWithSupport, ReferralWithoutSupport } from 'common/Incident';
 import { Location } from 'common/Location';
 import { LogEntry } from 'common/LogEntry';
 import { LogEntryTypes } from 'common/LogEntryTypes';
-import { Task } from 'common/Task'
- 
+
 import { type ValidationError } from '../types';
 import Format from '../Format';
 
@@ -28,14 +26,16 @@ function getErrorText(error: string): string {
 function extractErrors(details: Details, path?: string): Array<ValidationError> {
   const errors = [];
   if (details) {
-    errors.push(...Object.keys(details).flatMap((key) => {
-      const error = details[key];
-      const fieldId = path ? `${path}.${key}` : key;
-      if (typeof error === 'string') {
-        return { fieldId, error: getErrorText(error) };
-      }
-      return extractErrors(error, fieldId);
-    }));
+    errors.push(
+      ...Object.keys(details).flatMap((key) => {
+        const error = details[key];
+        const fieldId = path ? `${path}.${key}` : key;
+        if (typeof error === 'string') {
+          return { fieldId, error: getErrorText(error) };
+        }
+        return extractErrors(error, fieldId);
+      })
+    );
   }
   return errors;
 }
@@ -90,25 +90,24 @@ const Validate = {
 
       // Check any mentions are valid
       if (!noContent && hasValue(entry.content?.json)) {
-        errors.push(...Validate.mentions((entry.content?.json ?? '{}'), files));
+        errors.push(...Validate.mentions(entry.content?.json ?? '{}', files));
       }
 
       // Check the fields if they're supposed to be there...
       const fields = type.fields(entry);
       if (fields.length > 0) {
-        fields.filter((f) => f.type !== 'Location').forEach((field) => {
-          // ... but only if it's editable and not optional.
-          if (!Validate.field(field, entry.fields)) {
-            errors.push({ fieldId: field.id, error: 'Field required' });
-          }
-        });
+        fields
+          .filter((f) => f.type !== 'Location')
+          .forEach((field) => {
+            // ... but only if it's editable and not optional.
+            if (!Validate.field(field, entry.fields)) {
+              errors.push({ fieldId: field.id, error: 'Field required' });
+            }
+          });
       }
 
       // Validate the location.
       errors.push(...Validate.location(entry.location, !requireLocation));
-
-      // Validate task entry.
-      errors.push(...Validate.task(entry.task));
     }
 
     return errors;
@@ -134,8 +133,7 @@ const Validate = {
     return [];
   },
   mentions: (jsonContent: string, files: File[]): Array<ValidationError> => {
-    const mentionables = Format.lexical.mentionables(jsonContent)
-      .filter((m) => m.type === 'File');
+    const mentionables = Format.lexical.mentionables(jsonContent).filter((m) => m.type === 'File');
     const isMissing = mentionables.some((mention) => {
       const [owningEntry, fileName] = mention.id.split('::');
       return owningEntry === 'this' && !files.find((f) => f.name === fileName);
@@ -144,27 +142,6 @@ const Validate = {
       return [{ fieldId: 'content', error: 'One or more mentioned files are missing' }];
     }
     return [];
-  },
-  task: (task: Task | undefined): Array<ValidationError> => {
-    const taskValidationErrors: ValidationError[] = [];
-    
-    if (task?.include !== "Yes") {
-      return taskValidationErrors;
-    }
-
-    if (!task.name) {
-      taskValidationErrors.push({ fieldId: 'task_name', error: 'Name required' });
-    }
-
-    if (!task.assignee) {
-      taskValidationErrors.push({ fieldId: 'task_assignee', error: 'Assignee required' });
-    }
-
-    if (!task.description) {
-      taskValidationErrors.push({ fieldId: 'task_description', error: 'Description required' });
-    }
-
-    return taskValidationErrors;
   }
 };
 

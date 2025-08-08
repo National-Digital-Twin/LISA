@@ -48,7 +48,6 @@ export const buildLogFilters = (
         })),
       ]),
       ...makeOptions([
-        { id: 'task', label: 'Task' },
         { id: 'general', label: 'Update' },
       ]),
     ]),

@@ -14,7 +14,6 @@ import { type Mentionable } from 'common/Mentionable';
 import bem from '../../utils/bem';
 import Attachments from './Attachments';
 import Details from './Details';
-import Task from './Task';
 import EntryLocation from './EntryLocation';
 import Mentions from './Mentions';
 import Meta from './Meta';
@@ -126,7 +125,6 @@ const EntryItem = ({
 
       <Box display="flex" flexDirection="column" gap={2} padding={2}>
         <Details entry={entry} onContentClick={onContentClick} />
-        <Task entry={entry} />
         <EntryLocation entry={entry} />
         {/* <Actions entry={entry} onAction={onAction} /> */}
         <Mentions entry={entry} entries={entries} onMentionClick={onMentionClick} />

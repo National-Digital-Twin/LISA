@@ -5,21 +5,31 @@
 import { Static, Record, String, Optional, Literal, Union } from 'runtypes';
 import { User } from './User';
 
-export const TaskStatus = Union(
-  Literal('ToDo'),
-  Literal('InProgress'),
-  Literal('Done')
-);
+export const TaskStatus = Union(Literal('ToDo'), Literal('InProgress'), Literal('Done'));
 
 export type TaskStatus = Static<typeof TaskStatus>;
 
-export const Task = Record({
-  include: Optional(String),
+export const CreateTask = Record({
   id: Optional(String),
-  name: Optional(String),
+  name: String,
   description: Optional(String),
-  assignee: Optional(User),
-  status: Optional(TaskStatus)
+  incidentId: String,
+  assignee: User,
+  status: Optional(TaskStatus),
+  sequence: String
 });
 
+export const Task = Record({
+  id: String,
+  name: String,
+  description: String,
+  incidentId: String,
+  author: User,
+  assignee: User,
+  status: TaskStatus,
+  sequence: String,
+  createdAt: String
+});
+
+export type CreateTask = Static<typeof CreateTask>;
 export type Task = Static<typeof Task>;

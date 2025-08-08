@@ -6,14 +6,14 @@ import { Box, Button, Typography } from '@mui/material';
 import { type Task, type TaskStatus } from 'common/Task';
 import { type User } from 'common/User';
 import { useEffect, useState } from 'react';
-import { Link, useLocation, useParams } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 import { FormField, PageTitle } from '../components';
 import { FormFooter } from '../components/Form';
 import PageWrapper from '../components/PageWrapper';
 import Status from '../components/Status';
-import { useAuth, useIncidents, useLogEntries, useUsers } from '../hooks';
+import { useAuth, useIncidents, useUsers } from '../hooks';
 import { useResponsive } from '../hooks/useResponsiveHook';
-import { useUpdateTaskAssignee, useUpdateTaskStatus } from '../hooks/useTasks';
+import { useTasks, useUpdateTaskAssignee, useUpdateTaskStatus } from '../hooks/useTasks';
 import { Format } from '../utils';
 import { FieldValueType, ValidationError } from '../utils/types';
 
@@ -21,7 +21,7 @@ const Tasks = () => {
   const { incidentId } = useParams();
   const query = useIncidents();
   const { users } = useUsers();
-  const { logEntries } = useLogEntries(incidentId);
+  const { data: tasks, isLoading: tasksLoading } = useTasks(incidentId);
   const { user } = useAuth();
   const { isBelowMd } = useResponsive();
   const updateTaskStatus = useUpdateTaskStatus(incidentId);
@@ -59,8 +59,7 @@ const Tasks = () => {
     }
   }, [location]);
 
-  const taskEntries = logEntries?.filter((entry) => entry.task);
-  const hasTasks = Array.isArray(taskEntries) && taskEntries.length > 0;
+  const hasTasks = Array.isArray(tasks) && tasks.length > 0;
   const incident = query?.data?.find((inc) => inc.id === incidentId);
   const resetUpdateTask = () => setUpdateTask(defaultUpdateTask);
   const assignees = users?.map(Format.mentionable.user).map(({ id, label }) => ({
@@ -69,6 +68,19 @@ const Tasks = () => {
   }));
 
   if (!incident) return null;
+
+  if (tasksLoading) {
+    return (
+      <PageWrapper>
+        <PageTitle
+          title={Format.incident.type(incident.type)}
+          subtitle={incident.name}
+          stage={incident.stage}
+        />
+        <Typography>Loading tasks...</Typography>
+      </PageWrapper>
+    );
+  }
 
   const canUpdateTask = (task: Task) => {
     const currentUsername = user.current?.username;
@@ -172,19 +184,7 @@ const Tasks = () => {
       />
       <Box display="flex" flexDirection="column" gap={2}>
         {hasTasks ? (
-          taskEntries.map((entry) => {
-            const { task } = entry;
-
-            if (!task) {
-              return (
-                <Box key={entry.id}>
-                  <Typography variant="h5" component="h2" color="error">
-                    Error: Unable to display task information.
-                  </Typography>
-                </Box>
-              );
-            }
-
+          tasks.map((task) => {
             const formatDefaultAssignee =
               task.assignee?.username.replace(/\s+/g, '.').toLowerCase() ?? '';
             const isTaskUpdating = updateTask.id === task.id;
@@ -206,16 +206,16 @@ const Tasks = () => {
 
             return (
               <Box
-                key={entry.id}
-                id={entry.id}
+                key={task.id}
+                id={task.id}
                 display="flex"
                 flexDirection="column"
                 bgcolor="background.default"
                 padding={2}
                 gap={2}
                 sx={{
-                  border: highlightedTaskId === entry.id ? '2px solid' : '1px solid',
-                  borderColor: highlightedTaskId === entry.id ? 'accent.main' : 'border.main',
+                  border: highlightedTaskId === task.id ? '2px solid' : '1px solid',
+                  borderColor: highlightedTaskId === task.id ? 'accent.main' : 'border.main',
                   borderRadius: 1
                 }}
               >
@@ -309,7 +309,7 @@ const Tasks = () => {
                           <Typography variant="body1" fontWeight="bold">
                             Assigned by
                           </Typography>
-                          <Typography variant="body1">{Format.user(entry.author)}</Typography>
+                          <Typography variant="body1">{Format.user(task.author)}</Typography>
                         </Box>
                       </Box>
 
@@ -346,22 +346,13 @@ const Tasks = () => {
                             Date and time recorded
                           </Typography>
                           <Typography variant="body1">
-                            {Format.dateAndTimeMobile(entry.dateTime)}
+                            {Format.dateAndTimeMobile(task.createdAt)}
                           </Typography>
                         </Box>
                       </Box>
                     </Box>
                   </Box>
 
-                  <Typography
-                    variant="body1"
-                    component={Link}
-                    color="primary"
-                    sx={{ textDecoration: 'underline !important' }}
-                    to={`/logbook/${incidentId}#${entry.id}`}
-                  >
-                    View log entry
-                  </Typography>
                   <Box />
                   {(isStatusUpdating || isAssigneeUpdating) && (
                     <FormFooter
