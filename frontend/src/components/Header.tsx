@@ -187,12 +187,12 @@ const Header = ({ onMenuClick }: HeaderProps) => {
               paper: { sx: { minWidth: 200, padding: '4px' } }
             }}
           >
-            <MenuItem disabled sx={{ paddingBottom: '2px','&.Mui-disabled': { opacity: 1 } }}>
+            <MenuItem disabled dense sx={{ '&.Mui-disabled': { opacity: 1 }}}>
               <Typography variant="body2" fontWeight="bold">
                 {Format.user(user.current as User)}
               </Typography>
             </MenuItem>
-            <MenuItem disabled>
+            <MenuItem disabled dense sx={{ '&.Mui-disabled': { opacity: 1 }}}>
               <Typography variant="body2" color="secondary">
                 {user.current?.email?.split('@')[1] || ''}
               </Typography>
