@@ -36,6 +36,7 @@ import { getSortedEntriesWithDisplaySequence } from '../../utils/sortEntries';
 import Task from './Task';
 import { createSequenceNumber } from '../../utils/Form/sequence';
 import { Form as CustomForm } from '../CustomForms/FormTemplates/types';
+import EntryForm from '../Form/EntryForm';
 
 type AddEntryProps = {
   incident?: Incident;
@@ -103,6 +104,8 @@ const AddEntry = ({
     return null;
   }
 
+  const selectedForm = forms.find((form) => form.id === entry.type?.toLowerCase());
+
   const onAddRecording = (recording: File) => {
     setRecordings((prev) => [...prev, recording]);
   };
@@ -160,6 +163,10 @@ const AddEntry = ({
     });
   };
 
+  const onNestedFieldChange = (id: string, value: FieldValueType) => {
+    onFieldChange(id, value, true);
+  };
+
   const getUniqueFiles = (newFiles: File[], existingFiles: File[]): File[] =>
     newFiles.filter(
       (file) => !existingFiles.some((existingFile) => existingFile.name === file.name)
@@ -193,59 +200,68 @@ const AddEntry = ({
           validationErrors={validationErrors}
           showValidationErrors={showValidationErrors}
         />
-        <Box padding={2} component="form" bgcolor="background.default" id="rollup-log-book-entry">
-          <TabPanel value={TABS.FORM} hash={hash}>
-            <Form.Content
-              active={!hash || hash.includes(TABS.FORM)}
+        <Box padding={2} bgcolor="background.default">
+          <Box component="form" id="rollup-log-book-entry">
+            <TabPanel value={TABS.FORM} hash={hash}>
+              <Form.Content
+                active={!hash || hash.includes(TABS.FORM)}
+                entry={entry}
+                entries={entries}
+                forms={forms}
+                mentionables={mentionables}
+                validationErrors={validationErrors}
+                onFieldChange={onFieldChange}
+                onAddRecording={onAddRecording}
+                showValidationErrors={showValidationErrors}
+              />
+            </TabPanel>
+            <TabPanel value={TABS.LOCATION} hash={hash}>
+              <Location.Content
+                active={hash?.includes(TABS.LOCATION)}
+                required={entry.type && LogEntryTypes[entry.type].requireLocation}
+                location={entry.location}
+                validationErrors={validationErrors}
+                onLocationChange={onLocationChange}
+                showValidationErrors={showValidationErrors}
+              />
+            </TabPanel>
+            <TabPanel value={TABS.FILES} hash={hash}>
+              <Files.Content
+                active={hash?.includes(TABS.FILES)}
+                selectedFiles={selectedFiles}
+                recordings={recordings}
+                onFilesSelected={onFilesSelect}
+                removeSelectedFile={removeSelectedFile}
+                removeRecording={removeRecording}
+              />
+            </TabPanel>
+            <TabPanel value={TABS.SKETCH} hash={hash}>
+              <Sketch.Content
+                active={hash?.includes(TABS.SKETCH)}
+                canvasRef={sketchCanvasRef}
+                lines={sketchLines}
+                onChangeLines={setSketchLines}
+              />
+            </TabPanel>
+            <TabPanel value={TABS.TASK} hash={hash}>
+              <Task.Content
+                task={entry.task}
+                entries={entries}
+                onFieldChange={onTaskChange}
+                users={users}
+                validationErrors={validationErrors}
+                showValidationErrors={showValidationErrors}
+              />
+            </TabPanel>
+          </Box>
+          {hash?.includes(TABS.FORM) && selectedForm && (
+            <EntryForm
+              showValidationErrors={showValidationErrors}
+              selectedForm={selectedForm}
+              onFieldChange={onNestedFieldChange}
               entry={entry}
-              entries={entries}
-              forms={forms}
-              selectedForm={forms.find((form) => form.id === entry.type?.toLowerCase())}
-              mentionables={mentionables}
-              validationErrors={validationErrors}
-              onFieldChange={onFieldChange}
-              onAddRecording={onAddRecording}
-              showValidationErrors={showValidationErrors}
             />
-          </TabPanel>
-          <TabPanel value={TABS.LOCATION} hash={hash}>
-            <Location.Content
-              active={hash?.includes(TABS.LOCATION)}
-              required={entry.type && LogEntryTypes[entry.type].requireLocation}
-              location={entry.location}
-              validationErrors={validationErrors}
-              onLocationChange={onLocationChange}
-              showValidationErrors={showValidationErrors}
-            />
-          </TabPanel>
-          <TabPanel value={TABS.FILES} hash={hash}>
-            <Files.Content
-              active={hash?.includes(TABS.FILES)}
-              selectedFiles={selectedFiles}
-              recordings={recordings}
-              onFilesSelected={onFilesSelect}
-              removeSelectedFile={removeSelectedFile}
-              removeRecording={removeRecording}
-            />
-          </TabPanel>
-          <TabPanel value={TABS.SKETCH} hash={hash}>
-            <Sketch.Content
-              active={hash?.includes(TABS.SKETCH)}
-              canvasRef={sketchCanvasRef}
-              lines={sketchLines}
-              onChangeLines={setSketchLines}
-            />
-          </TabPanel>
-          <TabPanel value={TABS.TASK} hash={hash}>
-            <Task.Content
-              task={entry.task}
-              entries={entries}
-              onFieldChange={onTaskChange}
-              users={users}
-              validationErrors={validationErrors}
-              showValidationErrors={showValidationErrors}
-            />
-          </TabPanel>
+          )}
 
           <Box mt={2}>
             <FormFooter

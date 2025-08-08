@@ -10,6 +10,9 @@
         ],
         "ui:submitButtonOptions": {
           "norender": true
+        },
+        "ui:globalOptions": {
+          "label": false
         }
       }
     },
@@ -23,6 +26,9 @@
         ],
         "ui:submitButtonOptions": {
           "norender": true
+        },
+        "ui:globalOptions": {
+          "label": false
         }
       }
     },
@@ -36,28 +42,9 @@
         ],
         "ui:submitButtonOptions": {
           "norender": true
-        }
-      }
-    },
-    {
-      "type": "haz_floodwater",
-      "uiSchema": {
-        "ui:description": "Coastal / inland flooding, tidal, uncovered drains / manholes concealed by flood water.\n\n**Risks**  \nBeing swept away by floodwater, drowning, becoming cut off, falling down unseen holes.\n\n**Indicate which of the following applicable controls are in place:**  \nIf a control is not in place, you must explain why.\n\n**Briefing from Emergency Control Centre**",
-        "ui:order": [
-          "briefingEcc",
-          "reasonEcc",
-          "briefingFcpc",
-          "reasonFcpc",
-          "cordonUnsafe",
-          "reasonCordonUnsafe",
-          "ppe",
-          "reasonPpe",
-          "otherControls",
-          "reasonOtherControls",
-          "furtherAction"
-        ],
-        "ui:submitButtonOptions": {
-          "norender": true
+        },
+        "ui:globalOptions": {
+          "label": false
         }
       }
     }

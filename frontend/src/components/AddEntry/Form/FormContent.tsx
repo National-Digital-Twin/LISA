@@ -11,7 +11,6 @@ import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 
 // Local imports
 import { type Field } from 'common/Field';
-// import { type FieldGroup } from 'common/FieldGroup';
 import { type LogEntry } from 'common/LogEntry';
 import { type LogEntryTypeV2 } from 'common/LogEntryType';
 import { type Mentionable } from 'common/Mentionable';
@@ -19,18 +18,16 @@ import { type Mentionable } from 'common/Mentionable';
 import { LogEntryTypes } from 'common/LogEntryTypes';
 import { bem, Document, Form, Format } from '../../../utils';
 import { type OnFieldChange } from '../../../utils/handlers';
-import { FieldValueType, ValidationError } from '../../../utils/types';
+import { ValidationError } from '../../../utils/types';
 import { FormField } from '../../Form';
 import EntryContent from '../../lexical/EntryContent';
 import { Form as CustomForm } from '../../CustomForms/FormTemplates/types';
-import EntryForm from '../../Form/EntryForm';
 
 interface Props {
   readonly active: boolean;
   readonly entry: Partial<LogEntry>;
   readonly entries: Array<Partial<LogEntry>> | undefined;
   readonly forms: CustomForm[];
-  readonly selectedForm: CustomForm | undefined;
   readonly mentionables: Array<Mentionable>;
   readonly validationErrors: Array<ValidationError>;
   readonly onFieldChange: OnFieldChange;
@@ -43,7 +40,6 @@ export default function FormContent({
   entry,
   entries,
   forms,
-  selectedForm,
   mentionables,
   validationErrors,
   onFieldChange,
@@ -76,10 +72,6 @@ export default function FormContent({
     // setFields(type?.fields(entry) ?? []);
     // setGroups(type?.groups ?? []);
   }, [entry]);
-
-  const onNestedFieldChange = (id: string, value: FieldValueType) => {
-    onFieldChange(id, value, true);
-  };
 
   const onContentChange = (id: string, json: string, text: string) => {
     onFieldChange(id, { json, text });
@@ -244,13 +236,6 @@ export default function FormContent({
       {/*   onFieldChange={onNestedFieldChange} */}
       {/*   showValidationErrors={showValidationErrors} */}
       {/* /> */}
-      {selectedForm && (
-        <EntryForm
-          showValidationErrors={showValidationErrors}
-          selectedForm={selectedForm}
-          onFieldChange={onNestedFieldChange}
-        />
-      )}
     </Box>
   );
 }
