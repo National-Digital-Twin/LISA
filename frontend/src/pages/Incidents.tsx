@@ -117,6 +117,8 @@ const Incidents = () => {
 
     const v = queryState.values;
 
+    const searchTerm = ((v.search as string) ?? '').trim().toLowerCase();
+
     const selectedAuthors = new Set<string>((v.author as string[]) ?? []);
     const selectedStages = new Set<string>((v.stage as string[]) ?? []);
     const selectedTypes = new Set<string>((v.type as string[]) ?? []);
@@ -127,6 +129,8 @@ const Incidents = () => {
     const { from, to } = getFromAndToFromTimeSelection(preset, customTimeRange);
 
     const filtered = incidents.filter((incident) => {
+      if (searchTerm && !incident.name.toLowerCase().includes(searchTerm)) return false;
+      
       const authorKey = (incident.reportedBy?.displayName ?? '').toLowerCase().replace(/\s+/g, '-');
       if (selectedAuthors.size > 0 && !selectedAuthors.has(authorKey)) return false;
 
@@ -270,12 +274,6 @@ const Incidents = () => {
         onApply={(next) => {
           setQueryState(next);
           setFiltersOpen(false);
-        }}
-        onClear={() => {
-          setQueryState({
-            values: { stage: ['active'] },
-            sort: { by: 'date_desc', direction: 'desc' }
-          });
         }}
       />
     </PageWrapper>

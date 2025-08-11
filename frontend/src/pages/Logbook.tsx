@@ -190,6 +190,8 @@ const Logbook = () => {
       });
     };
     
+    // Search terms
+    const searchTerm = ((v.search as string) ?? '').trim().toLowerCase();
 
     // Attachment
     const selectedAttachments = new Set<string>((v.attachment as string[]) ?? []);
@@ -216,6 +218,9 @@ const Logbook = () => {
     const {from, to} = getFromAndToFromTimeSelection(preset, customTimeRange);
 
     const filtered = items.filter((e) => {
+      // search terms
+      if (searchTerm && !e.content.text?.toLowerCase().includes(searchTerm)) return false;
+
       // attachment
       if (!matchesAttachmentFilter(e, selectedAttachments)) return false;
 
@@ -392,9 +397,6 @@ const Logbook = () => {
         onApply={(next) => {
           setQueryState(next);
           setFiltersOpen(false);
-        }}
-        onClear={() => {
-          setQueryState({ values: {}, sort: { by: 'date_desc', direction: 'desc' } });
         }}
       />
     </PageWrapper>
