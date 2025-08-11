@@ -36,6 +36,7 @@ function getUserAttribute(u: UserType, attr: string): string | undefined {
 
 function cognitoUserToUserListItem(cognitoUser: UserType) {
   return {
+    email: getUserAttribute(cognitoUser, 'email'),
     username: cognitoUser.Username,
     displayName: getUserAttribute(cognitoUser, 'name')
   } satisfies UserListItem;
@@ -63,7 +64,7 @@ export async function getUsers(): Promise<UserList> {
   }
 
   if (settings.NODE_ENV === 'development') {
-    return [...cognitoUsers, { username: 'local.user', displayName: 'Local User' }];
+    return [...cognitoUsers, { username: 'local.user', displayName: 'Local User', email: 'local.user@example.com' }];
   }
 
   return cognitoUsers;
