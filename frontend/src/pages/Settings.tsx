@@ -24,6 +24,12 @@ const Settings = () => {
       <PageTitle title="Settings" />
       <Box>
         <List disablePadding>
+          <ListItemButton sx={{ pl: 0 }} to="/settings/my-profile" component={Link}>
+            <ListItemText primary="Manage my profile" />
+            <ChevronRightIcon />
+          </ListItemButton>
+          <Divider />
+
           {isAdmin(user.current) && (
             <>
               <ListItemButton sx={{ pl: 0 }} component={Link} to="/">
@@ -47,6 +53,11 @@ const Settings = () => {
 
           <ListItemButton sx={{ pl: 0 }} disabled>
             <ListItemText primary="Send feedback (coming soon)" />
+          </ListItemButton>
+          <Divider />
+
+          <ListItemButton sx={{ pl: 0 }} disabled>
+            <ListItemText primary="Privacy notice (coming soon)" />
           </ListItemButton>
         </List>
       </Box>

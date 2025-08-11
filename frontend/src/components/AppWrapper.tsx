@@ -21,6 +21,7 @@ import Overview from '../pages/Overview';
 import Settings from '../pages/Settings';
 import Tasks from '../pages/Tasks';
 import Layout from './Layout';
+import MyProfile from '../pages/MyProfile';
 
 const AppWrapper = () => {
   const router = createBrowserRouter([
@@ -41,6 +42,7 @@ const AppWrapper = () => {
         { path: 'files/:incidentId', element: <Files /> },
         { path: 'notifications', element: <Notifications /> },
         { path: 'settings', element: <Settings /> },
+        { path: 'settings/my-profile', element: <MyProfile /> },
         { path: '*', element: <Error404 /> }
       ]
     }
