@@ -35,7 +35,6 @@ describe('SortAndFilter component', () => {
         open
         onClose={() => {}}
         onApply={() => {}}
-        onClear={() => {}}
         title="Filters"
         sort={[{ id: 'date_desc', label: 'Newest first' }]}
         initial={initialState}
@@ -56,7 +55,6 @@ describe('SortAndFilter component', () => {
         open
         onClose={() => {}}
         onApply={() => {}}
-        onClear={() => {}}
         title="Filters"
         sort={[{ id: 'date_desc', label: 'Newest first' }]}
         initial={initialState}
@@ -83,7 +81,6 @@ describe('SortAndFilter component', () => {
         open
         onClose={() => {}}
         onApply={handleApply}
-        onClear={() => {}}
         title="Filters"
         sort={[{ id: 'date_desc', label: 'Newest first' }]}
         initial={initialState}
@@ -112,7 +109,6 @@ describe('SortAndFilter component', () => {
         open
         onClose={() => {}}
         onApply={() => {}}
-        onClear={() => {}}
         title="Filters"
         sort={[{ id: 'date_desc', label: 'Newest first' }]}
         initial={initialState}

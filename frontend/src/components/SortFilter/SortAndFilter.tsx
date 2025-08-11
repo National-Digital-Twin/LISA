@@ -8,7 +8,7 @@ import {
   TextField, Radio,
   Checkbox, ListItem
 } from '@mui/material';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import CloseIcon from '@mui/icons-material/Close';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
@@ -47,7 +47,6 @@ export function SortAndFilter({
   sort,
   initial,
   onApply,
-  onClear,
   tree,
 }: Readonly<SortAndFilterProps>) {
 
@@ -56,8 +55,25 @@ export function SortAndFilter({
     values: { ...(initial?.values ?? {}) },
   }), [initial, sort]);
 
+  const baselineRef = useRef<QueryState | null>(null);
+
+  useEffect(() => {
+    if (open && baselineRef.current == null) {
+      baselineRef.current = initialState;
+    }
+  }, [open, initialState]);
+
   const [local, setLocal] = useState<QueryState>(initialState);
-  useEffect(() => setLocal(initialState), [initialState]);
+  const [appliedState, setAppliedState] = useState<QueryState>(initialState);
+  const baseline = baselineRef.current ?? initialState;
+
+  const canApply = useMemo(() =>
+    JSON.stringify(local) !== JSON.stringify(appliedState),
+  [local, appliedState]);
+
+  const canClear = useMemo(() =>
+    JSON.stringify(local) !== JSON.stringify(baseline),
+  [local, baseline]);
 
   // Navigation stack
   const [stack, setStack] = useState<Page[]>([]);
@@ -130,7 +146,7 @@ export function SortAndFilter({
             return (
               <ListItem key={n.id} disablePadding>
                 <ListItemButton onClick={() => push({ kind: 'text', title: n.label, node: n })}>
-                  <ListItemText primary={n.label} secondary={n.helperText} />
+                  <ListItemText primary={n.label} />
                   <ChevronRightIcon />
                 </ListItemButton>
               </ListItem>
@@ -153,8 +169,6 @@ export function SortAndFilter({
     </List>
   );
   
-  
-
   const renderSelectPage = (group: GroupNode) => {
     const isMulti = group.selection === 'multi';
 
@@ -314,16 +328,24 @@ export function SortAndFilter({
           <Stack direction="row" spacing={1}>
             <Button
               variant="contained" fullWidth
-              onClick={() => { onApply(local); onClose(); }}
+              onClick={() => { 
+                setAppliedState(local);
+                onApply(local); 
+                onClose(); 
+              }}
+              disabled={!canApply}
             >
               Apply
             </Button>
             <Button
               variant="outlined" fullWidth
               onClick={() => {
-                setLocal({ sort: sort?.length ? { by: sort[0].id, direction: 'desc' } : undefined, values: {} });
-                onClear?.();
+                setLocal(baseline);
+                setAppliedState(baseline);
+                onApply(baseline);
+                onClose();
               }}
+              disabled={!canClear}
             >
               Clear
             </Button>

@@ -8,8 +8,8 @@ import { makeGroup, makeOptions } from './schema-utils';
 export const logSort: SortOption[] = [
   { id: 'author_asc', label: 'Author (A-Z)' },
   { id: 'author_desc', label: 'Author (Z-A)' },
-  { id: 'date_desc', label: 'Newest - oldest' },
-  { id: 'date_asc', label: 'Oldest - newest' },
+  { id: 'date_desc', label: 'Date created (Newest - oldest)' },
+  { id: 'date_asc', label: 'Date created (Oldest - newest)' },
 ];
 
 export const buildLogFilters = (
@@ -19,6 +19,13 @@ export const buildLogFilters = (
   title: 'Sort & Filter',
   items: [
     makeGroup('sort', 'Sort by', 'single', makeOptions(logSort)),
+    {
+      id: 'search',
+      type: 'text',
+      label: 'Keyword search',
+      placeholder: 'Search by content',
+      helperText: 'Filters logs by content',
+    },
     makeGroup('attachment', 'Attachment', 'multi', makeOptions([
       { id: 'file', label: 'File' },
       { id: 'location', label: 'Location' },

@@ -43,6 +43,5 @@ export type SortAndFilterProps = {
   sort?: SortOption[];
   initial?: QueryState;
   onApply: (next: QueryState) => void;
-  onClear?: () => void;
   tree: FilterTree;
 };
