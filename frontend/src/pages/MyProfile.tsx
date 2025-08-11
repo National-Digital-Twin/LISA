@@ -50,11 +50,11 @@ const MyProfile = () => {
           <Typography variant="h2" sx={{ fontSize: '1.25rem', fontWeight: 500, paddingBottom: 2 }}>
                         Personal details
           </Typography>
-          <Typography variant="body1" gutterBottom>
+          <Typography variant="body2" gutterBottom>
             <span style={{ fontWeight: 'bold' }}>Organisation:</span>{' '}
             {user.current?.email?.split('@')[1] || ''}
           </Typography>
-          <Typography variant="body1" gutterBottom>
+          <Typography variant="body2" gutterBottom>
             <span style={{ fontWeight: 'bold' }}>Email:</span>{' '}
             {user.current?.email || 'Not provided'}
           </Typography>

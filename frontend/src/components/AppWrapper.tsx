@@ -22,8 +22,9 @@ import Settings from '../pages/Settings';
 import Tasks from '../pages/Tasks';
 import Layout from './Layout';
 import MyProfile from '../pages/MyProfile';
-import AdminListUsers from '../pages/AdminListUsers';
+import AdminUserList from '../pages/AdminUserList';
 import AdminUserProfile from '../pages/AdminUserProfile';
+import AdminNewUser from '../pages/AdminNewUser';
 
 const AppWrapper = () => {
   const router = createBrowserRouter([
@@ -45,8 +46,9 @@ const AppWrapper = () => {
         { path: 'notifications', element: <Notifications /> },
         { path: 'settings', element: <Settings /> },
         { path: 'settings/my-profile', element: <MyProfile /> },
-        { path: 'settings/users', element: <AdminListUsers /> },
+        { path: 'settings/users', element: <AdminUserList /> },
         { path: 'settings/user-profile', element: <AdminUserProfile /> },
+        { path: 'settings/users/new', element: <AdminNewUser /> },
         { path: '*', element: <Error404 /> }
       ]
     }

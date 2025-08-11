@@ -64,7 +64,10 @@ export async function getUsers(): Promise<UserList> {
   }
 
   if (settings.NODE_ENV === 'development') {
-    return [...cognitoUsers, { username: 'local.user', displayName: 'Local User', email: 'local.user@example.com' }];
+    return [...cognitoUsers, 
+      { username: 'local.user', displayName: 'Local User', email: 'local.user@example.com' }, 
+      { username: 'local.user2', displayName: 'A Second Local User', email: 'local.user2@example.com' }
+    ];
   }
 
   return cognitoUsers;
