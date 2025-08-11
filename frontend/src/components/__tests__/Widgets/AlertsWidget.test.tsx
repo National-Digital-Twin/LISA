@@ -34,13 +34,12 @@ describe('AlertsWidget', () => {
   it('renders the arrow button and handles click', () => {
     const mockNavigate = jest.fn();
     (useNavigate as jest.Mock).mockReturnValue(mockNavigate);
-
+  
     render(<AlertsWidget />);
-
-    const button = screen.getByRole('button');
-    expect(button).toBeInTheDocument();
-
-    fireEvent.click(button);
+  
+    const arrow = screen.getByRole('button', { name: /open alerts/i });
+    fireEvent.click(arrow);
+  
     expect(mockNavigate).toHaveBeenCalledWith('/notifications');
   });
 });

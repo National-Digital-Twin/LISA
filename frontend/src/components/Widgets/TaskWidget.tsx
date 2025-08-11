@@ -65,7 +65,7 @@ const TasksWidget = () => {
   };
 
   return (
-    <WidgetBase title="Your tasks" onAction={onNavigateTasksHeader} showArrow>
+    <WidgetBase title="Your tasks" onAction={onNavigateTasksHeader} actionAriaLabel="Open Tasks" showArrow>
       <Box display="flex" flexDirection="column" alignItems="stretch">
         <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
           {renderCount(toDoCount, onNavigateToDo)}
