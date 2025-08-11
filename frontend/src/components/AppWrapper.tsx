@@ -21,6 +21,7 @@ import Overview from '../pages/Overview';
 import Settings from '../pages/Settings';
 import Tasks from '../pages/Tasks';
 import Layout from './Layout';
+import LogbookV2 from '../pages/LogbookV2';
 
 const AppWrapper = () => {
   const router = createBrowserRouter([
@@ -35,6 +36,7 @@ const AppWrapper = () => {
         { path: 'createlog', element: <CreateLog /> },
         { path: 'incident/:incidentId', element: <Overview /> },
         { path: 'logbook/:incidentId', element: <Logbook /> },
+        { path: 'logbook/v2/:incidentId', element: <LogbookV2 /> },
         { path: 'tasks/:incidentId', element: <Tasks /> },
         { path: 'forms/:incidentId', element: <LogForms /> },
         { path: 'location/:incidentId', element: <Location /> },
