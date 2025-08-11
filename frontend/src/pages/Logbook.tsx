@@ -4,8 +4,9 @@
 
 import { MouseEvent, useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Box, Button, Typography } from '@mui/material';
+import { Box, Button, IconButton, Typography } from '@mui/material';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { v4 as uuidV4 } from 'uuid';
 
 import { type Mentionable, type MentionableType } from 'common/Mentionable';
@@ -32,6 +33,7 @@ import { buildLogFilters, logSort } from '../components/SortFilter/schemas/log-s
 import { type QueryState } from '../components/SortFilter/filter-types';
 import { useFormTemplates } from '../hooks/Forms/useFormTemplates';
 import { getFromAndToFromTimeSelection } from '../components/SortFilter/filter-utils';
+import StageMini from '../components/Stage/StageMini';
 
 const Logbook = () => {
   const { incidentId } = useParams();
@@ -268,24 +270,82 @@ const Logbook = () => {
 
   return (
     <PageWrapper>
-      <PageTitle
-        title={incident?.type ? Format.incident.type(incident?.type) : ''}
-        subtitle={incident?.name ?? ''}
-        stage={incident?.stage}
-      >
-        <Box display="flex" flexDirection="row" justifyContent="space-between">
-          {!adding && (
+      <PageTitle title={incident?.name ?? ''}>
+        <Box sx={{ mt: -2, width: '100%' }}>
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 1,
+              width: '100%',
+              px: 0.5,
+            }}
+          >
+            <StageMini stage={incident?.stage ?? 'Monitoring'} size={12} />
+
+            <Box sx={{ flex: 1, minWidth: 0 }}>
+              <Typography
+                variant="body2"
+                color="grey"
+                sx={{
+                  overflowX: 'auto',
+                  whiteSpace: 'nowrap',
+                  pr: 2,
+                  maskImage: 'linear-gradient(to right, black 80%, transparent 100%)',
+                  WebkitMaskImage: 'linear-gradient(to right, black 80%, transparent 100%)',
+                  scrollbarWidth: 'none',
+                  msOverflowStyle: 'none',
+                  '&::-webkit-scrollbar': {
+                    display: 'none',
+                  },
+                }}
+                aria-label="Incident type"
+                role="region"
+              >
+                {incident?.type ? Format.incident.type(incident.type).toUpperCase() : ''}
+              </Typography>
+            </Box>
+
+            <IconButton
+              aria-label="More options"
+              onClick={() => navigate(`/incident/${incident?.id}`)}
+            >
+              <MoreVertIcon />
+            </IconButton>
+          </Box>
+        </Box>
+  
+        {!adding && (
+          <Box
+            display="flex"
+            flexDirection="row"
+            alignItems="center"
+            gap={2}
+            flexWrap="wrap"
+            width="100%"
+            displayPrint="none"
+          >
             <Button
               type="button"
               variant="contained"
               size={isMobile ? 'medium' : 'large'}
               startIcon={<AddCircleIcon />}
               onClick={onAddEntryClick}
+              sx={{ flex: 1 }}
             >
-              Add log entry
+              Add new
             </Button>
-          )}
-        </Box>
+
+            <Button
+              type="button"
+              variant="contained"
+              onClick={handleOpenFilters}
+              sx={{ flex: 1 }}
+            >
+              Sort & Filter
+            </Button>
+          </Box>
+        )}
       </PageTitle>
 
       {adding && (
@@ -297,50 +357,31 @@ const Logbook = () => {
         />
       )}
 
-      <Box display="flex" flexDirection="column" width="100%">
-        {logEntries && logEntries.length > 0 ? (
-          <>
-            <Box
-              display="flex"
-              flexDirection="row"
-              justifyContent="space-between"
-              flexWrap="wrap"
-              width="100%"
-              mb="1.6rem"
-              gap={1}
-              displayPrint="none"
-            >
-              <Box display="flex" flexDirection="row" flexGrow={1} gap={2}>
-                <Button
-                  type="button"
-                  variant="contained"
-                  onClick={handleOpenFilters}
-                >
-                  Sort & Filter
-                </Button>
-              </Box>
+      {!adding && (
+        <Box display="flex" flexDirection="column" width="100%">
+          {(!logEntries || logEntries.length === 0) && (
+            <Box p={2} bgcolor="background.default">
+              <Typography variant="h6">No logs found.</Typography>
+              <Typography mt={1}>There are currently no log entries.</Typography>
             </Box>
-
-            {visibleEntries.length > 0 ? (
-              <EntryList
-                entries={visibleEntries}
-                onContentClick={onContentClick}
-                onMentionClick={onMentionClick}
-              />
-            ) : (
-              <Box p={2} bgcolor="background.default">
-                <Typography variant="h6">No results found.</Typography>
-                <Typography mt={1}>Try adjusting your filters.</Typography>
-              </Box>
-            )}
-          </>
-        ) : (
-          <Box p={2} bgcolor="background.default">
-            <Typography variant="h6">No logs found.</Typography>
-            <Typography mt={1}>There are currently no log entries.</Typography>
-          </Box>
-        )}
-      </Box>
+          )}
+      
+          {logEntries && logEntries.length > 0 && visibleEntries.length === 0 && (
+            <Box p={2} bgcolor="background.default">
+              <Typography variant="h6">No results found.</Typography>
+              <Typography mt={1}>Try adjusting your filters.</Typography>
+            </Box>
+          )}
+      
+          {logEntries && logEntries.length > 0 && visibleEntries.length > 0 && (
+            <EntryList
+              entries={visibleEntries}
+              onContentClick={onContentClick}
+              onMentionClick={onMentionClick}
+            />
+          )}
+        </Box>
+      )}
 
       <SortAndFilter
         open={filtersOpen}
