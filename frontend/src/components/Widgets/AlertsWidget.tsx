@@ -18,7 +18,7 @@ const AlertsWidget = () => {
   const onNavigateUnread = () => navigate('/notifications#unread')
 
   return (
-    <WidgetBase title="Alerts" onAction={onNavigateAlertsHeader} showArrow>
+    <WidgetBase title="Alerts" onAction={onNavigateAlertsHeader} actionAriaLabel="Open Alerts" showArrow>
       <Typography variant="body2">
         You have{' '}
         {unreadCount > 0 ? (

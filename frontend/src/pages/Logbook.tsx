@@ -217,7 +217,7 @@ const Logbook = () => {
 
     const filtered = items.filter((e) => {
       // search terms
-      if (searchTerm && (!e.content.text || !e.content.text.toLowerCase().includes(searchTerm))) return false;
+      if (searchTerm && !e.content.text?.toLowerCase().includes(searchTerm)) return false;
 
       // attachment
       if (!matchesAttachmentFilter(e, selectedAttachments)) return false;
