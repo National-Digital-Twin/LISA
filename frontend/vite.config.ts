@@ -58,7 +58,6 @@ export default defineConfig(({ mode }) => {
       })
     ],
     server: {
-      allowedHosts: true,
       proxy: {
         '/api': {
           target: env.VITE_BACKEND_URL,

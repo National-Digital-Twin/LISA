@@ -2,11 +2,12 @@
 // © Crown Copyright 2025. This work has been developed by the National Digital Twin Programme
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
-import { Box, Button, Paper, Typography } from '@mui/material';
+import { Box, Button, Card, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { Link, useNavigate } from 'react-router-dom';
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import { useMemo, useState } from 'react';
+import { visuallyHidden } from '@mui/utils';
 import { PageTitle } from '../components';
 import PageWrapper from '../components/PageWrapper';
 import { useUsers } from '../hooks';
@@ -18,7 +19,7 @@ const AdminUserList = () => {
   const { users } = useUsers()
   const navigate = useNavigate();
 
-  const onAddUser= () => {
+  const onAddUser = () => {
     navigate('/settings/users/new');
   };
 
@@ -38,7 +39,15 @@ const AdminUserList = () => {
   const visibleUsers = useMemo(() => {
     if (!users) return [];
 
-    const filtered = users.filter(() => true);
+    const v = queryState.values;
+    const searchTerm = ((v.search as string) ?? '').trim().toLowerCase();
+
+    const filtered = users.filter((user) => {
+      if (!searchTerm) return true;
+      if (user.email?.toLowerCase().includes(searchTerm)) return true;
+      if (user.displayName?.toLowerCase().includes(searchTerm)) return true;
+      return false;
+    });
 
     const sorted = [...filtered].sort((a, b) => {
       const key = queryState.sort?.by;
@@ -53,7 +62,7 @@ const AdminUserList = () => {
     });
 
     return sorted;
-  }, [userFilters, users, queryState.sort?.by, queryState.values]);
+  }, [users, queryState.sort?.by, queryState.values]);
 
   return (
     <>
@@ -61,7 +70,7 @@ const AdminUserList = () => {
         sx={{
           width: '100%',
           backgroundColor: 'white',
-          paddingX: { xs: '1rem', md: '1' },
+          paddingX: { xs: '1rem', md: '60px' },
           paddingY: '1.3rem'
         }}
       >
@@ -81,12 +90,13 @@ const AdminUserList = () => {
         </Box>
       </Box>
 
-      <PageWrapper>
+      <PageWrapper backgroundColor="#f7f7f7">
         <Box
           sx={{
             display: 'flex',
             gap: 2,
             flexWrap: 'wrap',
+            justifyContent: 'flex-end' // added
           }}
         >
           <Button
@@ -114,22 +124,34 @@ const AdminUserList = () => {
           </Button>
         </Box>
 
-        <Paper elevation={0} sx={{ bgcolor: "#ededee", p: 1.5, borderRadius: 1 }}>
-          <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
-            Users
-          </Typography>
-        </Paper>
-
-        {visibleUsers.map(user => (
-          <Box sx={{ pl: 1, mb: 0 }}>
-            <Typography variant="subtitle1" sx={{ fontWeight: 600 }} component={Link} to={`/settings/user-profile?user=${encodeURIComponent(user.email || '')}`}>
-              {user.displayName}
-            </Typography>
-            <Box sx={{ color: 'secondary' }}>
-              {user.email?.split('@')[1] || ''}
-            </Box>
-          </Box>
-        ))}
+        <TableContainer component={Card} variant="outlined" sx={{ borderRadius: 2 }}>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell sx={visuallyHidden}>User</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {visibleUsers.map((user) => (
+                <TableRow key={user.email}>
+                  <TableCell>
+                    <Typography
+                      variant="subtitle1"
+                      sx={{ fontWeight: 600 }}
+                      component={Link}
+                      to={`/settings/user-profile?user=${encodeURIComponent(user.email || '')}`}
+                    >
+                      {user.displayName}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      {user.email?.split('@')[1] || ''}
+                    </Typography>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
 
         <SortAndFilter
           open={filtersOpen}
@@ -140,12 +162,6 @@ const AdminUserList = () => {
           onApply={(next) => {
             setQueryState(next);
             setFiltersOpen(false);
-          }}
-          onClear={() => {
-            setQueryState({
-              values: {},
-              sort: { by: 'name_asc', direction: 'desc' }
-            });
           }}
         />
       </PageWrapper>

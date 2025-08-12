@@ -14,6 +14,13 @@ export const buildUserFilters = (
 ): FilterTree => ({
   title: 'Sort & Filter',
   items: [
-    makeGroup('sort', 'Sort by', 'single', makeOptions(userSort))
+    makeGroup('sort', 'Sort by', 'single', makeOptions(userSort)),
+    {
+      id: 'search',
+      type: 'text',
+      label: 'Search',
+      placeholder: 'Search by name or organisation',
+      helperText: 'Filters users by name or organisation',
+    },
   ],
 });

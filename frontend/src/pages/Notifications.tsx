@@ -11,6 +11,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import getHandler from '../components/Notifications/handlers';
 import { useNotifications, useReadNotification } from '../hooks';
 import { Format } from '../utils';
+import PageTitle from '../components/PageTitle';
 
 interface TabPanelProps {
   readonly children?: React.ReactNode;
@@ -159,61 +160,79 @@ export default function Notifications() {
   }, [navigate, handleNotificationClick]);
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-      <Box sx={{ padding: { xs: 2, md: 3 } }}>
-        <Typography variant="h4" sx={{ fontSize: { xs: '1.5rem', md: '2rem' } }}>
-          Notifications
-        </Typography>
-      </Box>
-
-      <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-        <Tabs
-          value={tabValue}
-          onChange={handleTabChange}
-          aria-label="notifications tabs"
-          variant="fullWidth"
+    <>
+      <Box
+        sx={{
+          width: '100%',
+          backgroundColor: 'white',
+          paddingX: { xs: '1rem', md: '60px' },
+          paddingY: '1.3rem'
+        }}
+      >
+        <Box
           sx={{
-            '& .MuiTab-root': {
-              backgroundColor: 'background.paper',
-              '&.Mui-selected': {
-                backgroundColor: 'background.paper'
-              }
-            }
+            display: 'flex',
+            alignItems: 'center',
+            color: 'inherit',
+            textDecoration: 'none',
+            mr: 2
           }}
         >
-          <Tab label="All" sx={{ textTransform: 'none' }} />
-          <Tab
-            label={unreadCount > 0 ? `Unread (${unreadCount})` : 'Unread'}
-            sx={{ textTransform: 'none' }}
-          />
-        </Tabs>
+          <PageTitle title="Notifications" />
+        </Box>
       </Box>
 
-      <Box sx={{ flex: 1, overflow: 'auto', backgroundColor: 'background.default' }}>
-        <TabPanel value={tabValue} index={0}>
-          {notificationsArray.length === 0 ? (
-            <EmptyState icon={NotificationsNoneOutlinedIcon} title="There are no notifications" />
-          ) : (
-            <List sx={{ display: 'flex', flexDirection: 'column', padding: 0, gap: '1px' }}>
-              {notificationsArray.map((notification) => (
-                <Box key={notification.id}>{renderNotificationItem(notification)}</Box>
-              ))}
-            </List>
-          )}
-        </TabPanel>
+      <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
 
-        <TabPanel value={tabValue} index={1}>
-          {unreadNotifications.length === 0 ? (
-            <EmptyState icon={NotificationsIcon} title="You have no unread notifications" />
-          ) : (
-            <List sx={{ display: 'flex', flexDirection: 'column', padding: 0, gap: '1px' }}>
-              {unreadNotifications.map((notification) => (
-                <Box key={notification.id}>{renderNotificationItem(notification)}</Box>
-              ))}
-            </List>
-          )}
-        </TabPanel>
+        <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+          <Tabs
+            value={tabValue}
+            onChange={handleTabChange}
+            aria-label="notifications tabs"
+            variant="fullWidth"
+            sx={{
+              '& .MuiTab-root': {
+                backgroundColor: 'background.paper',
+                '&.Mui-selected': {
+                  backgroundColor: 'background.paper'
+                }
+              }
+            }}
+          >
+            <Tab label="All" sx={{ textTransform: 'none' }} />
+            <Tab
+              label={unreadCount > 0 ? `Unread (${unreadCount})` : 'Unread'}
+              sx={{ textTransform: 'none' }}
+            />
+          </Tabs>
+        </Box>
+
+        <Box sx={{ flex: 1, overflow: 'auto', backgroundColor: 'background.default' }}>
+          <TabPanel value={tabValue} index={0}>
+            {notificationsArray.length === 0 ? (
+              <EmptyState icon={NotificationsNoneOutlinedIcon} title="There are no notifications" />
+            ) : (
+              <List sx={{ display: 'flex', flexDirection: 'column', padding: 0, gap: '1px' }}>
+                {notificationsArray.map((notification) => (
+                  <Box key={notification.id}>{renderNotificationItem(notification)}</Box>
+                ))}
+              </List>
+            )}
+          </TabPanel>
+
+          <TabPanel value={tabValue} index={1}>
+            {unreadNotifications.length === 0 ? (
+              <EmptyState icon={NotificationsIcon} title="You have no unread notifications" />
+            ) : (
+              <List sx={{ display: 'flex', flexDirection: 'column', padding: 0, gap: '1px' }}>
+                {unreadNotifications.map((notification) => (
+                  <Box key={notification.id}>{renderNotificationItem(notification)}</Box>
+                ))}
+              </List>
+            )}
+          </TabPanel>
+        </Box>
       </Box>
-    </Box>
+    </>
   );
 }
