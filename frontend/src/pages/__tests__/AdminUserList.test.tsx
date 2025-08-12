@@ -33,7 +33,7 @@ jest.mock('../../components/SortFilter/schemas/user-schema', () => ({
 
 jest.mock('../../components/SortFilter/filter-utils', () => ({
   countActive: (values: Record<string, unknown>) =>
-    values && Object.values(values).some(v => String(v ?? '').trim() !== '') ? 1 : 0
+    values && Object.values(values).some(v => String(v).trim() !== '') ? 1 : 0
 }));
 
 type SortDir = 'asc' | 'desc';
