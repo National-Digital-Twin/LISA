@@ -14,6 +14,7 @@ import { useUsers } from '../hooks';
 import { SortAndFilter } from '../components/SortFilter/SortAndFilter';
 import { QueryState } from '../components/SortFilter/filter-types';
 import { buildUserFilters, userSort } from '../components/SortFilter/schemas/user-schema';
+import { countActive } from '../components/SortFilter/filter-utils';
 
 const AdminUserList = () => {
   const { users } = useUsers()
@@ -26,7 +27,7 @@ const AdminUserList = () => {
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [queryState, setQueryState] = useState<QueryState>({
     values: {},
-    sort: { by: 'displayName', direction: 'desc' }
+    sort: { by: 'displayName_asc', direction: 'asc' }
   });
 
   const userFilters = useMemo(
@@ -68,6 +69,8 @@ const AdminUserList = () => {
     return sorted;
   }, [users, queryState.sort?.by, queryState.values]);
 
+  const activeFilterCount = useMemo(() => countActive(queryState.values), [queryState.values]);
+
   return (
     <>
       <Box
@@ -100,7 +103,7 @@ const AdminUserList = () => {
             display: 'flex',
             gap: 2,
             flexWrap: 'wrap',
-            justifyContent: 'flex-end' // added
+            justifyContent: 'flex-end'
           }}
         >
           <Button
@@ -108,8 +111,8 @@ const AdminUserList = () => {
             startIcon={<AddCircleIcon />}
             variant="contained"
             sx={{
-              flexBasis: { xs: '48%', md: 'auto' },
-              flexGrow: { xs: 1, md: 0 }
+              flex: { xs: 1, sm: '0 0 auto' },
+              maxWidth: { sm: '200px' }
             }}
             onClick={onAddUser}
           >
@@ -119,14 +122,15 @@ const AdminUserList = () => {
             color="primary"
             variant="contained"
             sx={{
-              flexBasis: { xs: '48%', md: 'auto' },
-              flexGrow: { xs: 1, md: 0 }
+              flex: { xs: 1, sm: '0 0 auto' },
+              maxWidth: { sm: '200px' }
             }}
             onClick={handleOpenFilters}
           >
-            Sort & Filter
+            Sort & Filter {activeFilterCount > 0 ? ` (${activeFilterCount})` : ''}
           </Button>
         </Box>
+
 
         <TableContainer component={Card} variant="outlined" sx={{ borderRadius: 2 }}>
           <Table>

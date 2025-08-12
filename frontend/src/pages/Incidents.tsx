@@ -30,6 +30,7 @@ import PageWrapper from '../components/PageWrapper';
 import { QueryState } from '../components/SortFilter/filter-types';
 import {
   applyImpliedSelections,
+  countActive,
   getFromAndToFromTimeSelection
 } from '../components/SortFilter/filter-utils';
 import {
@@ -113,6 +114,8 @@ const Incidents = () => {
     if (typeof a === 'string') return a;
     return a.displayName ?? '';
   };
+
+  const activeFilterCount = useMemo(() => countActive(queryState.values), [queryState.values]);
 
   const visibleIncidents = useMemo(() => {
     if (!incidents) return [];
@@ -207,7 +210,7 @@ const Incidents = () => {
             display: 'flex',
             gap: 2,
             flexWrap: 'wrap',
-            justifyContent: 'flex-end' // added
+            justifyContent: 'flex-end'
           }}
         >
           <Button
@@ -216,8 +219,8 @@ const Incidents = () => {
             variant="contained"
             onClick={onAddIncident}
             sx={{
-              flexBasis: { xs: '48%', md: 'auto' },
-              flexGrow: { xs: 1, md: 0 }
+              flex: { xs: 1, sm: '0 0 auto' },
+              maxWidth: { sm: '200px' }
             }}
           >
             Add New Incident
@@ -227,12 +230,12 @@ const Incidents = () => {
             color="primary"
             variant="contained"
             sx={{
-              flexBasis: { xs: '48%', md: 'auto' },
-              flexGrow: { xs: 1, md: 0 }
+              flex: { xs: 1, sm: '0 0 auto' },
+              maxWidth: { sm: '200px' }
             }}
             onClick={handleOpenFilters}
           >
-            Sort & Filter
+          Sort & Filter{activeFilterCount > 0 ? ` (${activeFilterCount})` : ''}
           </Button>
         </Box>
 
