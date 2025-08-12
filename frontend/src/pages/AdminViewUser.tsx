@@ -2,14 +2,14 @@
 // © Crown Copyright 2025. This work has been developed by the National Digital Twin Programme
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
-import { Box, Card, Typography } from '@mui/material';
+import { Box, Button, Card, Typography } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { Link, useSearchParams } from 'react-router-dom';
 import { PageTitle } from '../components';
 import PageWrapper from '../components/PageWrapper';
 import { useUsers } from '../hooks';
 
-const AdminUserProfile = () => {
+const AdminViewUser = () => {
   const { users } = useUsers()
   const [searchParams] = useSearchParams();
   const userEmail = searchParams.get('user');
@@ -60,9 +60,33 @@ const AdminUserProfile = () => {
             </Typography>
           </Box>
         </Card>
+        <Box
+          sx={{
+            width: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: { xs: 'stretch', md: 'flex-end' }
+          }}
+        >
+          <Button
+            variant="contained"
+            disabled
+            sx={{ width: { xs: '100%', md: 'auto' } }}
+          >
+            Edit details
+          </Button>
+
+          <Typography
+            variant="caption"
+            color="text.secondary"
+            sx={{ mt: 1, textAlign: { xs: 'left', md: 'right' } }}
+          >
+            (coming soon)
+          </Typography>
+        </Box>
       </PageWrapper>
     </>
   );
 };
 
-export default AdminUserProfile;
+export default AdminViewUser;

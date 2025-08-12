@@ -2,7 +2,7 @@
 // © Crown Copyright 2025. This work has been developed by the National Digital Twin Programme
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
-import { Box, Card, Typography } from '@mui/material';
+import { Box, Button, Card, Typography } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { Link } from 'react-router-dom';
 import { PageTitle } from '../components';
@@ -42,7 +42,7 @@ const MyProfile = () => {
         <Card variant="outlined" sx={{ borderRadius: 2 }}>
           <Box sx={{ padding: 3 }}>
             <Typography variant="h2" sx={{ fontSize: '1.25rem', fontWeight: 500, paddingBottom: 2 }}>
-                          Personal details
+              Personal details
             </Typography>
             <Typography variant="body2" gutterBottom>
               <span style={{ fontWeight: 'bold' }}>Organisation:</span>{' '}
@@ -54,6 +54,30 @@ const MyProfile = () => {
             </Typography>
           </Box>
         </Card>
+        <Box
+          sx={{
+            width: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: { xs: 'stretch', md: 'flex-end' }
+          }}
+        >
+          <Button
+            variant="contained"
+            disabled
+            sx={{ width: { xs: '100%', md: 'auto' } }}
+          >
+            Edit details
+          </Button>
+
+          <Typography
+            variant="caption"
+            color="text.secondary"
+            sx={{ mt: 1, textAlign: { xs: 'left', md: 'right' } }}
+          >
+            (coming soon)
+          </Typography>
+        </Box>
       </PageWrapper>
     </>
   )
