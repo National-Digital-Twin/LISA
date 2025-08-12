@@ -18,6 +18,7 @@ import Location from '../pages/Location';
 import Logbook from '../pages/Logbook';
 import Notifications from '../pages/Notifications';
 import Overview from '../pages/Overview';
+import IncidentTasks from '../pages/IncidentTasks';
 import Settings from '../pages/Settings';
 import Tasks from '../pages/Tasks';
 import Layout from './Layout';
@@ -36,7 +37,8 @@ const AppWrapper = () => {
         { path: 'createlog', element: <CreateLog /> },
         { path: 'incident/:incidentId', element: <Overview /> },
         { path: 'logbook/:incidentId', element: <Logbook /> },
-        { path: 'tasks/:incidentId', element: <Tasks /> },
+        { path: 'tasks', element: <Tasks /> },
+        { path: 'tasks/:incidentId', element: <IncidentTasks /> },
         { path: 'forms/:incidentId', element: <LogForms /> },
         { path: 'location/:incidentId', element: <Location /> },
         { path: 'files/:incidentId', element: <Files /> },

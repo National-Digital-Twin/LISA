@@ -19,26 +19,14 @@ import {
   TextLeaf, DateRangeLeaf,
   OptionLeaf
 } from './filter-types';
+import { countActive, countActiveForGroup } from './filter-utils';
+
 
 type Page =
   | { kind: 'list'; title: string; nodes: FilterNode[] }
   | { kind: 'select'; title: string; group: GroupNode }
   | { kind: 'text'; title: string; node: TextLeaf }
   | { kind: 'date-range'; title: string; node: DateRangeLeaf };
-
-function countActive(values: QueryState['values']) {
-  return Object.entries(values)
-    .filter(([key, v]) => {
-      if (key === 'sort') return false;
-      if (Array.isArray(v)) return v.length > 0;
-      if (v == null || v === '') return false;
-      if (typeof v === 'object') return Object.values(v).some(Boolean);
-      return true;
-    })
-    .map(([key]) => key.split('.')[0])
-    .filter((v, i, arr) => arr.indexOf(v) === i)
-    .length;
-}
 
 export function SortAndFilter({
   open,
@@ -118,11 +106,27 @@ export function SortAndFilter({
     </Stack>
   );
 
-  const renderListPage = (nodes: FilterNode[]) => (
-    <List>
-      {nodes
-        .filter((n) => !n.hidden)
-        .map((n) => {
+  const renderCountAndChevron = (activeCount: number) => (
+    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+      {activeCount > 0 && (
+        <Chip size="small" label={activeCount} />
+      )}
+      <ChevronRightIcon />
+    </Box>
+  );
+
+  const renderListPage = (nodes: FilterNode[]) => {
+    const activeCounts: Record<string, number> = {};
+    const visibleNodes = nodes.filter((n) => !n.hidden);
+    visibleNodes.forEach((n) => {
+      activeCounts[n.id] = countActiveForGroup(local.values, n.id);
+    });
+
+    return (
+      <List>
+        {visibleNodes.map((n) => {
+          const activeCount = activeCounts[n.id];
+
           if (n.type === 'group') {
             return (
               <ListItem key={n.id} disablePadding>
@@ -136,7 +140,7 @@ export function SortAndFilter({
                   }}
                 >
                   <ListItemText primary={n.label} secondary={n.helperText} />
-                  <ChevronRightIcon />
+                  {renderCountAndChevron(activeCount)}
                 </ListItemButton>
               </ListItem>
             );
@@ -147,7 +151,7 @@ export function SortAndFilter({
               <ListItem key={n.id} disablePadding>
                 <ListItemButton onClick={() => push({ kind: 'text', title: n.label, node: n })}>
                   <ListItemText primary={n.label} />
-                  <ChevronRightIcon />
+                  {renderCountAndChevron(activeCount)}
                 </ListItemButton>
               </ListItem>
             );
@@ -158,7 +162,7 @@ export function SortAndFilter({
               <ListItem key={n.id} disablePadding>
                 <ListItemButton onClick={() => push({ kind: 'date-range', title: n.label, node: n })}>
                   <ListItemText primary={n.label} secondary={n.helperText} />
-                  <ChevronRightIcon />
+                  {renderCountAndChevron(activeCount)}
                 </ListItemButton>
               </ListItem>
             );
@@ -166,8 +170,9 @@ export function SortAndFilter({
   
           return null;
         })}
-    </List>
-  );
+      </List>
+    );
+  };
   
   const renderSelectPage = (group: GroupNode) => {
     const isMulti = group.selection === 'multi';
@@ -236,19 +241,19 @@ export function SortAndFilter({
                     }
                   }}
                 >
+                  <ListItemText primary={c.label} secondary={c.helperText} sx={isImplied ? { color: 'text.disabled' } : undefined}/>
                   {isMulti ? (
                     <Checkbox
                       checked={isSelected}
                       tabIndex={-1}
                       disableRipple
-                      edge="start"
+                      edge="end"
                       disabled={isImplied}
                       slotProps={{ input: { 'aria-label': c.label } }}
                     />
                   ) : (
-                    <Radio checked={isSelected} tabIndex={-1} disableRipple edge="start" />
+                    <Radio checked={isSelected} tabIndex={-1} disableRipple edge="end" />
                   )}
-                  <ListItemText primary={c.label} secondary={c.helperText} sx={isImplied ? { color: 'text.disabled' } : undefined}/>
                 </ListItemButton>
               </ListItem>
             );

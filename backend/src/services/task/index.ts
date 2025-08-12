@@ -5,4 +5,4 @@
 export { changeStatus } from './changeStatus';
 export { changeAssignee } from './changeAssignee';
 export { create } from './create';
-export { get } from './get';
+export { get, getForIncidentId } from './get';
