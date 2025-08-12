@@ -17,7 +17,7 @@ type Props = {
   disabled?: boolean;
 };
 
-export default function StageSelectListItem({ value, onChange, disabled = false }: Props) {
+export default function StageSelectListItem({ value, onChange, disabled = false }: Readonly<Props>) {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const open = Boolean(anchorEl);
   const menuId = 'stage-select-menu';
