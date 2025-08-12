@@ -290,6 +290,7 @@ const Logbook = () => {
 
             <Box sx={{ flex: 1, minWidth: 0 }}>
               <Typography
+                component="section"
                 variant="body2"
                 color="grey"
                 sx={{
@@ -305,7 +306,6 @@ const Logbook = () => {
                   },
                 }}
                 aria-label="Incident type"
-                role="region"
               >
                 {incident?.type ? Format.incident.type(incident.type).toUpperCase() : ''}
               </Typography>
