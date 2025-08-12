@@ -62,7 +62,13 @@ const Overview = () => {
         <PageTitle
           title="Overview"
           titleStart={
-            <IconButton aria-label="Back" onClick={() => navigate(-1)}>
+            <IconButton aria-label="Back" onClick={() => {
+              if (settingInformation) {
+                setSettingInformation(false);
+              } else {
+                navigate(-1);
+              }
+            }}>
               <ArrowBackIcon />
             </IconButton>
           }
@@ -80,24 +86,22 @@ const Overview = () => {
             </Button>
           }
         >
-          <Box sx={{ width: '100%' }}>
-            <Box
-              sx={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 1,
-                width: '100%',
-                px: 0.5,
-              }}
-            >
+          <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 0.5, px: 0.5, mt: 1 }}>
+            <Typography fontSize="1.25rem" variant="h2" fontWeight={400}>
+              {incident?.name}
+            </Typography>
+
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               <StageMini stage={incident?.stage ?? 'Monitoring'} size={12} />
-          
+
               <Box sx={{ flex: 1, minWidth: 0 }}>
                 <Typography
                   component="section"
                   variant="body2"
                   color="grey"
                   sx={{
+                    m: 0,
+                    lineHeight: 1.2,
                     overflowX: 'auto',
                     whiteSpace: 'nowrap',
                     pr: 2,
@@ -105,9 +109,7 @@ const Overview = () => {
                     WebkitMaskImage: 'linear-gradient(to right, black 80%, transparent 100%)',
                     scrollbarWidth: 'none',
                     msOverflowStyle: 'none',
-                    '&::-webkit-scrollbar': {
-                      display: 'none',
-                    },
+                    '&::-webkit-scrollbar': { display: 'none' },
                   }}
                   aria-label="Incident type"
                 >
