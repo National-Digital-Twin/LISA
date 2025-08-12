@@ -4,13 +4,14 @@
 
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import NotificationsNoneOutlinedIcon from '@mui/icons-material/NotificationsNoneOutlined';
-import { Box, List, ListItem, Tab, Tabs, Typography } from '@mui/material';
+import { Box, Tab, Tabs, Typography } from '@mui/material';
 import { type Notification } from 'common/Notification';
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import getHandler from '../components/Notifications/handlers';
 import { useNotifications, useReadNotification } from '../hooks';
 import { Format } from '../utils';
+import DataList, { ListRow } from '../components/DataList';
 
 interface TabPanelProps {
   readonly children?: React.ReactNode;
@@ -57,18 +58,13 @@ function NotificationDot() {
   return (
     <Box
       sx={{
-        marginTop: 1,
-        width: 10,
-        height: 10,
-        borderRadius: '9999px',
-        backgroundColor: 'primary.main'
+        width: 12,
+        height: 12,
+        borderRadius: '50%', 
+        backgroundColor: 'primary.main',
       }}
     />
   );
-}
-
-function NotificationSpacer() {
-  return <Box sx={{ width: 12, flexShrink: 0 }} />;
 }
 
 export default function Notifications() {
@@ -107,55 +103,18 @@ export default function Notifications() {
     }
   }, [navigate, readNotification]);
 
-  const renderNotificationItem = useCallback((notification: Notification) => {
-    try {
-      const handler = getHandler(notification, navigate);
-      return (
-        <ListItem
-          key={notification.id}
-          sx={{
-            padding: 2,
-            cursor: 'pointer',
-            backgroundColor: 'background.paper',
-            '&:hover': { backgroundColor: 'action.hover' }
-          }}
-          onClick={() => handleNotificationClick(notification)}
-        >
-          <Box sx={{ width: '100%', display: 'flex', gap: 2 }}>
-            {!notification.read ? <NotificationDot /> : <NotificationSpacer />}
-
-            <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                <Typography
-                  variant="body1"
-                  color="primary"
-                  sx={{ fontWeight: notification.read ? 'normal' : 'bold' }}
-                >
-                  {handler.title}
-                </Typography>
-                <Typography color="text.secondary">
-                  {Format.relativeTime(notification.dateTime)}
-                </Typography>
-              </Box>
-
-              <Box>{handler.Content}</Box>
-
-              {notification.incidentTitle && (
-                <Typography
-                  variant="caption"
-                  color="text.secondary"
-                  sx={{ fontSize: '0.75rem', fontWeight: 500 }}
-                >
-                  {handler.footer}
-                </Typography>
-              )}
-            </Box>
-          </Box>
-        </ListItem>
-      );
-    } catch {
-      return null;
-    }
+  const toRow = useCallback((n: Notification): ListRow => {
+    const handler = getHandler(n, navigate);
+    return {
+      key: n.id,
+      title: handler.title,
+      content: handler.Content,
+      footer: handler.footer,
+      metaRight: Format.relativeTime(n.dateTime),
+      titleDot: !n.read ? <NotificationDot /> : undefined,
+      emphasizeTitle: !n.read,
+      onClick: () => handleNotificationClick(n)
+    };
   }, [navigate, handleNotificationClick]);
 
   return (
@@ -194,11 +153,7 @@ export default function Notifications() {
           {notificationsArray.length === 0 ? (
             <EmptyState icon={NotificationsNoneOutlinedIcon} title="There are no notifications" />
           ) : (
-            <List sx={{ display: 'flex', flexDirection: 'column', padding: 0, gap: '1px' }}>
-              {notificationsArray.map((notification) => (
-                <Box key={notification.id}>{renderNotificationItem(notification)}</Box>
-              ))}
-            </List>
+            <DataList items={notificationsArray.map(toRow)} />
           )}
         </TabPanel>
 
@@ -206,11 +161,7 @@ export default function Notifications() {
           {unreadNotifications.length === 0 ? (
             <EmptyState icon={NotificationsIcon} title="You have no unread notifications" />
           ) : (
-            <List sx={{ display: 'flex', flexDirection: 'column', padding: 0, gap: '1px' }}>
-              {unreadNotifications.map((notification) => (
-                <Box key={notification.id}>{renderNotificationItem(notification)}</Box>
-              ))}
-            </List>
+            <DataList items={unreadNotifications.map(toRow)} />
           )}
         </TabPanel>
       </Box>

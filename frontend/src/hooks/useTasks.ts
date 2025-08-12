@@ -21,6 +21,13 @@ export const useTasks = (incidentId?: string) =>
     staleTime: 5 * 60 * 1000 // 5 minutes
   });
 
+export const useAllTasks = () =>
+  useQuery<Task[]>({
+    queryKey: ['tasks'],
+    queryFn: () => get('/tasks'),
+    staleTime: 5 * 60 * 1000 // 5 minutes
+  });
+
 export const useUpdateTaskStatus = (incidentId?: string) => {
   const queryClient = useQueryClient();
   const { createLogEntry } = useCreateLogEntry(incidentId);
