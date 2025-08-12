@@ -7,7 +7,9 @@ import { makeGroup, makeOptions } from './schema-utils';
 
 export const userSort: SortOption[] = [
   { id: 'displayName_asc', label: 'Name (A-Z)' },
-  { id: 'displayName_desc', label: 'Name (Z-A)' }
+  { id: 'displayName_desc', label: 'Name (Z-A)' },
+  { id: 'organisation_asc', label: 'Organisation (A-Z)' },
+  { id: 'organisation_desc', label: 'Organisation (Z-A)' }
 ];
 
 export const buildUserFilters = (

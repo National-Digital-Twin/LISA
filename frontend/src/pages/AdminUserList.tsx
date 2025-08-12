@@ -56,6 +56,10 @@ const AdminUserList = () => {
           return a.displayName.localeCompare(b.displayName);
         case 'displayName_desc':
           return b.displayName.localeCompare(a.displayName);
+        case 'organisation_asc':
+          return (a.email?.split('@')[1] || '').localeCompare(b.email?.split('@')[1] || '');
+        case 'organisation_desc':
+          return (b.email?.split('@')[1] || '').localeCompare(a.email?.split('@')[1] || '');
         default:
           return a.displayName.localeCompare(b.displayName);
       }

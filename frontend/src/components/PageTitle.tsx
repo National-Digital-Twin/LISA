@@ -24,7 +24,8 @@ const PageTitle = ({ title, subtitle = undefined, stage = undefined, children }:
     flexWrap="wrap"
     alignItems="center"
     justifyContent="space-between"
-    gap="1rem"
+    columnGap="1rem"
+    rowGap="0.5rem"
     width="100%"
   >
     <Box display="flex" flexDirection="column" gap={1}>

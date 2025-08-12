@@ -2,380 +2,272 @@
 // © Crown Copyright 2025. This work has been developed by the National Digital Twin Programme
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
+import AddCircleIcon from '@mui/icons-material/AddCircle';
 import { Box, Button, Typography } from '@mui/material';
-import { type Task, type TaskStatus } from 'common/Task';
-import { type User } from 'common/User';
-import { useEffect, useState } from 'react';
-import { useLocation, useParams } from 'react-router-dom';
-import { FormField, PageTitle } from '../components';
-import { FormFooter } from '../components/Form';
-import PageWrapper from '../components/PageWrapper';
-import Status from '../components/Status';
-import { useAuth, useIncidents, useUsers } from '../hooks';
-import { useResponsive } from '../hooks/useResponsiveHook';
-import { useTasks, useUpdateTaskAssignee, useUpdateTaskStatus } from '../hooks/useTasks';
+import { useNavigate } from 'react-router-dom';
+import { useState, useMemo } from 'react';
+import { Task, TaskStatus } from 'common/Task';
+import DataList, { ListRow } from '../components/DataList';
+import { useIncidents, useAllTasks } from '../hooks';
 import { Format } from '../utils';
-import { FieldValueType, ValidationError } from '../utils/types';
 
-const Tasks = () => {
-  const { incidentId } = useParams();
-  const query = useIncidents();
-  const { users } = useUsers();
-  const { data: tasks, isLoading: tasksLoading } = useTasks(incidentId);
-  const { user } = useAuth();
-  const { isBelowMd } = useResponsive();
-  const updateTaskStatus = useUpdateTaskStatus(incidentId);
-  const updateTaskAssignee = useUpdateTaskAssignee(incidentId);
-  const location = useLocation();
+import { SortAndFilter } from '../components/SortFilter/SortAndFilter';
+import { buildTaskFilters, taskSort } from '../components/SortFilter/schemas/task-schema';
+import { type QueryState } from '../components/SortFilter/filter-types';
+import { countActive } from '../components/SortFilter/filter-utils';
+import { PageTitle } from '../components';
+import PageWrapper from '../components/PageWrapper';
 
-  const defaultUpdateTask = {
-    id: undefined,
-    loading: false,
-    status: { edit: false, value: undefined, error: undefined },
-    assignee: { edit: false, value: undefined, error: undefined }
-  };
+function StatusDot({ status }: { status: TaskStatus }) {
+  let color: string;
+  let borderColor: string;
 
-  const [updateTask, setUpdateTask] = useState<{
-    id: string | undefined;
-    loading: boolean;
-    status: { edit: boolean; value: TaskStatus | undefined; error: ValidationError | undefined };
-    assignee: { edit: boolean; value: User | undefined; error: ValidationError | undefined };
-  }>(defaultUpdateTask);
-  const [displayErrors, setDisplayErrors] = useState(false);
-  const [highlightedTaskId, setHighlightedTaskId] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (location.hash) {
-      const elementId = location.hash.replace('#', '');
-      const element = document.getElementById(elementId);
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        setHighlightedTaskId(elementId);
-
-        setTimeout(() => {
-          setHighlightedTaskId(null);
-        }, 2000);
-      }
-    }
-  }, [location]);
-
-  const hasTasks = Array.isArray(tasks) && tasks.length > 0;
-  const incident = query?.data?.find((inc) => inc.id === incidentId);
-  const resetUpdateTask = () => setUpdateTask(defaultUpdateTask);
-  const assignees = users?.map(Format.mentionable.user).map(({ id, label }) => ({
-    value: id,
-    label
-  }));
-
-  if (!incident) return null;
-
-  if (tasksLoading) {
-    return (
-      <PageWrapper>
-        <PageTitle
-          title={Format.incident.type(incident.type)}
-          subtitle={incident.name}
-          stage={incident.stage}
-        />
-        <Typography>Loading tasks...</Typography>
-      </PageWrapper>
-    );
+  if (status === 'Done') {
+    color = '#9DF5A8';
+    borderColor = '#239932';
+  } else if (status === 'InProgress') {
+    color = '#F5CF9D';
+    borderColor = '#FF6D24';
+  } else {
+    color = '#A5D3F5';
+    borderColor = '#3C3DE9';
   }
 
-  const canUpdateTask = (task: Task) => {
-    const currentUsername = user.current?.username;
-    const taskAssigneeUsername = task.assignee?.username;
-    return currentUsername === taskAssigneeUsername;
-  };
-
-  const handleOnClickStatus = (task: Task) => {
-    if (task.id === updateTask.id) return setUpdateTask(defaultUpdateTask);
-    return setUpdateTask({
-      ...updateTask,
-      id: task.id,
-      status: {
-        ...updateTask.status,
-        edit: true,
-        value: task.status,
-        error: { fieldId: 'name', error: 'Please select a new status.' }
-      }
-    });
-  };
-
-  const handleOnClickAssignee = (task: Task) => {
-    if (task.id === updateTask.id) return setUpdateTask(defaultUpdateTask);
-    return setUpdateTask({
-      ...updateTask,
-      id: task.id,
-      assignee: {
-        ...updateTask.assignee,
-        edit: true,
-        error: { fieldId: 'assignee', error: 'Please select a new user.' }
-      }
-    });
-  };
-
-  const handleUpdateStatus = (task: Task, value: FieldValueType) => {
-    if (value) {
-      let isValidNextStep = false;
-      if (task.status === 'ToDo') {
-        isValidNextStep = value === 'InProgress' || value === 'Done';
-      } else if (task.status === 'InProgress') {
-        isValidNextStep = value === 'Done';
-      }
-
-      let error: ValidationError | undefined;
-      if (task.status === value) {
-        error = { fieldId: 'name', error: 'Please select a new status' };
-      } else if (!isValidNextStep) {
-        error = { fieldId: 'name', error: 'Cannot move backwards in status progression' };
-      }
-
-      setUpdateTask({
-        ...updateTask,
-        status: { ...updateTask.status, value: value as TaskStatus, error }
-      });
-    }
-  };
-
-  const handleUpdateAssignee = (task: Task, value: FieldValueType) => {
-    const findAssignee = assignees?.find((user) => user.value === value);
-    if (findAssignee) {
-      const error =
-        findAssignee.value === task.assignee?.username.replace(/\s+/g, '.').toLowerCase()
-          ? { fieldId: 'assignee', error: 'Please select a new user' }
-          : undefined;
-      setUpdateTask({
-        ...updateTask,
-        assignee: {
-          ...updateTask.assignee,
-          value: { username: findAssignee.value, displayName: findAssignee.label },
-          error
-        }
-      });
-    }
-  };
-
-  const handleOnCancel = () => {
-    setUpdateTask(defaultUpdateTask);
-  };
-
-  const handleOnSubmit = (task: Task) => {
-    if (updateTask.status.edit && updateTask.status.value) {
-      updateTaskStatus.mutate(
-        { task: { ...task, status: updateTask.status.value } },
-        { onSettled: resetUpdateTask }
-      );
-    }
-    if (updateTask.assignee.edit && updateTask.assignee.value) {
-      updateTaskAssignee.mutate(
-        { task: { ...task, assignee: updateTask.assignee.value } },
-        { onSettled: resetUpdateTask }
-      );
-    }
-  };
-
   return (
-    <PageWrapper>
-      <PageTitle
-        title={Format.incident.type(incident.type)}
-        subtitle={incident.name}
-        stage={incident.stage}
-      />
-      <Box display="flex" flexDirection="column" gap={2}>
-        {hasTasks ? (
-          tasks.map((task) => {
-            const formatDefaultAssignee =
-              task.assignee?.username.replace(/\s+/g, '.').toLowerCase() ?? '';
-            const isTaskUpdating = updateTask.id === task.id;
-            const isStatusUpdating = isTaskUpdating && updateTask.status.edit;
-            const isAssigneeUpdating = isTaskUpdating && updateTask.assignee.edit;
-            const canUpdate = canUpdateTask(task);
-
-            const validationErrors = () => {
-              if (isStatusUpdating) {
-                return updateTask.status.error ? [updateTask.status.error] : [];
-              }
-              if (isAssigneeUpdating) {
-                return updateTask.assignee.error ? [updateTask.assignee.error] : [];
-              }
-              return [];
-            };
-
-            const statusValue = () => task.status ?? 'ToDo';
-
-            return (
-              <Box
-                key={task.id}
-                id={task.id}
-                display="flex"
-                flexDirection="column"
-                bgcolor="background.default"
-                padding={2}
-                gap={2}
-                sx={{
-                  border: highlightedTaskId === task.id ? '2px solid' : '1px solid',
-                  borderColor: highlightedTaskId === task.id ? 'accent.main' : 'border.main',
-                  borderRadius: 1
-                }}
-              >
-                <Box
-                  display="flex"
-                  flexDirection="column"
-                  bgcolor="background.default"
-                  padding={2}
-                  gap={2}
-                >
-                  <Box display="flex" flexDirection={isBelowMd ? 'column' : 'row-reverse'} gap={2}>
-                    <Box
-                      display="flex"
-                      flexDirection="row"
-                      justifyContent={isBelowMd ? 'flex-start' : 'flex-end'}
-                      gap={2}
-                      flexGrow={0.5}
-                    >
-                      <Button
-                        type="button"
-                        size="small"
-                        variant="contained"
-                        onClick={() => handleOnClickStatus(task)}
-                        disabled={isAssigneeUpdating || !canUpdate || task.status === 'Done'}
-                        fullWidth={isBelowMd}
-                        sx={{ maxHeight: 40 }}
-                      >
-                        Change Status
-                      </Button>
-                      <Button
-                        type="button"
-                        size="small"
-                        variant="contained"
-                        onClick={() => handleOnClickAssignee(task)}
-                        fullWidth={isBelowMd}
-                        disabled={isStatusUpdating || !canUpdate || task.status === 'Done'}
-                        sx={{ maxHeight: 40 }}
-                      >
-                        Change Assignee
-                      </Button>
-                    </Box>
-
-                    <Box
-                      display="flex"
-                      flexDirection={isBelowMd ? 'column' : 'row'}
-                      justifyContent="space-between"
-                      gap={2}
-                      flexGrow={1}
-                      alignItems="flex-start"
-                    >
-                      <Box display="flex" flexDirection="column" gap={2} flex={1}>
-                        <Box display="flex" flexDirection="column" gap={1}>
-                          <Typography variant="body1" fontWeight="bold">
-                            Current Status
-                          </Typography>
-                          <Status width="fit-content" status={statusValue()} />
-                        </Box>
-                        {isStatusUpdating && (
-                          <Box component="ul" width="100%">
-                            <FormField
-                              component="li"
-                              field={{
-                                id: 'name',
-                                type: 'Select',
-                                label: 'New Status',
-                                value: updateTask.status.value ?? task.status,
-                                options: [
-                                  { value: 'ToDo', label: 'To Do' },
-                                  { value: 'InProgress', label: 'In Progress' },
-                                  { value: 'Done', label: 'Done' }
-                                ]
-                              }}
-                              error={
-                                displayErrors
-                                  ? (updateTask.status.error as ValidationError)
-                                  : undefined
-                              }
-                              onChange={(_, value) => handleUpdateStatus(task, value)}
-                            />
-                          </Box>
-                        )}
-
-                        <Box display="flex" flexDirection="column" gap={1}>
-                          <Typography variant="body1" fontWeight="bold">
-                            Task description
-                          </Typography>
-                          <Typography variant="body1">{task.description}</Typography>
-                        </Box>
-
-                        <Box display="flex" flexDirection="column" gap={1}>
-                          <Typography variant="body1" fontWeight="bold">
-                            Assigned by
-                          </Typography>
-                          <Typography variant="body1">{Format.user(task.author)}</Typography>
-                        </Box>
-                      </Box>
-
-                      <Box display="flex" flexDirection="column" gap={2} flex={1}>
-                        <Box display="flex" flexDirection="column" gap={1}>
-                          <Typography variant="body1" fontWeight="bold">
-                            Assigned to
-                          </Typography>
-                          <Typography>{Format.user(task.assignee)}</Typography>
-                          {isAssigneeUpdating && (
-                            <Box component="ul" width="100%">
-                              <FormField
-                                component="li"
-                                field={{
-                                  id: 'assignee',
-                                  type: 'Select',
-                                  label: 'Assign to',
-                                  value: formatDefaultAssignee,
-                                  options: assignees ?? []
-                                }}
-                                error={
-                                  displayErrors
-                                    ? (updateTask.assignee.error as ValidationError)
-                                    : undefined
-                                }
-                                onChange={(_, value) => handleUpdateAssignee(task, value)}
-                              />
-                            </Box>
-                          )}
-                        </Box>
-
-                        <Box display="flex" flexDirection="column" gap={1}>
-                          <Typography variant="body1" fontWeight="bold">
-                            Date and time recorded
-                          </Typography>
-                          <Typography variant="body1">
-                            {Format.dateAndTimeMobile(task.createdAt)}
-                          </Typography>
-                        </Box>
-                      </Box>
-                    </Box>
-                  </Box>
-
-                  <Box />
-                  {(isStatusUpdating || isAssigneeUpdating) && (
-                    <FormFooter
-                      validationErrors={validationErrors()}
-                      onShowValidationErrors={() => setDisplayErrors(!displayErrors)}
-                      onCancel={handleOnCancel}
-                      onSubmit={() => handleOnSubmit(task)}
-                      loading={updateTask.loading}
-                    />
-                  )}
-                </Box>
-              </Box>
-            );
-          })
-        ) : (
-          <>
-            <h3>There are currently no tasks.</h3>
-            <hr />
-          </>
-        )}
-      </Box>
-    </PageWrapper>
+    <Box
+      sx={{
+        width: 12,
+        height: 12,
+        borderRadius: '50%',
+        backgroundColor: color,
+        border: '1px solid',
+        borderColor,
+        flexShrink: 0
+      }}
+    />
   );
+}
+
+const DEFAULT_QUERY_STATE: QueryState = {
+  values: {
+    status: ['ToDo', 'InProgress'] // Default to show only active tasks
+  },
+  sort: { by: 'date_desc', direction: 'desc' }
 };
 
-export default Tasks;
+export default function Tasks() {
+  const navigate = useNavigate();
+  const { data: incidents } = useIncidents();
+  const { data: tasksData } = useAllTasks();
+
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const [queryState, setQueryState] = useState<QueryState>(DEFAULT_QUERY_STATE);
+
+  const allTasks: Task[] = useMemo(() => tasksData ?? [], [tasksData]);
+  const incidentNameById = new Map((incidents ?? []).map((i) => [i.id, i.name] as const));
+
+  const allAuthors = useMemo(() => {
+    const seen = new Set<string>();
+    return allTasks
+      .map((t) => t.author)
+      .filter((user) => {
+        if (!user || seen.has(user.username)) return false;
+        seen.add(user.username);
+        return true;
+      })
+      .sort((a, b) => a.displayName.localeCompare(b.displayName));
+  }, [allTasks]);
+
+  const allAssignees = useMemo(() => {
+    const seen = new Set<string>();
+    return allTasks
+      .map((t) => t.assignee)
+      .filter((user) => {
+        if (!user || seen.has(user.username)) return false;
+        seen.add(user.username);
+        return true;
+      })
+      .sort((a, b) => a.displayName.localeCompare(b.displayName));
+  }, [allTasks]);
+
+  const taskFilters = useMemo(() => {
+    const incidentList = (incidents ?? []).map((i) => ({ id: i.id, name: i.name }));
+    return buildTaskFilters(allAuthors, allAssignees, incidentList);
+  }, [allAuthors, allAssignees, incidents]);
+
+  const visibleTasks = useMemo(() => {
+    const items = allTasks.slice();
+    const v = queryState.values;
+
+    const selectedAuthors = new Set<string>((v.author as string[]) ?? []);
+    const selectedAssignees = new Set<string>((v.assignee as string[]) ?? []);
+    const selectedIncidents = new Set<string>((v.incident as string[]) ?? []);
+    const selectedStatuses = new Set<string>((v.status as string[]) ?? []);
+
+    const filtered = items.filter((task) => {
+      if (selectedAuthors.size > 0) {
+        if (!selectedAuthors.has(task.author.username)) return false;
+      }
+
+      if (selectedAssignees.size > 0) {
+        if (!selectedAssignees.has(task.assignee.username)) return false;
+      }
+
+      if (selectedIncidents.size > 0) {
+        if (!selectedIncidents.has(task.incidentId)) return false;
+      }
+
+      if (selectedStatuses.size > 0) {
+        if (!selectedStatuses.has(task.status)) return false;
+      }
+
+      return true;
+    });
+
+    const sortBy = queryState.sort?.by || 'date_desc';
+    filtered.sort((a, b) => {
+      switch (sortBy) {
+        case 'name_asc':
+          return a.name.localeCompare(b.name);
+        case 'name_desc':
+          return b.name.localeCompare(a.name);
+        case 'author_asc':
+          return a.author.displayName.localeCompare(b.author.displayName);
+        case 'author_desc':
+          return b.author.displayName.localeCompare(a.author.displayName);
+        case 'date_asc':
+          return a.createdAt.localeCompare(b.createdAt);
+        case 'date_desc':
+        default:
+          return b.createdAt.localeCompare(a.createdAt);
+      }
+    });
+
+    return filtered;
+  }, [allTasks, queryState]);
+
+  const activeFilterCount = useMemo(() => countActive(queryState.values), [queryState.values]);
+
+  const onAddTask = () => {
+    // eslint-disable-next-line no-alert
+    alert('Not implemented');
+  };
+
+  const handleOpenFilters = () => setFiltersOpen(true);
+
+  return (
+    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+      <Box
+        sx={{
+          width: '100%',
+          backgroundColor: 'white',
+          paddingX: { xs: '1rem', md: '60px' },
+          paddingY: '1.3rem'
+        }}
+      >
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            color: 'inherit',
+            textDecoration: 'none',
+            mr: 2
+          }}
+        >
+          <PageTitle title="Tasks" />
+        </Box>
+      </Box>
+
+      <PageWrapper backgroundColor="#f7f7f7">
+        <Box
+          sx={{
+            display: 'flex',
+            gap: 2,
+            flexWrap: 'wrap',
+            justifyContent: 'flex-end' // added
+          }}
+        >
+          <Button
+            variant="contained"
+            startIcon={<AddCircleIcon />}
+            onClick={onAddTask}
+            color="primary"
+            sx={{
+              flex: { xs: 1, sm: '0 0 auto' },
+              maxWidth: { sm: '200px' }
+            }}
+          >
+          Add Task
+          </Button>
+          <Button
+            variant="contained"
+            onClick={handleOpenFilters}
+            color="primary"
+            sx={{
+              flex: { xs: 1, sm: '0 0 auto' },
+              maxWidth: { sm: '200px' }
+            }}
+          >
+          Sort & Filter{activeFilterCount > 0 ? ` (${activeFilterCount})` : ''}
+          </Button>
+        </Box>
+      </PageWrapper>
+
+
+      <Box
+        sx={{
+          flex: 1,
+          overflow: 'auto',
+          backgroundColor: 'background.default',
+          p: { xs: 0, md: 0 }
+        }}
+      >
+        {visibleTasks.length === 0 ? (
+          <Box
+            sx={{
+              display: 'flex',
+              padding: 4,
+              flexDirection: 'column',
+              alignItems: 'center',
+              color: 'text.secondary'
+            }}
+          >
+            <Typography variant="h6">
+              {allTasks.length === 0 ? 'No tasks found' : 'No results found'}
+            </Typography>
+            <Typography variant="body2">
+              {allTasks.length === 0
+                ? 'There are currently no tasks.'
+                : 'There are no tasks matching your filters.'}
+            </Typography>
+          </Box>
+        ) : (
+          <DataList
+            items={visibleTasks.map<ListRow>((t) => ({
+              key: t.id,
+              title: t.name,
+              content: (
+                <Typography variant="body2">Assigned to: {Format.user(t.assignee)}</Typography>
+              ),
+              footer: `INCIDENT: ${incidentNameById.get(t.incidentId) ?? t.incidentId}`,
+              titleDot: <StatusDot status={t.status} />,
+              onClick: () => navigate(`/tasks/${t.incidentId}#${t.id}`)
+            }))}
+          />
+        )}
+      </Box>
+
+      <SortAndFilter
+        open={filtersOpen}
+        onClose={() => setFiltersOpen(false)}
+        sort={taskSort}
+        tree={taskFilters}
+        initial={queryState}
+        onApply={(next) => {
+          setQueryState(next);
+          setFiltersOpen(false);
+        }}
+      />
+    </Box>
+  );
+}
