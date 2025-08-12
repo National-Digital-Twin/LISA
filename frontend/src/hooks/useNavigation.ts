@@ -1,4 +1,5 @@
 import { useLocation } from 'react-router-dom';
+import { useResponsive } from './useResponsiveHook';
 
 export interface NavigationItem {
   to: string;
@@ -14,15 +15,20 @@ export const NAVIGATION_ITEMS: NavigationItem[] = [
 
 export const useNavigation = () => {
   const { pathname } = useLocation();
+  const { isMobile } = useResponsive();
 
   const isActive = (path: string) => pathname === path;
+
+  const filteredItems = NAVIGATION_ITEMS.filter(
+    (item) => !(isMobile && item.label === 'Form Templates')
+  );
 
   const handleLink = () => {
     document.documentElement.scrollTo(0, 0);
   };
 
   return {
-    navigationItems: NAVIGATION_ITEMS,
+    navigationItems: filteredItems,
     isActive,
     handleLink
   };

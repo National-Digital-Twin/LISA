@@ -12,6 +12,7 @@ import getHandler from '../components/Notifications/handlers';
 import { useNotifications, useReadNotification } from '../hooks';
 import { Format } from '../utils';
 import DataList, { ListRow } from '../components/DataList';
+import { PageTitle } from '../components';
 
 interface TabPanelProps {
   readonly children?: React.ReactNode;
@@ -119,10 +120,25 @@ export default function Notifications() {
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-      <Box sx={{ padding: { xs: 2, md: 3 } }}>
-        <Typography variant="h4" sx={{ fontSize: { xs: '1.5rem', md: '2rem' } }}>
-          Notifications
-        </Typography>
+      <Box
+        sx={{
+          width: '100%',
+          backgroundColor: 'white',
+          paddingX: { xs: '1rem', md: '60px' },
+          paddingY: '1.3rem'
+        }}
+      >
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            color: 'inherit',
+            textDecoration: 'none',
+            mr: 2
+          }}
+        >
+          <PageTitle title="Notifications" />
+        </Box>
       </Box>
 
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
