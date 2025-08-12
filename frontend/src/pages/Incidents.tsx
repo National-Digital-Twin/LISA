@@ -12,6 +12,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import {
   Box,
   Button,
+  Card,
+  CardContent,
   Paper,
   Table,
   TableBody,
@@ -28,6 +30,7 @@ import PageWrapper from '../components/PageWrapper';
 import { QueryState } from '../components/SortFilter/filter-types';
 import {
   applyImpliedSelections,
+  countActive,
   getFromAndToFromTimeSelection
 } from '../components/SortFilter/filter-utils';
 import {
@@ -112,6 +115,8 @@ const Incidents = () => {
     return a.displayName ?? '';
   };
 
+  const activeFilterCount = useMemo(() => countActive(queryState.values), [queryState.values]);
+
   const visibleIncidents = useMemo(() => {
     if (!incidents) return [];
 
@@ -130,7 +135,7 @@ const Incidents = () => {
 
     const filtered = incidents.filter((incident) => {
       if (searchTerm && !incident.name.toLowerCase().includes(searchTerm)) return false;
-      
+
       const authorKey = (incident.reportedBy?.displayName ?? '').toLowerCase().replace(/\s+/g, '-');
       if (selectedAuthors.size > 0 && !selectedAuthors.has(authorKey)) return false;
 
@@ -177,106 +182,149 @@ const Incidents = () => {
   }, [incidentFilters, incidents, queryState.sort?.by, queryState.values]);
 
   return (
-    <PageWrapper>
-      <PageTitle title="Incidents">
-        <Box display="flex" width="100%" gap={1}>
+    <>
+      <Box
+        sx={{
+          width: '100%',
+          backgroundColor: 'white',
+          paddingX: { xs: '1rem', md: '60px' },
+          paddingY: '1.3rem'
+        }}
+      >
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            color: 'inherit',
+            textDecoration: 'none',
+            mr: 2
+          }}
+        >
+          <PageTitle title="Incidents" />
+        </Box>
+      </Box>
+
+      <PageWrapper backgroundColor="#f7f7f7">
+        <Box
+          sx={{
+            display: 'flex',
+            gap: 2,
+            flexWrap: 'wrap',
+            justifyContent: 'flex-end'
+          }}
+        >
           <Button
-            variant="contained"
-            startIcon={<AddCircleIcon />}
-            onClick={onAddIncident}
             color="primary"
-            sx={{ flex: 1 }}
+            startIcon={<AddCircleIcon />}
+            variant="contained"
+            onClick={onAddIncident}
+            sx={{
+              flex: { xs: 1, sm: '0 0 auto' },
+              maxWidth: { sm: '200px' }
+            }}
           >
             Add New Incident
           </Button>
 
-          <Button variant="contained" onClick={handleOpenFilters} color="primary" sx={{ flex: 1 }}>
-            Sort & Filter
+          <Button
+            color="primary"
+            variant="contained"
+            sx={{
+              flex: { xs: 1, sm: '0 0 auto' },
+              maxWidth: { sm: '200px' }
+            }}
+            onClick={handleOpenFilters}
+          >
+          Sort & Filter{activeFilterCount > 0 ? ` (${activeFilterCount})` : ''}
           </Button>
         </Box>
-      </PageTitle>
 
-      <TableContainer sx={{ boxShadow: 0 }} component={Paper}>
-        <Table>
-          <TableHead sx={{ backgroundColor: 'background.default' }}>
-            <TableRow>
-              {tableHeaders.map((value) => (
-                <TableCell key={value} align="left">
-                  <Typography variant="body1" fontWeight="600" padding={0} margin={0}>
-                    {value}
-                  </Typography>
-                </TableCell>
-              ))}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {visibleIncidents.map((incident) => {
-              const { id, name, reportedBy, startedAt } = incident;
-              return isMobile ? (
-                <TableRow key={id}>
-                  <TableCell width="70%">
-                    <Box display="flex" flexDirection="column" gap="0.3rem">
-                      <Typography
-                        component={Link}
-                        to={`/logbook/${id}`}
-                        variant="body1"
-                        color="primary"
-                        fontWeight="bold"
-                      >
-                        {name}
-                      </Typography>
+        <Card variant="outlined" sx={{ borderRadius: 2 }}>
+          <CardContent>
+            <TableContainer sx={{ boxShadow: 0 }} component={Paper}>
+              <Table>
+                <TableHead sx={{ backgroundColor: 'background.default' }}>
+                  <TableRow>
+                    {tableHeaders.map((value) => (
+                      <TableCell key={value} align="left">
+                        <Typography variant="body1" fontWeight="600" padding={0} margin={0}>
+                          {value}
+                        </Typography>
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {visibleIncidents.map((incident) => {
+                    const { id, name, reportedBy, startedAt } = incident;
+                    return isMobile ? (
+                      <TableRow key={id}>
+                        <TableCell width="70%">
+                          <Box display="flex" flexDirection="column" gap="0.3rem">
+                            <Typography
+                              component={Link}
+                              to={`/logbook/${id}`}
+                              variant="body1"
+                              color="primary"
+                              fontWeight="bold"
+                            >
+                              {name}
+                            </Typography>
 
-                      <Typography variant="body2">{reportedBy?.username}</Typography>
-                      <Typography variant="body2">{Format.date(startedAt)}</Typography>
+                            <Typography variant="body2">{reportedBy?.username}</Typography>
+                            <Typography variant="body2">{Format.date(startedAt)}</Typography>
 
-                      <Box>
-                        <Stage
-                          label={Format.incident.stage(incident.stage).toUpperCase()}
-                          stage={incident.stage}
-                        />
-                      </Box>
-                    </Box>
-                  </TableCell>
-                </TableRow>
-              ) : (
-                <TableRow key={id}>
-                  <TableCell>
-                    <Typography
-                      component={Link}
-                      to={`/logbook/${id}`}
-                      variant="body1"
-                      color="primary"
-                      fontWeight="bold"
-                    >
-                      {name}
-                    </Typography>
-                  </TableCell>
-                  <TableCell>{reportedBy?.username}</TableCell>
-                  <TableCell>{Format.date(startedAt)}</TableCell>
-                  <TableCell>
-                    <Stage
-                      label={Format.incident.stage(incident.stage).toUpperCase()}
-                      stage={incident.stage}
-                    />
-                  </TableCell>
-                </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
-      </TableContainer>
-      <SortAndFilter
-        open={filtersOpen}
-        onClose={() => setFiltersOpen(false)}
-        sort={incidentSort}
-        tree={incidentFilters}
-        initial={queryState}
-        onApply={(next) => {
-          setQueryState(next);
-          setFiltersOpen(false);
-        }}
-      />
-    </PageWrapper>
+                            <Box>
+                              <Stage
+                                label={Format.incident.stage(incident.stage).toUpperCase()}
+                                stage={incident.stage}
+                              />
+                            </Box>
+                          </Box>
+                        </TableCell>
+                      </TableRow>
+                    ) : (
+                      <TableRow key={id}>
+                        <TableCell>
+                          <Typography
+                            component={Link}
+                            to={`/logbook/${id}`}
+                            variant="body1"
+                            color="primary"
+                            fontWeight="bold"
+                          >
+                            {name}
+                          </Typography>
+                        </TableCell>
+                        <TableCell>{reportedBy?.username}</TableCell>
+                        <TableCell>{Format.date(startedAt)}</TableCell>
+                        <TableCell>
+                          <Stage
+                            label={Format.incident.stage(incident.stage).toUpperCase()}
+                            stage={incident.stage}
+                          />
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </CardContent>
+        </Card>
+        <SortAndFilter
+          open={filtersOpen}
+          onClose={() => setFiltersOpen(false)}
+          sort={incidentSort}
+          tree={incidentFilters}
+          initial={queryState}
+          onApply={(next) => {
+            setQueryState(next);
+            setFiltersOpen(false);
+          }}
+        />
+      </PageWrapper>
+    </>
   );
 };
 

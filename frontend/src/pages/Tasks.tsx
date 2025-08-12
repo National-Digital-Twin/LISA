@@ -15,6 +15,8 @@ import { SortAndFilter } from '../components/SortFilter/SortAndFilter';
 import { buildTaskFilters, taskSort } from '../components/SortFilter/schemas/task-schema';
 import { type QueryState } from '../components/SortFilter/filter-types';
 import { countActive } from '../components/SortFilter/filter-utils';
+import { PageTitle } from '../components';
+import PageWrapper from '../components/PageWrapper';
 
 function StatusDot({ status }: { status: TaskStatus }) {
   let color: string;
@@ -155,45 +157,62 @@ export default function Tasks() {
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-      <Box sx={{ padding: { xs: 2, md: 3 } }}>
-        <Typography variant="h4" sx={{ fontSize: { xs: '1.5rem', md: '2rem' } }}>
-          Tasks
-        </Typography>
-      </Box>
-
       <Box
         sx={{
-          paddingX: { xs: 2, md: 3 },
-          pb: 2,
-          display: 'flex',
-          gap: 2,
-          flexDirection: 'row'
+          width: '100%',
+          backgroundColor: 'white',
+          paddingX: { xs: '1rem', md: '60px' },
+          paddingY: '1.3rem'
         }}
       >
-        <Button
-          variant="contained"
-          startIcon={<AddCircleIcon />}
-          onClick={onAddTask}
-          color="primary"
+        <Box
           sx={{
-            flex: { xs: 1, sm: '0 0 auto' },
-            maxWidth: { sm: '200px' }
+            display: 'flex',
+            alignItems: 'center',
+            color: 'inherit',
+            textDecoration: 'none',
+            mr: 2
           }}
         >
-          Add Task
-        </Button>
-        <Button
-          variant="contained"
-          onClick={handleOpenFilters}
-          color="primary"
-          sx={{
-            flex: { xs: 1, sm: '0 0 auto' },
-            maxWidth: { sm: '200px' }
-          }}
-        >
-          Sort & Filter{activeFilterCount > 0 ? ` (${activeFilterCount})` : ''}
-        </Button>
+          <PageTitle title="Tasks" />
+        </Box>
       </Box>
+
+      <PageWrapper backgroundColor="#f7f7f7">
+        <Box
+          sx={{
+            display: 'flex',
+            gap: 2,
+            flexWrap: 'wrap',
+            justifyContent: 'flex-end' // added
+          }}
+        >
+          <Button
+            variant="contained"
+            startIcon={<AddCircleIcon />}
+            onClick={onAddTask}
+            color="primary"
+            sx={{
+              flex: { xs: 1, sm: '0 0 auto' },
+              maxWidth: { sm: '200px' }
+            }}
+          >
+          Add Task
+          </Button>
+          <Button
+            variant="contained"
+            onClick={handleOpenFilters}
+            color="primary"
+            sx={{
+              flex: { xs: 1, sm: '0 0 auto' },
+              maxWidth: { sm: '200px' }
+            }}
+          >
+          Sort & Filter{activeFilterCount > 0 ? ` (${activeFilterCount})` : ''}
+          </Button>
+        </Box>
+      </PageWrapper>
+
 
       <Box
         sx={{

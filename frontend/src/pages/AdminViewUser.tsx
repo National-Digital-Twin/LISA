@@ -4,13 +4,19 @@
 
 import { Box, Button, Card, Typography } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { PageTitle } from '../components';
 import PageWrapper from '../components/PageWrapper';
-import { useAuth } from '../hooks';
+import { useUsers } from '../hooks';
 
-const MyProfile = () => {
-  const { user } = useAuth()
+const AdminViewUser = () => {
+  const { users } = useUsers()
+  const [searchParams] = useSearchParams();
+  const userEmail = searchParams.get('user');
+
+  const selectedUser = Array.isArray(users)
+    ? users.find(u => String(u.email) === String(userEmail))
+    : null;
 
   return (
     <>
@@ -24,7 +30,7 @@ const MyProfile = () => {
       >
         <Box
           component={Link}
-          to="/settings"
+          to="/settings/users"
           sx={{
             display: 'flex',
             alignItems: 'center',
@@ -34,7 +40,7 @@ const MyProfile = () => {
           }}
         >
           <ArrowBackIcon sx={{ marginRight: 1 }} />
-          <PageTitle title={user.current?.displayName ?? "Unknown user"} />
+          <PageTitle title={selectedUser?.displayName ?? 'Unknown user'} />
         </Box>
       </Box>
 
@@ -44,13 +50,13 @@ const MyProfile = () => {
             <Typography variant="h2" sx={{ fontSize: '1.25rem', fontWeight: 500, paddingBottom: 2 }}>
               Personal details
             </Typography>
-            <Typography variant="body2" gutterBottom>
+            <Typography variant="body1" gutterBottom>
               <span style={{ fontWeight: 'bold' }}>Organisation:</span>{' '}
-              {user.current?.email?.split('@')[1] || ''}
+              {selectedUser?.email?.split('@')[1] || ''}
             </Typography>
-            <Typography variant="body2" gutterBottom>
+            <Typography variant="body1" gutterBottom>
               <span style={{ fontWeight: 'bold' }}>Email:</span>{' '}
-              {user.current?.email || 'Not provided'}
+              {selectedUser?.email || 'Not provided'}
             </Typography>
           </Box>
         </Card>
@@ -80,8 +86,7 @@ const MyProfile = () => {
         </Box>
       </PageWrapper>
     </>
-  )
-}
+  );
+};
 
-
-export default MyProfile;
+export default AdminViewUser;
