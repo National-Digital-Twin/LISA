@@ -2,7 +2,7 @@
 // © Crown Copyright 2025. This work has been developed by the National Digital Twin Programme
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
-import { FilterTree, GroupNode, OptionLeaf } from "./filter-types";
+import { FilterTree, GroupNode, OptionLeaf, QueryState } from "./filter-types";
 
 const resolveTimeRange = (preset: string | undefined): { from?: number; to?: number } => {
   const now = new Date();
@@ -93,3 +93,31 @@ export const applyImpliedSelections = (
   };
 };
   
+
+export const countActive = (values: QueryState['values']) => 
+  Object.entries(values)
+    .filter(([key, v]) => {
+      if (key === 'sort') return false;
+      if (Array.isArray(v)) return v.length > 0;
+      if (v == null || v === '') return false;
+      if (typeof v === 'object') return Object.values(v).some(Boolean);
+      return true;
+    })
+    .map(([key]) => key.split('.')[0])
+    .filter((v, i, arr) => arr.indexOf(v) === i)
+    .length;
+
+
+export const countActiveForGroup = (values: QueryState['values'], groupId: string): number => 
+  Object.entries(values)
+    .filter(([key, v]) => {
+      // Check if this key belongs to the group
+      const keyGroup = key.split('.')[0];
+      if (keyGroup !== groupId) return false;
+      
+      if (Array.isArray(v)) return v.length > 0;
+      if (v == null || v === '') return false;
+      if (typeof v === 'object') return Object.values(v).some(Boolean);
+      return true;
+    })
+    .length;

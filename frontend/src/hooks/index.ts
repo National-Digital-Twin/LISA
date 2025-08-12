@@ -8,7 +8,7 @@ import { useCreateLogEntry, useLogEntries } from './useLogEntries';
 import { useLogEntriesUpdates } from './useLogEntriesUpdates';
 import { useNotifications, useReadNotification } from './useNotifications';
 import { useOutsideClick } from './useOutsideClick';
-import { useTasks, useUpdateTaskAssignee, useUpdateTaskStatus } from './useTasks';
+import { useTasks, useUpdateTaskAssignee, useUpdateTaskStatus, useAllTasks } from './useTasks';
 import { useToast, useToastEntries } from './useToasts';
 
 export {
@@ -21,6 +21,7 @@ export {
   useNotifications,
   useReadNotification,
   useTasks,
+  useAllTasks,
   useUpdateTaskAssignee,
   useUpdateTaskStatus,
   useUsers,
