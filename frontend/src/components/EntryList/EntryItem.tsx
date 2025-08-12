@@ -3,9 +3,9 @@
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
 // Global imports
-import { MouseEvent, ReactElement, useEffect, useMemo, useRef, useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { Box, Button, Divider, Grid2 as Grid, Paper, Popover, Typography } from '@mui/material';
+import { MouseEvent, ReactElement, useEffect, useMemo, useRef } from 'react';
+import { useLocation } from 'react-router-dom';
+import { Box, Divider, Grid2 as Grid, Paper, Typography } from '@mui/material';
 import PersonIcon from '@mui/icons-material/Person';
 
 // Local imports
@@ -37,8 +37,6 @@ const EntryItem = ({
   metaItems = undefined
 }: Props) => {
   const { isMobile, isBelowMd } = useResponsive();
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const openUser = Boolean(anchorEl);
   const { hash } = useLocation();
   const divRef = useRef<HTMLDivElement>(null);
   const { id, offline } = entry;
@@ -67,33 +65,12 @@ const EntryItem = ({
       {isMobile && (
         <>
           <Box display="flex" alignItems="center" gap={1}>
-            <Button
-              variant="text"
-              sx={{ color: 'primary.main', fontSize: '0.875rem', textTransform:'none', minWidth: 'unset', '& .MuiButton-startIcon': {
-                marginRight: 0.5,
-                svg: {
-                  fontSize: '1rem',
-                  color: 'primary.main',
-                }
-              }  }}
-              onClick={(event) => setAnchorEl(event.currentTarget)}
-              startIcon={<PersonIcon />}
-            >
-              {Format.user(entry.author)}
-            </Button>
-            <Popover
-              open={openUser}
-              anchorEl={anchorEl}
-              onClose={() => setAnchorEl(null)}
-              anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
-              slotProps={{
-                paper: {
-                  sx: { padding: '1rem' }
-                }
-              }}
-            >
-              <Typography fontSize="1.15rem">{Format.user(entry.author)}</Typography>
-            </Popover>
+            <Box display="inline-flex" alignItems="center" gap={0.5} >
+              <PersonIcon sx={{ fontSize: '1rem', color: 'text.primary' }}  color="action"/>
+              <Typography variant="body2" sx={{ color: 'text.primary', fontSize: '0.875rem' }}>
+                {Format.user(entry.author)}
+              </Typography>
+            </Box>
             <Grid
               component="div"
               sx={{ display: 'flex', alignItems: 'center', marginLeft:'auto', pr:1.5 }}
@@ -101,18 +78,10 @@ const EntryItem = ({
               title={entry.offline ? 'Offline entry' : ''}
             >
               <Typography
-                component={Link}
-                to={`/logbook/${entry.incidentId}#${entry.id}`}
                 variant="body2"
                 sx={{
-                  color: 'primary.main',
-                  textDecoration: 'none',
-                  '&:visited': {
-                    color: 'primary.main',
-                  },
-                  '&:hover': {
-                    textDecoration: 'underline',
-                  }
+                  color: 'text.primary',
+                  textDecoration: 'none'
                 }}
               >
                 {prefix}{entry.sequence}

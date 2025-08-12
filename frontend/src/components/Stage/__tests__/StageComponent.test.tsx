@@ -1,7 +1,7 @@
 // Stage.test.tsx
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import Stage from './Stage';
+import Stage from '../Stage';
 
 describe('Stage component', () => {
   it('renders with default size and width', () => {
