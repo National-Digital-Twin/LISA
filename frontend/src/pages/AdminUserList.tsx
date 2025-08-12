@@ -39,17 +39,19 @@ const AdminUserList = () => {
 
   const visibleUsers = useMemo(() => {
     if (!users) return [];
-
+  
+    const base = users.filter(u => u.displayName?.trim()); // exclude missing names
+  
     const v = queryState.values;
     const searchTerm = ((v.search as string) ?? '').trim().toLowerCase();
-
-    const filtered = users.filter((user) => {
+  
+    const filtered = base.filter((user) => {
       if (!searchTerm) return true;
       if (user.email?.toLowerCase().includes(searchTerm)) return true;
-      if (user.displayName?.toLowerCase().includes(searchTerm)) return true;
+      if (user.displayName.toLowerCase().includes(searchTerm)) return true;
       return false;
     });
-
+  
     const sorted = [...filtered].sort((a, b) => {
       const key = queryState.sort?.by;
       switch (key) {
@@ -65,7 +67,7 @@ const AdminUserList = () => {
           return a.displayName.localeCompare(b.displayName);
       }
     });
-
+  
     return sorted;
   }, [users, queryState.sort?.by, queryState.values]);
 
