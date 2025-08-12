@@ -14,7 +14,7 @@ const PageWrapper = ({ children, backgroundColor = 'transparent' }: PageWrapperP
     display="flex"
     flexDirection="column"
     gap={4}
-    paddingY="2rem"
+    paddingY="1rem"
     sx={{
       backgroundColor,
       '@media print': {

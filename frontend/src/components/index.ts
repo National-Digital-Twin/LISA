@@ -3,7 +3,6 @@
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
 import AddEntry from './AddEntry';
-import ChangeStage from './ChangeStage';
 import DateTimeInput from './DateTimeInput';
 import { EntryList } from './EntryList';
 import FormField from './Form/FormField';
@@ -16,7 +15,6 @@ import SelectField from './SelectField';
 
 export {
   AddEntry,
-  ChangeStage,
   DateTimeInput,
   EntryList,
   FormField,
