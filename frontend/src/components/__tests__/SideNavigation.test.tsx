@@ -4,7 +4,7 @@ import { MemoryRouter } from 'react-router-dom';
 import theme from '../../theme';
 import SideNavigation from '../SideNavigation';
 
-const mockNavigationItems = [
+let mockNavigationItems = [
   { to: '/', label: 'Home' },
   { to: '/incidents', label: 'Incidents' },
   { to: '/tasks', label: 'Tasks' },
@@ -42,7 +42,15 @@ describe('SideNavigation', () => {
     mockIsActive.mockReturnValue(false);
   });
 
-  it('should render navigation items', () => {
+  it('renders all items on desktop', () => {
+    // desktop: include Form Templates
+    mockNavigationItems = [
+      { to: '/', label: 'Home' },
+      { to: '/incidents', label: 'Incidents' },
+      { to: '/tasks', label: 'Tasks' },
+      { to: '/forms', label: 'Form Templates' }
+    ];
+
     renderSideNavigation({ open: true, onClose: mockOnClose });
 
     expect(screen.getByText('Home')).toBeInTheDocument();
@@ -51,19 +59,30 @@ describe('SideNavigation', () => {
     expect(screen.getByText('Form Templates')).toBeInTheDocument();
   });
 
-  it('should render logo', () => {
+  it('hides Form Templates on mobile', () => {
+    // mobile: exclude Form Templates
+    mockNavigationItems = [
+      { to: '/', label: 'Home' },
+      { to: '/incidents', label: 'Incidents' },
+      { to: '/tasks', label: 'Tasks' }
+    ];
+
     renderSideNavigation({ open: true, onClose: mockOnClose });
 
-    const logo = screen.getByAltText('Local Incident Services Application');
-    expect(logo).toBeInTheDocument();
+    expect(screen.getByText('Home')).toBeInTheDocument();
+    expect(screen.getByText('Incidents')).toBeInTheDocument();
+    expect(screen.getByText('Tasks')).toBeInTheDocument();
+    expect(screen.queryByText('Form Templates')).toBeNull();
   });
 
-  it('should handle navigation item clicks', () => {
+  it('renders logo', () => {
     renderSideNavigation({ open: true, onClose: mockOnClose });
+    expect(screen.getByAltText('Local Incident Services Application')).toBeInTheDocument();
+  });
 
-    const homeLink = screen.getByText('Home');
-    expect(homeLink).toBeInTheDocument();
-    fireEvent.click(homeLink);
+  it('handles item clicks', () => {
+    renderSideNavigation({ open: true, onClose: mockOnClose });
+    fireEvent.click(screen.getByText('Home'));
     expect(mockHandleLink).toHaveBeenCalled();
   });
 });
