@@ -55,33 +55,26 @@ describe('TasksWidget', () => {
     expect(screen.getByRole('button', { name: /view in progress tasks/i })).toBeInTheDocument();
   });
 
-  it('navigates to correct URL when ToDo count clicked', () => {
-    const mockTasks: Partial<Task>[] = [{ id: '1', status: 'ToDo' }];
-
-    (useAllTasks as jest.Mock).mockReturnValue({
-      data: mockTasks,
-      isLoading: false
-    });
-
-    render(<TasksWidget />);
-
-    fireEvent.click(screen.getByRole('button', { name: '1' }));
-    expect(mockNavigate).toHaveBeenCalledWith('/tasks?mine=true&status=ToDo');
-  });
-
-  it('navigates to correct URL when InProgress count clicked', () => {
-    const mockTasks: Partial<Task>[] = [{ id: '1', status: 'InProgress' }];
-
-    (useAllTasks as jest.Mock).mockReturnValue({
-      data: mockTasks,
-      isLoading: false
-    });
-
-    render(<TasksWidget />);
-
-    fireEvent.click(screen.getByRole('button', { name: '1' }));
-    expect(mockNavigate).toHaveBeenCalledWith('/tasks?mine=true&status=InProgress');
-  });
+  it.each([
+    { status: 'ToDo' as Task['status'], expectedUrl: '/tasks?mine=true&status=ToDo' },
+    { status: 'InProgress' as Task['status'], expectedUrl: '/tasks?mine=true&status=InProgress' }
+  ])(
+    'navigates to correct URL when %s count clicked',
+    ({ status, expectedUrl }) => {
+      const mockTasks: Partial<Task>[] = [{ id: '1', status }];
+  
+      (useAllTasks as jest.Mock).mockReturnValue({
+        data: mockTasks,
+        isLoading: false
+      });
+  
+      render(<TasksWidget />);
+  
+      fireEvent.click(screen.getByRole('button', { name: '1' }));
+      expect(mockNavigate).toHaveBeenCalledWith(expectedUrl);
+    }
+  );
+  
 
   it('navigates to tasks when header arrow clicked', () => {
     (useAllTasks as jest.Mock).mockReturnValue({
