@@ -116,11 +116,10 @@ export function SortAndFilter({
   );
 
   const renderListPage = (nodes: FilterNode[]) => {
-    const activeCounts: Record<string, number> = {};
     const visibleNodes = nodes.filter((n) => !n.hidden);
-    visibleNodes.forEach((n) => {
-      activeCounts[n.id] = countActiveForGroup(local.values, n.id);
-    });
+    const activeCounts: Record<string, number> = Object.fromEntries(
+      visibleNodes.map((n) => [n.id, countActiveForGroup(local.values, n)])
+    );
 
     return (
       <List>
