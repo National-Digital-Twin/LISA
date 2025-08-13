@@ -6,12 +6,12 @@ import { FilterTree, SortOption } from '../filter-types';
 import { makeGroup, makeOptions } from './schema-utils';
 
 export const incidentSort: SortOption[] = [
-  { id: 'name_asc', label: 'Name (A-Z)' },
-  { id: 'name_desc', label: 'Name (Z-A)' },
+  { id: 'name_asc', label: 'Incident name (A-Z)' },
+  { id: 'name_desc', label: 'Incident name (Z-A)' },
   { id: 'reportedby_asc', label: 'Reported by (A-Z)' },
   { id: 'reportedby_desc', label: 'Reported by (Z-A)' },
-  { id: 'date_desc', label: 'Newest - oldest' },
-  { id: 'date_asc', label: 'Oldest - newest' },
+  { id: 'date_desc', label: 'Date created (Newest - oldest)' },
+  { id: 'date_asc', label: ' Date created (Oldest - newest)' },
 ];
 
 export const buildIncidentFilters = (
@@ -21,6 +21,13 @@ export const buildIncidentFilters = (
   title: 'Sort & Filter',
   items: [
     makeGroup('sort', 'Sort by', 'single', makeOptions(incidentSort)),
+    {
+      id: 'search',
+      type: 'text',
+      label: 'Keyword search',
+      placeholder: 'Search by name',
+      helperText: 'Filters incidents by name',
+    },
     makeGroup('author', 'Author', 'multi', makeOptions(
       authors.map((name) => ({
         id: name.toLowerCase().replace(/\s+/g, '-'),

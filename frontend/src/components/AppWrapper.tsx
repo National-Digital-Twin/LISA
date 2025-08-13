@@ -18,10 +18,16 @@ import Location from '../pages/Location';
 import Logbook from '../pages/Logbook';
 import Notifications from '../pages/Notifications';
 import Overview from '../pages/Overview';
+import IncidentTasks from '../pages/IncidentTasks';
+import IncidentPickerPage from '../pages/IncidentPickerPage';
 import Settings from '../pages/Settings';
 import Tasks from '../pages/Tasks';
 import Layout from './Layout';
 import LogbookV2 from '../pages/LogbookV2';
+import MyProfile from '../pages/MyProfile';
+import AdminUserList from '../pages/AdminUserList';
+import AdminViewUser from '../pages/AdminViewUser';
+import AdminNewUser from '../pages/AdminNewUser';
 
 const AppWrapper = () => {
   const router = createBrowserRouter([
@@ -37,12 +43,18 @@ const AppWrapper = () => {
         { path: 'incident/:incidentId', element: <Overview /> },
         { path: 'logbook/:incidentId', element: <Logbook /> },
         { path: 'logbook/v2/:incidentId', element: <LogbookV2 /> },
-        { path: 'tasks/:incidentId', element: <Tasks /> },
+        { path: 'tasks', element: <Tasks /> },
+        { path: 'tasks/:incidentId', element: <IncidentTasks /> },
+        { path: 'incidents/pick', element: <IncidentPickerPage /> },
         { path: 'forms/:incidentId', element: <LogForms /> },
         { path: 'location/:incidentId', element: <Location /> },
         { path: 'files/:incidentId', element: <Files /> },
         { path: 'notifications', element: <Notifications /> },
         { path: 'settings', element: <Settings /> },
+        { path: 'settings/my-profile', element: <MyProfile /> },
+        { path: 'settings/users', element: <AdminUserList /> },
+        { path: 'settings/user-profile', element: <AdminViewUser /> },
+        { path: 'settings/users/new', element: <AdminNewUser /> },
         { path: '*', element: <Error404 /> }
       ]
     }

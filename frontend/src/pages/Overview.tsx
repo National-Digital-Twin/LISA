@@ -4,28 +4,34 @@
 
 // Global imports
 import { useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { Box, Button, Typography, Grid2 as Grid } from '@mui/material';
+import { useNavigate, useParams } from 'react-router-dom';
+import { Box, Button, Typography, Grid2 as Grid, IconButton } from '@mui/material';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 // Local imports
 import { type IncidentStage } from 'common/IncidentStage';
 import { type LogEntry } from 'common/LogEntry';
-import { ChangeStage, PageTitle } from '../components';
+import { PageTitle } from '../components';
 import SetInformation from '../components/SetInformation';
 import { useChangeIncidentStage, useIncidents } from '../hooks/useIncidents';
 import { Format } from '../utils';
-import { useCreateLogEntry } from '../hooks';
-import Stage from '../components/Stage';
+import { useAuth, useCreateLogEntry } from '../hooks';
 import PageWrapper from '../components/PageWrapper';
 import { GridListItem } from '../components/GridListItem';
+import StageMini from '../components/Stage/StageMini';
+import StageSelect from '../components/Stage/StageSelect';
+import { isAdmin } from '../utils/userRoles';
 
 const Overview = () => {
   const { incidentId } = useParams();
   const query = useIncidents();
+  const { user } = useAuth();
   const changeIncidentStage = useChangeIncidentStage();
+  const navigate = useNavigate();
   const { createLogEntry } = useCreateLogEntry(incidentId);
-  const [changingStage, setChangingStage] = useState<boolean>();
   const [settingInformation, setSettingInformation] = useState<boolean>();
+
+  const isUserAdmin = isAdmin(user.current);
 
   const incident = query.data?.find((inc) => inc.id === incidentId);
   if (!incident) {
@@ -39,12 +45,6 @@ const Overview = () => {
         onSuccess: () => {}
       }
     );
-    setChangingStage(false);
-  };
-
-  const onChangeStateClick = () => {
-    setSettingInformation(false);
-    setChangingStage(true);
   };
 
   const onSetInformation = (logEntry: Partial<LogEntry>) => {
@@ -53,7 +53,6 @@ const Overview = () => {
   };
 
   const onEditClick = () => {
-    setChangingStage(false);
     setSettingInformation(true);
   };
 
@@ -61,21 +60,19 @@ const Overview = () => {
     <PageWrapper>
       <>
         <PageTitle
-          title={Format.incident.type(incident.type)}
-          subtitle={incident.name}
-          stage={incident.stage}
-        >
-          <Box display="flex" justifyContent="end" gap={2}>
-            <Button
-              type="button"
-              variant="contained"
-              disableRipple
-              disableFocusRipple
-              onClick={onChangeStateClick}
-              color="primary"
-            >
-              Change Stage
-            </Button>
+          title="Overview"
+          titleStart={
+            <IconButton aria-label="Back" onClick={() => {
+              if (settingInformation) {
+                setSettingInformation(false);
+              } else {
+                navigate(-1);
+              }
+            }}>
+              <ArrowBackIcon />
+            </IconButton>
+          }
+          titleEnd={
             <Button
               type="button"
               variant="contained"
@@ -83,19 +80,45 @@ const Overview = () => {
               disableFocusRipple
               onClick={onEditClick}
               color="primary"
+              sx={{ px: 9 }}
             >
               Edit
             </Button>
+          }
+        >
+          <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 0.5, px: 0.5, mt: 1 }}>
+            <Typography fontSize="1.25rem" variant="h2" fontWeight={400}>
+              {incident?.name}
+            </Typography>
+
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <StageMini stage={incident?.stage ?? 'Monitoring'} size={12} />
+
+              <Box sx={{ flex: 1, minWidth: 0 }}>
+                <Typography
+                  component="section"
+                  variant="body2"
+                  color="grey"
+                  sx={{
+                    m: 0,
+                    lineHeight: 1.2,
+                    overflowX: 'auto',
+                    whiteSpace: 'nowrap',
+                    pr: 2,
+                    maskImage: 'linear-gradient(to right, black 80%, transparent 100%)',
+                    WebkitMaskImage: 'linear-gradient(to right, black 80%, transparent 100%)',
+                    scrollbarWidth: 'none',
+                    msOverflowStyle: 'none',
+                    '&::-webkit-scrollbar': { display: 'none' },
+                  }}
+                  aria-label="Incident type"
+                >
+                  {incident?.type ? Format.incident.type(incident.type).toUpperCase() : ''}
+                </Typography>
+              </Box>
+            </Box>
           </Box>
         </PageTitle>
-
-        {changingStage && (
-          <ChangeStage
-            incident={incident}
-            onChangeStage={onChangeStage}
-            onCancel={() => setChangingStage(false)}
-          />
-        )}
 
         {settingInformation && (
           <SetInformation
@@ -106,16 +129,29 @@ const Overview = () => {
         )}
 
         <Box display="flex" flexDirection="column" gap={2}>
-          <Typography variant="h2" fontSize="1.6rem">
+          <Typography variant="h6" fontWeight='bold' fontSize='1rem'>
             Summary
           </Typography>
           <Grid component="ul" container padding={3} spacing={4} bgcolor="background.default">
-            <GridListItem title="Stage">
-              <Stage
-                label={Format.incident.stage(incident.stage).toUpperCase()}
-                stage={incident.stage}
-              />
-            </GridListItem>
+            {isUserAdmin ? (
+              <StageSelect value={incident.stage} onChange={onChangeStage} />
+            ) : (
+              <GridListItem title="Stage">
+                <Box display="flex" alignItems="center" gap={1} flexWrap="nowrap">
+                  <Box sx={{ display: 'inline-flex', alignItems: 'center', transform: 'translateY(-1px)' }}>
+                    <StageMini stage={incident.stage} size={12} />
+                  </Box>
+                  <Typography
+                    component="span"
+                    variant="body1"
+                    noWrap
+                    sx={{ lineHeight: 1, m: 0 }}
+                  >
+                    {Format.incident.stage(incident.stage)}
+                  </Typography>
+                </Box>
+              </GridListItem>
+            )}
             <GridListItem title="Incident Type" text={Format.incident.type(incident.type)} />
             <GridListItem
               title="Date and time recorded"
@@ -126,7 +162,7 @@ const Overview = () => {
 
           {incident.referrer && (
             <>
-              <Typography variant="h2" fontSize="1.6rem">
+              <Typography variant="h6" fontWeight='bold' fontSize='1rem'>
                 Referral information
               </Typography>
               <Grid component="ul" container padding={3} spacing={4} bgcolor="background.default">
@@ -148,7 +184,7 @@ const Overview = () => {
             </>
           )}
 
-          <Typography variant="h2" fontSize="1.6rem">
+          <Typography variant="h6" fontWeight='bold' fontSize='1rem'>
             Other Information
           </Typography>
           <Grid component="ul" container padding={3} spacing={4} bgcolor="background.default">

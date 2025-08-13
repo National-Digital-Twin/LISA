@@ -10,9 +10,10 @@ type WidgetBaseProps = PropsWithChildren & {
   title: string;
   onAction?: () => void;
   showArrow?: boolean;
+  actionAriaLabel?: string;
 }
 
-const WidgetBase = ({ title, onAction = undefined, showArrow = false, children }: WidgetBaseProps) => (
+const WidgetBase = ({ title, onAction = undefined, showArrow = false, actionAriaLabel = '', children }: WidgetBaseProps) => (
   <Card variant="outlined" sx={{ borderRadius: 2 }}>
     <CardContent>
       <Box
@@ -29,6 +30,7 @@ const WidgetBase = ({ title, onAction = undefined, showArrow = false, children }
         <Typography variant="h5">{title}</Typography>
         {showArrow && onAction && (
           <IconButton
+            aria-label={actionAriaLabel ?? `Open ${title}`}
             color="primary"
             onClick={(e) => {
               e.stopPropagation();

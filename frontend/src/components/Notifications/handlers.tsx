@@ -62,7 +62,7 @@ function assignedTask(notification: Notification, navigate: NavigateFunction): H
     footer: `INCIDENT: ${incidentTitle}`,
     clickHandler: (item) => {
       if (TaskAssignedNotification.guard(item)) {
-        navigate(`/tasks/${item.task.incidentId}#${item.task.id}`); // TODO: might need to add the Task-{id}
+        navigate(`/tasks/${item.task.incidentId}#${item.task.id}`);
       }
     }
   };

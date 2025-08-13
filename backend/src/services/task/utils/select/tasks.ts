@@ -11,7 +11,7 @@ import { TaskStatus } from 'common/Task';
 import { select } from '../../../../ia';
 import { ns } from '../../../../rdfutil';
 
-export function tasks(incidentId: string) {
+export function tasks(incidentId?: string) {
   const statusNotExistsFilter = new TriplePattern('?x', ns.ies.isEndOf, '?statusNode');
   const assigneeNotExistsFilter = new TriplePattern('?x', ns.ies.isEndOf, '?assigneeNode');
 
@@ -19,9 +19,15 @@ export function tasks(incidentId: string) {
     .map((literal) => `<${ns.lisa(literal.value).value}>`)
     .join(' ');
 
+  const incidentClauses: unknown[] = [
+    ['?incidentId', ns.lisa.hasTask, '?taskId'],
+    ...(incidentId ? [`FILTER(?incidentId = <${ns.data(incidentId).value}>)`] : [])
+  ];
+
   return select({
     clause: [
-      [ns.data(incidentId), ns.lisa.hasTask, '?taskId'],
+      ...incidentClauses,
+      ['?incidentId', ns.ies.hasName, '?incidentName'],
       ['?taskId', ns.ies.hasName, '?taskName'],
       ['?taskId', ns.lisa.hasDescription, '?description'],
       ['?taskId', ns.lisa.hasSequence, '?sequence'],
@@ -56,3 +62,5 @@ export function tasks(incidentId: string) {
     orderBy: [['?createdAt', 'DESC']]
   });
 }
+
+
