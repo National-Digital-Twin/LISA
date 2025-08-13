@@ -126,28 +126,23 @@ export const countActiveForGroup = (
     
     case 'group': {
       if (node.selection === 'single') {
-        
         const v = values[node.id];
         return v == null || v === '' ? 0 : 1;
       }
-    
-      if (node.selection === 'multi') {
-
-        const selfCount = Array.isArray(values[node.id])
-          ? (values[node.id] as unknown[]).length
-          : 0;
-
-        const childCount = node.children
-          .filter((c) => c.type !== 'option')
-          .map((c) => countActiveForGroup(values, c))
-          .reduce((a, b) => a + b, 0);
-    
-        return selfCount + childCount;
-      }
-    
-      return node.children
-        .map((c) => countActiveForGroup(values, c))
-        .reduce((a, b) => a + b, 0);
+  
+      const isMulti = node.selection === 'multi';
+      const selfCount =
+          isMulti && Array.isArray(values[node.id])
+            ? (values[node.id] as unknown[]).length
+            : 0;
+  
+      const includeOptions = !isMulti;
+      const childCount = node.children.reduce((sum, c) => {
+        if (!includeOptions && c.type === 'option') return sum;
+        return sum + countActiveForGroup(values, c);
+      }, 0);
+  
+      return selfCount + childCount;
     }
     default: {
       return 0;

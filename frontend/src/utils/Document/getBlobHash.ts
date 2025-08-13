@@ -29,10 +29,10 @@ export function getBlobHash(blob: Blob): Promise<string> {
             resolve(base64);
           })
           .catch((err) => {
-            reject(err);
+            reject(err instanceof Error ? err : new Error(String(err)));
           });
       } catch (err) {
-        reject(err);
+        reject(err instanceof Error ? err : new Error(String(err)));
       }
     });
 
