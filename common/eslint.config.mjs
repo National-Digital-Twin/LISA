@@ -29,7 +29,7 @@ export default tsEslint.config(js.configs.recommended, ...tsEslint.configs.recom
     parserOptions: {}
   },
 
-  extends: fixupPluginRules(compat.extends('airbnb')),
+  extends: fixupPluginRules(compat.extends('prettier')),
   plugins: {},
 
   settings: {

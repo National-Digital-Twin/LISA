@@ -99,7 +99,6 @@ export default function Notifications() {
       const handler = getHandler(notification, navigate);
       handler.clickHandler(notification);
     } catch {
-      // eslint-disable-next-line no-console
       console.error('No handler found for notification:', notification);
     }
   }, [navigate, readNotification]);

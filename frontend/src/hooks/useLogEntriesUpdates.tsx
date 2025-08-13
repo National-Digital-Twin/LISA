@@ -54,7 +54,6 @@ export function useLogEntriesUpdates(incidentId: string) {
         [...matchedEntries, ...unmatchedEntries]
       );
     } catch (error) {
-      // eslint-disable-next-line no-console
       console.error(`Error occured: ${error}. Unable to poll for updates!`);
     }
   }, [incidentId, queryClient]);

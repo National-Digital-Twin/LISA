@@ -44,7 +44,6 @@ async function poll(
     const retryAttemptsLeft = TOTAL_RETRY_ATTEMPTS - retryAttemptNumber;
 
     if (retryAttemptsLeft > 0) {
-      // eslint-disable-next-line no-console
       console.error(
         `Error occured while polling for updates: ${error}. Retry attempts left: ${retryAttemptsLeft}`
       );
@@ -147,7 +146,6 @@ export async function pollForIncidentUpdate(
       }
     } catch (error) {
       const retryAttemptsLeft = TOTAL_RETRY_ATTEMPTS - retryAttemptNumber;
-      // eslint-disable-next-line no-console
       console.error(
         `Error occured while polling for updates: ${error}. Retry attempts left: ${retryAttemptsLeft}`
       );

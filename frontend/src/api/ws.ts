@@ -2,7 +2,6 @@
 // © Crown Copyright 2025. This work has been developed by the National Digital Twin Programme
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
-// eslint-disable-next-line import/no-relative-packages
 import { User } from '../../../common/User';
 import { config } from './config';
 
@@ -43,7 +42,6 @@ export class WebSocketClient {
   private connect(isRestoration: boolean = false) {
     const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
     const { apiUrl } = config;
-    /* eslint-disable-next-line no-restricted-globals */
     const backendHost = apiUrl || self.window.location.host;
     const ws = new WebSocket(`${protocol}://${backendHost}/api/ws`, [protocol, this.user.username]);
     ws.onopen = () => {
@@ -68,14 +66,12 @@ export class WebSocketClient {
     this.pendingMessages.forEach((msg) => this.send(msg));
     this.connectionCallback();
     if (isRestoration) {
-      // eslint-disable-next-line no-console
       console.info('ws connection was restored');
     }
   }
 
   private handleClose() {
     const delay = Math.min(500 * 2 ** this.attemptCount, 32000);
-    // eslint-disable-next-line no-console
     console.warn('ws connection was closed, retrying in', delay / 1000, 's');
     clearTimeout(this.timer);
     this.timer = setTimeout(() => {

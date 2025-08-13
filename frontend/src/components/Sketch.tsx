@@ -126,7 +126,6 @@ const Sketch = ({ lines, setLines, canvasRef, active }: Props) => {
         <Layer>
           {lines.map((line, i) => (
             <Line
-              // eslint-disable-next-line react/no-array-index-key
               key={`${line.color}-${i}-${line.points.length}`}
               points={line.points}
               stroke={line.color}

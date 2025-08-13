@@ -33,7 +33,7 @@ export type SerializedMentionNode = Spread<
   },
   SerializedTextNode
 >;
-/* eslint-disable no-use-before-define */
+
 function convertMentionElement(domNode: HTMLElement): DOMConversionOutput | null {
   const { textContent } = domNode;
   const type: MentionableType = domNode.getAttribute('data-lexical-mention-type') as MentionableType;
@@ -51,7 +51,6 @@ function convertMentionElement(domNode: HTMLElement): DOMConversionOutput | null
 
 const mentionStyle = 'background-color: rgba(24, 119, 232, 0.2)';
 
-/* eslint-disable class-methods-use-this, no-underscore-dangle */
 export class MentionNode extends TextNode {
   __mention: string;
 
@@ -135,7 +134,6 @@ export class MentionNode extends TextNode {
     return false;
   }
 }
-/* eslint-enable class-methods-use-this, no-underscore-dangle, no-use-before-define */
 
 export function $createMentionNode(
   mentionName: string,

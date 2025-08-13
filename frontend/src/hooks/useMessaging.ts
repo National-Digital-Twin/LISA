@@ -24,7 +24,6 @@ export default function useMessaging(topic: MessagingTopicType, subject?: string
       return;
     }
     subscribe(topic, subject, callback);
-    /* eslint-disable-next-line consistent-return */
     return () => {
       unsubscribe(topic, subject, callback);
     };
