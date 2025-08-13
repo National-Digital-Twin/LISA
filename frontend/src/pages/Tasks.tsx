@@ -99,12 +99,15 @@ export default function Tasks() {
     const items = allTasks.slice();
     const v = queryState.values;
 
+    const searchTerm = ((v.search as string) ?? '').trim().toLowerCase();
     const selectedAuthors = new Set<string>((v.author as string[]) ?? []);
     const selectedAssignees = new Set<string>((v.assignee as string[]) ?? []);
     const selectedIncidents = new Set<string>((v.incident as string[]) ?? []);
     const selectedStatuses = new Set<string>((v.status as string[]) ?? []);
 
     const filtered = items.filter((task) => {
+      if (searchTerm && (!task.name?.toLowerCase().includes(searchTerm) || !task.description?.toLowerCase().includes(searchTerm))) return false;
+
       if (selectedAuthors.size > 0) {
         if (!selectedAuthors.has(task.author.username)) return false;
       }
