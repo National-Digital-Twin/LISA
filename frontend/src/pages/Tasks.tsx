@@ -196,7 +196,7 @@ export default function Tasks() {
               maxWidth: { sm: '200px' }
             }}
           >
-          Add Task
+            Add Task
           </Button>
           <Button
             variant="contained"
@@ -207,66 +207,65 @@ export default function Tasks() {
               maxWidth: { sm: '200px' }
             }}
           >
-          Sort & Filter{activeFilterCount > 0 ? ` (${activeFilterCount})` : ''}
+            Sort & Filter{activeFilterCount > 0 ? ` (${activeFilterCount})` : ''}
           </Button>
         </Box>
+
+        <Box
+          sx={{
+            flex: 1,
+            overflow: 'auto',
+            backgroundColor: 'background.default',
+            p: { xs: 0, md: 0 }
+          }}
+        >
+          {visibleTasks.length === 0 ? (
+            <Box
+              sx={{
+                display: 'flex',
+                padding: 4,
+                flexDirection: 'column',
+                alignItems: 'center',
+                color: 'text.secondary'
+              }}
+            >
+              <Typography variant="h6">
+                {allTasks.length === 0 ? 'No tasks found' : 'No results found'}
+              </Typography>
+              <Typography variant="body2">
+                {allTasks.length === 0
+                  ? 'There are currently no tasks.'
+                  : 'There are no tasks matching your filters.'}
+              </Typography>
+            </Box>
+          ) : (
+            <DataList
+              items={visibleTasks.map<ListRow>((t) => ({
+                key: t.id,
+                title: t.name,
+                content: (
+                  <Typography variant="body2">Assigned to: {Format.user(t.assignee)}</Typography>
+                ),
+                footer: `INCIDENT: ${incidentNameById.get(t.incidentId) ?? t.incidentId}`,
+                titleDot: <StatusDot status={t.status} />,
+                onClick: () => navigate(`/tasks/${t.incidentId}#${t.id}`)
+              }))}
+            />
+          )}
+        </Box>
+
+        <SortAndFilter
+          open={filtersOpen}
+          onClose={() => setFiltersOpen(false)}
+          sort={taskSort}
+          tree={taskFilters}
+          initial={queryState}
+          onApply={(next) => {
+            setQueryState(next);
+            setFiltersOpen(false);
+          }}
+        />
       </PageWrapper>
-
-
-      <Box
-        sx={{
-          flex: 1,
-          overflow: 'auto',
-          backgroundColor: 'background.default',
-          p: { xs: 0, md: 0 }
-        }}
-      >
-        {visibleTasks.length === 0 ? (
-          <Box
-            sx={{
-              display: 'flex',
-              padding: 4,
-              flexDirection: 'column',
-              alignItems: 'center',
-              color: 'text.secondary'
-            }}
-          >
-            <Typography variant="h6">
-              {allTasks.length === 0 ? 'No tasks found' : 'No results found'}
-            </Typography>
-            <Typography variant="body2">
-              {allTasks.length === 0
-                ? 'There are currently no tasks.'
-                : 'There are no tasks matching your filters.'}
-            </Typography>
-          </Box>
-        ) : (
-          <DataList
-            items={visibleTasks.map<ListRow>((t) => ({
-              key: t.id,
-              title: t.name,
-              content: (
-                <Typography variant="body2">Assigned to: {Format.user(t.assignee)}</Typography>
-              ),
-              footer: `INCIDENT: ${incidentNameById.get(t.incidentId) ?? t.incidentId}`,
-              titleDot: <StatusDot status={t.status} />,
-              onClick: () => navigate(`/tasks/${t.incidentId}#${t.id}`)
-            }))}
-          />
-        )}
-      </Box>
-
-      <SortAndFilter
-        open={filtersOpen}
-        onClose={() => setFiltersOpen(false)}
-        sort={taskSort}
-        tree={taskFilters}
-        initial={queryState}
-        onApply={(next) => {
-          setQueryState(next);
-          setFiltersOpen(false);
-        }}
-      />
     </Box>
   );
 }
