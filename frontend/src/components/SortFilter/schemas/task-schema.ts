@@ -22,6 +22,13 @@ export const buildTaskFilters = (
   title: 'Sort & Filter',
   items: [
     makeGroup('sort', 'Sort by', 'single', makeOptions(taskSort)),
+    {
+      id: 'search',
+      type: 'text',
+      label: 'Keyword search',
+      placeholder: 'Search by name or description',
+      helperText: 'Filters tasks by name or description',
+    },
     makeGroup(
       'author',
       'Author',
