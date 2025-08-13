@@ -4,7 +4,7 @@
   "type": "module",
   "description": "Code shared between the backend and the frontend",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest --passWithNoTests",
     "lint": "eslint . --report-unused-disable-directives --max-warnings 3",
     "lint:fix": "eslint --fix ."
   },
