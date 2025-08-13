@@ -1,7 +1,4 @@
-FROM ghcr.io/national-digital-twin/secure-agent-graph:0.90.0
-USER fuseki
+FROM telicent/smart-cache-graph:0.82.8
 
-COPY --chown=root:root --chmod=755 ./config/config.ttl /fuseki/config
-COPY --chown=root:root --chmod=755 ./config/attribute-store.ttl /fuseki/config
-COPY --chown=root:root --chmod=755 ./data/ontology.ttl /fuseki/databases
-COPY --chown=root:root --chmod=755 ./kafka/consumer.properties /fuseki/kafka/consumer.properties
+COPY --chown=fuseki ./config/config.ttl /fuseki/config
+COPY --chown=fuseki ./data/ontology.ttl /fuseki/databases
