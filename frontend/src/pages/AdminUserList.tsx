@@ -146,8 +146,9 @@ const AdminUserList = () => {
                 <TableRow key={user.email}>
                   <TableCell>
                     <Typography
-                      variant="subtitle1"
-                      sx={{ fontWeight: 600 }}
+                      variant="body1"
+                      color="primary"
+                      fontWeight="bold"
                       component={Link}
                       to={`/settings/user-profile?user=${encodeURIComponent(user.email || '')}`}
                     >
