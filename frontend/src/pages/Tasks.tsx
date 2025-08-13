@@ -18,7 +18,7 @@ import { countActive } from '../components/SortFilter/filter-utils';
 import { PageTitle } from '../components';
 import PageWrapper from '../components/PageWrapper';
 
-function StatusDot({ status }: { status: TaskStatus }) {
+function StatusDot({ status }: Readonly<{ status: TaskStatus }>) {
   let color: string;
   let borderColor: string;
 
@@ -149,8 +149,7 @@ export default function Tasks() {
   const activeFilterCount = useMemo(() => countActive(queryState.values), [queryState.values]);
 
   const onAddTask = () => {
-    // eslint-disable-next-line no-alert
-    alert('Not implemented');
+    navigate('/incidents/pick?next=/tasks/create/:incidentId');
   };
 
   const handleOpenFilters = () => setFiltersOpen(true);
