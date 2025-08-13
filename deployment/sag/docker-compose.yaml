@@ -1,14 +1,54 @@
 version: '3'
-
 services:
-  smart-cache-graph:
-    container_name: lisa-scg
+  zookeeper:
+    container_name: lisa-zookeeper
+    image: bitnami/zookeeper:latest
+    ports:
+      - '2181:2181'
     environment:
-      JAVA_OPTIONS: "-XX:MaxRAMPercentage=40.0"
-      JWKS_URL: "disabled"
+      - ALLOW_ANONYMOUS_LOGIN=yes
+  kafka:
+    container_name: lisa-kafka
+    depends_on:
+      - zookeeper
+    image: 'bitnami/kafka:3.5'
+    ports:
+      - '9092:9092'
+    volumes:
+      - ./kafka/server.properties:/bitnami/kafka/config/server.properties
+      - ./kafka/consumer.properties:/bitnami/kafka/config/consumer.properties
+    environment:
+      - BITNAMI_DEBUG=true
+    healthcheck:
+      test: ["CMD-SHELL", "kafka-topics.sh --bootstrap-server localhost:9092 --list --command-config /bitnami/kafka/config/consumer.properties || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 4
+  secure-agent-graph:
+    container_name: lisa-sag
+    depends_on:
+      zookeeper:
+        condition: service_started
+      kafka:
+        condition: service_healthy
+    volumes:
+      - sag_databases:/fuseki/databases
+    environment:
+      JAVA_OPTIONS: '-XX:MaxRAMPercentage=40.0'
+      JWKS_URL: 'disabled'
     command:
       - --config
       - /fuseki/config/config.ttl
-    image: lisa/smart-cache-graph
+    image: lisa/secure-agent-graph
     ports:
       - 3030:3030
+  transparent-proxy:
+    container_name: lisa-transparent-proxy
+    image: lisa/transparent-proxy
+    ports:
+      - 8000:80
+    env_file:
+      - "../../backend/.env"
+
+volumes:
+  sag_databases:

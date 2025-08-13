@@ -12,7 +12,7 @@ import {
 import type { FilterTree, GroupNode, OptionLeaf, FilterNode, QueryState } from '../filter-types';
   
 describe('filter-utils', () => {
-  const fixedNow = new Date('2025-02-10T12:00:00Z'); // stable clock
+  const fixedNow = new Date('2025-02-10T12:00:00Z');
   
   beforeAll(() => {
     jest.useFakeTimers();
@@ -92,13 +92,9 @@ describe('filter-utils', () => {
         'logType.update': ['general'],
         time: 'custom',
         timeRange: { from: '2025-02-01', to: '' },
-        sort: { by: 'x', direction: 'asc' }, // ignored
+        sort: { by: 'x', direction: 'asc' },
       };
   
-      // keys that contribute: search, logType (deduped from two children), time, timeRange -> 4,
-      // BUT our top-level countActive is designed to show number of *parents* with any active value
-      // It dedupes by the parent part *only*, so:
-      // parents: 'search', 'logType', 'time', 'timeRange' -> 4
       expect(countActive(values)).toBe(4);
     });
   
@@ -183,7 +179,7 @@ describe('filter-utils', () => {
     it('single-select group returns 1 if set, does NOT double-count date-range child', () => {
       const values: QueryState['values'] = {
         time: 'custom',
-        timeRange: { from: '2025-02-01' }, // should not add to single-select count
+        timeRange: { from: '2025-02-01' },
       };
       expect(countActiveForGroup(values, timeGroupSingle)).toBe(1);
     });
@@ -200,8 +196,7 @@ describe('filter-utils', () => {
   
     it('container (selection: none) sums child groups/leaves', () => {
       const values: QueryState['values'] = {
-        'logType.form': ['action', 'decision'], // 2 (multi)
-        // 'general' is an option directly under container; options themselves aren’t counted here
+        'logType.form': ['action', 'decision'],
       };
       expect(countActiveForGroup(values, containerLogType)).toBe(2);
     });
