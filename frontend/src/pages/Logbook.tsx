@@ -4,7 +4,7 @@
 
 import { MouseEvent, useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Box, Button, IconButton, Typography } from '@mui/material';
+import { Box, Button, IconButton, Menu, MenuItem, Typography } from '@mui/material';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { v4 as uuidV4 } from 'uuid';
@@ -92,6 +92,22 @@ const Logbook = () => {
   }, [isOnline, startPolling, clearPolling]);
 
   const incident = query?.data?.find((inc) => inc.id === incidentId);
+
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
+
+  const handleClick = (event: MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleOverview = () => {
+    handleClose();
+    navigate(`/incident/${incident?.id}`);
+  };
 
   const onCancel = () => {
     document.documentElement.scrollTo(0, 0);
@@ -311,12 +327,24 @@ const Logbook = () => {
               </Typography>
             </Box>
 
-            <IconButton
-              aria-label="More options"
-              onClick={() => navigate(`/incident/${incident?.id}`)}
-            >
+            <IconButton aria-label="More options" onClick={handleClick}>
               <MoreVertIcon />
             </IconButton>
+            <Menu
+              anchorEl={anchorEl}
+              open={open}
+              onClose={handleClose}
+              anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'right'
+              }}
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'right'
+              }}
+            >
+              <MenuItem onClick={handleOverview}>Overview</MenuItem>
+            </Menu>
           </Box>
         </Box>
   
