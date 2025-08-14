@@ -3,16 +3,29 @@
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
 import { Box, Typography, Button } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+import { Task } from 'common/Task';
 import WidgetBase from './WidgetBase';
-import { logInfo } from '../../utils/logger';
+import { useAllTasks } from '../../hooks/useTasks';
 
 const TasksWidget = () => {
-  const toDoCount = 0;
-  const inProgressCount = 0;
+  const { data: tasks, isLoading } = useAllTasks();
+  const navigate = useNavigate();
 
-  const onNavigateToDo = () => logInfo('Clicked To do');
-  const onNavigateInProgress = () => logInfo('Clicked In progress');
-  const onNavigateTasksHeader = () => logInfo('Clicked tasks header');
+  const toDoCount = tasks?.filter((t: Task) => t.status === 'ToDo').length ?? 0;
+  const inProgressCount = tasks?.filter((t: Task) => t.status === 'InProgress').length ?? 0;
+
+  const onNavigateToDo = () => navigate('/tasks?mine=true&status=ToDo');
+  const onNavigateInProgress = () => navigate('/tasks?mine=true&status=InProgress');
+  const onNavigateTasksHeader = () => navigate('/tasks?mine=true');
+
+  if (isLoading) {
+    return (
+      <WidgetBase title="Your tasks">
+        <Typography>Loading tasks…</Typography>
+      </WidgetBase>
+    );
+  }
 
   const renderCount = (count: number, onClick: () => void) => {
     const isActive = count > 0;

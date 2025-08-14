@@ -18,14 +18,14 @@ export const useTasks = (incidentId?: string) =>
     queryKey: [`incident/${incidentId}/tasks`],
     queryFn: () => get(`/incident/${incidentId}/tasks`),
     enabled: !!incidentId,
-    staleTime: 5 * 60 * 1000 // 5 minutes
+    staleTime: 10_000 // 10 seconds
   });
 
 export const useAllTasks = () =>
   useQuery<Task[]>({
     queryKey: ['tasks'],
     queryFn: () => get('/tasks'),
-    staleTime: 5 * 60 * 1000 // 5 minutes
+    staleTime: 10_000 // 10 seconds
   });
 
 export const useUpdateTaskStatus = (incidentId?: string) => {

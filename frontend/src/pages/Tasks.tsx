@@ -4,11 +4,11 @@
 
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import { Box, Button, Typography } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useState, useMemo } from 'react';
 import { Task, TaskStatus } from 'common/Task';
 import DataList, { ListRow } from '../components/DataList';
-import { useIncidents, useAllTasks } from '../hooks';
+import { useIncidents, useAllTasks, useAuth } from '../hooks';
 import { Format } from '../utils';
 
 import { SortAndFilter } from '../components/SortFilter/SortAndFilter';
@@ -57,11 +57,31 @@ const DEFAULT_QUERY_STATE: QueryState = {
 
 export default function Tasks() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const { data: incidents } = useIncidents();
   const { data: tasksData } = useAllTasks();
+  const [searchParams] = useSearchParams();
+
+  const mine = searchParams.get('mine') === 'true';
+  const status = searchParams.get('status');
+
+  const initialValues: QueryState['values'] = {
+    ...DEFAULT_QUERY_STATE.values
+  };
+
+  if (mine && user?.current?.username) {
+    initialValues.assignee = [user.current?.username];
+  }
+  
+  if (status) {
+    initialValues.status = [status];
+  }
 
   const [filtersOpen, setFiltersOpen] = useState(false);
-  const [queryState, setQueryState] = useState<QueryState>(DEFAULT_QUERY_STATE);
+  const [queryState, setQueryState] = useState<QueryState>({
+    values: initialValues,
+    sort: DEFAULT_QUERY_STATE.sort
+  });
 
   const allTasks: Task[] = useMemo(() => tasksData ?? [], [tasksData]);
   const incidentNameById = new Map((incidents ?? []).map((i) => [i.id, i.name] as const));
