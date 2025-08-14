@@ -86,7 +86,6 @@ export async function changeStage(req: Request, res: Response) {
   const { id: incidentId, stage: stageStr, sequence: seqNumber } = req.body;
 
   const stage = IncidentStage.check(stageStr);
-
   const incidentIdNode = ns.data(incidentId);
 
   const notExistsFilter = new TriplePattern('?x', ns.ies.isEndOf, '?lastStateNodeId');
@@ -130,6 +129,32 @@ export async function changeStage(req: Request, res: Response) {
   const incidentStateNode = ns.data(incidentState);
   const startDateNode = literalDate(now);
 
+  // no other open state exists for this incident (besides the one we're closing)
+  const preventConcurrentOpenStates = `
+    FILTER NOT EXISTS {
+      ${new TriplePattern('?otherState', ns.ies.isStateOf, incidentIdNode)}
+      FILTER(?otherState != <${ns.data(lastStateNodeId).value}>)
+      FILTER NOT EXISTS {${new TriplePattern('?x', ns.ies.isEndOf, '?otherState')}}
+    }
+  `;
+
+  // idempotency per incident + sequence
+  const preventDuplicateSequence =
+    seqNumber !== undefined && seqNumber !== null && `${seqNumber}` !== ''
+      ? `
+    FILTER NOT EXISTS {
+      ${new TriplePattern(incidentIdNode, ns.lisa.hasLogEntry, '?e')}
+      ${new TriplePattern('?e', ns.lisa.hasSequence, literalString(seqNumber))}
+    }
+  `
+      : '';
+
+  const whereClauses = [
+    `FILTER NOT EXISTS {${new TriplePattern('?x', ns.ies.isEndOf, ns.data(lastStateNodeId))}}`,
+    preventConcurrentOpenStates
+  ];
+  if (preventDuplicateSequence) whereClauses.push(preventDuplicateSequence);
+
   await ia.insert({
     triples: [
       // Closing the last state
@@ -154,9 +179,7 @@ export async function changeStage(req: Request, res: Response) {
       [authorNode, ns.ies.hasName, literalString(res.locals.user.displayName)],
       [authorNode, ns.ies.isParticipantIn, entryIdNode]
     ],
-    where: [
-      `FILTER NOT EXISTS {${new TriplePattern('?x', ns.ies.isEndOf, ns.data(lastStateNodeId))}}`
-    ]
+    where: whereClauses
   });
 
   res.json({ id: incidentId, ...results[0] });
@@ -234,7 +257,7 @@ export async function get(_: Request, res: Response) {
         ['?id', ns.rdf.type, '?type'],
         ['?isStateOf', ns.ies.isStateOf, '?id'],
         ['?isStateOf', ns.rdf.type, '?stage'],
-        ['?isStartOf', ns.ies.isStartOf, '?id'],
+        ['?isStartOf', ns.ies.isStartOf, '?isStateOf'],
         ['?isStartOf', ns.ies.inPeriod, '?startedAt'],
         sparql.optional([
           ['?id', ns.ies.hasName, '?name'],
@@ -299,7 +322,7 @@ export async function getById(req: Request, res: Response) {
         [incidentIdNode, ns.rdf.type, '?type'],
         ['?isStateOf', ns.ies.isStateOf, incidentIdNode],
         ['?isStateOf', ns.rdf.type, '?stage'],
-        ['?isStartOf', ns.ies.isStartOf, incidentIdNode],
+        ['?isStartOf', ns.ies.isStartOf, '?isStateOf'],
         ['?isStartOf', ns.ies.inPeriod, '?startedAt'],
         sparql.optional([
           [incidentIdNode, ns.ies.hasName, '?name'],
