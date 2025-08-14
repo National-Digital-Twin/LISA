@@ -2,7 +2,7 @@
 // © Crown Copyright 2025. This work has been developed by the National Digital Twin Programme
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
-import { FilterTree, GroupNode, OptionLeaf, QueryState } from "./filter-types";
+import { FilterNode, FilterTree, GroupNode, OptionLeaf, QueryState } from "./filter-types";
 
 const resolveTimeRange = (preset: string | undefined): { from?: number; to?: number } => {
   const now = new Date();
@@ -108,16 +108,44 @@ export const countActive = (values: QueryState['values']) =>
     .length;
 
 
-export const countActiveForGroup = (values: QueryState['values'], groupId: string): number => 
-  Object.entries(values)
-    .filter(([key, v]) => {
-      // Check if this key belongs to the group
-      const keyGroup = key.split('.')[0];
-      if (keyGroup !== groupId) return false;
-      
-      if (Array.isArray(v)) return v.length > 0;
-      if (v == null || v === '') return false;
-      if (typeof v === 'object') return Object.values(v).some(Boolean);
-      return true;
-    })
-    .length;
+export const countActiveForGroup = (
+  values: QueryState['values'],
+  node: FilterNode
+): number => {
+  switch (node.type) {
+    case 'text': {
+      const v = values[node.id];
+      return typeof v === 'string' && v.trim() ? 1 : 0;
+    }
+    case 'date-range': {
+      const v = values[node.id] as { from?: string; to?: string } | undefined;
+      return v?.from || v?.to ? 1 : 0;
+    }
+    case 'option':
+      return 0;
+    
+    case 'group': {
+      if (node.selection === 'single') {
+        const v = values[node.id];
+        return v == null || v === '' ? 0 : 1;
+      }
+  
+      const isMulti = node.selection === 'multi';
+      const selfCount =
+          isMulti && Array.isArray(values[node.id])
+            ? (values[node.id] as unknown[]).length
+            : 0;
+  
+      const includeOptions = !isMulti;
+      const childCount = node.children.reduce((sum, c) => {
+        if (!includeOptions && c.type === 'option') return sum;
+        return sum + countActiveForGroup(values, c);
+      }, 0);
+  
+      return selfCount + childCount;
+    }
+    default: {
+      return 0;
+    }
+  }
+};

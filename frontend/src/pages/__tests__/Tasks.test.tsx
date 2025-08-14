@@ -89,7 +89,11 @@ jest.mock('../../hooks', () => ({
   })),
   useAllTasks: jest.fn(() => ({
     data: mockTasks
-  }))
+  })),
+  useAuth: jest.fn(() => ({
+    user: { current: { username: 'testUser', displayName: 'Test User', email: 'test@test.com', groups: [] } },
+    logout: jest.fn()
+  })),
 }));
 
 describe('Tasks Page', () => {

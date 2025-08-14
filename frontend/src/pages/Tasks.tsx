@@ -4,11 +4,11 @@
 
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import { Box, Button, Typography } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useState, useMemo } from 'react';
 import { Task, TaskStatus } from 'common/Task';
 import DataList, { ListRow } from '../components/DataList';
-import { useIncidents, useAllTasks } from '../hooks';
+import { useIncidents, useAllTasks, useAuth } from '../hooks';
 import { Format } from '../utils';
 
 import { SortAndFilter } from '../components/SortFilter/SortAndFilter';
@@ -57,11 +57,31 @@ const DEFAULT_QUERY_STATE: QueryState = {
 
 export default function Tasks() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const { data: incidents } = useIncidents();
   const { data: tasksData } = useAllTasks();
+  const [searchParams] = useSearchParams();
+
+  const mine = searchParams.get('mine') === 'true';
+  const status = searchParams.get('status');
+
+  const initialValues: QueryState['values'] = {
+    ...DEFAULT_QUERY_STATE.values
+  };
+
+  if (mine && user?.current?.username) {
+    initialValues.assignee = [user.current?.username];
+  }
+  
+  if (status) {
+    initialValues.status = [status];
+  }
 
   const [filtersOpen, setFiltersOpen] = useState(false);
-  const [queryState, setQueryState] = useState<QueryState>(DEFAULT_QUERY_STATE);
+  const [queryState, setQueryState] = useState<QueryState>({
+    values: initialValues,
+    sort: DEFAULT_QUERY_STATE.sort
+  });
 
   const allTasks: Task[] = useMemo(() => tasksData ?? [], [tasksData]);
   const incidentNameById = new Map((incidents ?? []).map((i) => [i.id, i.name] as const));
@@ -99,12 +119,15 @@ export default function Tasks() {
     const items = allTasks.slice();
     const v = queryState.values;
 
+    const searchTerm = ((v.search as string) ?? '').trim().toLowerCase();
     const selectedAuthors = new Set<string>((v.author as string[]) ?? []);
     const selectedAssignees = new Set<string>((v.assignee as string[]) ?? []);
     const selectedIncidents = new Set<string>((v.incident as string[]) ?? []);
     const selectedStatuses = new Set<string>((v.status as string[]) ?? []);
 
     const filtered = items.filter((task) => {
+      if (searchTerm && (!task.name?.toLowerCase().includes(searchTerm) || !task.description?.toLowerCase().includes(searchTerm))) return false;
+
       if (selectedAuthors.size > 0) {
         if (!selectedAuthors.has(task.author.username)) return false;
       }
@@ -196,7 +219,7 @@ export default function Tasks() {
               maxWidth: { sm: '200px' }
             }}
           >
-          Add Task
+            Add Task
           </Button>
           <Button
             variant="contained"
@@ -207,66 +230,65 @@ export default function Tasks() {
               maxWidth: { sm: '200px' }
             }}
           >
-          Sort & Filter{activeFilterCount > 0 ? ` (${activeFilterCount})` : ''}
+            Sort & Filter{activeFilterCount > 0 ? ` (${activeFilterCount})` : ''}
           </Button>
         </Box>
+
+        <Box
+          sx={{
+            flex: 1,
+            overflow: 'auto',
+            backgroundColor: 'background.default',
+            p: { xs: 0, md: 0 }
+          }}
+        >
+          {visibleTasks.length === 0 ? (
+            <Box
+              sx={{
+                display: 'flex',
+                padding: 4,
+                flexDirection: 'column',
+                alignItems: 'center',
+                color: 'text.secondary'
+              }}
+            >
+              <Typography variant="h6">
+                {allTasks.length === 0 ? 'No tasks found' : 'No results found'}
+              </Typography>
+              <Typography variant="body2">
+                {allTasks.length === 0
+                  ? 'There are currently no tasks.'
+                  : 'There are no tasks matching your filters.'}
+              </Typography>
+            </Box>
+          ) : (
+            <DataList
+              items={visibleTasks.map<ListRow>((t) => ({
+                key: t.id,
+                title: t.name,
+                content: (
+                  <Typography variant="body2">Assigned to: {Format.user(t.assignee)}</Typography>
+                ),
+                footer: `INCIDENT: ${incidentNameById.get(t.incidentId) ?? t.incidentId}`,
+                titleDot: <StatusDot status={t.status} />,
+                onClick: () => navigate(`/tasks/${t.incidentId}#${t.id}`)
+              }))}
+            />
+          )}
+        </Box>
+
+        <SortAndFilter
+          open={filtersOpen}
+          onClose={() => setFiltersOpen(false)}
+          sort={taskSort}
+          tree={taskFilters}
+          initial={queryState}
+          onApply={(next) => {
+            setQueryState(next);
+            setFiltersOpen(false);
+          }}
+        />
       </PageWrapper>
-
-
-      <Box
-        sx={{
-          flex: 1,
-          overflow: 'auto',
-          backgroundColor: 'background.default',
-          p: { xs: 0, md: 0 }
-        }}
-      >
-        {visibleTasks.length === 0 ? (
-          <Box
-            sx={{
-              display: 'flex',
-              padding: 4,
-              flexDirection: 'column',
-              alignItems: 'center',
-              color: 'text.secondary'
-            }}
-          >
-            <Typography variant="h6">
-              {allTasks.length === 0 ? 'No tasks found' : 'No results found'}
-            </Typography>
-            <Typography variant="body2">
-              {allTasks.length === 0
-                ? 'There are currently no tasks.'
-                : 'There are no tasks matching your filters.'}
-            </Typography>
-          </Box>
-        ) : (
-          <DataList
-            items={visibleTasks.map<ListRow>((t) => ({
-              key: t.id,
-              title: t.name,
-              content: (
-                <Typography variant="body2">Assigned to: {Format.user(t.assignee)}</Typography>
-              ),
-              footer: `INCIDENT: ${incidentNameById.get(t.incidentId) ?? t.incidentId}`,
-              titleDot: <StatusDot status={t.status} />,
-              onClick: () => navigate(`/tasks/${t.incidentId}#${t.id}`)
-            }))}
-          />
-        )}
-      </Box>
-
-      <SortAndFilter
-        open={filtersOpen}
-        onClose={() => setFiltersOpen(false)}
-        sort={taskSort}
-        tree={taskFilters}
-        initial={queryState}
-        onApply={(next) => {
-          setQueryState(next);
-          setFiltersOpen(false);
-        }}
-      />
     </Box>
   );
 }

@@ -114,4 +114,3 @@ PREFIX tdb2:    <http://jena.apache.org/2016/tdb#>
     # properties are loaded
     fk:configFile       "/fuseki/kafka/consumer.properties"
     .
-
