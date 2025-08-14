@@ -28,6 +28,7 @@
     "dotenv": "17.2.1",
     "envalid": "8.1.0",
     "express": "5.1.0",
+    "get-tsconfig": "^4.10.1",
     "helmet": "8.1.0",
     "multer": "2.0.2",
     "rdf-sparql-builder": "0.2.5",
