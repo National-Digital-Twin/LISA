@@ -327,6 +327,7 @@ export function SortAndFilter({
           <DateTimePicker
             label="From"
             value={fromNorm}
+            disablePast={false}
             onChange={(newVal) => setValue(node.id, { ...v, from: fmt(clampToMinute(newVal)) })}
             views={['year','month','day','hours','minutes']}
             viewRenderers={{ hours: renderTimeViewClock, minutes: renderTimeViewClock }}
@@ -341,6 +342,7 @@ export function SortAndFilter({
           <DateTimePicker
             label="To"
             value={toNorm}
+            disablePast={false}
             onChange={(newVal) => setValue(node.id, { ...v, to: fmt(clampToMinute(newVal)) })}
             views={['year','month','day','hours','minutes']}
             viewRenderers={{ hours: renderTimeViewClock, minutes: renderTimeViewClock }}
