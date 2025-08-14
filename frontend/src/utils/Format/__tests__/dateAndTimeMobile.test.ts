@@ -1,7 +1,7 @@
 import { dateAndTimeMobile } from '../dateAndTimeMobile';
 
 // Set the timezone to UTC for consistent date formatting in tests.
-process.env.TZ = 'UTC';
+process.env.TZ = 'Europe/London';
 
 describe('dateAndTimeMobile function', () => {
   it('should format a valid ISO date string with date and time', () => {
