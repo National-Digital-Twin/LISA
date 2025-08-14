@@ -8,6 +8,11 @@ import {
   TextField, Radio,
   Checkbox, ListItem
 } from '@mui/material';
+import dayjs, { Dayjs } from 'dayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
+import { renderTimeViewClock } from '@mui/x-date-pickers/timeViewRenderers';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import CloseIcon from '@mui/icons-material/Close';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
@@ -62,6 +67,15 @@ export function SortAndFilter({
   const canClear = useMemo(() =>
     JSON.stringify(local) !== JSON.stringify(baseline),
   [local, baseline]);
+
+  const timeSelection = local.values.time;
+  const timeRange = (local.values.timeRange as { from?: string; to?: string } | undefined) ?? undefined;
+
+  const isCustomTime = timeSelection === 'custom';
+  const isTimeRangeComplete = !!(timeRange?.from && timeRange?.to);
+
+  const customTimeConfigured =
+  (!isCustomTime) || (isCustomTime && isTimeRangeComplete);
 
   // Navigation stack
   const [stack, setStack] = useState<Page[]>([]);
@@ -297,18 +311,48 @@ export function SortAndFilter({
   );
 
   const renderDateRangePage = (node: DateRangeLeaf) => {
+    const clampToMinute = (d: Dayjs | null) => (d ? d.second(0).millisecond(0) : null);
+    const fmt = (d: Dayjs | null) => (d ? d.format('YYYY-MM-DDTHH:mm:ss') : undefined);
+
     const v = (local.values[node.id] as { from?: string; to?: string }) ?? {};
+    const fromVal = v.from ? dayjs(v.from) : null;
+    const toVal   = v.to   ? dayjs(v.to)   : null;
+
+    const fromNorm = clampToMinute(fromVal);
+    const toNorm   = clampToMinute(toVal);
+
     return (
-      <Stack spacing={2} sx={{ p: 2 }}>
-        <TextField
-          fullWidth type="date" size="medium" label="From" InputLabelProps={{ shrink: true }}
-          value={v.from ?? ''} onChange={(e) => setValue(node.id, { ...v, from: e.target.value || undefined })}
-        />
-        <TextField
-          fullWidth type="date" size="medium" label="To" InputLabelProps={{ shrink: true }}
-          value={v.to ?? ''} onChange={(e) => setValue(node.id, { ...v, to: e.target.value || undefined })}
-        />
-      </Stack>
+      <LocalizationProvider dateAdapter={AdapterDayjs}>
+        <Stack spacing={2} sx={{ p: 2 }}>
+          <DateTimePicker
+            label="From"
+            value={fromNorm}
+            onChange={(newVal) => setValue(node.id, { ...v, from: fmt(clampToMinute(newVal)) })}
+            views={['year','month','day','hours','minutes']}
+            viewRenderers={{ hours: renderTimeViewClock, minutes: renderTimeViewClock }}
+            maxDateTime={toNorm ?? undefined}
+            referenceDate={(fromNorm ?? toNorm ?? dayjs().startOf('day'))}
+            slotProps={{
+              textField: { fullWidth: true, id: 'from' },
+              openPickerButton: { 'aria-label': 'Open From date-time picker' },
+            }}
+          />
+
+          <DateTimePicker
+            label="To"
+            value={toNorm}
+            onChange={(newVal) => setValue(node.id, { ...v, to: fmt(clampToMinute(newVal)) })}
+            views={['year','month','day','hours','minutes']}
+            viewRenderers={{ hours: renderTimeViewClock, minutes: renderTimeViewClock }}
+            minDateTime={fromNorm ?? undefined}
+            referenceDate={(toNorm ?? fromNorm ?? dayjs().startOf('day'))}
+            slotProps={{
+              textField: { fullWidth: true, id: 'to' },
+              openPickerButton: { 'aria-label': 'Open To date-time picker' },
+            }}
+          />
+        </Stack>
+      </LocalizationProvider>
     );
   };
 
@@ -337,7 +381,7 @@ export function SortAndFilter({
                 onApply(local); 
                 onClose(); 
               }}
-              disabled={!canApply}
+              disabled={!customTimeConfigured || !canApply}
             >
               Apply
             </Button>
