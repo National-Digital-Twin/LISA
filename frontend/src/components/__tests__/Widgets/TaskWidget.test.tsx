@@ -7,8 +7,13 @@ import type { Task } from 'common/Task';
 import { useNavigate } from 'react-router-dom';
 import TasksWidget from '../../Widgets/TaskWidget';
 import { useAllTasks } from '../../../hooks/useTasks';
+import { useAuth } from '../../../hooks';
 
 jest.mock('../../../hooks/useTasks');
+jest.mock('../../../hooks', () => ({
+  ...jest.requireActual('../../../hooks'),
+  useAuth: jest.fn()
+}));
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useNavigate: jest.fn()
@@ -20,6 +25,9 @@ describe('TasksWidget', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     (useNavigate as jest.Mock).mockReturnValue(mockNavigate);
+    (useAuth as jest.Mock).mockReturnValue({
+      user: { current: { username: 'test.user1' } }
+    });
   });
 
   it('renders loading state', () => {
@@ -36,10 +44,13 @@ describe('TasksWidget', () => {
 
   it('renders correct counts for ToDo and InProgress tasks', () => {
     const mockTasks: Partial<Task>[] = [
-      { id: '1', status: 'ToDo' },
-      { id: '2', status: 'ToDo' },
-      { id: '3', status: 'InProgress' }
+      { id: '1', status: 'ToDo',       assignee: { username: 'test.user1', displayName: 'Test user 1' } },
+      { id: '2', status: 'ToDo',       assignee: { username: 'test.user1', displayName: 'Test user 1' } },
+      { id: '3', status: 'InProgress', assignee: { username: 'test.user1', displayName: 'Test user 1' } },
+      { id: '4', status: 'ToDo',       assignee: { username: 'test.user2', displayName: 'Test User 2' } },
+      { id: '5', status: 'InProgress', assignee: { username: 'test.user3', displayName: 'Test User 3' } }
     ];
+
 
     (useAllTasks as jest.Mock).mockReturnValue({
       data: mockTasks,
@@ -61,7 +72,9 @@ describe('TasksWidget', () => {
   ])(
     'navigates to correct URL when %s count clicked',
     ({ status, expectedUrl }) => {
-      const mockTasks: Partial<Task>[] = [{ id: '1', status }];
+      const mockTasks: Partial<Task>[] = [
+        { id: '1', status, assignee: { username: 'test.user1', displayName: 'Test user 1' } }
+      ];
   
       (useAllTasks as jest.Mock).mockReturnValue({
         data: mockTasks,

@@ -7,13 +7,17 @@ import { useNavigate } from 'react-router-dom';
 import { Task } from 'common/Task';
 import WidgetBase from './WidgetBase';
 import { useAllTasks } from '../../hooks/useTasks';
+import { useAuth } from '../../hooks';
 
 const TasksWidget = () => {
   const { data: tasks, isLoading } = useAllTasks();
+  const { user } = useAuth();
   const navigate = useNavigate();
 
-  const toDoCount = tasks?.filter((t: Task) => t.status === 'ToDo').length ?? 0;
-  const inProgressCount = tasks?.filter((t: Task) => t.status === 'InProgress').length ?? 0;
+  const currentUsername = user?.current?.username;
+
+  const toDoCount = tasks?.filter((t: Task) => t.status === 'ToDo' && (currentUsername && t.assignee.username === currentUsername)).length ?? 0;
+  const inProgressCount = tasks?.filter((t: Task) => t.status === 'InProgress' && (currentUsername && t.assignee.username === currentUsername)).length ?? 0;
 
   const onNavigateToDo = () => navigate('/tasks?mine=true&status=ToDo');
   const onNavigateInProgress = () => navigate('/tasks?mine=true&status=InProgress');
