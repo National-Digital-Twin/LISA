@@ -1,7 +1,8 @@
 import { LogEntry } from 'common/LogEntry';
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useEffect, useMemo, useRef, useState, MouseEvent } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { enGB } from 'date-fns/locale';
+import { v4 as uuidV4 } from 'uuid';
 import {
   Box,
   Divider,
@@ -32,11 +33,12 @@ import { Stage } from 'konva/lib/Stage';
 import { LogEntryType } from 'common/LogEntryType';
 import { LogEntryTypes } from 'common/LogEntryTypes';
 import { Coordinates, LocationType, type Location as TypeOfLocation } from 'common/Location';
-import { type Field } from 'common/Field';
+import { FieldOption, type Field } from 'common/Field';
 import { Mentionable } from 'common/Mentionable';
+import { LogEntryAttachment } from 'common/LogEntryAttachment';
 import { createSequenceNumber } from '../utils/Form/sequence';
-import { useIncidents, useLogEntries, useUsers } from '../hooks';
-import { Format, Form as FormUtils, MapUtils, Validate } from '../utils';
+import { useCreateLogEntry, useIncidents, useLogEntries, useUsers } from '../hooks';
+import { Document, Format, Form as FormUtils, MapUtils, Validate } from '../utils';
 import {
   FullLocationType,
   SketchLine,
@@ -51,6 +53,9 @@ import { getLocationTypes } from '../utils/Map/getLocationTypes';
 import { MapComponent } from '../components/Map';
 import Files from '../components/AddEntry/Files';
 import Sketch from '../components/AddEntry/Sketch';
+import { getFieldValue } from '../utils/Form/getFieldValue';
+import { OnCreateEntry } from '../utils/handlers';
+import PageWrapper from '../components/PageWrapper';
 
 const LogbookV2 = () => {
   const { incidentId } = useParams();
@@ -59,6 +64,11 @@ const LogbookV2 = () => {
   const { logEntries } = useLogEntries(incidentId);
   const { attachments: incidentAttachments } = useAttachments(incident?.id);
   const { users } = useUsers();
+  const navigate = useNavigate();
+  const { createLogEntry } = useCreateLogEntry(incidentId, () =>
+    navigate(`/logbook/${incidentId}`)
+  );
+
   const [entry, setEntry] = useState<Partial<LogEntry>>({
     incidentId,
     sequence: createSequenceNumber(),
@@ -76,6 +86,7 @@ const LogbookV2 = () => {
   const [recordings, setRecordings] = useState<File[]>([]);
   const [addingFormContent, setAddingFormContent] = useState<boolean>(false);
   const [addingDescription, setAddingDescription] = useState<boolean>(false);
+  const [addingFormFields, setAddingFormFields] = useState<boolean>(false);
   const [addingDateAndTime, setAddingDateAndTime] = useState<boolean>(false);
   const [addingLocation, setAddingLocation] = useState<boolean>(false);
   const [addingLocationDescription, setAddingLocationDescription] = useState<boolean>(false);
@@ -88,10 +99,17 @@ const LogbookV2 = () => {
   const [onBackClick, setOnBackClick] = useState<(() => () => void) | undefined>(undefined);
   const [date, setDate] = useState<string>(entry.dateTime ? Format.isoDate(entry.dateTime) : '');
   const [time, setTime] = useState<string>(entry.dateTime ? Format.time(entry.dateTime) : '');
+  const [fields, setFields] = useState<Field[]>();
+  const [field, setField] = useState<Field>();
+  const [dependent, setDependent] = useState<Field>();
 
   useEffect(() => {
     entry.type = formType;
   }, [entry, formType]);
+
+  useEffect(() => {
+    setFields(LogEntryTypes[formType as LogEntryType]?.fields(entry));
+  }, [formType, entry]);
 
   useEffect(() => {
     setValidationErrors(Validate.entry(entry, [...selectedFiles, ...recordings]));
@@ -169,9 +187,6 @@ const LogbookV2 = () => {
     return [];
   }, [entry.location]);
 
-  const type = LogEntryTypes[formType as LogEntryType];
-  const fields = type?.fields(entry);
-
   useEffect(() => {
     if (formType) {
       setHeading(`New form - ${formType}`);
@@ -186,6 +201,8 @@ const LogbookV2 = () => {
       setHeading('Add attachments(s)');
     } else if (addingSketch) {
       setHeading('Add sketch');
+    } else if (addingFormFields && field) {
+      setHeading('Add field');
     }
   }, [
     formType,
@@ -194,11 +211,17 @@ const LogbookV2 = () => {
     addingDateAndTime,
     addingLocation,
     addingAttachments,
-    addingSketch
+    addingSketch,
+    addingFormFields,
+    field
   ]);
 
   const onContentChange = (id: string, json: string, text: string) => {
     onFieldChange(id, { json, text });
+  };
+
+  const onNestedFieldChange = (id: string, value: FieldValueType) => {
+    onFieldChange(id, value, true);
   };
 
   const otherAttachments: Array<Mentionable> = useMemo(() => {
@@ -225,11 +248,17 @@ const LogbookV2 = () => {
 
   useEffect(() => {
     setAddingFormContent(
-      addingDescription || addingDateAndTime || addingLocation || addingAttachments || addingSketch
+      addingDescription ||
+        addingFormFields ||
+        addingDateAndTime ||
+        addingLocation ||
+        addingAttachments ||
+        addingSketch
     );
   }, [
     setAddingFormContent,
     addingDescription,
+    addingFormFields,
     addingDateAndTime,
     addingLocation,
     addingAttachments,
@@ -294,6 +323,49 @@ const LogbookV2 = () => {
 
   const removeRecording = (name: string) => {
     setRecordings((prev) => prev.filter((r) => r.name !== name));
+  };
+
+  const dependentFieldIds = fields
+    ?.flatMap((field) => field.dependentFieldIds)
+    ?.filter((fieldId) => fieldId);
+  const parentFields = fields?.filter((field) => !dependentFieldIds?.includes(field.id));
+
+  useEffect(() => {
+    const matchingDependent = fields?.find((field1) =>
+      field?.dependentFieldIds?.includes(field1.id)
+    );
+    setDependent(matchingDependent);
+  }, [fields, field, setDependent]);
+
+  const onCreateEntry: OnCreateEntry = (entry, files) => {
+    createLogEntry({ logEntry: { id: uuidV4(), ...entry }, attachments: files });
+    return undefined;
+  };
+
+  const onAddEntryClick = (evt?: MouseEvent<HTMLButtonElement>) => {
+    evt?.preventDefault();
+    const fileAttachments: LogEntryAttachment[] = selectedFiles.map((file) => ({
+      type: 'File',
+      name: file.name
+    }));
+    const recordingAttachments: LogEntryAttachment[] = recordings.map((recording) => ({
+      type: 'Recording',
+      name: recording.name
+    }));
+    const sketchAttachments: LogEntryAttachment[] = [];
+    const sketches: File[] = [];
+    if (sketchLines.length > 0) {
+      const dataURL = canvasRef.current?.toDataURL();
+      if (dataURL) {
+        const file = Document.dataURLtoFile(dataURL, `Sketch ${Format.timestamp()}.png`);
+        sketchAttachments.push({ type: 'Sketch', name: file.name });
+        sketches.push(file);
+      }
+    }
+    const attachments = [...fileAttachments, ...recordingAttachments, ...sketchAttachments];
+    entry.attachments = attachments.length > 0 ? attachments : undefined;
+
+    onCreateEntry({ ...entry } as LogEntry, [...selectedFiles, ...recordings, ...sketches]);
   };
 
   if (!incident) return null;
@@ -425,7 +497,21 @@ const LogbookV2 = () => {
     );
     const fieldComponents = fields.map((field) => (
       <>
-        <Box key={`field-${field.id}`} display="flex" textAlign="center" gap={1} padding="10px 5px">
+        <Box
+          key={`field-${field.id}`}
+          display="flex"
+          textAlign="center"
+          gap={1}
+          padding="10px 5px"
+          sx={{ cursor: 'pointer' }}
+          onClick={() => {
+            setField(field);
+            setAddingFormFields(true);
+            setOnBackClick(() => () => {
+              setAddingFormFields(false);
+            });
+          }}
+        >
           {FormUtils.getFieldIcon(field)?.icon}
           <Box display="flex" flexDirection="column">
             <Typography
@@ -457,37 +543,37 @@ const LogbookV2 = () => {
   };
 
   return (
-    <Box
-      marginLeft={1}
-      marginRight={1}
-      display="flex"
-      flexDirection="column"
-      position="relative"
-      height="95%"
-    >
-      <Box display="flex" gap={1} alignItems="center">
-        <IconButton aria-label="back" sx={{ paddingLeft: 0 }} onClick={onBackClick}>
-          <ArrowBackIcon />
-        </IconButton>
-        <Typography component="h1">{heading}</Typography>
-      </Box>
-      <Divider />
-      {addingDescription && (
-        <Box flexGrow={1} sx={{ backgroundColor: '#f0f2f2' }}>
-          <EntryContent
-            id="content"
-            editable
-            json={typeof entry.content === 'object' ? entry.content.json : undefined}
-            recordingActive={false}
-            onRecording={undefined}
-            onChange={onContentChange}
-            error={false}
-            mentionables={mentionables}
-          />
+    <PageWrapper>
+      <Box
+        marginLeft={1}
+        marginRight={1}
+        display="flex"
+        flexDirection="column"
+        position="relative"
+        height="95%"
+      >
+        <Box display="flex" gap={1} alignItems="center">
+          <IconButton aria-label="back" sx={{ paddingLeft: 0 }} onClick={onBackClick}>
+            <ArrowBackIcon />
+          </IconButton>
+          <Typography component="h1">{heading}</Typography>
         </Box>
-      )}
-      {addingDateAndTime && (
-        <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={enGB}>
+        <Divider />
+        {addingDescription && (
+          <Box flexGrow={1} sx={{ backgroundColor: '#f0f2f2' }}>
+            <EntryContent
+              id="content"
+              editable
+              json={typeof entry.content === 'object' ? entry.content.json : undefined}
+              recordingActive={false}
+              onRecording={undefined}
+              onChange={onContentChange}
+              error={false}
+              mentionables={mentionables}
+            />
+          </Box>
+        )}
+        {addingFormFields && field && (
           <Box
             display="flex"
             flexDirection="column"
@@ -496,145 +582,243 @@ const LogbookV2 = () => {
             marginTop={2}
             sx={{ backgroundColor: '#f0f2f2' }}
           >
-            <FormControl variant="standard">
-              <DatePicker
-                label="Date"
-                slotProps={{ textField: { variant: 'filled', hiddenLabel: true } }}
-                disableFuture
-                value={getDateValue()}
-                onChange={onDateChange}
-              />
-            </FormControl>
-            <FormControl>
-              <TimePicker
-                label="Time"
-                slotProps={{ textField: { variant: 'filled', hiddenLabel: true } }}
-                viewRenderers={{ hours: renderTimeViewClock, minutes: renderTimeViewClock }}
-                value={getTimeValue()}
-                onChange={onTimeChange}
-              />
-            </FormControl>
+            {field.type && field.type === 'Select' && (
+              <FormControl fullWidth>
+                <TextField
+                  select
+                  aria-label="Commicated by option"
+                  value={getFieldValue(field, entry)}
+                  onChange={(event) => {
+                    setField(field);
+                    onNestedFieldChange(field.id, event.target.value);
+                  }}
+                  id={field.id}
+                  label={getFieldValue(field, entry) ? '' : 'Select'}
+                  slotProps={{ inputLabel: { shrink: false } }}
+                  sx={{
+                    '&. MuiInputBase-input': {
+                      backgroundColor: '#FFFFFF',
+                      paddingTop: '17px',
+                      paddingBottom: '16px'
+                    }
+                  }}
+                >
+                  {field.options!.map((option: FieldOption) => (
+                    <MenuItem value={option.value}>{option.label}</MenuItem>
+                  ))}
+                </TextField>
+              </FormControl>
+            )}
+            {field.type && field.type === 'Input' && (
+              <FormControl fullWidth>
+                <TextField
+                  hiddenLabel
+                  value={getFieldValue(field, entry)}
+                  onChange={(event) => {
+                    setField(field);
+                    onNestedFieldChange(field.id, event.target.value);
+                  }}
+                  id={field.id}
+                  variant="filled"
+                />
+              </FormControl>
+            )}
+            {dependent && (
+              <>
+                {dependent.type && dependent.type === 'Select' && (
+                  <FormControl fullWidth>
+                    <TextField
+                      select
+                      aria-label={dependent.label}
+                      value={getFieldValue(dependent, entry)}
+                      onChange={(event) => {
+                        onNestedFieldChange(dependent.id, event.target.value);
+                      }}
+                      id={dependent.id}
+                      label={getFieldValue(dependent, entry) ? '' : 'Select'}
+                      slotProps={{ inputLabel: { shrink: false } }}
+                      sx={{
+                        '&. MuiInputBase-input': {
+                          backgroundColor: '#FFFFFF',
+                          paddingTop: '17px',
+                          paddingBottom: '16px'
+                        }
+                      }}
+                    >
+                      {dependent.options!.map((option: FieldOption) => (
+                        <MenuItem value={option.value}>{option.label}</MenuItem>
+                      ))}
+                    </TextField>
+                  </FormControl>
+                )}
+                {dependent.type && dependent.type === 'Input' && (
+                  <FormControl fullWidth>
+                    <TextField
+                      hiddenLabel
+                      value={getFieldValue(dependent, entry)}
+                      onChange={(event) => {
+                        onNestedFieldChange(dependent.id, event.target.value);
+                      }}
+                      id={dependent.id}
+                      variant="filled"
+                    />
+                  </FormControl>
+                )}
+              </>
+            )}
           </Box>
-        </LocalizationProvider>
-      )}
-      {addingLocation && (
-        <Box flexGrow={1} sx={{ backgroundColor: '#f0f2f2' }}>
-          <FormControl fullWidth sx={{ marginTop: 2 }}>
-            <TextField
-              select
-              aria-label="Select location input type"
-              value={locationInputType}
-              onChange={(event) => handleLocationInputTypeChange(event.target.value)}
-              id="location.type"
-              variant="filled"
-              label={locationInputType ? '' : 'Select location type'}
-              slotProps={{ inputLabel: { shrink: false } }}
-              sx={{
-                '&. MuiInputBase-input': {
-                  backgroundColor: '#FFFFFF',
-                  paddingTop: '17px',
-                  paddingBottom: '16px'
-                }
-              }}
+        )}
+        {addingDateAndTime && (
+          <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={enGB}>
+            <Box
+              display="flex"
+              flexDirection="column"
+              flexGrow={1}
+              gap={4}
+              marginTop={2}
+              sx={{ backgroundColor: '#f0f2f2' }}
             >
-              {getLocationTypes().map((locationType) => (
-                <MenuItem key={`location-${locationType.value}`} value={locationType.value}>
-                  {locationType.label}
-                </MenuItem>
-              ))}
-            </TextField>
-          </FormControl>
-          {addingLocationDescription && (
+              <FormControl variant="standard">
+                <DatePicker
+                  label="Date"
+                  slotProps={{ textField: { variant: 'filled', hiddenLabel: true } }}
+                  disableFuture
+                  value={getDateValue()}
+                  onChange={onDateChange}
+                />
+              </FormControl>
+              <FormControl>
+                <TimePicker
+                  label="Time"
+                  slotProps={{ textField: { variant: 'filled', hiddenLabel: true } }}
+                  viewRenderers={{ hours: renderTimeViewClock, minutes: renderTimeViewClock }}
+                  value={getTimeValue()}
+                  onChange={onTimeChange}
+                />
+              </FormControl>
+            </Box>
+          </LocalizationProvider>
+        )}
+        {addingLocation && (
+          <Box flexGrow={1} sx={{ backgroundColor: '#f0f2f2' }}>
             <FormControl fullWidth sx={{ marginTop: 2 }}>
               <TextField
-                hiddenLabel
-                variant="filled"
-                multiline
-                id="location.description"
-                value={
-                  entry.location?.type === 'description' || entry.location?.type === 'both'
-                    ? entry.location.description
-                    : null
-                }
-                onChange={(event) => handleLocationDescriptionChange(event.target.value)}
-                minRows={4}
-                placeholder="Describe the location"
-              />
-            </FormControl>
-          )}
-          {addingLocationCoordinates && (
-            <Box marginTop={2}>
-              <MapComponent
-                id="location.coordinates"
-                markers={markers}
-                setMarkers={handleLocationCoordinatesChange}
-              />
-            </Box>
-          )}
-        </Box>
-      )}
-      {addingAttachments && (
-        <Box sx={{ backgroundColor: '' }}>
-          <Files.Content
-            active={addingAttachments}
-            selectedFiles={selectedFiles}
-            recordings={recordings}
-            onFilesSelected={onFilesSelect}
-            removeSelectedFile={removeSelectedFile}
-            removeRecording={removeRecording}
-          />
-        </Box>
-      )}
-      {addingSketch && (
-        <Box sx={{ backgroundColor: '' }}>
-          <Sketch.Content
-            active={addingSketch}
-            canvasRef={canvasRef}
-            lines={sketchLines}
-            onChangeLines={setSketchLines}
-          />
-        </Box>
-      )}
-      {!addingFormContent && (
-        <Box display="flex" flexDirection="column" marginTop={1} flexGrow={1}>
-          <Box flexGrow={1}>
-            <FormControl fullWidth sx={{ marginBottom: 2 }}>
-              <TextField
                 select
-                value={formType}
-                onChange={(event) => handleFormTypeChange(event.target.value)}
-                aria-label="Select form type"
-                id="select-form-type"
-                variant="standard"
-                sx={{ marginLeft: 1, marginRight: 1, color: theme.palette.secondary.main }}
-                label={formType ? '' : 'Select form'}
+                aria-label="Select location input type"
+                value={locationInputType}
+                onChange={(event) => handleLocationInputTypeChange(event.target.value)}
+                id="location.type"
+                variant="filled"
+                label={locationInputType ? '' : 'Select location type'}
                 slotProps={{ inputLabel: { shrink: false } }}
+                sx={{
+                  '&. MuiInputBase-input': {
+                    backgroundColor: '#FFFFFF',
+                    paddingTop: '17px',
+                    paddingBottom: '16px'
+                  }
+                }}
               >
-                {baseOptions.map((baseOption) => (
-                  <MenuItem key={`formType-${baseOption.value}`} value={baseOption.value}>
-                    {baseOption.label}
+                {getLocationTypes().map((locationType) => (
+                  <MenuItem key={`location-${locationType.value}`} value={locationType.value}>
+                    {locationType.label}
                   </MenuItem>
                 ))}
               </TextField>
             </FormControl>
-            <Divider />
-            {fields && formComponents(fields)}
+            {addingLocationDescription && (
+              <FormControl fullWidth sx={{ marginTop: 2 }}>
+                <TextField
+                  hiddenLabel
+                  variant="filled"
+                  multiline
+                  id="location.description"
+                  value={
+                    entry.location?.type === 'description' || entry.location?.type === 'both'
+                      ? entry.location.description
+                      : null
+                  }
+                  onChange={(event) => handleLocationDescriptionChange(event.target.value)}
+                  minRows={4}
+                  placeholder="Describe the location"
+                />
+              </FormControl>
+            )}
+            {addingLocationCoordinates && (
+              <Box marginTop={2}>
+                <MapComponent
+                  id="location.coordinates"
+                  markers={markers}
+                  setMarkers={handleLocationCoordinatesChange}
+                />
+              </Box>
+            )}
           </Box>
-          <Box display="flex" alignSelf="flex-end" gap={1} alignItems="end">
-            <Button variant="outlined" href={`/logbook/${incidentId}`}>
-              Cancel
-            </Button>
-            <Button
-              variant="contained"
-              startIcon={<ImportContactsIcon />}
-              disabled={validationErorrs.length > 0}
-            >
-              Save
-            </Button>
+        )}
+        {addingAttachments && (
+          <Box sx={{ backgroundColor: '#f0f2f2' }}>
+            <Files.Content
+              active={addingAttachments}
+              selectedFiles={selectedFiles}
+              recordings={recordings}
+              onFilesSelected={onFilesSelect}
+              removeSelectedFile={removeSelectedFile}
+              removeRecording={removeRecording}
+            />
           </Box>
-        </Box>
-      )}
-    </Box>
+        )}
+        {addingSketch && (
+          <Box sx={{ backgroundColor: '#f0f2f2' }}>
+            <Sketch.Content
+              active={addingSketch}
+              canvasRef={canvasRef}
+              lines={sketchLines}
+              onChangeLines={setSketchLines}
+            />
+          </Box>
+        )}
+        {!addingFormContent && (
+          <Box display="flex" flexDirection="column" marginTop={1} flexGrow={1}>
+            <Box flexGrow={1}>
+              <FormControl fullWidth sx={{ marginBottom: 2 }}>
+                <TextField
+                  select
+                  value={formType}
+                  onChange={(event) => handleFormTypeChange(event.target.value)}
+                  aria-label="Select form type"
+                  id="select-form-type"
+                  variant="standard"
+                  sx={{ marginLeft: 1, marginRight: 1, color: theme.palette.secondary.main }}
+                  label={formType ? '' : 'Select form'}
+                  slotProps={{ inputLabel: { shrink: false } }}
+                >
+                  {baseOptions.map((baseOption) => (
+                    <MenuItem key={`formType-${baseOption.value}`} value={baseOption.value}>
+                      {baseOption.label}
+                    </MenuItem>
+                  ))}
+                </TextField>
+              </FormControl>
+              <Divider />
+              {parentFields && formComponents(parentFields ?? [])}
+            </Box>
+            <Box display="flex" alignSelf="flex-end" gap={1} alignItems="end">
+              <Button variant="outlined" href={`/logbook/${incidentId}`}>
+                Cancel
+              </Button>
+              <Button
+                variant="contained"
+                startIcon={<ImportContactsIcon />}
+                disabled={validationErorrs.length > 0}
+                onClick={onAddEntryClick}
+              >
+                Save
+              </Button>
+            </Box>
+          </Box>
+        )}
+      </Box>
+    </PageWrapper>
   );
 };
 
