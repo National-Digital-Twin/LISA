@@ -73,6 +73,7 @@ jobs:
     needs: dependencies
     env:
       GITHUB_ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      TZ: UTC
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
