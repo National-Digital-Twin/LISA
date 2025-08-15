@@ -27,7 +27,7 @@ type CreateLogEntryParams = {
   attachments?: File[];
 };
 
-export const useCreateLogEntry = (incidentId?: string) => {
+export const useCreateLogEntry = (incidentId?: string, onSuccess?: () => void) => {
   if (!incidentId) {
     throw new Error('Incident id is undefined cannot create log entry!');
   }
@@ -52,9 +52,18 @@ export const useCreateLogEntry = (incidentId?: string) => {
     onMutate: async ({ logEntry }) => {
       await queryClient.cancelQueries({ queryKey: [`incident/${incidentId}/logEntries`] });
 
-      const { previousEntries, updatedEntries } = await addOptimisticLogEntry(incidentId, logEntry);
+      const { previousEntries, updatedEntries } = await addOptimisticLogEntry(
+        queryClient,
+        incidentId,
+        logEntry
+      );
 
       return { previousEntries, updatedEntries };
+    },
+    onSuccess: () => {
+      if (onSuccess) {
+        onSuccess();
+      }
     },
     onError(error, _variables, context) {
       if (error.cause && context?.previousEntries) {

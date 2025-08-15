@@ -14,12 +14,16 @@ export const FieldOption = Record({
   subIndex: Optional(String),
   value: String,
   label: String,
-  options: Optional(Array(Record({
-    index: Optional(String),
-    subIndex: Optional(String),
-    value: String,
-    label: String
-  })))
+  options: Optional(
+    Array(
+      Record({
+        index: Optional(String),
+        subIndex: Optional(String),
+        value: String,
+        label: String
+      })
+    )
+  )
 });
 
 export const Field = Record({
@@ -35,7 +39,8 @@ export const Field = Record({
   hint: Optional(String),
   className: Optional(String),
   multiline: Optional(Boolean),
-  rows: Optional(Number)
+  rows: Optional(Number),
+  dependentFieldIds: Optional(Array(String))
 });
 
 export type Field = Static<typeof Field>;

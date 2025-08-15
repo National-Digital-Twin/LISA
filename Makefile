@@ -17,3 +17,9 @@ run-sonar-scan:
 		-e SONAR_SCANNER_OPTS="-Dsonar.projectKey=${SONAR_PROJECT_KEY}" \
 		-e SONAR_TOKEN="${SONAR_TOKEN}" \
 		sonarsource/sonar-scanner-cli
+
+lisa-sag-up:
+	docker compose -f deployment/sag/docker-compose.yaml up -d
+
+lisa-sag-down:
+	docker compose -f deployment/sag/docker-compose.yaml down
