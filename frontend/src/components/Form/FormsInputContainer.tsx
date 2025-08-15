@@ -1,5 +1,6 @@
-import { useMemo, useState } from 'react';
+import { RefObject, useMemo, useState } from 'react';
 import { enGB } from 'date-fns/locale';
+import { Stage } from 'konva/lib/Stage';
 import { Box, Divider, FormControl, MenuItem, TextField, Typography } from '@mui/material';
 import CircleIcon from '@mui/icons-material/Circle';
 import {
@@ -16,7 +17,7 @@ import { LogEntryTypes } from 'common/LogEntryTypes';
 import { LogEntryType } from 'common/LogEntryType';
 import { Mentionable } from 'common/Mentionable';
 import { Coordinates, LocationType, type Location as TypeOfLocation } from 'common/Location';
-import { FullLocationType, OptionType, ValidationError } from '../../utils/types';
+import { FullLocationType, OptionType, SketchLine, ValidationError } from '../../utils/types';
 import { EntityInputContainer, EntityInputContainerData } from '../AddEntity/EntityInputContainer';
 import { getLogEntryTypes } from '../../utils/Form/getBaseLogEntryFields';
 import { EntityOptionsContainer } from '../AddEntity/EntityOptionsContainer';
@@ -34,10 +35,18 @@ type Props = {
   incident: Incident;
   entry: Partial<LogEntry>;
   mentionables: Array<Mentionable>;
+  selectedFiles: Array<File>;
+  recordings: Array<File>;
   markers: Coordinates[];
+  canvasRef: RefObject<Stage | null>;
+  sketchLines: Array<SketchLine>;
   errors: ValidationError[];
   onFieldChange: OnFieldChange;
+  onFilesSelected: (files: Array<File>) => void;
+  onRemoveSelectedFile: (filename: string) => void;
+  onRemoveRecording: (recordingName: string) => void;
   onLocationChange: (locationInputType: Partial<TypeOfLocation>) => void;
+  setSketchLines: (sketchLines: Array<SketchLine>) => void;
   onSubmit: () => void;
   onCancel: () => void;
 };
@@ -46,16 +55,24 @@ export const FormsInputContainer = ({
   incident,
   entry,
   mentionables,
+  selectedFiles,
+  recordings,
   markers,
+  canvasRef,
+  sketchLines,
   errors,
   onFieldChange,
+  onFilesSelected,
+  onRemoveSelectedFile,
+  onRemoveRecording,
   onLocationChange,
+  setSketchLines,
   onSubmit,
   onCancel
 }: Props) => {
   const formTypes: OptionType[] = useMemo(() => getLogEntryTypes(incident), [incident]);
   const [level, setLevel] = useState<number>(0);
-  const [level3Heading, setLevel3Heading] = useState<string>('');
+  const [customHeading, setCustomHeading] = useState<string>('');
   const [addingDescription, setAddingDescription] = useState<boolean>(false);
   const [addingDateAndTime, setAddingDateAndTime] = useState<boolean>(false);
   const [addingLocation, setAddingLocation] = useState<boolean>(false);
@@ -155,7 +172,7 @@ export const FormsInputContainer = ({
     {
       id: 'description',
       onClick: () => {
-        setLevel3Heading('Add a description');
+        setCustomHeading('Add a description');
         setAddingDescription(true);
         setLevel(2);
       }
@@ -163,7 +180,7 @@ export const FormsInputContainer = ({
     {
       id: 'dateAndTime',
       onClick: () => {
-        setLevel3Heading('Add date and time');
+        setCustomHeading('Add date and time');
         setAddingDateAndTime(true);
         setLevel(2);
       }
@@ -171,7 +188,7 @@ export const FormsInputContainer = ({
     {
       id: 'location',
       onClick: () => {
-        setLevel3Heading('Add location(s)');
+        setCustomHeading('Add location(s)');
         setAddingLocation(true);
         setLevel(2);
       },
@@ -232,7 +249,7 @@ export const FormsInputContainer = ({
       )
     },
     {
-      heading: level3Heading,
+      heading: customHeading,
       inputControls: (
         <>
           {addingDescription && (
@@ -335,14 +352,14 @@ export const FormsInputContainer = ({
                 active={addingAttachments}
                 selectedFiles={selectedFiles}
                 recordings={recordings}
-                onFilesSelected={onFilesSelect}
-                removeSelectedFile={removeSelectedFile}
-                removeRecording={removeRecording}
+                onFilesSelected={onFilesSelected}
+                removeSelectedFile={onRemoveSelectedFile}
+                removeRecording={onRemoveRecording}
               />
             </Box>
           )}
           {addingSketch && (
-            <Box sx={{ backgroundColor: '#f0f2f2' }}>
+            <Box>
               <Sketch.Content
                 active={addingSketch}
                 canvasRef={canvasRef}

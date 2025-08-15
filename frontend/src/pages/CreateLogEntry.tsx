@@ -36,9 +36,9 @@ export const CreateLogEntry = () => {
   });
 
   const [validationErorrs, setValidationErrors] = useState<Array<ValidationError>>([]);
-  const [selectedFiles] = useState<File[]>([]);
-  const [recordings] = useState<File[]>([]);
-  const [sketchLines] = useState<SketchLine[]>([]);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [recordings, setRecordings] = useState<File[]>([]);
+  const [sketchLines, setSketchLines] = useState<SketchLine[]>([]);
   const canvasRef = useRef<Stage>(null);
 
   const otherAttachments: Array<Mentionable> = useMemo(() => {
@@ -99,6 +99,23 @@ export const CreateLogEntry = () => {
     setEntry((prev) => ({ ...prev, location }) as LogEntry);
   };
 
+  const getUniqueFiles = (newFiles: File[], existingFiles: File[]): File[] =>
+    newFiles.filter(
+      (file) => !existingFiles.some((existingFile) => existingFile.name === file.name)
+    );
+
+  const onFilesSelected = (files: File[]): void => {
+    setSelectedFiles((prevFiles) => [...prevFiles, ...getUniqueFiles(files, prevFiles)]);
+  };
+
+  const onRemoveSelectedFile = (name: string) => {
+    setSelectedFiles((prev) => prev.filter((file) => file.name !== name));
+  };
+
+  const onRemoveRecording = (name: string) => {
+    setRecordings((prev) => prev.filter((r) => r.name !== name));
+  };
+
   const onCreateEntry: OnCreateEntry = (entry, files) => {
     createLogEntry({ logEntry: { id: uuidV4(), ...entry }, attachments: files });
     return undefined;
@@ -139,11 +156,19 @@ export const CreateLogEntry = () => {
         entry={entry}
         errors={validationErorrs}
         onFieldChange={onFieldChange}
+        onFilesSelected={onFilesSelected}
+        onRemoveSelectedFile={onRemoveSelectedFile}
+        onRemoveRecording={onRemoveRecording}
+        setSketchLines={setSketchLines}
         onLocationChange={onLocationChange}
         onSubmit={onAddEntryClick}
         onCancel={() => navigate(`/logbook/${incidentId}`)}
         mentionables={mentionables}
+        selectedFiles={selectedFiles}
+        recordings={recordings}
         markers={markers}
+        canvasRef={canvasRef}
+        sketchLines={sketchLines}
       />
     </PageWrapper>
   );

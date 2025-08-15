@@ -16,7 +16,11 @@ const TOTAL_RETRY_ATTEMPTS = 3;
 export const useIncidents = () =>
   useQuery<Incident[], FetchError>({
     queryKey: ['incidents'],
-    queryFn: () => get('/incidents')
+    queryFn: () => get('/incidents'),
+    staleTime: 10_000,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    refetchOnReconnect: true,
   });
 
 async function poll(
