@@ -35,7 +35,7 @@ export const CreateLogEntry = () => {
     content: {}
   });
 
-  const [validationErorrs, setValidationErrors] = useState<Array<ValidationError>>([]);
+  const [validationErrors, setValidationErrors] = useState<Array<ValidationError>>([]);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [recordings, setRecordings] = useState<File[]>([]);
   const [sketchLines, setSketchLines] = useState<SketchLine[]>([]);
@@ -154,7 +154,7 @@ export const CreateLogEntry = () => {
       <FormsInputContainer
         incident={incident}
         entry={entry}
-        errors={validationErorrs}
+        errors={validationErrors}
         onFieldChange={onFieldChange}
         onFilesSelected={onFilesSelected}
         onRemoveSelectedFile={onRemoveSelectedFile}

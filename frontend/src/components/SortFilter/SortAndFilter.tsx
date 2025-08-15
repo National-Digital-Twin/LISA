@@ -3,21 +3,10 @@
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
 import {
-  Drawer,
-  Box,
-  Stack,
-  Typography,
-  IconButton,
-  Divider,
-  Button,
-  Chip,
-  List,
-  ListItemButton,
-  ListItemText,
-  TextField,
-  Radio,
-  Checkbox,
-  ListItem
+  Drawer, Box, Stack, Typography, IconButton, Divider, Button, Chip,
+  List, ListItemButton, ListItemText,
+  TextField, Radio,
+  Checkbox, ListItem
 } from '@mui/material';
 import dayjs, { Dayjs } from 'dayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -31,15 +20,12 @@ import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import SortIcon from '@mui/icons-material/Sort';
 
 import {
-  SortAndFilterProps,
-  QueryState,
-  FilterNode,
-  GroupNode,
-  TextLeaf,
-  DateRangeLeaf,
+  SortAndFilterProps, QueryState, FilterNode, GroupNode,
+  TextLeaf, DateRangeLeaf,
   OptionLeaf
 } from './filter-types';
 import { countActive, countActiveForGroup } from './filter-utils';
+
 
 type Page =
   | { kind: 'list'; title: string; nodes: FilterNode[] }
@@ -54,15 +40,13 @@ export function SortAndFilter({
   sort,
   initial,
   onApply,
-  tree
+  tree,
 }: Readonly<SortAndFilterProps>) {
-  const initialState: QueryState = useMemo(
-    () => ({
-      sort: initial?.sort ?? (sort?.length ? { by: sort[0].id, direction: 'desc' } : undefined),
-      values: { ...(initial?.values ?? {}) }
-    }),
-    [initial, sort]
-  );
+
+  const initialState: QueryState = useMemo(() => ({
+    sort: initial?.sort ?? (sort?.length ? { by: sort[0].id, direction: 'desc' } : undefined),
+    values: { ...(initial?.values ?? {}) },
+  }), [initial, sort]);
 
   const baselineRef = useRef<QueryState | null>(null);
 
@@ -76,24 +60,22 @@ export function SortAndFilter({
   const [appliedState, setAppliedState] = useState<QueryState>(initialState);
   const baseline = baselineRef.current ?? initialState;
 
-  const canApply = useMemo(
-    () => JSON.stringify(local) !== JSON.stringify(appliedState),
-    [local, appliedState]
-  );
+  const canApply = useMemo(() =>
+    JSON.stringify(local) !== JSON.stringify(appliedState),
+  [local, appliedState]);
 
-  const canClear = useMemo(
-    () => JSON.stringify(local) !== JSON.stringify(baseline),
-    [local, baseline]
-  );
+  const canClear = useMemo(() =>
+    JSON.stringify(local) !== JSON.stringify(baseline),
+  [local, baseline]);
 
   const timeSelection = local.values.time;
-  const timeRange =
-    (local.values.timeRange as { from?: string; to?: string } | undefined) ?? undefined;
+  const timeRange = (local.values.timeRange as { from?: string; to?: string } | undefined) ?? undefined;
 
   const isCustomTime = timeSelection === 'custom';
   const isTimeRangeComplete = !!(timeRange?.from && timeRange?.to);
 
-  const customTimeConfigured = !isCustomTime || (isCustomTime && isTimeRangeComplete);
+  const customTimeConfigured =
+  (!isCustomTime) || (isCustomTime && isTimeRangeComplete);
 
   // Navigation stack
   const [stack, setStack] = useState<Page[]>([]);
@@ -111,10 +93,7 @@ export function SortAndFilter({
 
   const setSingleSelect = (key: string, id: string) => {
     if (key === 'sort') {
-      setLocal((prev) => ({
-        ...prev,
-        sort: { by: id, direction: prev.sort?.direction ?? 'desc' }
-      }));
+      setLocal((prev) => ({ ...prev, sort: { by: id, direction: prev.sort?.direction ?? 'desc' } }));
     } else {
       setValue(key, id);
     }
@@ -131,7 +110,9 @@ export function SortAndFilter({
           <SortIcon />
         )}
         <Typography variant="h6">{curr?.title ?? title ?? 'Filters'}</Typography>
-        {stack.length === 1 && <Chip size="small" label={`${countActive(local.values)}`} />}
+        {stack.length === 1 && (
+          <Chip size="small" label={`${countActive(local.values)}`} />
+        )}
       </Stack>
       <IconButton onClick={onClose} aria-label="Close filter panel">
         <CloseIcon />
@@ -141,7 +122,9 @@ export function SortAndFilter({
 
   const renderCountAndChevron = (activeCount: number) => (
     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-      {activeCount > 0 && <Chip size="small" label={activeCount} />}
+      {activeCount > 0 && (
+        <Chip size="small" label={activeCount} />
+      )}
       <ChevronRightIcon />
     </Box>
   );
@@ -175,7 +158,7 @@ export function SortAndFilter({
               </ListItem>
             );
           }
-
+  
           if (n.type === 'text') {
             return (
               <ListItem key={n.id} disablePadding>
@@ -186,26 +169,24 @@ export function SortAndFilter({
               </ListItem>
             );
           }
-
+  
           if (n.type === 'date-range') {
             return (
               <ListItem key={n.id} disablePadding>
-                <ListItemButton
-                  onClick={() => push({ kind: 'date-range', title: n.label, node: n })}
-                >
+                <ListItemButton onClick={() => push({ kind: 'date-range', title: n.label, node: n })}>
                   <ListItemText primary={n.label} secondary={n.helperText} />
                   {renderCountAndChevron(activeCount)}
                 </ListItemButton>
               </ListItem>
             );
           }
-
+  
           return null;
         })}
       </List>
     );
   };
-
+  
   const renderSelectPage = (group: GroupNode) => {
     const isMulti = group.selection === 'multi';
 
@@ -229,21 +210,21 @@ export function SortAndFilter({
       .forEach((id) => implied.add(id));
 
     const effectiveSelection = new Set([...selected, ...implied]);
-
+  
     const showCustomRange = group.id === 'time' && current === 'custom';
-
+  
     const nodes = [...group.children];
     if (showCustomRange) {
       nodes.push({
         id: 'timeRange',
         type: 'date-range',
-        label: 'Between'
+        label: 'Between',
       });
     }
 
     const handleMultiToggle = (key: string, id: string) => {
       const existing = (local.values[key] as string[] | undefined) ?? [];
-
+  
       let updated: string[];
       if (existing.includes(id)) {
         updated = existing.filter((v) => v !== id);
@@ -252,13 +233,15 @@ export function SortAndFilter({
       }
       setValue(key, updated);
     };
-
+  
     return (
       <List>
         {nodes.map((c) => {
           if (c.type === 'option') {
             const isImplied = implied.has(c.id);
-            const isSelected = isMulti ? effectiveSelection.has(c.id) : current === c.id;
+            const isSelected = isMulti
+              ? effectiveSelection.has(c.id)
+              : current === c.id;
             return (
               <ListItem key={c.id} disablePadding>
                 <ListItemButton
@@ -271,11 +254,7 @@ export function SortAndFilter({
                     }
                   }}
                 >
-                  <ListItemText
-                    primary={c.label}
-                    secondary={c.helperText}
-                    sx={isImplied ? { color: 'text.disabled' } : undefined}
-                  />
+                  <ListItemText primary={c.label} secondary={c.helperText} sx={isImplied ? { color: 'text.disabled' } : undefined}/>
                   {isMulti ? (
                     <Checkbox
                       checked={isSelected}
@@ -292,7 +271,7 @@ export function SortAndFilter({
               </ListItem>
             );
           }
-
+          
           if (c.type === 'group') {
             return (
               <ListItem key={c.id} disablePadding>
@@ -303,13 +282,10 @@ export function SortAndFilter({
               </ListItem>
             );
           }
-
+          
           if (c.type === 'date-range') {
             return (
-              <ListItemButton
-                key={c.id}
-                onClick={() => push({ kind: 'date-range', title: c.label, node: c })}
-              >
+              <ListItemButton key={c.id} onClick={() => push({ kind: 'date-range', title: c.label, node: c })}>
                 <ListItemText primary={c.label} secondary={c.helperText} />
                 <ChevronRightIcon />
               </ListItemButton>
@@ -320,13 +296,12 @@ export function SortAndFilter({
       </List>
     );
   };
+  
 
   const renderTextPage = (node: TextLeaf) => (
     <Box sx={{ p: 2 }}>
       <TextField
-        fullWidth
-        size="medium"
-        label={node.label}
+        fullWidth size="medium" label={node.label}
         placeholder={node.placeholder}
         value={(local.values[node.id] as string) ?? ''}
         onChange={(e) => setValue(node.id, e.target.value)}
@@ -341,10 +316,10 @@ export function SortAndFilter({
 
     const v = (local.values[node.id] as { from?: string; to?: string }) ?? {};
     const fromVal = v.from ? dayjs(v.from) : null;
-    const toVal = v.to ? dayjs(v.to) : null;
+    const toVal   = v.to   ? dayjs(v.to)   : null;
 
     const fromNorm = clampToMinute(fromVal);
-    const toNorm = clampToMinute(toVal);
+    const toNorm   = clampToMinute(toVal);
 
     return (
       <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -354,13 +329,13 @@ export function SortAndFilter({
             value={fromNorm}
             disablePast={false}
             onChange={(newVal) => setValue(node.id, { ...v, from: fmt(clampToMinute(newVal)) })}
-            views={['year', 'month', 'day', 'hours', 'minutes']}
+            views={['year','month','day','hours','minutes']}
             viewRenderers={{ hours: renderTimeViewClock, minutes: renderTimeViewClock }}
             maxDateTime={toNorm ?? undefined}
-            referenceDate={fromNorm ?? toNorm ?? dayjs().startOf('day')}
+            referenceDate={(fromNorm ?? toNorm ?? dayjs().startOf('day'))}
             slotProps={{
               textField: { fullWidth: true, id: 'from' },
-              openPickerButton: { 'aria-label': 'Open From date-time picker' }
+              openPickerButton: { 'aria-label': 'Open From date-time picker' },
             }}
           />
 
@@ -369,13 +344,13 @@ export function SortAndFilter({
             value={toNorm}
             disablePast={false}
             onChange={(newVal) => setValue(node.id, { ...v, to: fmt(clampToMinute(newVal)) })}
-            views={['year', 'month', 'day', 'hours', 'minutes']}
+            views={['year','month','day','hours','minutes']}
             viewRenderers={{ hours: renderTimeViewClock, minutes: renderTimeViewClock }}
             minDateTime={fromNorm ?? undefined}
-            referenceDate={toNorm ?? fromNorm ?? dayjs().startOf('day')}
+            referenceDate={(toNorm ?? fromNorm ?? dayjs().startOf('day'))}
             slotProps={{
               textField: { fullWidth: true, id: 'to' },
-              openPickerButton: { 'aria-label': 'Open To date-time picker' }
+              openPickerButton: { 'aria-label': 'Open To date-time picker' },
             }}
           />
         </Stack>
@@ -385,14 +360,7 @@ export function SortAndFilter({
 
   return (
     <Drawer anchor="right" open={open} onClose={onClose} ModalProps={{ keepMounted: true }}>
-      <Box
-        sx={{
-          width: { xs: '90vw', sm: 420 },
-          display: 'flex',
-          flexDirection: 'column',
-          height: '100%'
-        }}
-      >
+      <Box sx={{ width: { xs: '90vw', sm: 420 }, display: 'flex', flexDirection: 'column', height: '100%' }}>
         {renderHeader()}
         <Divider />
 
@@ -403,32 +371,24 @@ export function SortAndFilter({
           {curr?.kind === 'date-range' && renderDateRangePage(curr.node)}
         </Box>
 
-        <Box
-          sx={{
-            p: 2,
-            borderTop: 1,
-            borderColor: 'divider',
-            position: 'sticky',
-            bottom: 0,
-            backgroundColor: 'background.paper'
-          }}
-        >
+        <Box sx={{
+          p: 2, borderTop: 1, borderColor: 'divider', position: 'sticky', bottom: 0,
+          backgroundColor: 'background.paper'
+        }}>
           <Stack direction="row" spacing={1}>
             <Button
-              variant="contained"
-              fullWidth
-              onClick={() => {
+              variant="contained" fullWidth
+              onClick={() => { 
                 setAppliedState(local);
-                onApply(local);
-                onClose();
+                onApply(local); 
+                onClose(); 
               }}
               disabled={!customTimeConfigured || !canApply}
             >
               Apply
             </Button>
             <Button
-              variant="outlined"
-              fullWidth
+              variant="outlined" fullWidth
               onClick={() => {
                 setLocal(baseline);
                 setAppliedState(baseline);

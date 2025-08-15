@@ -1,6 +1,6 @@
 import { RefObject, useMemo, useState } from 'react';
-import { enGB } from 'date-fns/locale';
 import { Stage } from 'konva/lib/Stage';
+import dayjs from 'dayjs';
 import { Box, Divider, FormControl, MenuItem, TextField, Typography } from '@mui/material';
 import CircleIcon from '@mui/icons-material/Circle';
 import {
@@ -9,7 +9,7 @@ import {
   renderTimeViewClock,
   TimePicker
 } from '@mui/x-date-pickers';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { PickerValue } from '@mui/x-date-pickers/internals';
 import { type LogEntry } from 'common/LogEntry';
 import { type Incident } from 'common/Incident';
@@ -118,10 +118,10 @@ export const FormsInputContainer = ({
 
   const getDateValue = () => {
     if (entry.dateTime) {
-      return new Date(Format.isoDate(entry.dateTime));
+      return dayjs(new Date(Format.isoDate(entry.dateTime)));
     }
     if (entryDate) {
-      return new Date(entryDate);
+      return dayjs(new Date(entryDate));
     }
 
     return null;
@@ -129,11 +129,11 @@ export const FormsInputContainer = ({
 
   const getTimeValue = () => {
     if (entry.dateTime) {
-      return new Date(entry.dateTime);
+      return dayjs(new Date(entry.dateTime));
     }
     if (entryTime) {
       const now = new Date();
-      return new Date(`${Format.isoDate(now.toISOString())}T${entryTime}`);
+      return dayjs(new Date(`${Format.isoDate(now.toISOString())}T${entryTime}`));
     }
 
     return null;
@@ -225,7 +225,9 @@ export const FormsInputContainer = ({
               slotProps={{ inputLabel: { shrink: false } }}
             >
               {formTypes.map((formType) => (
-                <MenuItem value={formType.value}>{formType.label}</MenuItem>
+                <MenuItem key={`key-${formType.value}`} value={formType.value}>
+                  {formType.label}
+                </MenuItem>
               ))}
             </TextField>
           </FormControl>
@@ -267,7 +269,7 @@ export const FormsInputContainer = ({
             </Box>
           )}
           {addingDateAndTime && (
-            <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={enGB}>
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
               <Box display="flex" flexDirection="column" flexGrow={1} gap={4} marginTop={2}>
                 <FormControl variant="standard">
                   <DatePicker

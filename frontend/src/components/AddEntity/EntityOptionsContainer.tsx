@@ -15,13 +15,12 @@ export const EntityOptionsContainer = ({ entityType, data, errors }: Props) => {
 
   return (
     <Box>
-      {entityOptionsForType &&
-        entityOptionsForType.map((entityOption) => (
-          <>
-            {entityOption}
-            <Divider />
-          </>
-        ))}
+      {entityOptionsForType?.map((entityOption) => (
+        <>
+          {entityOption}
+          <Divider />
+        </>
+      ))}
     </Box>
   );
 };
