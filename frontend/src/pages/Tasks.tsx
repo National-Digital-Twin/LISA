@@ -5,10 +5,11 @@
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import { Box, Button, Typography } from '@mui/material';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Task, TaskStatus } from 'common/Task';
 import DataList, { ListRow } from '../components/DataList';
-import { useIncidents, useAllTasks, useAuth } from '../hooks';
+import { useIncidents, useAllTasks, useAuth, useAllTasksUpdates } from '../hooks';
+import { useIsOnline } from '../hooks/useIsOnline';
 import { Format } from '../utils';
 
 import { SortAndFilter } from '../components/SortFilter/SortAndFilter';
@@ -60,6 +61,8 @@ export default function Tasks() {
   const { user } = useAuth();
   const { data: incidents } = useIncidents();
   const { data: tasksData } = useAllTasks();
+  const { startPolling, clearPolling } = useAllTasksUpdates();
+  const isOnline = useIsOnline();
   const [searchParams] = useSearchParams();
 
   const mine = searchParams.get('mine') === 'true';
@@ -82,6 +85,18 @@ export default function Tasks() {
     values: initialValues,
     sort: DEFAULT_QUERY_STATE.sort
   });
+
+  useEffect(() => {
+    if (isOnline) {
+      startPolling();
+    } else {
+      clearPolling();
+    }
+    
+    return () => {
+      clearPolling();
+    };
+  }, [isOnline, startPolling, clearPolling]);
 
   const allTasks: Task[] = useMemo(() => tasksData ?? [], [tasksData]);
   const incidentNameById = new Map((incidents ?? []).map((i) => [i.id, i.name] as const));
@@ -271,7 +286,8 @@ export default function Tasks() {
                 ),
                 footer: `INCIDENT: ${incidentNameById.get(t.incidentId) ?? t.incidentId}`,
                 titleDot: <StatusDot status={t.status} />,
-                onClick: () => navigate(`/tasks/${t.incidentId}#${t.id}`)
+                onClick: () => navigate(`/tasks/${t.incidentId}#${t.id}`),
+                offline: t.offline
               }))}
             />
           )}

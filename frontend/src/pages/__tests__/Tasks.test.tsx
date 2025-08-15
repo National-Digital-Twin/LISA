@@ -57,7 +57,9 @@ const mockTasks: Task[] = [
     assignee: { username: 'jane.smith', displayName: 'Jane Smith' },
     status: 'ToDo',
     sequence: '1',
-    createdAt: '2025-01-01T10:00:00Z'
+    createdAt: '2025-01-01T10:00:00Z',
+    location: null,
+    attachments: []
   },
   {
     id: 'task-2',
@@ -68,7 +70,9 @@ const mockTasks: Task[] = [
     assignee: { username: 'bob.wilson', displayName: 'Bob Wilson' },
     status: 'InProgress',
     sequence: '2',
-    createdAt: '2025-01-01T11:00:00Z'
+    createdAt: '2025-01-01T11:00:00Z',
+    location: null,
+    attachments: []
   },
   {
     id: 'task-3',
@@ -79,7 +83,9 @@ const mockTasks: Task[] = [
     assignee: { username: 'john.doe', displayName: 'John Doe' },
     status: 'Done',
     sequence: '3',
-    createdAt: '2025-01-01T09:00:00Z'
+    createdAt: '2025-01-01T09:00:00Z',
+    location: null,
+    attachments: []
   }
 ];
 
@@ -90,10 +96,18 @@ jest.mock('../../hooks', () => ({
   useAllTasks: jest.fn(() => ({
     data: mockTasks
   })),
+  useAllTasksUpdates: jest.fn(() => ({
+    startPolling: jest.fn(),
+    clearPolling: jest.fn()
+  })),
   useAuth: jest.fn(() => ({
     user: { current: { username: 'testUser', displayName: 'Test User', email: 'test@test.com', groups: [] } },
     logout: jest.fn()
   })),
+}));
+
+jest.mock('../../hooks/useIsOnline', () => ({
+  useIsOnline: jest.fn(() => true)
 }));
 
 describe('Tasks Page', () => {

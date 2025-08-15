@@ -12,7 +12,7 @@ import { Box } from '@mui/material';
 import { type Incident } from 'common/Incident';
 import { type Location as LocationType } from 'common/Location';
 import { type LogEntry } from 'common/LogEntry';
-import { type LogEntryAttachment } from 'common/LogEntryAttachment';
+import { type Attachment } from 'common/Attachment';
  
 import { LogEntryTypes } from 'common/LogEntryTypes';
 import { type Mentionable } from 'common/Mentionable';
@@ -107,15 +107,15 @@ const AddEntry = ({
   const onLogEntry = (evt?: MouseEvent<HTMLButtonElement>) => {
     evt?.preventDefault();
     const dateTime = entry.dateTime ?? startAt;
-    const fileAttachments: LogEntryAttachment[] = selectedFiles.map((file) => ({
+    const fileAttachments: Attachment[] = selectedFiles.map((file) => ({
       type: 'File',
       name: file.name
     }));
-    const recordingAttachments: LogEntryAttachment[] = recordings.map((recording) => ({
+    const recordingAttachments: Attachment[] = recordings.map((recording) => ({
       type: 'Recording',
       name: recording.name
     }));
-    const sketchAttachments: LogEntryAttachment[] = [];
+    const sketchAttachments: Attachment[] = [];
     const sketches: File[] = [];
     if (sketchLines.length > 0) {
       const dataURL = sketchCanvasRef.current?.toDataURL();

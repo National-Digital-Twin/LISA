@@ -13,7 +13,9 @@ describe('Task Component', () => {
     status: 'ToDo',
     author: { username: 'author', displayName: 'Author Name', email: 'author@test.com', groups: [] },
     createdAt: '2025-04-02T12:00:00Z',
-    sequence: '1'
+    sequence: '1',
+    location: null,
+    attachments: []
   };
 
   it('renders task name, description, and assignee', () => {

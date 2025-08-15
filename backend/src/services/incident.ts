@@ -14,7 +14,7 @@ import { IncidentAttachment } from 'common/IncidentAttachment';
 import { IncidentType, addIncidentSuffix, removeIncidentSuffix } from 'common/IncidentType';
 import { IncidentTypes } from 'common/IncidentTypes';
 import { LogEntryType } from 'common/LogEntryType';
-import { LogEntryAttachmentType } from 'common/LogEntryAttachment';
+import { AttachmentType } from 'common/Attachment';
 import { addStageSuffix, IncidentStage, removeStageSuffix } from 'common/IncidentStage';
 
 import * as ia from '../ia';
@@ -391,7 +391,7 @@ export async function getAttachments(req: Request, res: Response) {
           },
           uploadedAt: row.createdAt.value,
           name: row.attachmentName.value,
-          type: row.attachmentType.value as LogEntryAttachmentType,
+          type: row.attachmentType.value as AttachmentType,
           key: row.attachmentKey.value,
           mimeType: row.attachmentMimeType.value,
           size: Number(row.attachmentSize.value),

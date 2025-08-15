@@ -14,6 +14,7 @@ export type ListRow = {
   titleDot?: React.ReactNode;
   emphasizeTitle?: boolean;
   onClick?: () => void;
+  offline?: boolean;
 };
 
 type DataListProps = {
@@ -32,6 +33,9 @@ export default function DataList({ items }: Readonly<DataListProps>) {
             padding: 2,
             cursor: item.onClick ? 'pointer' : 'default',
             backgroundColor: 'background.paper',
+            border: item.offline ? '1px solid' : 'none',
+            borderColor: item.offline ? 'error.main' : 'transparent',
+            borderRadius: item.offline ? 1 : 0,
             '&:hover': item.onClick ? { backgroundColor: 'action.hover' } : undefined
           }}
           onClick={item.onClick}

@@ -10,7 +10,7 @@ import { nonFuture } from './constraints';
 import { Field } from './Field';
 import { IncidentStage } from './IncidentStage';
 import { Location } from './Location';
-import { LogEntryAttachment } from './LogEntryAttachment';
+import { Attachment } from './Attachment';
 import { LogEntryContent } from './LogEntryContent';
 import { LogEntryType } from './LogEntryType';
 import { User } from './User';
@@ -36,7 +36,7 @@ export const LogEntry = Record({
   // recordings?: Array<string>; // Needs to be linked as multimedia,
   sequence: Optional(String), // System-generated
   stage: Optional(IncidentStage), // Only applicable to type ChangeStage
-  attachments: Optional(Array(LogEntryAttachment)),
+  attachments: Optional(Array(Attachment)),
   // This allows for determining if the Incident has been synced to the server during
   // offline operation.
   offline: Optional(Boolean),
