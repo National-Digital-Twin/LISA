@@ -1,7 +1,7 @@
 import { RefObject, useMemo, useState } from 'react';
 import { Stage } from 'konva/lib/Stage';
 import dayjs from 'dayjs';
-import { Box, Divider, FormControl, MenuItem, TextField, Typography } from '@mui/material';
+import { Box, FormControl, MenuItem, TextField, Typography } from '@mui/material';
 import CircleIcon from '@mui/icons-material/Circle';
 import {
   DatePicker,
@@ -30,6 +30,7 @@ import { getLocationTypes } from '../../utils/Map/getLocationTypes';
 import { MapComponent } from '../Map';
 import Sketch from '../AddEntry/Sketch';
 import Files from '../AddEntry/Files';
+import { EntityDivider } from '../AddEntity/EntityDivider';
 
 type Props = {
   incident: Incident;
@@ -47,6 +48,7 @@ type Props = {
   onRemoveRecording: (recordingName: string) => void;
   onLocationChange: (locationInputType: Partial<TypeOfLocation>) => void;
   setSketchLines: (sketchLines: Array<SketchLine>) => void;
+  onMainBackClick: () => void;
   onSubmit: () => void;
   onCancel: () => void;
 };
@@ -67,6 +69,7 @@ export const FormsInputContainer = ({
   onRemoveRecording,
   onLocationChange,
   setSketchLines,
+  onMainBackClick,
   onSubmit,
   onCancel
 }: Props) => {
@@ -175,7 +178,9 @@ export const FormsInputContainer = ({
         setCustomHeading('Add a description');
         setAddingDescription(true);
         setLevel(2);
-      }
+      },
+      value: entry.content && entry.content.text ? entry.content.text : undefined,
+      supportedOffline: true
     },
     {
       id: 'dateAndTime',
@@ -183,7 +188,11 @@ export const FormsInputContainer = ({
         setCustomHeading('Add date and time');
         setAddingDateAndTime(true);
         setLevel(2);
-      }
+      },
+      value: entry.dateTime
+        ? `${Format.date(entry.dateTime)} @ ${Format.time(entry.dateTime)}`
+        : undefined,
+      supportedOffline: true
     },
     {
       id: 'location',
@@ -192,19 +201,26 @@ export const FormsInputContainer = ({
         setAddingLocation(true);
         setLevel(2);
       },
+      value: entry.location ? 'View location(s)' : undefined,
       required: LogEntryTypes[entry.type as LogEntryType].requireLocation
     },
     {
       id: 'attachments',
       onClick: () => {
         setLevel(1);
-      }
+      },
+      value: entry.attachments ? `${entry.attachments.length} attachments` : undefined,
+      supportedOffline: true
     },
     {
       id: 'sketch',
       onClick: () => {
         setLevel(2);
-      }
+      },
+      value: entry.attachments?.find((attachment) => attachment.type === 'Sketch')
+        ? 'View sketch'
+        : undefined,
+      supportedOffline: true
     }
   ];
   const inputContainerData: EntityInputContainerData[] = [
@@ -231,7 +247,7 @@ export const FormsInputContainer = ({
               ))}
             </TextField>
           </FormControl>
-          <Divider />
+          <EntityDivider />
         </>
       )
     },
@@ -245,7 +261,7 @@ export const FormsInputContainer = ({
               {entry.type}
             </Typography>
           </Box>
-          <Divider />
+          <EntityDivider />
           <EntityOptionsContainer entityType="forms" data={entityOptionData} errors={errors} />
         </>
       )
@@ -371,13 +387,15 @@ export const FormsInputContainer = ({
             </Box>
           )}
         </>
-      )
+      ),
+      hideButtons: true
     }
   ];
 
   return (
     <EntityInputContainer
       data={inputContainerData}
+      onMainBackClick={onMainBackClick}
       onSubmit={onSubmit}
       onCancel={onCancel}
       level={level}
