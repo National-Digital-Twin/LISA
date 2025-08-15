@@ -343,7 +343,7 @@ const Logbook = () => {
                 horizontal: 'right'
               }}
             >
-              <MenuItem onClick={handleOverview}>Overview</MenuItem>
+              <MenuItem onClick={handleOverview}>Incident Overview</MenuItem>
             </Menu>
           </Box>
         </Box>
