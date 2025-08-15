@@ -9,7 +9,8 @@ import { type Coordinates, type Location } from 'common/Location';
 import { LogEntry, type LogEntry as LogEntryType } from 'common/LogEntry';
 import { type LogEntryType as LogEntryTypeEnum } from 'common/LogEntryType';
 import { nodeValue } from '../../rdfutil';
-import { attachments, details, fields, mentions, select } from './utils';
+import { details, fields, mentions, select } from './utils';
+import { parseAttachments } from '../common/attachments';
 
 type TempEntryData = Omit<LogEntryType, 'location'> & {
   coordinates: Coordinates[];
@@ -64,7 +65,7 @@ export async function get(req: Request, res: Response) {
   const mentionsLogEntriesByEntry = mentions.parse.logEntry(mentionsResults, false);
   const mentionedByLogEntriesByEntry = mentions.parse.logEntry(mentionedByResults, true);
   const mentionedUsersByEntry = mentions.parse.user(mentionsUsersResults);
-  const attachmentsByEntry = await attachments.parse(attachmentResults);
+  const attachmentsByEntry = await parseAttachments(attachmentResults, 'entryId');
   const detailsByEntry = await details.parse(detailResults);
 
   const entriesByEntryId = new Map<string, TempEntryData>();

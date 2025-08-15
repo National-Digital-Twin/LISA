@@ -27,6 +27,7 @@ import MyProfile from '../pages/MyProfile';
 import AdminUserList from '../pages/AdminUserList';
 import AdminViewUser from '../pages/AdminViewUser';
 import AdminNewUser from '../pages/AdminNewUser';
+import CreateTask from '../pages/CreateTask';
 
 const AppWrapper = () => {
   const router = createBrowserRouter([
@@ -43,6 +44,7 @@ const AppWrapper = () => {
         { path: 'logbook/:incidentId', element: <Logbook /> },
         { path: 'tasks', element: <Tasks /> },
         { path: 'tasks/:incidentId', element: <IncidentTasks /> },
+        { path: 'tasks/create/:incidentId', element: <CreateTask /> },
         { path: 'incidents/pick', element: <IncidentPickerPage /> },
         { path: 'forms/:incidentId', element: <LogForms /> },
         { path: 'location/:incidentId', element: <Location /> },

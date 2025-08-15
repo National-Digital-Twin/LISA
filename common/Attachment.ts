@@ -4,21 +4,27 @@
 
 import { Union, Literal, Static, Record, Number, String, Optional } from 'runtypes';
 
-export const LogEntryAttachmentType = Union(
+export const AttachmentType = Union(
   Literal('Recording'),
   Literal('Sketch'),
   Literal('File')
 );
 
-export type LogEntryAttachmentType = Static<typeof LogEntryAttachmentType>;
+export type AttachmentType = Static<typeof AttachmentType>;
 
-export const LogEntryAttachment = Record({
+export const Attachment = Record({
   name: String,
-  type: LogEntryAttachmentType,
+  type: AttachmentType,
   key: Optional(String),
   size: Optional(Number),
   mimeType: Optional(String),
   scanResult: Optional(String)
 });
 
-export type LogEntryAttachment = Static<typeof LogEntryAttachment>;
+export type Attachment = Static<typeof Attachment>;
+
+// Keep old exports for backward compatibility during transition
+export const LogEntryAttachmentType = AttachmentType;
+export type LogEntryAttachmentType = AttachmentType;
+export const LogEntryAttachment = Attachment;
+export type LogEntryAttachment = Attachment;

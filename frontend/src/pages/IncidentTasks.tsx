@@ -7,21 +7,27 @@ import { type Task, type TaskStatus } from 'common/Task';
 import { type User } from 'common/User';
 import { useEffect, useState } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
+import { LogEntry } from 'common/LogEntry';
 import { FormField, PageTitle } from '../components';
 import { FormFooter } from '../components/Form';
 import PageWrapper from '../components/PageWrapper';
 import Status from '../components/Status';
-import { useAuth, useIncidents, useUsers } from '../hooks';
+import { useAuth, useIncidents, useUsers, useTasksUpdates } from '../hooks';
 import { useResponsive } from '../hooks/useResponsiveHook';
+import { useIsOnline } from '../hooks/useIsOnline';
 import { useTasks, useUpdateTaskAssignee, useUpdateTaskStatus } from '../hooks/useTasks';
 import { Format } from '../utils';
 import { FieldValueType, ValidationError } from '../utils/types';
+import Attachments from '../components/EntryList/Attachments';
+import EntryLocation from '../components/EntryList/EntryLocation';
 
 const IncidentTasks = () => {
   const { incidentId } = useParams();
   const query = useIncidents();
   const { users } = useUsers();
   const { data: tasks, isLoading: tasksLoading } = useTasks(incidentId);
+  const { startPolling, clearPolling } = useTasksUpdates(incidentId!);
+  const isOnline = useIsOnline();
   const { user } = useAuth();
   const { isBelowMd } = useResponsive();
   const updateTaskStatus = useUpdateTaskStatus(incidentId);
@@ -58,6 +64,19 @@ const IncidentTasks = () => {
       }
     }
   }, [location]);
+
+  useEffect(() => {
+    if (isOnline) {
+      startPolling();
+    } else {
+      clearPolling();
+    }
+    
+    // Cleanup function to clear polling when component unmounts or deps change
+    return () => {
+      clearPolling();
+    };
+  }, [isOnline, startPolling, clearPolling]);
 
   const hasTasks = Array.isArray(tasks) && tasks.length > 0;
   const incident = query?.data?.find((inc) => inc.id === incidentId);
@@ -203,6 +222,12 @@ const IncidentTasks = () => {
             };
 
             const statusValue = () => task.status ?? 'ToDo';
+            let borderColor = 'border.main';
+            if (highlightedTaskId === task.id) {
+              borderColor = 'accent.main';
+            } else if (task.offline) {
+              borderColor = 'error.main';
+            }
 
             return (
               <Box
@@ -215,7 +240,7 @@ const IncidentTasks = () => {
                 gap={2}
                 sx={{
                   border: highlightedTaskId === task.id ? '2px solid' : '1px solid',
-                  borderColor: highlightedTaskId === task.id ? 'accent.main' : 'border.main',
+                  borderColor,
                   borderRadius: 1
                 }}
               >
@@ -300,6 +325,13 @@ const IncidentTasks = () => {
 
                         <Box display="flex" flexDirection="column" gap={1}>
                           <Typography variant="body1" fontWeight="bold">
+                            Task name
+                          </Typography>
+                          <Typography variant="body1">{task.name}</Typography>
+                        </Box>
+
+                        <Box display="flex" flexDirection="column" gap={1}>
+                          <Typography variant="body1" fontWeight="bold">
                             Task description
                           </Typography>
                           <Typography variant="body1">{task.description}</Typography>
@@ -350,6 +382,10 @@ const IncidentTasks = () => {
                           </Typography>
                         </Box>
                       </Box>
+
+                      {/* These want proper components, just reusing these for testing creation */}
+                      <EntryLocation entry={task as unknown as LogEntry} />
+                      <Attachments entry={task} />
                     </Box>
                   </Box>
 

@@ -7,53 +7,16 @@ import { randomUUID } from 'crypto';
 import { Request, Response } from 'express';
 
 // Local imports
-import { type Coordinates } from 'common/Location';
 import { LogEntry } from 'common/LogEntry';
 import { LogEntryTypes } from 'common/LogEntryTypes';
 import PubSubManager from '../../pubSub/manager';
 import * as ia from '../../ia';
-import { literalDate, literalDecimal, literalString, ns } from '../../rdfutil';
+import { literalDate, literalString, ns } from '../../rdfutil';
 import { create as createNotification } from '../notifications';
-import { attachments, details, fields, mentions } from './utils';
+import { details, fields, mentions } from './utils';
+import { extractAttachments } from '../common/attachments';
+import { addLocationTriples } from '../common/location';
 
-function addLocationTriples(entry: LogEntry, entryIdNode: string): unknown[] {
-  let coordinates: Coordinates[];
-  let description: string;
-  let locationIdNode: string | undefined;
-  const triples: unknown[] = [];
-
-  if (entry.location.type === 'description' || entry.location.type === 'both') {
-    description = entry.location.description;
-  }
-  if (entry.location.type === 'coordinates' || entry.location.type === 'both') {
-    coordinates = entry.location.coordinates;
-  }
-
-  if (coordinates) {
-    coordinates.forEach((coordinate, index) => {
-      locationIdNode = `${randomUUID()}-${index}`;
-      triples.push([ns.data(locationIdNode), ns.rdf.type, ns.ies.Location]);
-      triples.push([ns.data(locationIdNode), ns.ies.Latitude, literalDecimal(coordinate.latitude)]);
-      triples.push([
-        ns.data(locationIdNode),
-        ns.ies.Longitude,
-        literalDecimal(coordinate.longitude)
-      ]);
-      triples.push([entryIdNode, ns.ies.inLocation, ns.data(locationIdNode)]);
-    });
-  }
-
-  if (description) {
-    if (!locationIdNode) {
-      locationIdNode = randomUUID();
-      triples.push([ns.data(locationIdNode), ns.rdf.type, ns.ies.Location]);
-      triples.push([entryIdNode, ns.ies.inLocation, ns.data(locationIdNode)]);
-    }
-    triples.push([ns.data(locationIdNode), ns.lisa.hasDescription, literalString(description)]);
-  }
-
-  return triples;
-}
 
 export async function create(req: Request, res: Response) {
   const { incidentId } = req.params;
@@ -75,9 +38,10 @@ export async function create(req: Request, res: Response) {
   const incidentIdNode = ns.data(incidentId);
   const authorNode = ns.data(res.locals.user.username);
 
-  const { triples: attachmentTriples, names: fileNameMappings } = await attachments.extract(
+  const { triples: attachmentTriples, names: fileNameMappings } = await extractAttachments(
     req,
-    entry,
+    entry.attachments,
+    entryId,
     entryIdNode
   );
   mentions.reconcileLogFiles.file(entry, entryId, fileNameMappings);
@@ -109,11 +73,11 @@ export async function create(req: Request, res: Response) {
       ...details.extract(entry, entryIdNode)
     ];
   } catch (err) {
-    throw new Error('Error creating log entry', err);
+    throw new Error('Error creating log entry', { cause: err });
   }
 
   if (entry.location) {
-    triples.push(...addLocationTriples(entry, entryIdNode));
+    triples.push(...addLocationTriples(entry.location, entryIdNode));
   }
 
   await ia.insertData(triples);

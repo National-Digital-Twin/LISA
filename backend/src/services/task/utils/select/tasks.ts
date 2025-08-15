@@ -57,9 +57,30 @@ export function tasks(incidentId?: string) {
         ['?assigneeBounding', ns.ies.isStartOf, '?assigneeNode'],
         ['?assigneeBounding', ns.ies.inPeriod, '?assigneeStart'],
         `FILTER NOT EXISTS {${assigneeNotExistsFilter}}`
+      ]),
+
+      // Attachments
+      optional([
+        ['?taskId', ns.lisa.hasAttachment, '?attachmentId'],
+        ['?attachmentId', ns.ies.hasName, '?attachmentName'],
+        ['?attachmentId', ns.lisa.hasAttachmentType, '?attachmentType'],
+        ['?attachmentId', ns.ies.hasKey, '?attachmentKey'],
+        ['?attachmentId', ns.lisa.hasSize, '?attachmentSize'],
+        ['?attachmentId', ns.lisa.hasMimeType, '?attachmentMimeType']
+      ]),
+
+      // Location
+      optional([
+        ['?taskId', ns.ies.inLocation, '?locationId'],
+        optional([
+          ['?locationId', ns.ies.Latitude, '?latitude'],
+          ['?locationId', ns.ies.Longitude, '?longitude']
+        ]),
+        optional([
+          ['?locationId', ns.lisa.hasDescription, '?locationDescription']
+        ])
       ])
-    ],
-    orderBy: [['?createdAt', 'DESC']]
+    ]
   });
 }
 

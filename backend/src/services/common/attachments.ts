@@ -2,28 +2,32 @@
 // © Crown Copyright 2025. This work has been developed by the National Digital Twin Programme
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
-// Global imports
 import { randomUUID } from 'crypto';
 import { Express, Request } from 'express';
 import fs from 'fs';
 
-// Local imports
-import { type LogEntry } from 'common/LogEntry';
+import { type Attachment, AttachmentType } from 'common/Attachment';
 import { Node } from 'rdflib';
-import { FileNameMapping } from '../types';
-import { literalInteger, literalString, nodeValue, ns } from '../../../../rdfutil';
-import { storeS3Object } from '../../../fileStorage';
+import { literalInteger, literalString, nodeValue, ns } from '../../rdfutil';
+import { storeS3Object, getScanResultInternal } from '../fileStorage';
+import { type ResultRow } from '../../ia';
+
+export type FileNameMapping = {
+  originalname: string;
+  storedName: string;
+};
 
 export async function extractAttachments(
   req: Request,
-  entry: LogEntry,
-  entryIdNode: unknown
+  attachments: Attachment[] | undefined,
+  entityId: string,
+  entityIdNode: unknown,
 ): Promise<{ triples: unknown[]; names: FileNameMapping[] }> {
-  if (!entry.attachments?.length || !req.files?.length) {
+  if (!attachments?.length || !req.files?.length) {
     return { triples: [], names: [] };
   }
 
-  const entryId = nodeValue((entryIdNode as Node).value);
+  const entityIdValue = typeof entityId === 'string' ? entityId : nodeValue((entityIdNode as Node).value);
   const files = req.files as Express.Multer.File[];
   const triples: unknown[] = [];
   const nameMaps: FileNameMapping[] = [];
@@ -31,11 +35,11 @@ export async function extractAttachments(
   try {
     const timeStamp = new Date().toISOString().substring(0, 19).replace('T', ' at ');
 
-    for await (const attachment of entry.attachments) {
+    for await (const attachment of attachments) {
       const uploadedFile = files.find((file) => file.originalname === attachment.name);
       if (uploadedFile) {
         const attachmentId = randomUUID();
-        const key = await storeS3Object(`${entryId}:${attachmentId}`, uploadedFile.path);
+        const key = await storeS3Object(`${entityIdValue}:${attachmentId}`, uploadedFile.path);
 
         const { originalname } = uploadedFile;
         const extension = originalname.split('.').pop();
@@ -55,12 +59,12 @@ export async function extractAttachments(
         triples.push([attachmentIdNode, ns.lisa.hasMimeType, literalString(uploadedFile.mimetype)]);
         triples.push([attachmentIdNode, ns.lisa.hasAttachmentType, literalString(attachment.type)]);
 
-        triples.push([entryIdNode, ns.lisa.hasAttachment, attachmentIdNode]);
+        triples.push([entityIdNode, ns.lisa.hasAttachment, attachmentIdNode]);
       }
     }
   } catch (err) {
     // need a strategy for dealing with possible orphaned files in S3
-    throw new Error('error with attachments', err);
+    throw new Error('error with attachments', { cause: err });
   } finally {
     files.forEach((file) => {
       fs.unlink(file.path, (err) => {
@@ -73,4 +77,26 @@ export async function extractAttachments(
   }
 
   return { triples, names: nameMaps };
+}
+
+export async function parseAttachments(results: ResultRow[], entityIdField: string) {
+  return results.reduce(async (map, result) => {
+    if (!result[entityIdField] || !result.attachmentType || !result.attachmentName || !result.attachmentKey) {
+      return map;
+    }
+
+    const entityId = nodeValue(result[entityIdField].value);
+    const attachment: Attachment = {
+      type: result.attachmentType.value as AttachmentType,
+      name: result.attachmentName.value,
+      key: result.attachmentKey.value,
+      mimeType: result.attachmentMimeType.value,
+      size: Number(result.attachmentSize.value),
+      scanResult: await getScanResultInternal(result.attachmentKey.value)
+    };
+    const resolvedMap = await map;
+    const attachments = resolvedMap[entityId] || [];
+    attachments.push(attachment);
+    return { ...resolvedMap, [entityId]: attachments };
+  }, Promise.resolve({} as Record<string, Attachment[]>));
 }
