@@ -41,7 +41,7 @@ describe('useAttachments', () => {
     });
 
     // Wait until data is fetched
-    await waitFor(() => result.current.attachments !== undefined);
+    await waitFor(() => expect(result.current.attachments).toBeDefined());
 
     // Verify that the API was called with the proper URL
     expect(get).toHaveBeenCalledWith(`/incident/${incidentId}/attachments`);
@@ -92,7 +92,7 @@ describe('useAttachments', () => {
       wrapper: createWrapper()
     });
 
-    await waitFor(() => result.current.attachments !== undefined);
+    await waitFor(() => expect(result.current.attachments).toBeDefined());
 
     // Note: With incidentId undefined, the URL will include "undefined"
     expect(get).toHaveBeenCalledWith('/incident/undefined/attachments');

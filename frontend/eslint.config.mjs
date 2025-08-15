@@ -7,6 +7,8 @@ import reactRefresh from 'eslint-plugin-react-refresh';
 import html from 'eslint-plugin-html';
 import testingLibrary from 'eslint-plugin-testing-library';
 import jest from 'eslint-plugin-jest';
+import reactPlugin from 'eslint-plugin-react';
+import importPlugin from 'eslint-plugin-import';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import js from '@eslint/js';
@@ -39,13 +41,11 @@ export default tsEslint.config(
       parserOptions: {}
     },
 
-    extends: fixupConfigRules(
-      compat.extends('plugin:react-hooks/recommended', 'airbnb', 'prettier')
-    ),
-
     plugins: {
-      'react-refresh': reactRefresh,
-      html
+      'react-refresh': fixupPluginRules(reactRefresh),
+      html: fixupPluginRules(html),
+      react: fixupPluginRules(reactPlugin),
+      import: fixupPluginRules(importPlugin)
     },
 
     settings: {
@@ -55,6 +55,9 @@ export default tsEslint.config(
         node: {
           extensions: ['.mjs', '.js', '.jsx', '.ts', '.tsx']
         }
+      },
+      react: {
+        version: 'detect'
       }
     },
 
@@ -68,14 +71,6 @@ export default tsEslint.config(
       ],
 
       'max-len': ['error', 180],
-
-      'jsx-a11y/label-has-associated-control': [
-        'error',
-        {
-          controlComponents: ['DateTimeInput', 'EntryContent', 'SelectField'],
-          assert: 'both'
-        }
-      ],
 
       'react-refresh/only-export-components': 'warn',
       'react/function-component-definition': 'off',

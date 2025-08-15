@@ -45,7 +45,6 @@ export default function ActionsPlugin({
       setIsRecording(recordingActive);
       onCommand(RECORD_COMMAND.type, recordingActive);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editor, recordingActive, isRecording, setIsRecording]);
 
   if (!isEditable) {

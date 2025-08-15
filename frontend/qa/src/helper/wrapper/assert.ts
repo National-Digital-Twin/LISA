@@ -1,7 +1,6 @@
 import { expect, Page } from '@playwright/test';
 
 export default class Assert {
-  // eslint-disable-next-line no-useless-constructor,no-empty-function
   constructor(private readonly page: Page) {}
 
   async assertTitle(title: string) {

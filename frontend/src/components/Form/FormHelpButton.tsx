@@ -35,7 +35,6 @@ export default function FormHelpButton({ field }: Readonly<Props>) {
       {expanded && (
         <div className={classes('popup')}>
           <div className={classes('title')}>{field.label}</div>
-          {/* eslint-disable-next-line react/no-danger */}
           <div className={classes('content')} dangerouslySetInnerHTML={{ __html: field.hint }} />
         </div>
       )}

@@ -38,7 +38,6 @@ const fetchLandingPageUrl = async (): Promise<void> => {
       cachedLandingPageUrl = logoutLinks.landingPageUrl;
     }
   } catch (error) {
-    // eslint-disable-next-line no-console
     console.warn('Failed to fetch logout links config:', error);
   }
 };

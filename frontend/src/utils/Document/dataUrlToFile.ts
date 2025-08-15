@@ -8,7 +8,7 @@ export function dataURLtoFile(dataurl: string, filename: string): File {
   const bstr = atob(arr[arr.length - 1]);
   let n = bstr.length;
   const u8arr = new Uint8Array(n);
-  // eslint-disable-next-line no-plusplus
+
   while (n--) {
     u8arr[n] = bstr.charCodeAt(n);
   }

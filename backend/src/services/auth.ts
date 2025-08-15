@@ -40,7 +40,6 @@ export async function getUserDetails(req: Request): Promise<User> {
 }
 
 export async function user(_req: Request, res: Response) {
-  // eslint-disable-next-line no-shadow
   const user = res.locals.user;
   if (!user) {
     throw new ApplicationError('Error: the user is not set.');
