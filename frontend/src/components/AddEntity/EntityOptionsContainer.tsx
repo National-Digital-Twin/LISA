@@ -1,7 +1,8 @@
 import { ReactNode } from 'react';
-import { Box, Divider } from '@mui/material';
+import { Box } from '@mui/material';
 import { ValidationError } from '../../utils/types';
 import { EntityOptionData, getEntityOptions } from './EntityOptions';
+import { EntityDivider } from './EntityDivider';
 
 type Props = {
   entityType: string;
@@ -18,7 +19,7 @@ export const EntityOptionsContainer = ({ entityType, data, errors }: Props) => {
       {entityOptionsForType?.map((entityOption) => (
         <>
           {entityOption}
-          <Divider />
+          <EntityDivider />
         </>
       ))}
     </Box>

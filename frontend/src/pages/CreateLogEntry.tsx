@@ -15,6 +15,7 @@ import { Document, Format, Form as FormUtils, Validate } from '../utils';
 import { OnCreateEntry } from '../utils/handlers';
 import { getSortedEntriesWithDisplaySequence } from '../utils/sortEntries';
 import { useAttachments } from '../hooks/useAttachments';
+import { useIsOnline } from '../hooks/useIsOnline';
 
 export const CreateLogEntry = () => {
   const { incidentId } = useParams();
@@ -27,6 +28,7 @@ export const CreateLogEntry = () => {
   const { createLogEntry } = useCreateLogEntry(incidentId, () =>
     navigate(`/logbook/${incidentId}`)
   );
+  const isOnline = useIsOnline();
 
   const [entry, setEntry] = useState<Partial<LogEntry>>({
     incidentId,
@@ -77,6 +79,12 @@ export const CreateLogEntry = () => {
   useEffect(() => {
     setValidationErrors(Validate.entry(entry, [...selectedFiles, ...recordings]));
   }, [setValidationErrors, entry, selectedFiles, recordings]);
+
+  useEffect(() => {
+    if (!isOnline) {
+      setEntry((prev) => ({ ...prev, location: undefined }));
+    }
+  }, [isOnline, entry]);
 
   const onFieldChange = (id: string, value: FieldValueType, nested = false) => {
     setEntry((prev) => {
@@ -161,6 +169,7 @@ export const CreateLogEntry = () => {
         onRemoveRecording={onRemoveRecording}
         setSketchLines={setSketchLines}
         onLocationChange={onLocationChange}
+        onMainBackClick={() => navigate(`/logbook/${incidentId}`)}
         onSubmit={onAddEntryClick}
         onCancel={() => navigate(`/logbook/${incidentId}`)}
         mentionables={mentionables}

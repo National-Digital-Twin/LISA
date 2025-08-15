@@ -1,17 +1,20 @@
-import { Box, Button, Divider, IconButton, Typography } from '@mui/material';
+import { Box, Button, IconButton, Typography } from '@mui/material';
 import { ReactNode } from 'react';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ImportContactsIcon from '@mui/icons-material/ImportContacts';
+import { EntityDivider } from './EntityDivider';
 
 export type EntityInputContainerData = {
   heading: string;
   inputControls: ReactNode;
+  hideButtons?: boolean;
 };
 
 type Props = {
   level: number;
   setLevel: (level: number) => void;
   data: EntityInputContainerData[];
+  onMainBackClick: () => void;
   onSubmit: () => void;
   onCancel: () => void;
   disableSubmit: boolean;
@@ -21,14 +24,14 @@ export const EntityInputContainer = ({
   level,
   setLevel,
   data,
+  onMainBackClick,
   onSubmit,
   onCancel,
   disableSubmit
 }: Props) => {
   const entityInputItem = data[level];
 
-  const handleBackClick = () => setLevel(level > 0 ? level - 1 : level);
-
+  const handleBackClick = () => (level > 0 ? setLevel(level - 1) : onMainBackClick());
   return (
     <Box display="flex" flexDirection="column">
       <Box display="flex" marginBottom={1}>
@@ -39,21 +42,23 @@ export const EntityInputContainer = ({
           {entityInputItem.heading}
         </Typography>
       </Box>
-      <Divider />
+      <EntityDivider />
       {entityInputItem.inputControls}
-      <Box display="flex" alignSelf="flex-end" gap={1} marginTop={2}>
-        <Button onClick={onCancel} variant="outlined">
-          Cancel
-        </Button>
-        <Button
-          onClick={onSubmit}
-          variant="contained"
-          disabled={disableSubmit}
-          startIcon={<ImportContactsIcon />}
-        >
-          Save
-        </Button>
-      </Box>
+      {!entityInputItem?.hideButtons && (
+        <Box display="flex" alignSelf="flex-end" gap={1} marginTop={2}>
+          <Button onClick={onCancel} variant="outlined">
+            Cancel
+          </Button>
+          <Button
+            onClick={onSubmit}
+            variant="contained"
+            disabled={disableSubmit}
+            startIcon={<ImportContactsIcon />}
+          >
+            Save
+          </Button>
+        </Box>
+      )}
     </Box>
   );
 };
