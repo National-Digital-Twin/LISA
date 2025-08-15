@@ -119,8 +119,8 @@ describe('SortAndFilter component', () => {
     await user.click(screen.getByText('Time'));
     await user.click(screen.getByText('Custom date range'));
     await user.click(screen.getByText('Between'));
-  
-    expect(await screen.findByLabelText('From')).toBeInTheDocument();
-    expect(await screen.findByLabelText('To')).toBeInTheDocument();
+
+    await screen.findByLabelText('From', { selector: 'input' });
+    await screen.findByLabelText('To',   { selector: 'input' });
   });
 })

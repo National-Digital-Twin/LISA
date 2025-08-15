@@ -12,6 +12,7 @@ import { Format } from '../utils';
 type Props = PropsWithChildren & {
   title: string;
   subtitle?: string;
+  subtitleComponent?: ReactNode;
   stage?: Incident['stage'];
   titleStart?: ReactNode;
   titleEnd?: ReactNode;
@@ -21,6 +22,7 @@ type Props = PropsWithChildren & {
 const PageTitle = ({
   title,
   subtitle = undefined,
+  subtitleComponent = undefined,
   stage = undefined,
   children,
   titleStart = undefined,
@@ -77,6 +79,8 @@ const PageTitle = ({
           {subtitle}
         </Typography>
       )}
+
+      {subtitleComponent && <Box sx={{ flex: '0 0 auto' }}>{subtitleComponent}</Box>}
 
       {stage && (
         <Box>
