@@ -4,40 +4,67 @@
 
 import { Request, Response } from 'express';
 import { Task, TaskStatus } from 'common/Task';
-import { tasks } from './utils/select/tasks';
+import { selectAll } from './utils/select';
 import { type ResultRow } from '../../ia';
 import { nodeValue } from '../../rdfutil';
+import { parseAttachments } from '../common/attachments';
+import { buildLocation, parseLocations } from '../common/location';
 
 function removePrefix(uri: string): string {
   return uri.split('#').pop() || uri.split('/').pop() || uri;
 }
 
-function mapResultToTask(result: ResultRow): Task {
-  const taskId = nodeValue(result.taskId.value);
-  const incidentId = nodeValue(result.incidentId.value);
-  const assigneeNode = result.assignee?.value;
-  const assigneeUsername = assigneeNode ? nodeValue(assigneeNode) : undefined;
 
-  const authorNode = result.author?.value;
-  const authorUsername = authorNode ? nodeValue(authorNode) : undefined;
+async function mapResultsToTasks(
+  taskResults: ResultRow[],
+  attachmentResults: ResultRow[]
+): Promise<Task[]> {
+  const taskMap = new Map<string, Task>();
 
-  return {
-    id: taskId,
-    name: result.taskName.value,
-    description: result.description.value,
-    incidentId,
-    author: {
-      username: authorUsername ?? 'unknown',
-      displayName: result.authorName?.value ?? 'Unknown User'
-    },
-    assignee: {
-      username: assigneeUsername ?? result.assigneeName?.value ?? 'unknown',
-      displayName: result.assigneeName?.value ?? 'Unknown User'
-    },
-    status: removePrefix(result.taskStatus?.value || 'ToDo') as TaskStatus,
-    sequence: result.sequence.value,
-    createdAt: result.createdAt.value
-  };
+  const attachmentsByTask = await parseAttachments(attachmentResults, 'taskId');
+  const locationsByTask = parseLocations(taskResults, 'taskId');
+
+  for (const result of taskResults) {
+    const taskId = nodeValue(result.taskId.value);
+
+    if (!taskMap.has(taskId)) {
+      const incidentId = nodeValue(result.incidentId.value);
+      const assigneeNode = result.assignee?.value;
+      const assigneeUsername = assigneeNode ? nodeValue(assigneeNode) : undefined;
+      const authorNode = result.author?.value;
+      const authorUsername = authorNode ? nodeValue(authorNode) : undefined;
+
+      taskMap.set(taskId, {
+        id: taskId,
+        name: result.taskName.value,
+        description: result.description.value,
+        incidentId,
+        author: {
+          username: authorUsername ?? 'unknown',
+          displayName: result.authorName?.value ?? 'Unknown User'
+        },
+        assignee: {
+          username: assigneeUsername ?? 'unknown',
+          displayName: result.assigneeName?.value ?? 'Unknown User'
+        },
+        status: removePrefix(result.taskStatus?.value || 'ToDo') as TaskStatus,
+        sequence: result.sequence.value,
+        createdAt: result.createdAt.value,
+        location: null,
+        attachments: []
+      });
+    }
+  }
+
+  for (const task of taskMap.values()) {
+    task.attachments = attachmentsByTask[task.id] ?? [];
+    const locationData = locationsByTask[task.id];
+    if (locationData) {
+      task.location = buildLocation(locationData.coordinates, locationData.description);
+    }
+  }
+
+  return Array.from(taskMap.values()).sort((a, b) => b.createdAt.localeCompare(a.createdAt));
 }
 
 export async function getForIncidentId(req: Request, res: Response) {
@@ -48,8 +75,8 @@ export async function getForIncidentId(req: Request, res: Response) {
   }
 
   try {
-    const taskResults = await tasks(incidentId);
-    const tasksArray = taskResults.map((r) => mapResultToTask(r));
+    const [taskResults, attachmentResults] = await Promise.all(selectAll(incidentId));
+    const tasksArray = await mapResultsToTasks(taskResults, attachmentResults);
     res.json(tasksArray);
   } catch (error) {
     console.error('Error fetching tasks:', error);
@@ -59,8 +86,8 @@ export async function getForIncidentId(req: Request, res: Response) {
 
 export async function get(_req: Request, res: Response) {
   try {
-    const taskResults = await tasks();
-    const tasksArray = taskResults.map((r) => mapResultToTask(r));
+    const [taskResults, attachmentResults] = await Promise.all(selectAll());
+    const tasksArray = await mapResultsToTasks(taskResults, attachmentResults);
     res.json(tasksArray);
   } catch (error) {
     console.error('Error fetching tasks:', error);

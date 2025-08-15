@@ -3,10 +3,10 @@
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
 import { type IncidentAttachment } from 'common/IncidentAttachment';
-import { type LogEntryAttachment } from 'common/LogEntryAttachment';
+import { type Attachment } from 'common/Attachment';
 import { type Mentionable } from 'common/Mentionable';
 
-export function attachment(item: LogEntryAttachment | IncidentAttachment): Mentionable {
+export function attachment(item: Attachment | IncidentAttachment): Mentionable {
   const entryId = (item as IncidentAttachment).logEntryId;
   return {
     id: `${entryId || 'this'}::${item.name}`,

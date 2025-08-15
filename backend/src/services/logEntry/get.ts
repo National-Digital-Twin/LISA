@@ -5,42 +5,19 @@
 import { Request, Response } from 'express';
 
 import { type IncidentStage } from 'common/IncidentStage';
-import { type Coordinates, type Location } from 'common/Location';
+import { type Coordinates } from 'common/Location';
 import { LogEntry, type LogEntry as LogEntryType } from 'common/LogEntry';
 import { type LogEntryType as LogEntryTypeEnum } from 'common/LogEntryType';
 import { nodeValue } from '../../rdfutil';
-import { attachments, details, fields, mentions, select } from './utils';
+import { details, fields, mentions, select } from './utils';
+import { parseAttachments } from '../common/attachments';
+import { buildLocation } from '../common/location';
 
 type TempEntryData = Omit<LogEntryType, 'location'> & {
   coordinates: Coordinates[];
   locationDescription?: string;
 };
 
-function buildLocation(
-  coordinates: Coordinates[],
-  locationDescription?: string
-): Location | undefined {
-  if (coordinates.length > 0) {
-    if (locationDescription) {
-      return {
-        type: 'both',
-        coordinates,
-        description: locationDescription
-      } as Location;
-    }
-    return {
-      type: 'coordinates',
-      coordinates
-    } as Location;
-  }
-  if (locationDescription) {
-    return {
-      type: 'description',
-      description: locationDescription
-    } as Location;
-  }
-  return undefined;
-}
 
 export async function get(req: Request, res: Response) {
   const { incidentId } = req.params;
@@ -64,7 +41,7 @@ export async function get(req: Request, res: Response) {
   const mentionsLogEntriesByEntry = mentions.parse.logEntry(mentionsResults, false);
   const mentionedByLogEntriesByEntry = mentions.parse.logEntry(mentionedByResults, true);
   const mentionedUsersByEntry = mentions.parse.user(mentionsUsersResults);
-  const attachmentsByEntry = await attachments.parse(attachmentResults);
+  const attachmentsByEntry = await parseAttachments(attachmentResults, 'entryId');
   const detailsByEntry = await details.parse(detailResults);
 
   const entriesByEntryId = new Map<string, TempEntryData>();
@@ -112,7 +89,7 @@ export async function get(req: Request, res: Response) {
   });
 
   const entries = Array.from(entriesByEntryId.values()).map((entry) => {
-    const location = buildLocation(entry.coordinates, entry.locationDescription);
+    const location = buildLocation(entry.coordinates, entry.locationDescription) || undefined;
 
     // Remove temporary properties and add final location
     // eslint-disable-next-line @typescript-eslint/no-unused-vars

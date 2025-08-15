@@ -3,7 +3,7 @@ import { MouseEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { v4 as uuidV4 } from 'uuid';
 import { Stage } from 'konva/lib/Stage';
 import { type LogEntry } from 'common/LogEntry';
-import { LogEntryAttachment } from 'common/LogEntryAttachment';
+import { Attachment } from 'common/Attachment';
 import { Mentionable } from 'common/Mentionable';
 import { type Location } from 'common/Location';
 import { useCreateLogEntry, useIncidents, useLogEntries, useUsers } from '../hooks';
@@ -131,15 +131,15 @@ export const CreateLogEntry = () => {
 
   const onAddEntryClick = (evt?: MouseEvent<HTMLButtonElement>) => {
     evt?.preventDefault();
-    const fileAttachments: LogEntryAttachment[] = selectedFiles.map((file) => ({
+    const fileAttachments: Attachment[] = selectedFiles.map((file) => ({
       type: 'File',
       name: file.name
     }));
-    const recordingAttachments: LogEntryAttachment[] = recordings.map((recording) => ({
+    const recordingAttachments: Attachment[] = recordings.map((recording) => ({
       type: 'Recording',
       name: recording.name
     }));
-    const sketchAttachments: LogEntryAttachment[] = [];
+    const sketchAttachments: Attachment[] = [];
     const sketches: File[] = [];
     if (sketchLines.length > 0) {
       const dataURL = canvasRef.current?.toDataURL();

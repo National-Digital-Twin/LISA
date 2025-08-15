@@ -3,13 +3,13 @@
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
 import { type IncidentAttachment } from 'common/IncidentAttachment';
-import { type LogEntryAttachment } from 'common/LogEntryAttachment';
+import { type Attachment } from 'common/Attachment';
 import { Box, Typography } from '@mui/material';
 import { Format } from '../utils';
 import { useAttachmentScanResult } from '../hooks/useAttachmentScanResult';
 
 interface Props {
-  attachment: LogEntryAttachment | IncidentAttachment;
+  attachment: Attachment | IncidentAttachment;
   isOnServer?: boolean;
 }
 
