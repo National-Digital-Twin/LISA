@@ -14,6 +14,9 @@ export const settings = cleanEnv(process.env, {
   SCG_URL: url({ default: 'http://localhost:3030' }),
   COGNITO_USER_POOL_ID: str(),
   S3_BUCKET_ID: str(),
+  S3_ENDPOINT: url({ default: undefined }),
+  S3_ACCESS_KEY_ID: str({ default: undefined }),
+  S3_SECRET_ACCESS_KEY: str({ default: undefined }),
   MAX_UPLOAD_SIZE: num({ default: 104857600 }),
   NODE_ENV: str({
     choices: ['development', 'test', 'production', 'staging'],

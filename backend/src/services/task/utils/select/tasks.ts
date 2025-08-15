@@ -2,11 +2,9 @@
 // © Crown Copyright 2025. This work has been developed by the National Digital Twin Programme
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
-// Global imports
 import { optional } from 'rdf-sparql-builder';
 import TriplePattern from 'rdf-sparql-builder/lib/TriplePattern';
 
-// Local imports
 import { TaskStatus } from 'common/Task';
 import { select } from '../../../../ia';
 import { ns } from '../../../../rdfutil';
@@ -57,9 +55,21 @@ export function tasks(incidentId?: string) {
         ['?assigneeBounding', ns.ies.isStartOf, '?assigneeNode'],
         ['?assigneeBounding', ns.ies.inPeriod, '?assigneeStart'],
         `FILTER NOT EXISTS {${assigneeNotExistsFilter}}`
+      ]),
+
+
+      // Location
+      optional([
+        ['?taskId', ns.ies.inLocation, '?locationId'],
+        optional([
+          ['?locationId', ns.ies.Latitude, '?latitude'],
+          ['?locationId', ns.ies.Longitude, '?longitude']
+        ]),
+        optional([
+          ['?locationId', ns.lisa.hasDescription, '?locationDescription']
+        ])
       ])
-    ],
-    orderBy: [['?createdAt', 'DESC']]
+    ]
   });
 }
 

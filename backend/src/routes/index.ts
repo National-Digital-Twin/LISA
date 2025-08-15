@@ -64,7 +64,9 @@ apiRouter.put('/notifications/:id', notifications.markRead);
 
 apiRouter.get('/tasks', task.get);
 apiRouter.get('/incident/:incidentId/tasks', task.getForIncidentId);
-apiRouter.post('/incident/:incidentId/tasks', task.create);
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+apiRouter.post('/incident/:incidentId/tasks', upload.any() as any, task.create);
 apiRouter.patch('/task/:taskId/status', task.changeStatus);
 apiRouter.patch('/task/:taskId/assignee', task.changeAssignee);
 
