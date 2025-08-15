@@ -1,0 +1,369 @@
+import { useMemo, useState } from 'react';
+import { enGB } from 'date-fns/locale';
+import { Box, Divider, FormControl, MenuItem, TextField, Typography } from '@mui/material';
+import CircleIcon from '@mui/icons-material/Circle';
+import {
+  DatePicker,
+  LocalizationProvider,
+  renderTimeViewClock,
+  TimePicker
+} from '@mui/x-date-pickers';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { PickerValue } from '@mui/x-date-pickers/internals';
+import { type LogEntry } from 'common/LogEntry';
+import { type Incident } from 'common/Incident';
+import { LogEntryTypes } from 'common/LogEntryTypes';
+import { LogEntryType } from 'common/LogEntryType';
+import { Mentionable } from 'common/Mentionable';
+import { Coordinates, LocationType, type Location as TypeOfLocation } from 'common/Location';
+import { FullLocationType, OptionType, ValidationError } from '../../utils/types';
+import { EntityInputContainer, EntityInputContainerData } from '../AddEntity/EntityInputContainer';
+import { getLogEntryTypes } from '../../utils/Form/getBaseLogEntryFields';
+import { EntityOptionsContainer } from '../AddEntity/EntityOptionsContainer';
+import { EntityOptionData } from '../AddEntity/EntityOptions';
+import { OnFieldChange } from '../../utils/handlers';
+import EntryContent from '../lexical/EntryContent';
+
+import { Format, MapUtils } from '../../utils';
+import { getLocationTypes } from '../../utils/Map/getLocationTypes';
+import { MapComponent } from '../Map';
+import Sketch from '../AddEntry/Sketch';
+import Files from '../AddEntry/Files';
+
+type Props = {
+  incident: Incident;
+  entry: Partial<LogEntry>;
+  mentionables: Array<Mentionable>;
+  markers: Coordinates[];
+  errors: ValidationError[];
+  onFieldChange: OnFieldChange;
+  onLocationChange: (locationInputType: Partial<TypeOfLocation>) => void;
+  onSubmit: () => void;
+  onCancel: () => void;
+};
+
+export const FormsInputContainer = ({
+  incident,
+  entry,
+  mentionables,
+  markers,
+  errors,
+  onFieldChange,
+  onLocationChange,
+  onSubmit,
+  onCancel
+}: Props) => {
+  const formTypes: OptionType[] = useMemo(() => getLogEntryTypes(incident), [incident]);
+  const [level, setLevel] = useState<number>(0);
+  const [level3Heading, setLevel3Heading] = useState<string>('');
+  const [addingDescription, setAddingDescription] = useState<boolean>(false);
+  const [addingDateAndTime, setAddingDateAndTime] = useState<boolean>(false);
+  const [addingLocation, setAddingLocation] = useState<boolean>(false);
+  const [addingLocationDescription, setAddingLocationDescription] = useState<boolean>(false);
+  const [addingLocationCoordinates, setAddingLocationCoordinates] = useState<boolean>(false);
+  const [addingAttachments, setAddingAttachments] = useState<boolean>(false);
+  const [addingSketch, setAddingSketch] = useState<boolean>(false);
+  const [entryDate, setEntryDate] = useState<string>();
+  const [entryTime, setEntryTime] = useState<string>();
+
+  const setLevelAndClearState = (level: number) => {
+    setLevel(level);
+    setAddingDescription(false);
+    setAddingDateAndTime(false);
+    setAddingLocation(false);
+    setAddingAttachments(false);
+    setAddingSketch(false);
+  };
+
+  const onContentChange = (id: string, json: string, text: string) => {
+    onFieldChange(id, { json, text });
+  };
+
+  const dispatchOnChange = (d: string | undefined, t: string | undefined) => {
+    if (d && t) {
+      const parseDate = Date.parse(`${d}T${t}`);
+      if (!Number.isNaN(parseDate)) {
+        onFieldChange('dateTime', new Date(`${d}T${t}`).toISOString());
+      }
+    }
+  };
+
+  const onDateChange = (value: PickerValue) => {
+    const isoDate = value ? Format.isoDate(value?.toISOString()) : undefined;
+    setEntryDate(isoDate ?? '');
+    dispatchOnChange(isoDate, entryTime);
+  };
+  const onTimeChange = (value: PickerValue) => {
+    const timeString = value ? Format.time(value.toISOString()) : undefined;
+    setEntryTime(timeString ?? '');
+    dispatchOnChange(entryDate, timeString);
+  };
+
+  const getDateValue = () => {
+    if (entry.dateTime) {
+      return new Date(Format.isoDate(entry.dateTime));
+    }
+    if (entryDate) {
+      return new Date(entryDate);
+    }
+
+    return null;
+  };
+
+  const getTimeValue = () => {
+    if (entry.dateTime) {
+      return new Date(entry.dateTime);
+    }
+    if (entryTime) {
+      const now = new Date();
+      return new Date(`${Format.isoDate(now.toISOString())}T${entryTime}`);
+    }
+
+    return null;
+  };
+
+  const onLocationInputTypeChange = (value: string) => {
+    if (LocationType.guard(value)) {
+      if (value === 'none') return;
+      setAddingLocationDescription(value === 'description' || value === 'both');
+      setAddingLocationCoordinates(value === 'coordinates' || value === 'both');
+      onLocationChange(
+        MapUtils.getNewLocation(value as LocationType, (entry.location ?? {}) as FullLocationType)
+      );
+    }
+  };
+
+  const onLocationDescriptionChange = (value: string) => {
+    if (value) {
+      onLocationChange({
+        ...(entry.location ?? ({} as Partial<TypeOfLocation>)),
+        description: value
+      });
+    }
+  };
+
+  const handleLocationCoordinatesChange = (value: Coordinates[]) => {
+    if (value) {
+      onLocationChange({
+        ...(entry.location ?? ({} as Partial<TypeOfLocation>)),
+        coordinates: value
+      });
+    }
+  };
+
+  const entityOptionData: EntityOptionData[] = [
+    {
+      id: 'description',
+      onClick: () => {
+        setLevel3Heading('Add a description');
+        setAddingDescription(true);
+        setLevel(2);
+      }
+    },
+    {
+      id: 'dateAndTime',
+      onClick: () => {
+        setLevel3Heading('Add date and time');
+        setAddingDateAndTime(true);
+        setLevel(2);
+      }
+    },
+    {
+      id: 'location',
+      onClick: () => {
+        setLevel3Heading('Add location(s)');
+        setAddingLocation(true);
+        setLevel(2);
+      },
+      required: LogEntryTypes[entry.type as LogEntryType].requireLocation
+    },
+    {
+      id: 'attachments',
+      onClick: () => {
+        setLevel(1);
+      }
+    },
+    {
+      id: 'sketch',
+      onClick: () => {
+        setLevel(2);
+      }
+    }
+  ];
+  const inputContainerData: EntityInputContainerData[] = [
+    {
+      heading: 'Select form',
+      inputControls: (
+        <>
+          <FormControl fullWidth sx={{ marginBottom: 2 }}>
+            <TextField
+              select
+              value={entry.type}
+              variant="filled"
+              label={entry.type ? '' : 'Select'}
+              onChange={(event) => {
+                onFieldChange('type', event.target.value);
+                setLevel(1);
+              }}
+              slotProps={{ inputLabel: { shrink: false } }}
+            >
+              {formTypes.map((formType) => (
+                <MenuItem value={formType.value}>{formType.label}</MenuItem>
+              ))}
+            </TextField>
+          </FormControl>
+          <Divider />
+        </>
+      )
+    },
+    {
+      heading: `Add form - ${entry.type}`,
+      inputControls: (
+        <>
+          <Box display="flex">
+            <CircleIcon sx={{ opacity: 0 }} />
+            <Typography variant="body1" padding={1}>
+              {entry.type}
+            </Typography>
+          </Box>
+          <Divider />
+          <EntityOptionsContainer entityType="forms" data={entityOptionData} errors={errors} />
+        </>
+      )
+    },
+    {
+      heading: level3Heading,
+      inputControls: (
+        <>
+          {addingDescription && (
+            <Box flexGrow={1}>
+              <EntryContent
+                id="content"
+                editable
+                json={typeof entry.content === 'object' ? entry.content.json : undefined}
+                recordingActive={false}
+                onRecording={undefined}
+                onChange={onContentChange}
+                error={false}
+                mentionables={mentionables}
+              />
+            </Box>
+          )}
+          {addingDateAndTime && (
+            <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={enGB}>
+              <Box display="flex" flexDirection="column" flexGrow={1} gap={4} marginTop={2}>
+                <FormControl variant="standard">
+                  <DatePicker
+                    label="Date"
+                    slotProps={{ textField: { variant: 'filled', hiddenLabel: true } }}
+                    disableFuture
+                    value={getDateValue()}
+                    onChange={onDateChange}
+                  />
+                </FormControl>
+                <FormControl>
+                  <TimePicker
+                    label="Time"
+                    slotProps={{ textField: { variant: 'filled', hiddenLabel: true } }}
+                    viewRenderers={{ hours: renderTimeViewClock, minutes: renderTimeViewClock }}
+                    value={getTimeValue()}
+                    onChange={onTimeChange}
+                  />
+                </FormControl>
+              </Box>
+            </LocalizationProvider>
+          )}
+          {addingLocation && (
+            <Box flexGrow={1}>
+              <FormControl fullWidth sx={{ marginTop: 2 }}>
+                <TextField
+                  select
+                  aria-label="Select location input type"
+                  value={entry.location?.type}
+                  onChange={(event) => onLocationInputTypeChange(event.target.value)}
+                  id="location.type"
+                  variant="filled"
+                  label={entry.location?.type ? '' : 'Select location type'}
+                  slotProps={{ inputLabel: { shrink: false } }}
+                  sx={{
+                    '&. MuiInputBase-input': {
+                      backgroundColor: '#FFFFFF',
+                      paddingTop: '17px',
+                      paddingBottom: '16px'
+                    }
+                  }}
+                >
+                  {getLocationTypes().map((locationType) => (
+                    <MenuItem key={`location-${locationType.value}`} value={locationType.value}>
+                      {locationType.label}
+                    </MenuItem>
+                  ))}
+                </TextField>
+              </FormControl>
+              {addingLocationDescription && (
+                <FormControl fullWidth sx={{ marginTop: 2 }}>
+                  <TextField
+                    hiddenLabel
+                    variant="filled"
+                    multiline
+                    id="location.description"
+                    value={
+                      entry.location?.type === 'description' || entry.location?.type === 'both'
+                        ? entry.location.description
+                        : null
+                    }
+                    onChange={(event) => onLocationDescriptionChange(event.target.value)}
+                    minRows={4}
+                    placeholder="Describe the location"
+                  />
+                </FormControl>
+              )}
+              {addingLocationCoordinates && (
+                <Box marginTop={2}>
+                  <MapComponent
+                    id="location.coordinates"
+                    markers={markers}
+                    setMarkers={handleLocationCoordinatesChange}
+                  />
+                </Box>
+              )}
+            </Box>
+          )}
+          {addingAttachments && (
+            <Box>
+              <Files.Content
+                active={addingAttachments}
+                selectedFiles={selectedFiles}
+                recordings={recordings}
+                onFilesSelected={onFilesSelect}
+                removeSelectedFile={removeSelectedFile}
+                removeRecording={removeRecording}
+              />
+            </Box>
+          )}
+          {addingSketch && (
+            <Box sx={{ backgroundColor: '#f0f2f2' }}>
+              <Sketch.Content
+                active={addingSketch}
+                canvasRef={canvasRef}
+                lines={sketchLines}
+                onChangeLines={setSketchLines}
+              />
+            </Box>
+          )}
+        </>
+      )
+    }
+  ];
+
+  return (
+    <EntityInputContainer
+      data={inputContainerData}
+      onSubmit={onSubmit}
+      onCancel={onCancel}
+      level={level}
+      setLevel={setLevelAndClearState}
+      disableSubmit={errors.length > 0}
+    />
+  );
+};
