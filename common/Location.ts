@@ -5,7 +5,7 @@
 // Global imports
 import { Literal, Number, Record, Static, String, Union, Array } from 'runtypes';
 
-const LocationType = Union(
+export const LocationType = Union(
   Literal('none'),
   Literal('description'),
   Literal('coordinates'),
