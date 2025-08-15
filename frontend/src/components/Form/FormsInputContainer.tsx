@@ -179,7 +179,7 @@ export const FormsInputContainer = ({
         setAddingDescription(true);
         setLevel(2);
       },
-      value: entry.content && entry.content.text ? entry.content.text : undefined,
+      value: entry?.content?.text ? entry.content.text : undefined,
       supportedOffline: true
     },
     {
@@ -207,7 +207,8 @@ export const FormsInputContainer = ({
     {
       id: 'attachments',
       onClick: () => {
-        setLevel(1);
+        setAddingAttachments(true);
+        setLevel(2);
       },
       value: entry.attachments ? `${entry.attachments.length} attachments` : undefined,
       supportedOffline: true
@@ -215,6 +216,7 @@ export const FormsInputContainer = ({
     {
       id: 'sketch',
       onClick: () => {
+        setAddingSketch(true);
         setLevel(2);
       },
       value: entry.attachments?.find((attachment) => attachment.type === 'Sketch')
