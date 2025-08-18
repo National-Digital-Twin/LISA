@@ -9,6 +9,7 @@ import { EntityOption } from './EntityOption';
 
 export type EntityOptionData = {
   id: string;
+  dependentId?: string;
   onClick: () => void;
   required?: boolean;
   value: string | undefined;
@@ -45,7 +46,13 @@ const forms = (data: EntityOptionData[], errors: ValidationError[]) => {
         value={fieldOptionData?.value}
         label={fieldOptionData?.value ?? fieldOptionData.label!}
         supportedOffline={!!fieldOptionData.supportedOffline}
-        errored={!!errors.find((error) => error.fieldId === fieldOptionData.id.split('-')?.[1])}
+        errored={
+          !!errors.find(
+            (error) =>
+              error.fieldId === fieldOptionData.id.split('-')?.[1] ||
+              error.fieldId === fieldOptionData.dependentId
+          )
+        }
       />
     )),
     <EntityOption

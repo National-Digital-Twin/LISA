@@ -181,6 +181,7 @@ export const FormsInputContainer = ({
       (field) =>
         ({
           id: `field-${field.id}`,
+          dependentId: field.dependentFieldId,
           onClick: () => {
             setCustomHeading('Add field');
             setAddingFormFields(true);
