@@ -1,4 +1,4 @@
-FROM nginx:1.29.0
+FROM nginxinc/nginx-unprivileged:1.29.0-alpine-perl
 
 RUN ["rm", "/etc/nginx/conf.d/default.conf"]
 
