@@ -3,10 +3,10 @@
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
 // Global imports
-import CloseIcon from '@mui/icons-material/Close';
-import ImportContactsIcon from '@mui/icons-material/ImportContacts';
 import { FitBoundsOptions } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
+import CloseIcon from '@mui/icons-material/Close';
+import ImportContactsIcon from '@mui/icons-material/ImportContacts';
 import { MouseEvent, ReactElement, useEffect, useMemo, useRef, useState } from 'react';
 import Map, { LngLatBoundsLike, MapRef, Marker, NavigationControl } from 'react-map-gl/maplibre';
 import { useNavigate } from 'react-router-dom';

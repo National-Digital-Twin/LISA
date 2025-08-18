@@ -9,6 +9,9 @@ type Props = {
 
 const getLabelColour = (errored: boolean, required: boolean, value: string | undefined) => {
   if (value) {
+    if (errored) {
+      return 'red';
+    }
     return 'initial';
   }
   if (errored || required) {

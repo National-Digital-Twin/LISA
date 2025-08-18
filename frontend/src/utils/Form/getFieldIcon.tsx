@@ -1,6 +1,6 @@
 import { Field } from 'common/Field';
 import ForumOutlinedIcon from '@mui/icons-material/ForumOutlined';
-import PersonIcon from '@mui/icons-material/Person';
+import PersonOutlineOutlinedIcon from '@mui/icons-material/PersonOutlineOutlined';
 import { ReactNode } from 'react';
 
 type FieldIcon = {
@@ -10,7 +10,7 @@ type FieldIcon = {
 
 const FIELD_ICONS: FieldIcon[] = [
   { id: 'CommunicationMethod', icon: <ForumOutlinedIcon /> },
-  { id: 'ContactName', icon: <PersonIcon /> }
+  { id: 'ContactName', icon: <PersonOutlineOutlinedIcon /> }
 ];
 
 export function getFieldIcon(field: Field): FieldIcon | undefined {
