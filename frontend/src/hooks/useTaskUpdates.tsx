@@ -56,7 +56,6 @@ export function useTasksUpdates(incidentId?: string) {
 
       queryClient.setQueryData<Task[]>([`incident/${incidentId}/tasks`], mergedTasks);
     } catch (error) {
-      // eslint-disable-next-line no-console
       console.error(`Error occurred: ${error}. Unable to poll for task updates!`);
     }
   }, [incidentId, queryClient]);
@@ -90,7 +89,6 @@ export function useAllTasksUpdates() {
 
       queryClient.setQueryData<Task[]>(['tasks'], mergedTasks);
     } catch (error) {
-      // eslint-disable-next-line no-console
       console.error(`Error occurred: ${error}. Unable to poll for all tasks updates!`);
     }
   }, [queryClient]);
