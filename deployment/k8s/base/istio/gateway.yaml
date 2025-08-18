@@ -10,7 +10,7 @@ spec:
         - "HTTP_PLACE_HOLDER"
       port:
         name: http
-        number: 8080
+        number: 80
         protocol: HTTP
       tls:
         httpsRedirect: true
