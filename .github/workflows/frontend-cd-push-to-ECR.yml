@@ -79,6 +79,8 @@ jobs:
         run: npm ci
 
       - name: Build Frontend
+        env:
+          VITE_LISA_VERSION: ${{ inputs.version }}
         run: |
           npm run build
 

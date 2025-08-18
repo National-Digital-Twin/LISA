@@ -9,6 +9,7 @@ import { PageTitle } from '../components';
 import PageWrapper from '../components/PageWrapper';
 import { useAuth } from '../hooks';
 import { isAdmin } from '../utils/userRoles';
+import AppVersion from '../components/AppVersion';
 
 const Settings = () => {
   const { user } = useAuth()
@@ -80,6 +81,7 @@ const Settings = () => {
             </List>
           </CardContent>
         </Card>
+        <AppVersion />
       </PageWrapper>
     </>
   )
