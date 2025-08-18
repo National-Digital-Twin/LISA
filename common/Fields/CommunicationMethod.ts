@@ -19,7 +19,7 @@ export const CommunicationMethod: Field = {
   label: 'Communicated by',
   type: 'Select',
   options: CommunicationMethods,
-  dependentFieldIds: ['ContactDetails']
+  dependentFieldId: 'ContactDetails'
 };
 
 export function getCommunicationMethod(label?: string): Field {

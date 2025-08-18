@@ -8,11 +8,11 @@ import { type Field } from 'common/Field';
 export const TYPE_FIELD: Field = {
   id: 'location.type',
   type: 'Select',
-  label: 'Location type'
+  label: 'Select location type'
 };
 
 export const DESCRIPTION_FIELD: Field = {
   id: 'location.description',
   type: 'Input',
-  label: 'Description'
+  label: 'Describe the location'
 };
