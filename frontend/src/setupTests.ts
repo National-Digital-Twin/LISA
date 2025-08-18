@@ -14,6 +14,16 @@ Object.defineProperty(global, 'crypto', {
   }
 });
 
+Object.defineProperty(URL, 'createObjectURL', {
+  value: jest.fn(() => 'blob:mock'),
+  writable: true
+});
+
+Object.defineProperty(URL, 'revokeObjectURL', {
+  value: jest.fn(),
+  writable: true
+});
+
 jest.mock('react-media-recorder', () => ({
   useReactMediaRecorder: () => ({
     status: 'idle',
