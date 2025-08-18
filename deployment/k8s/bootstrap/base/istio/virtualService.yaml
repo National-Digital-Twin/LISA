@@ -17,7 +17,7 @@ spec:
         - destination:
             host: lisa-transparent-proxy
             port:
-              number: 80
+              number: 8080
     - match:
         - uri:
             prefix: /api
@@ -33,7 +33,7 @@ spec:
         - destination:
             host: lisa-backend
             port:
-              number: 80
+              number: 8080
 
     # Rule for root ("/") to prevent caching and add CSP header
     - match:
@@ -51,7 +51,7 @@ spec:
         - destination:
             host: lisa
             port:
-              number: 80
+              number: 8080
 
     # Rule for all other paths with the CSP header
     - match:
@@ -70,4 +70,4 @@ spec:
         - destination:
             host: lisa
             port:
-              number: 80
+              number: 8080
