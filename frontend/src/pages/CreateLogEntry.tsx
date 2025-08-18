@@ -16,6 +16,9 @@ import { OnCreateEntry } from '../utils/handlers';
 import { getSortedEntriesWithDisplaySequence } from '../utils/sortEntries';
 import { useAttachments } from '../hooks/useAttachments';
 import { useIsOnline } from '../hooks/useIsOnline';
+import { Field } from 'common/Field';
+import { LogEntryTypes } from 'common/LogEntryTypes';
+import { LogEntryType } from 'common/LogEntryType';
 
 export const CreateLogEntry = () => {
   const { incidentId } = useParams();
@@ -38,6 +41,7 @@ export const CreateLogEntry = () => {
   });
 
   const [validationErrors, setValidationErrors] = useState<Array<ValidationError>>([]);
+  const [formFields, setFormFields] = useState<Field[]>([]);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [recordings, setRecordings] = useState<File[]>([]);
   const [sketchLines, setSketchLines] = useState<SketchLine[]>([]);
@@ -65,17 +69,6 @@ export const CreateLogEntry = () => {
     [logEntries, users, selectedFiles, recordings, otherAttachments]
   );
 
-  const markers = useMemo(() => {
-    if (!entry.location || entry.location.type === 'none' || entry.location.type === 'description')
-      return [];
-    if ('coordinates' in entry.location && entry.location.coordinates) {
-      return Array.isArray(entry.location.coordinates)
-        ? entry.location.coordinates
-        : [entry.location.coordinates];
-    }
-    return [];
-  }, [entry.location]);
-
   useEffect(() => {
     setValidationErrors(Validate.entry(entry, [...selectedFiles, ...recordings]));
   }, [setValidationErrors, entry, selectedFiles, recordings]);
@@ -84,7 +77,11 @@ export const CreateLogEntry = () => {
     if (!isOnline) {
       setEntry((prev) => ({ ...prev, location: undefined }));
     }
-  }, [isOnline, entry]);
+  }, [isOnline, setEntry]);
+
+  useEffect(() => {
+    setFormFields(LogEntryTypes[entry.type as LogEntryType].fields(entry));
+  }, [setFormFields, entry]);
 
   const onFieldChange = (id: string, value: FieldValueType, nested = false) => {
     setEntry((prev) => {
@@ -161,7 +158,9 @@ export const CreateLogEntry = () => {
     <PageWrapper>
       <FormsInputContainer
         incident={incident}
+        entries={logEntries ?? []}
         entry={entry}
+        formFields={formFields}
         errors={validationErrors}
         onFieldChange={onFieldChange}
         onFilesSelected={onFilesSelected}
@@ -175,7 +174,6 @@ export const CreateLogEntry = () => {
         mentionables={mentionables}
         selectedFiles={selectedFiles}
         recordings={recordings}
-        markers={markers}
         canvasRef={canvasRef}
         sketchLines={sketchLines}
       />

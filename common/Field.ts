@@ -40,7 +40,7 @@ export const Field = Record({
   className: Optional(String),
   multiline: Optional(Boolean),
   rows: Optional(Number),
-  dependentFieldIds: Optional(Array(String))
+  dependentFieldId: Optional(String)
 });
 
 export type Field = Static<typeof Field>;

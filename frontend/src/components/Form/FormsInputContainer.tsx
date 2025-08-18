@@ -16,8 +16,8 @@ import { type Incident } from 'common/Incident';
 import { LogEntryTypes } from 'common/LogEntryTypes';
 import { LogEntryType } from 'common/LogEntryType';
 import { Mentionable } from 'common/Mentionable';
-import { Coordinates, LocationType, type Location as TypeOfLocation } from 'common/Location';
-import { FullLocationType, OptionType, SketchLine, ValidationError } from '../../utils/types';
+import { type Location as TypeOfLocation } from 'common/Location';
+import { FieldValueType, OptionType, SketchLine, ValidationError } from '../../utils/types';
 import { EntityInputContainer, EntityInputContainerData } from '../AddEntity/EntityInputContainer';
 import { getLogEntryTypes } from '../../utils/Form/getBaseLogEntryFields';
 import { EntityOptionsContainer } from '../AddEntity/EntityOptionsContainer';
@@ -25,20 +25,25 @@ import { EntityOptionData } from '../AddEntity/EntityOptions';
 import { OnFieldChange } from '../../utils/handlers';
 import EntryContent from '../lexical/EntryContent';
 
-import { Format, MapUtils } from '../../utils';
-import { getLocationTypes } from '../../utils/Map/getLocationTypes';
-import { MapComponent } from '../Map';
+import { Format } from '../../utils';
 import Sketch from '../AddEntry/Sketch';
 import Files from '../AddEntry/Files';
 import { EntityDivider } from '../AddEntity/EntityDivider';
+import Location from '../AddEntry/Location';
+import { getFieldValue } from '../../utils/Form/getFieldValue';
+import { getFieldIcon } from '../../utils/Form/getFieldIcon';
+import { Field } from 'common/Field';
+import { FormFieldWithDependent } from './FormFieldWithDependent';
+import { CommunicationMethod } from 'common/Fields/CommunicationMethod';
 
 type Props = {
   incident: Incident;
+  entries: Array<LogEntry>;
   entry: Partial<LogEntry>;
+  formFields: Array<Field>;
   mentionables: Array<Mentionable>;
   selectedFiles: Array<File>;
   recordings: Array<File>;
-  markers: Coordinates[];
   canvasRef: RefObject<Stage | null>;
   sketchLines: Array<SketchLine>;
   errors: ValidationError[];
@@ -55,11 +60,12 @@ type Props = {
 
 export const FormsInputContainer = ({
   incident,
+  entries,
   entry,
+  formFields,
   mentionables,
   selectedFiles,
   recordings,
-  markers,
   canvasRef,
   sketchLines,
   errors,
@@ -77,18 +83,19 @@ export const FormsInputContainer = ({
   const [level, setLevel] = useState<number>(0);
   const [customHeading, setCustomHeading] = useState<string>('');
   const [addingDescription, setAddingDescription] = useState<boolean>(false);
+  const [addingFormFields, setAddingFormFields] = useState<boolean>(false);
   const [addingDateAndTime, setAddingDateAndTime] = useState<boolean>(false);
   const [addingLocation, setAddingLocation] = useState<boolean>(false);
-  const [addingLocationDescription, setAddingLocationDescription] = useState<boolean>(false);
-  const [addingLocationCoordinates, setAddingLocationCoordinates] = useState<boolean>(false);
   const [addingAttachments, setAddingAttachments] = useState<boolean>(false);
   const [addingSketch, setAddingSketch] = useState<boolean>(false);
   const [entryDate, setEntryDate] = useState<string>();
   const [entryTime, setEntryTime] = useState<string>();
+  const [formField, setFormField] = useState<Field>();
 
   const setLevelAndClearState = (level: number) => {
     setLevel(level);
     setAddingDescription(false);
+    setAddingFormFields(false);
     setAddingDateAndTime(false);
     setAddingLocation(false);
     setAddingAttachments(false);
@@ -119,6 +126,10 @@ export const FormsInputContainer = ({
     dispatchOnChange(entryDate, timeString);
   };
 
+  const onNestedFieldChange = (id: string, value: FieldValueType) => {
+    onFieldChange(id, value, true);
+  };
+
   const getDateValue = () => {
     if (entry.dateTime) {
       return dayjs(new Date(Format.isoDate(entry.dateTime)));
@@ -142,36 +153,20 @@ export const FormsInputContainer = ({
     return null;
   };
 
-  const onLocationInputTypeChange = (value: string) => {
-    if (LocationType.guard(value)) {
-      if (value === 'none') return;
-      setAddingLocationDescription(value === 'description' || value === 'both');
-      setAddingLocationCoordinates(value === 'coordinates' || value === 'both');
-      onLocationChange(
-        MapUtils.getNewLocation(value as LocationType, (entry.location ?? {}) as FullLocationType)
-      );
+  const getFormattedValueForField = (field: Field, value: FieldValueType) => {
+    if (field.id === 'CommunicationMethod') {
+      return CommunicationMethod?.options?.find((option) => option.value === value)?.label ?? value;
     }
+
+    return value;
   };
 
-  const onLocationDescriptionChange = (value: string) => {
-    if (value) {
-      onLocationChange({
-        ...(entry.location ?? ({} as Partial<TypeOfLocation>)),
-        description: value
-      });
-    }
-  };
+  const dependentFieldIds = formFields.map((formField) => formField.dependentFieldId);
+  const parentFormFields = formFields.filter(
+    (formField) => !dependentFieldIds.includes(formField.id)
+  );
 
-  const handleLocationCoordinatesChange = (value: Coordinates[]) => {
-    if (value) {
-      onLocationChange({
-        ...(entry.location ?? ({} as Partial<TypeOfLocation>)),
-        coordinates: value
-      });
-    }
-  };
-
-  const entityOptionData: EntityOptionData[] = [
+  const entityOptionsData: EntityOptionData[] = [
     {
       id: 'description',
       onClick: () => {
@@ -182,6 +177,28 @@ export const FormsInputContainer = ({
       value: entry?.content?.text ? entry.content.text : undefined,
       supportedOffline: true
     },
+    ...parentFormFields.map(
+      (field) =>
+        ({
+          id: `field-${field.id}`,
+          onClick: () => {
+            setCustomHeading('Add field');
+            setAddingFormFields(true);
+            setFormField(field);
+            setLevel(2);
+          },
+          value: getFormattedValueForField(
+            field,
+            getFieldValue(
+              formFields.find((formField) => field.dependentFieldId === formField.id) ?? field,
+              entry
+            )
+          ),
+          label: field.label,
+          icon: getFieldIcon(field)?.icon,
+          supportedOffline: true
+        }) as EntityOptionData
+    ),
     {
       id: 'dateAndTime',
       onClick: () => {
@@ -210,7 +227,7 @@ export const FormsInputContainer = ({
         setAddingAttachments(true);
         setLevel(2);
       },
-      value: entry.attachments ? `${entry.attachments.length} attachments` : undefined,
+      value: selectedFiles.length > 0 ? `${selectedFiles.length} attachments` : undefined,
       supportedOffline: true
     },
     {
@@ -219,9 +236,7 @@ export const FormsInputContainer = ({
         setAddingSketch(true);
         setLevel(2);
       },
-      value: entry.attachments?.find((attachment) => attachment.type === 'Sketch')
-        ? 'View sketch'
-        : undefined,
+      value: sketchLines.length > 0 ? 'View sketch' : undefined,
       supportedOffline: true
     }
   ];
@@ -264,7 +279,7 @@ export const FormsInputContainer = ({
             </Typography>
           </Box>
           <EntityDivider />
-          <EntityOptionsContainer entityType="forms" data={entityOptionData} errors={errors} />
+          <EntityOptionsContainer entityType="forms" data={entityOptionsData} errors={errors} />
         </>
       )
     },
@@ -283,6 +298,20 @@ export const FormsInputContainer = ({
                 onChange={onContentChange}
                 error={false}
                 mentionables={mentionables}
+              />
+            </Box>
+          )}
+          {addingFormFields && formFields && formField && (
+            <Box flexGrow={1}>
+              <FormFieldWithDependent
+                mainFormField={{ field: formField }}
+                dependentFormField={{
+                  field: formFields.find((x) => x.id === formField.dependentFieldId)
+                }}
+                entry={entry}
+                entries={entries}
+                onChange={onNestedFieldChange}
+                errors={errors}
               />
             </Box>
           )}
@@ -312,58 +341,13 @@ export const FormsInputContainer = ({
           )}
           {addingLocation && (
             <Box flexGrow={1}>
-              <FormControl fullWidth sx={{ marginTop: 2 }}>
-                <TextField
-                  select
-                  aria-label="Select location input type"
-                  value={entry.location?.type}
-                  onChange={(event) => onLocationInputTypeChange(event.target.value)}
-                  id="location.type"
-                  variant="filled"
-                  label={entry.location?.type ? '' : 'Select location type'}
-                  slotProps={{ inputLabel: { shrink: false } }}
-                  sx={{
-                    '&. MuiInputBase-input': {
-                      backgroundColor: '#FFFFFF',
-                      paddingTop: '17px',
-                      paddingBottom: '16px'
-                    }
-                  }}
-                >
-                  {getLocationTypes().map((locationType) => (
-                    <MenuItem key={`location-${locationType.value}`} value={locationType.value}>
-                      {locationType.label}
-                    </MenuItem>
-                  ))}
-                </TextField>
-              </FormControl>
-              {addingLocationDescription && (
-                <FormControl fullWidth sx={{ marginTop: 2 }}>
-                  <TextField
-                    hiddenLabel
-                    variant="filled"
-                    multiline
-                    id="location.description"
-                    value={
-                      entry.location?.type === 'description' || entry.location?.type === 'both'
-                        ? entry.location.description
-                        : null
-                    }
-                    onChange={(event) => onLocationDescriptionChange(event.target.value)}
-                    minRows={4}
-                    placeholder="Describe the location"
-                  />
-                </FormControl>
-              )}
-              {addingLocationCoordinates && (
-                <Box marginTop={2}>
-                  <MapComponent
-                    id="location.coordinates"
-                    markers={markers}
-                    setMarkers={handleLocationCoordinatesChange}
-                  />
-                </Box>
-              )}
+              <Location.Content
+                location={entry.location}
+                onLocationChange={onLocationChange}
+                validationErrors={errors}
+                showValidationErrors={errors.length > 0}
+                active={addingLocation}
+              />
             </Box>
           )}
           {addingAttachments && (
