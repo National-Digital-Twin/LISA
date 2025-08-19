@@ -2,6 +2,12 @@
 // © Crown Copyright 2025. This work has been developed by the National Digital Twin Programme
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
-import Content from './TaskContent';
+import { attachments } from './attachments';
+import { tasks } from './tasks';
 
-export default { Content };
+export function selectAll(incidentId?: string) {
+  return [
+    tasks(incidentId),
+    attachments(incidentId)
+  ];
+}

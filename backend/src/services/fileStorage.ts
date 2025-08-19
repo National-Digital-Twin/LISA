@@ -36,12 +36,28 @@ function getContentInfo(
   };
 }
 
+function createS3Client(): S3Client {
+  if (settings.S3_ENDPOINT) { // MinIO
+    return new S3Client({
+      endpoint: settings.S3_ENDPOINT,
+      forcePathStyle: true,
+      region: 'eu-west-2',
+      credentials: settings.S3_ACCESS_KEY_ID ? {
+        accessKeyId: settings.S3_ACCESS_KEY_ID,
+        secretAccessKey: settings.S3_SECRET_ACCESS_KEY
+      } : undefined
+    });
+  }
+
+  return new S3Client();
+}
+
 export async function getScanResultInternal(key: string) {
   if (!key) {
     throw new ApplicationError('Key cannot be undefined.');
   }
 
-  const client = new S3Client();
+  const client = createS3Client();
 
   const command = new GetObjectTaggingCommand({
     Bucket: settings.S3_BUCKET_ID,
@@ -101,7 +117,7 @@ export async function streamS3Object(req: Request, res: Response) {
   }
 
   const { disposition, type } = getContentInfo(fileName, String(mimeType));
-  const client = new S3Client();
+  const client = createS3Client();
   const ims = req.header('If-Modified-Since');
   const command = new GetObjectCommand({
     Bucket: settings.S3_BUCKET_ID,
@@ -150,7 +166,7 @@ export async function storeS3Object(key: string, filePath: string): Promise<stri
     throw new Error('error creating file stream', e);
   }
 
-  const client = new S3Client();
+  const client = createS3Client();
   const command = new PutObjectCommand({
     Bucket: settings.S3_BUCKET_ID,
     Key: key,

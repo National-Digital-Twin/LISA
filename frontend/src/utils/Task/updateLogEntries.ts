@@ -40,3 +40,20 @@ export function createLogEntryFromTaskAssigneeUpdate(taskId : string, assigneeNa
   
   return logEntry;
 }
+
+export function createLogEntryFromTaskCreation(taskId: string, taskName: string, incidentId: string, entry?: Partial<LogEntry>): Partial<LogEntry> {
+  const logEntry: Partial<LogEntry> = entry ?? {
+    type: 'TaskCreated',
+    incidentId,
+    dateTime: new Date().toISOString(),
+    content: {},
+    fields: [],
+    sequence: createSequenceNumber(),
+    details: {
+      createdTaskId: taskId,
+      createdTaskName: taskName
+    }
+  };
+  
+  return logEntry;
+}

@@ -7,7 +7,7 @@ import { IncidentType } from './IncidentType';
 import { IncidentAttachment } from './IncidentAttachment';
 import { Location } from './Location';
 import { LogEntry } from './LogEntry';
-import { LogEntryAttachmentType, LogEntryAttachment } from './LogEntryAttachment';
+import { AttachmentType, Attachment } from './Attachment';
 import { LogEntryType } from './LogEntryType';
 
 export {
@@ -17,6 +17,6 @@ export {
   Location,
   LogEntry,
   LogEntryType,
-  LogEntryAttachmentType,
-  LogEntryAttachment
+  AttachmentType,
+  Attachment
 };

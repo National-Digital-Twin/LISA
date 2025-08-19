@@ -8,9 +8,19 @@ import { Request, Response } from 'express';
 import { literalDate, literalString, ns } from '../../rdfutil';
 import { create as createNotification } from '../notifications';
 import * as ia from '../../ia';
+import { extractAttachments } from '../common/attachments';
+import { addLocationTriples } from '../common/location';
 
 export async function create(req: Request, res: Response) {
-  const task = CreateTask.check({ ...req.body, incidentId: req.params.incidentId });
+  const { incidentId } = req.params;
+  if (!incidentId) {
+    res.status(400).end();
+    return;
+  }
+
+  const task = CreateTask.check(
+    req.files?.length ? { ...JSON.parse(req.body.task), incidentId } : { ...req.body, incidentId }
+  );
 
   const taskId = task.id ?? randomUUID();
   const taskNode = ns.data(taskId);
@@ -24,6 +34,10 @@ export async function create(req: Request, res: Response) {
   const statusBoundingNode = ns.data(randomUUID());
   const assigneeStateNode = ns.data(randomUUID());
   const assigneeBoundingNode = ns.data(randomUUID());
+
+  const { triples: attachmentTriples } = await extractAttachments(req, task.attachments, taskNode);
+
+  const locationTriples = addLocationTriples(task.location, taskNode);
 
   const triples = [
     [incidentNode, ns.lisa.hasTask, taskNode],
@@ -50,7 +64,10 @@ export async function create(req: Request, res: Response) {
     [statusNode, ns.rdf.type, ns.lisa(task.status || 'ToDo')],
     [statusNode, ns.ies.isStateOf, taskNode],
     [statusBoundingNode, ns.ies.inPeriod, nowNode],
-    [statusBoundingNode, ns.ies.isStartOf, statusNode]
+    [statusBoundingNode, ns.ies.isStartOf, statusNode],
+
+    ...attachmentTriples,
+    ...locationTriples
   ];
 
   await ia.insertData(triples);

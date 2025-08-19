@@ -6,6 +6,8 @@ import { Static, Record, String, Optional } from 'runtypes';
 import { TaskStatus } from './Task';
 
 export const LogEntryChangeDetails = Record({
+  createdTaskId: Optional(String), // Only applicable to type TaskCreated
+  createdTaskName: Optional(String), // Only applicable to type TaskCreated  
   changedAssignee: Optional(String), // Only applicable to type ChangeTaskAssignee
   changedStatus: Optional(TaskStatus), // Only applicable to type ChangeTaskStatus
   changedTaskName: Optional(String), // Only applicable to type ChangeTaskStatus/ChangeTaskAssignee

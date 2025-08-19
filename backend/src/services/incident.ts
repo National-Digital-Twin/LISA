@@ -14,7 +14,7 @@ import { IncidentAttachment } from 'common/IncidentAttachment';
 import { IncidentType, addIncidentSuffix, removeIncidentSuffix } from 'common/IncidentType';
 import { IncidentTypes } from 'common/IncidentTypes';
 import { LogEntryType } from 'common/LogEntryType';
-import { LogEntryAttachmentType } from 'common/LogEntryAttachment';
+import { AttachmentType } from 'common/Attachment';
 import { addStageSuffix, IncidentStage, removeStageSuffix } from 'common/IncidentStage';
 
 import * as ia from '../ia';
@@ -108,7 +108,7 @@ export async function changeStage(req: Request, res: Response) {
 
   if (results.length !== 1) {
     throw new ApplicationError(
-      `Query for latest stage of incident ${incidentId} returned multiple rows: ${results}`
+      `Query for latest stage of incident ${incidentId} returned ${results.length} rows instead of 1. Results: ${JSON.stringify(results, null, 2)}`
     );
   }
 
@@ -189,22 +189,27 @@ function getReferrer(row: ia.ResultRow, amendments?: Amendments): Referrer | und
   if (!row.referrerName?.value) {
     return undefined;
   }
-  const referrer: Partial<Referrer> = {
+
+  const referrer = {
     name: amendments?.['referrer.name'] ?? row.referrerName?.value,
     organisation: amendments?.['referrer.organisation'] ?? row.referrerOrg?.value,
     telephone: amendments?.['referrer.telephone'] ?? row.referrerTel?.value,
     email: amendments?.['referrer.email'] ?? row.referrerEmail?.value
   };
-  const supportRequested =
-    amendments?.['referrer.supportRequested'] ?? row.referrerSupportRequested?.value;
+
+  const supportRequested = amendments?.['referrer.supportRequested'] ?? row.referrerSupportRequested?.value;
   if (supportRequested === 'Yes') {
-    referrer.supportRequested = 'Yes';
-    referrer.supportDescription =
-      amendments?.['referrer.supportDescription'] ?? row.referrerSupportDesc?.value;
+    return {
+      ...referrer,
+      supportRequested: 'Yes',
+      supportDescription: amendments?.['referrer.supportDescription'] ?? row.referrerSupportDesc?.value
+    };
   } else {
-    referrer.supportRequested = 'No';
+    return {
+      ...referrer,
+      supportRequested: 'No'
+    };
   }
-  return referrer as Referrer;
 }
 
 function getName(row: ia.ResultRow, amendments?: Amendments): string {
@@ -391,7 +396,7 @@ export async function getAttachments(req: Request, res: Response) {
           },
           uploadedAt: row.createdAt.value,
           name: row.attachmentName.value,
-          type: row.attachmentType.value as LogEntryAttachmentType,
+          type: row.attachmentType.value as AttachmentType,
           key: row.attachmentKey.value,
           mimeType: row.attachmentMimeType.value,
           size: Number(row.attachmentSize.value),
