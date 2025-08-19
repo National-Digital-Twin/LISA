@@ -20,6 +20,7 @@ type Props = {
   incidentId: string;
   onSubmit: (task: CreateTask & Required<Pick<CreateTask, 'id' | 'status'>>, files: File[]) => void;
   onCancel: () => void;
+  isSubmitting?: boolean;
 };
 
 type FieldType = 'name' | 'assignee' | 'description' | 'location' | 'attachments' | 'sketch';
@@ -33,7 +34,7 @@ const fieldConfigs = {
   sketch: { heading: 'Add sketch', required: false, supportedOffline: true }
 };
 
-export const TaskInputContainer = ({ users, incidentId, onSubmit, onCancel }: Readonly<Props>) => {
+export const TaskInputContainer = ({ users, incidentId, onSubmit, onCancel, isSubmitting = false }: Readonly<Props>) => {
   const [level, setLevel] = useState<number>(0);
   const [activeField, setActiveField] = useState<FieldType | null>(null);
 
@@ -284,7 +285,7 @@ export const TaskInputContainer = ({ users, incidentId, onSubmit, onCancel }: Re
       onCancel={onCancel}
       level={level}
       setLevel={setLevelAndClearState}
-      disableSubmit={errors.length > 0}
+      disableSubmit={errors.length > 0 || isSubmitting}
     />
   );
 };
