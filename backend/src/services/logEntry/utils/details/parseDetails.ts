@@ -15,6 +15,10 @@ export async function parseDetails(
   for (const result of results) {
     const entryId = nodeValue(result.entryId.value);
 
+    const createdTaskId = result?.createdTaskId?.value
+      ? nodeValue(result?.createdTaskId?.value)
+      : undefined;
+    const createdTaskName = result?.createdTaskName?.value;    
     const changedTaskId = result?.changedTaskId?.value
       ? nodeValue(result?.changedTaskId?.value)
       : undefined;
@@ -29,6 +33,8 @@ export async function parseDetails(
 
     if (!detailsByEntry.has(entryId)) {
       const details: LogEntryChangeDetails = {
+        createdTaskId,
+        createdTaskName,        
         changedTaskId,
         changedTaskName,
         changedAssignee,
