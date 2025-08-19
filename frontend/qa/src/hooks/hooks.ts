@@ -50,7 +50,6 @@ After(async function TestCaseHook({ pickle, result }) {
     if (video) {
       videoPath = await video.path();
     } else {
-      // eslint-disable-next-line no-console
       console.warn('No video recorded for this test.');
     }
   }
@@ -69,7 +68,6 @@ After(async function TestCaseHook({ pickle, result }) {
       const videoData = fs.readFileSync(videoPath);
       this.attach(videoData, 'video/webm');
     } else {
-      // eslint-disable-next-line no-console
       console.warn('Video file not found or not recorded.');
     }
 
@@ -78,7 +76,6 @@ After(async function TestCaseHook({ pickle, result }) {
       const traceFileLink = `<a href="https://trace.playwright.dev/">Open ${path}</a>`;
       this.attach(`Trace file: ${traceFileLink}`, 'text/html');
     } else {
-      // eslint-disable-next-line no-console
       console.log('File does not exist.');
     }
   }

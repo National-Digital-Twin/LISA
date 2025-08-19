@@ -1,11 +1,12 @@
 /* eslint no-underscore-dangle: ["error", { "allow": ["__filename", "__dirname"] }] */
 
-import { fixupConfigRules } from '@eslint/compat';
+import { fixupConfigRules, fixupPluginRules } from '@eslint/compat';
 import tsEslint from 'typescript-eslint';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import js from '@eslint/js';
 import { FlatCompat } from '@eslint/eslintrc';
+import importPlugin from 'eslint-plugin-import';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -24,9 +25,11 @@ export default tsEslint.config(js.configs.recommended, tsEslint.configs.recommen
     parserOptions: {}
   },
 
-  extends: fixupConfigRules(compat.extends('airbnb', 'prettier')),
+  extends: fixupConfigRules(compat.extends('prettier')),
 
-  plugins: {},
+  plugins: {
+    import: fixupPluginRules(importPlugin)
+  },
 
   settings: {
     'import/extensions': ['.mjs', '.js', '.jsx', '.ts', '.tsx'],

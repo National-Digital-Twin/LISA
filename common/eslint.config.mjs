@@ -7,6 +7,7 @@ import { fileURLToPath } from 'node:url';
 import js from '@eslint/js';
 import { FlatCompat } from '@eslint/eslintrc';
 import { fixupPluginRules } from '@eslint/compat';
+import importPlugin from 'eslint-plugin-import';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -29,8 +30,11 @@ export default tsEslint.config(js.configs.recommended, ...tsEslint.configs.recom
     parserOptions: {}
   },
 
-  extends: fixupPluginRules(compat.extends('airbnb')),
-  plugins: {},
+  extends: fixupPluginRules(compat.extends('prettier')),
+
+  plugins: {
+    import: fixupPluginRules(importPlugin)
+  },
 
   settings: {
     'import/extensions': ['.mjs', '.js', '.jsx', '.ts', '.tsx'],

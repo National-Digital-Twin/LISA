@@ -11,11 +11,8 @@ import { get } from '../api';
 const POLLING_INTERVAL_SECONDS = 10;
 const POLLING_INTERVAL_MS = POLLING_INTERVAL_SECONDS * 1000;
 
-let globalQueryClient: QueryClient | null = null;
-
 export function useLogEntriesUpdates(incidentId: string) {
   const queryClient = useQueryClient();
-  globalQueryClient = queryClient;
   const pollingIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const syncEntries = useCallback(async () => {
@@ -54,7 +51,6 @@ export function useLogEntriesUpdates(incidentId: string) {
         [...matchedEntries, ...unmatchedEntries]
       );
     } catch (error) {
-      // eslint-disable-next-line no-console
       console.error(`Error occured: ${error}. Unable to poll for updates!`);
     }
   }, [incidentId, queryClient]);
@@ -73,12 +69,12 @@ export function useLogEntriesUpdates(incidentId: string) {
   return { startPolling, clearPolling };
 }
 
-export const addOptimisticLogEntry = async (incidentId: string, logEntry: LogEntry) => {
-  if (!globalQueryClient) {
-    throw new Error('queryClient not available!');
-  }
-
-  const previousEntries = globalQueryClient.getQueryData<LogEntry[]>([
+export const addOptimisticLogEntry = async (
+  queryClient: QueryClient,
+  incidentId: string,
+  logEntry: LogEntry
+) => {
+  const previousEntries = queryClient.getQueryData<LogEntry[]>([
     `incident/${incidentId}/logEntries`
   ]);
 
@@ -89,7 +85,7 @@ export const addOptimisticLogEntry = async (incidentId: string, logEntry: LogEnt
     offline: true
   };
 
-  globalQueryClient.setQueryData<LogEntry[]>(
+  queryClient.setQueryData<LogEntry[]>(
     [`incident/${incidentId}/logEntries`],
     (oldData) => oldData?.concat(optimisticEntry) || [optimisticEntry]
   );

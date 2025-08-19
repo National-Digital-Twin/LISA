@@ -17,7 +17,6 @@ function getMentions(content: LogEntryContent, entryId: string, namesMap: FileNa
     if (mention.id.startsWith('this::')) {
       const fileName = mention.id.split('::')[1];
       const mapping = namesMap.find((map) => map.originalname === fileName);
-      // eslint-disable-next-line no-param-reassign
       content.json = content.json.replace(
         mention.id,
         `${entryId}::${mapping?.storedName || fileName}`

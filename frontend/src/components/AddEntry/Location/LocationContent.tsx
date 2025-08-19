@@ -88,7 +88,6 @@ export default function LocationContent({
       )}
       {(location?.type === 'coordinates' || location?.type === 'both') && (
         <li className="full-width">
-          {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
           <label htmlFor="location.coordinates">
             <MapComponent
               id="location.coordinates"

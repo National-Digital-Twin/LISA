@@ -97,7 +97,6 @@ const SelectField = ({
       getOptionLabel={(option) => option.label}
       onChange={(_, selection) => handleOnChange(selection)}
       renderOption={(props, option) => (
-        // eslint-disable-next-line react/jsx-props-no-spreading
         <li {...props} key={`${option.value}-${option.index}`}>
           {option.index && (
             <span style={{ marginRight: '1rem' }}>
@@ -111,7 +110,6 @@ const SelectField = ({
       )}
       renderInput={(params) => (
         <TextField
-          // eslint-disable-next-line react/jsx-props-no-spreading
           {...params}
           error={Boolean(error)}
           helperText={error?.error}

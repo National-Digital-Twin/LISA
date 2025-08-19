@@ -132,7 +132,6 @@ export default class EditIncidentLogPage {
       .type('Some Emergency Related Text');
 
     if (isOptionalFieldNeeded) {
-      /* eslint-disable no-console */
       console.log('Need to implement Optional fields if required');
     }
   }

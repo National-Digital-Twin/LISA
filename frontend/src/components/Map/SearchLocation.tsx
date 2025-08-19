@@ -68,10 +68,9 @@ const SearchLocation = ({ location, onSelectLocation }: Props) => {
             keys: [(option) => option.label]
           })
         }
-        // renderOption={(props, option) => <li>{option.label}</li>}
+
         renderInput={(params) => (
           <TextField
-            // eslint-disable-next-line react/jsx-props-no-spreading
             {...params}
             placeholder="Search map..."
             onChange={handleOnChange}

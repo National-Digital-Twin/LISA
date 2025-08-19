@@ -123,7 +123,7 @@ const MapComponent = ({ id, markers, setMarkers }: Props) => {
               latitude={marker.latitude}
               anchor="bottom"
               draggable
-              onDrag={(event) => onMarkerDrag(event, index)}
+              onDrag={(event: MarkerDragEvent) => onMarkerDrag(event, index)}
             >
               <Box sx={{ position: 'relative' }}>
                 <Icons.MapPin />
