@@ -33,7 +33,6 @@ import Sketch from './Sketch';
 import { type OnCreateEntry } from '../../utils/handlers';
 import { useAttachments } from '../../hooks/useAttachments';
 import { getSortedEntriesWithDisplaySequence } from '../../utils/sortEntries';
-import Task from './Task';
 import { createSequenceNumber } from '../../utils/Form/sequence';
 
 type AddEntryProps = {
@@ -222,9 +221,6 @@ const AddEntry = ({
               lines={sketchLines}
               onChangeLines={setSketchLines}
             />
-          </TabPanel>
-          <TabPanel value={TABS.TASK} hash={hash}>
-            <Task.Content />
           </TabPanel>
 
           <Box mt={2}>
