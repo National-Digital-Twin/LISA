@@ -64,6 +64,7 @@ export default function CreateTaskPage() {
         incidentId={incidentId}
         onSubmit={handleSubmit}
         onCancel={() => navigate(-1)}
+        isSubmitting={createTask.isPending}
       />
     </PageWrapper>
   );
