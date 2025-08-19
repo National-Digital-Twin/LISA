@@ -10,7 +10,7 @@ import { User } from 'common/User';
 import { PageTitle } from '../components';
 import PageWrapper from '../components/PageWrapper';
 import { useAuth, useUsers } from '../hooks';
-import { useAllTasks } from '../hooks/useTasks';
+import { useTasks, useUpdateTaskStatus, useUpdateTaskAssignee  } from '../hooks/useTasks';
 import { GridListItem } from '../components/GridListItem';
 import AssigneeSelector from '../components/InlineSelectors/AssigneeSelector';
 import TaskStatusSelector from '../components/InlineSelectors/TaskStatusSelector';
@@ -20,11 +20,14 @@ import { logInfo } from '../utils/logger';
 
 const IncidentTask = () => {
   const { taskId } = useParams();
-  const { data: tasks } = useAllTasks();
+  const { data: tasks } = useTasks();
   const { users } = useUsers();
   const navigate = useNavigate();
 
   const task = tasks?.find((task) => task.id === taskId);
+
+  const { mutate: updateStatus } = useUpdateTaskStatus(task?.incidentId);
+  const { mutate: updateAssignee } = useUpdateTaskAssignee(task?.incidentId);
 
   const { user } = useAuth();
 
@@ -72,12 +75,26 @@ const IncidentTask = () => {
   }
 
   const onChangeAssignee = (newAssignee: User) => {
-    logInfo(`assignee changed to ${newAssignee.displayName}`)
-  }
+    if (!task) return;
+    updateAssignee(
+      { task: { ...task, assignee: newAssignee } },
+      {
+        onError: (e) => logInfo(`failed to update assignee: ${e.message}`),
+        onSuccess: () => logInfo(`assignee changed to ${newAssignee.displayName}`)
+      }
+    );
+  };
 
   const onChangeStatus = (newStatus: TaskStatus) => {
-    logInfo(`status changed to ${newStatus}`)
-  }
+    if (!task) return;
+    updateStatus(
+      { task: { ...task, status: newStatus } },
+      {
+        onError: (e) => logInfo(`failed to update status: ${e.message}`),
+        onSuccess: () => logInfo(`status changed to ${newStatus}`)
+      }
+    );
+  };
 
   const canUpdateTask = user.current?.username === task?.assignee?.username;
 

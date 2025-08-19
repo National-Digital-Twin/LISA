@@ -5,7 +5,7 @@
 import React from 'react';
 import { renderHook, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { useTasks, useAllTasks } from '../useTasks';
+import { useTasks } from '../useTasks';
 import { get } from '../../api';
 
 jest.mock('../../api');
@@ -54,52 +54,6 @@ describe('useTasks', () => {
     jest.resetAllMocks();
   });
 
-  it('fetches tasks for a specific incident', async () => {
-    (get as jest.Mock).mockResolvedValueOnce(mockTasks);
-
-    const { wrapper } = createWrapper();
-    const { result } = renderHook(() => useTasks('incident-1'), {
-      wrapper
-    });
-
-    await waitFor(() => expect(result.current.isLoading).toBe(false));
-
-    expect(get).toHaveBeenCalledWith('/incident/incident-1/tasks');
-    expect(result.current.data).toEqual(mockTasks);
-    expect(result.current.isError).toBe(false);
-  });
-
-  it('does not fetch when no incident ID is provided', () => {
-    const { wrapper } = createWrapper();
-    const { result } = renderHook(() => useTasks(undefined), {
-      wrapper
-    });
-
-    expect(get).not.toHaveBeenCalled();
-    expect(result.current.data).toBeUndefined();
-  });
-
-  it('handles errors when fetching tasks', async () => {
-    const errorMessage = 'Failed to fetch tasks';
-    (get as jest.Mock).mockRejectedValueOnce(new Error(errorMessage));
-
-    const { wrapper } = createWrapper();
-    const { result } = renderHook(() => useTasks('incident-1'), {
-      wrapper
-    });
-
-    await waitFor(() => expect(result.current.isLoading).toBe(false));
-
-    expect(result.current.isError).toBe(true);
-    expect(result.current.data).toBeUndefined();
-  });
-});
-
-describe('useAllTasks', () => {
-  beforeEach(() => {
-    jest.resetAllMocks();
-  });
-
   it('fetches all tasks', async () => {
     const allTasks = [
       ...mockTasks,
@@ -119,7 +73,7 @@ describe('useAllTasks', () => {
     (get as jest.Mock).mockResolvedValueOnce(allTasks);
 
     const { wrapper } = createWrapper();
-    const { result } = renderHook(() => useAllTasks(), {
+    const { result } = renderHook(() => useTasks(), {
       wrapper
     });
 
@@ -135,7 +89,7 @@ describe('useAllTasks', () => {
     (get as jest.Mock).mockRejectedValueOnce(new Error(errorMessage));
 
     const { wrapper } = createWrapper();
-    const { result } = renderHook(() => useAllTasks(), {
+    const { result } = renderHook(() => useTasks(), {
       wrapper
     });
 

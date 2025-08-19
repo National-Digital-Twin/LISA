@@ -5,7 +5,7 @@
 import { fireEvent, screen } from '@testing-library/react';
 import { type Task } from 'common/Task';
 import { type Incident } from 'common/Incident';
-import * as hooks from '../../hooks';
+import * as taskHooks from '../../hooks/useTasks';
 import { providersRender } from '../../test-utils';
 import Tasks from '../Tasks';
 
@@ -93,17 +93,17 @@ jest.mock('../../hooks', () => ({
   useIncidents: jest.fn(() => ({
     data: mockIncidents
   })),
-  useAllTasks: jest.fn(() => ({
-    data: mockTasks
-  })),
-  useAllTasksUpdates: jest.fn(() => ({
-    startPolling: jest.fn(),
-    clearPolling: jest.fn()
-  })),
   useAuth: jest.fn(() => ({
     user: { current: { username: 'testUser', displayName: 'Test User', email: 'test@test.com', groups: [] } },
     logout: jest.fn()
   })),
+  useTasksUpdates: jest.fn(() => ({ startPolling: jest.fn(), clearPolling: jest.fn() })),
+}));
+
+jest.mock('../../hooks/useTasks', () => ({
+  useTasks: jest.fn(() => ({ data: mockTasks })),
+  useTasksUpdates: jest.fn(() => ({ startPolling: jest.fn(), clearPolling: jest.fn() })),
+  
 }));
 
 jest.mock('../../hooks/useIsOnline', () => ({
@@ -157,7 +157,7 @@ describe('Tasks Page', () => {
   });
 
   it('shows empty state when no tasks exist', () => {
-    (hooks.useAllTasks as jest.Mock).mockReturnValue({
+    (taskHooks.useTasks as jest.Mock).mockReturnValue({
       data: []
     });
 
@@ -168,7 +168,7 @@ describe('Tasks Page', () => {
   });
 
   it('shows filtered empty state when tasks exist but none match filters', () => {
-    (hooks.useAllTasks as jest.Mock).mockReturnValue({
+    (taskHooks.useTasks as jest.Mock).mockReturnValue({
       data: [mockTasks[2]] // Only completed task
     });
 

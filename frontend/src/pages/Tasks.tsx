@@ -8,7 +8,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useState, useMemo, useEffect } from 'react';
 import { Task } from 'common/Task';
 import DataList, { ListRow } from '../components/DataList';
-import { useIncidents, useAllTasks, useAuth, useAllTasksUpdates } from '../hooks';
+import { useIncidents, useAuth, useTasksUpdates } from '../hooks';
 import { useIsOnline } from '../hooks/useIsOnline';
 import { Format } from '../utils';
 
@@ -19,6 +19,7 @@ import { countActive } from '../components/SortFilter/filter-utils';
 import { PageTitle } from '../components';
 import PageWrapper from '../components/PageWrapper';
 import StatusMini from '../components/Tasks/StatusMini';
+import { useTasks } from '../hooks/useTasks';
 
 const DEFAULT_QUERY_STATE: QueryState = {
   values: {
@@ -31,8 +32,8 @@ export default function Tasks() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { data: incidents } = useIncidents();
-  const { data: tasksData } = useAllTasks();
-  const { startPolling, clearPolling } = useAllTasksUpdates();
+  const { data: tasksData } = useTasks();
+  const { startPolling, clearPolling } = useTasksUpdates();
   const isOnline = useIsOnline();
   const [searchParams] = useSearchParams();
 
