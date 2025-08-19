@@ -31,11 +31,13 @@ export default function CreateTaskPage() {
     task: CreateTask & Required<Pick<CreateTask, 'id' | 'status'>>,
     files: File[]
   ) => {
+    console.log(`this is your incident id bro: ${incidentId}`)
     createTask.mutate(
       { task, files },
       {
-        onSuccess: () => {
-          navigate(`/tasks/${incidentId}`);
+        onSuccess: (data) => {
+          console.log(`navigating to yr incident: ${incidentId}`)
+          navigate(`/tasks/${data.id}`);
         },
         onError: (error) => {
           console.error('Task creation failed:', error);
