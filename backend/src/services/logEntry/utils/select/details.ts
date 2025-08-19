@@ -14,6 +14,10 @@ export function details(incidentId: string) {
     clause: [
       [ns.data(incidentId), ns.lisa.hasLogEntry, '?entryId'],
       optional([
+        ['?entryId', ns.lisa.hasCreatedTask, '?createdTaskId'],
+        ['?createdTaskId', ns.ies.hasName, '?createdTaskName']
+      ]),      
+      optional([
         ['?entryId', ns.lisa.hasModifiedTask, '?changedTaskId'],
         ['?changedTaskId', ns.ies.hasName, '?changedTaskName']
       ]),

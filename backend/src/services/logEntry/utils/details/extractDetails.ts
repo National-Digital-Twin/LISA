@@ -10,6 +10,10 @@ export function extractDetails(entry: LogEntry, entryIdNode: unknown): Array<unk
 
   const triples: unknown[] = [];
 
+  if (entry.details.createdTaskId) {
+    triples.push([entryIdNode, ns.lisa.hasCreatedTask, ns.data(entry.details.createdTaskId)]);
+  }
+    
   if (entry.details.changedTaskId) {
     triples.push([entryIdNode, ns.lisa.hasModifiedTask, ns.data(entry.details.changedTaskId)]);
   }

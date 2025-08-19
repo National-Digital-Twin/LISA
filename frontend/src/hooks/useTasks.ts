@@ -10,7 +10,8 @@ import { get, patch, post } from '../api';
 import { useCreateLogEntry } from './useLogEntries';
 import {
   createLogEntryFromTaskStatusUpdate,
-  createLogEntryFromTaskAssigneeUpdate
+  createLogEntryFromTaskAssigneeUpdate,
+  createLogEntryFromTaskCreation
 } from '../utils/Task/updateLogEntries';
 import { addOptimisticTask } from './useTaskUpdates';
 
@@ -34,8 +35,9 @@ type CreateTaskInput = {
   files?: File[]; // attachments + generated sketches/recordings
 };
 
-export const useCreateTask = ({ author }: { author: User }) => {
+export const useCreateTask = ({ author, incidentId }: { author: User; incidentId?: string }) => {
   const queryClient = useQueryClient();
+  const { createLogEntry } = useCreateLogEntry(incidentId);
 
   return useMutation<{ id: string }, Error, CreateTaskInput, { previousTasks?: Task[]; previousAllTasks?: Task[] }>({
     mutationFn: ({ task, files }) => {
@@ -73,8 +75,18 @@ export const useCreateTask = ({ author }: { author: User }) => {
         queryClient.setQueryData(['tasks'], context.previousAllTasks);
       }
     },
-    // TODO: create log entry for task creation
-    // onSuccess: (_data, variables) 
+    onSuccess: (_data, variables) => {
+      const taskId = variables.task.id;
+      const taskName = variables.task.name;
+      const taskIncidentId = variables.task.incidentId;
+
+      if (!taskIncidentId || !taskId || !taskName) return;
+
+      const logEntry = {
+        ...createLogEntryFromTaskCreation(taskId, taskName, taskIncidentId)
+      } as Omit<LogEntry, 'id' | 'author'>;
+      createLogEntry({ logEntry });
+    }
   });
 };
 
