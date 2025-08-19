@@ -19,6 +19,7 @@ import { SetIncidentInformation } from './SetIncidentInformation';
 import { ChangeTaskStatus } from './ChangeTaskStatus';
 import { ChangeTaskAssignee } from './ChangeTaskAssignee';
 import { FormSubmitted } from './FormSubmitted';
+import { TaskCreated } from './TaskCreated';
 
 export const LogEntryTypes: LogEntryTypesDict = {
   AvianFlu,
@@ -35,6 +36,7 @@ export const LogEntryTypes: LogEntryTypesDict = {
   SituationReport,
   ChangeStage,
   SetIncidentInformation,
+  TaskCreated,  
   ChangeTaskStatus,
   ChangeTaskAssignee,
   FormSubmitted

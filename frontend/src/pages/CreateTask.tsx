@@ -19,7 +19,7 @@ export default function CreateTaskPage() {
   const navigate = useNavigate();
   const { data: incidents } = useIncidents();
   const { users } = useUsers();
-  const createTask = useCreateTask({ author: user.current! });
+  const createTask = useCreateTask({ author: user.current!, incidentId });
   const postToast = useToast();
 
   const incident: Incident | undefined = useMemo(
@@ -64,6 +64,7 @@ export default function CreateTaskPage() {
         incidentId={incidentId}
         onSubmit={handleSubmit}
         onCancel={() => navigate(-1)}
+        isSubmitting={createTask.isPending}
       />
     </PageWrapper>
   );
