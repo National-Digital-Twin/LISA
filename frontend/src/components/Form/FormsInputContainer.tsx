@@ -321,6 +321,7 @@ export const FormsInputContainer = ({
               {formTypeLabel}
             </Typography>
           </Box>
+          <EntityDivider />
           <EntityOptionsContainer entityType="forms" data={entityOptionsData} errors={errors} />
         </>
       )
