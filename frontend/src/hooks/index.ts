@@ -6,6 +6,7 @@ import { useAuth, useUsers } from './useAuth';
 import { useCreateIncident, useIncidents } from './useIncidents';
 import { useCreateLogEntry, useLogEntries } from './useLogEntries';
 import { useLogEntriesUpdates } from './useLogEntriesUpdates';
+import { useTasksUpdates, useAllTasksUpdates } from './useTaskUpdates';
 import { useNotifications, useReadNotification } from './useNotifications';
 import { useOutsideClick } from './useOutsideClick';
 import { useTasks, useUpdateTaskAssignee, useUpdateTaskStatus, useAllTasks } from './useTasks';
@@ -18,6 +19,8 @@ export {
   useIncidents,
   useLogEntries,
   useLogEntriesUpdates,
+  useTasksUpdates,
+  useAllTasksUpdates,
   useNotifications,
   useReadNotification,
   useTasks,

@@ -1,4 +1,3 @@
-import { ReactNode } from 'react';
 import { Box } from '@mui/material';
 import { ValidationError } from '../../utils/types';
 import { EntityOptionData, getEntityOptions } from './EntityOptions';
@@ -11,16 +10,15 @@ type Props = {
 };
 
 export const EntityOptionsContainer = ({ entityType, data, errors }: Props) => {
-  const allEntityOptions = getEntityOptions(data, errors);
-  const entityOptionsForType: ReactNode[] | undefined = allEntityOptions[entityType];
+  const entityOptions = getEntityOptions(entityType, data, errors);
 
   return (
     <Box>
-      {entityOptionsForType?.map((entityOption) => (
-        <>
+      {entityOptions.map((entityOption, index) => (
+        <Box key={data[index].id}>
           {entityOption}
           <EntityDivider />
-        </>
+        </Box>
       ))}
     </Box>
   );
