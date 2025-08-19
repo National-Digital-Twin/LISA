@@ -3,21 +3,18 @@
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
 import { useState, MouseEvent } from 'react';
-import { Box, ButtonBase, Menu, MenuItem, ListItemIcon, ListItemText, Typography, Grid2 as Grid } from '@mui/material';
+import { Box, ButtonBase, Menu, MenuItem, ListItemText, Typography, Grid2 as Grid } from '@mui/material';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import { type IncidentStage } from 'common/IncidentStage';
-import StageMini from './StageMini';
-import Format from '../../utils/Format';
-
-const STAGES: IncidentStage[] = ['Monitoring', 'Response', 'Recovery', 'Closed'];
+import { User } from 'common/User';
 
 type Props = {
-  value: IncidentStage;
-  onChange: (next: IncidentStage) => void;
+  value: User;
+  availableValues?: User[],
+  onChange: (next: User) => void;
   disabled?: boolean;
 };
 
-export default function StageSelectListItem({ value, onChange, disabled = false }: Readonly<Props>) {
+export default function AssigneeSelector({ value, availableValues = [], onChange, disabled = false }: Readonly<Props>) {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const open = Boolean(anchorEl);
   const menuId = 'stage-select-menu';
@@ -48,25 +45,23 @@ export default function StageSelectListItem({ value, onChange, disabled = false 
           }}
         >
           <Typography variant="h3" fontWeight="bold" component="span" sx={{ fontSize: 'inherit', lineHeight: 1, m: 0 }}>
-            Stage
+            Assigned to
           </Typography>
           <ArrowDropDownIcon fontSize="small" />
         </ButtonBase>
 
         <Box display="flex" alignItems="center" gap={1}>
-          <StageMini stage={value} size={12} />
-          <Typography variant="body1">{Format.incident.stage(value)}</Typography>
+          <Typography variant="body1">{value?.displayName}</Typography>
         </Box>
 
         <Menu id={menuId} anchorEl={anchorEl} open={open} onClose={handleClose}>
-          {STAGES.map((s) => (
+          {availableValues.map((s) => (
             <MenuItem
-              key={s}
+              key={s.username}
               selected={s === value}
               onClick={() => { onChange(s); handleClose(); }}
             >
-              <ListItemIcon><StageMini stage={s} size={12} /></ListItemIcon>
-              <ListItemText primary={Format.incident.stage(s)} />
+              <ListItemText primary={s.displayName} />
             </MenuItem>
           ))}
         </Menu>

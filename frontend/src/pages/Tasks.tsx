@@ -6,7 +6,7 @@ import AddCircleIcon from '@mui/icons-material/AddCircle';
 import { Box, Button, Typography } from '@mui/material';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useState, useMemo } from 'react';
-import { Task, TaskStatus } from 'common/Task';
+import { Task } from 'common/Task';
 import DataList, { ListRow } from '../components/DataList';
 import { useIncidents, useAllTasks, useAuth } from '../hooks';
 import { Format } from '../utils';
@@ -17,36 +17,7 @@ import { type QueryState } from '../components/SortFilter/filter-types';
 import { countActive } from '../components/SortFilter/filter-utils';
 import { PageTitle } from '../components';
 import PageWrapper from '../components/PageWrapper';
-
-function StatusDot({ status }: Readonly<{ status: TaskStatus }>) {
-  let color: string;
-  let borderColor: string;
-
-  if (status === 'Done') {
-    color = '#9DF5A8';
-    borderColor = '#239932';
-  } else if (status === 'InProgress') {
-    color = '#F5CF9D';
-    borderColor = '#FF6D24';
-  } else {
-    color = '#A5D3F5';
-    borderColor = '#3C3DE9';
-  }
-
-  return (
-    <Box
-      sx={{
-        width: 12,
-        height: 12,
-        borderRadius: '50%',
-        backgroundColor: color,
-        border: '1px solid',
-        borderColor,
-        flexShrink: 0
-      }}
-    />
-  );
-}
+import StatusMini from '../components/Tasks/StatusMini';
 
 const DEFAULT_QUERY_STATE: QueryState = {
   values: {
@@ -270,8 +241,8 @@ export default function Tasks() {
                   <Typography variant="body2">Assigned to: {Format.user(t.assignee)}</Typography>
                 ),
                 footer: `INCIDENT: ${incidentNameById.get(t.incidentId) ?? t.incidentId}`,
-                titleDot: <StatusDot status={t.status} />,
-                onClick: () => navigate(`/tasks/${t.incidentId}#${t.id}`)
+                titleDot: <StatusMini status={t.status} />,
+                onClick: () => navigate(`/tasks/${t.id}`)
               }))}
             />
           )}

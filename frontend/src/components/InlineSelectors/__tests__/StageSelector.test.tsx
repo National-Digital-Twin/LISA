@@ -6,9 +6,9 @@ import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
 
-import StageSelectListItem from '../StageSelect';
+import StageSelectListItem from '../StageSelector';
 
-jest.mock('../StageMini', () => ({
+jest.mock('../../Stage/StageMini', () => ({
   __esModule: true,
   default: ({ stage }: { stage: string }) => (
     <span data-testid="stage-mini" data-stage={stage} />
@@ -26,7 +26,7 @@ jest.mock('../../../utils/Format', () => ({
 
 const STAGES = ['Monitoring', 'Response', 'Recovery', 'Closed'] as const;
 
-describe('StageSelectListItem', () => {
+describe('StageSelector', () => {
   test('renders the title trigger and current value (dot + text)', () => {
     const handleChange = jest.fn();
     render(<StageSelectListItem value="Monitoring" onChange={handleChange} />);

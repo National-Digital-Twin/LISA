@@ -18,7 +18,7 @@ import Location from '../pages/Location';
 import Logbook from '../pages/Logbook';
 import Notifications from '../pages/Notifications';
 import Overview from '../pages/Overview';
-import IncidentTasks from '../pages/IncidentTasks';
+import IncidentTask from '../pages/IncidentTask';
 import IncidentPickerPage from '../pages/IncidentPickerPage';
 import Settings from '../pages/Settings';
 import Tasks from '../pages/Tasks';
@@ -42,7 +42,7 @@ const AppWrapper = () => {
         { path: 'incident/:incidentId', element: <Overview /> },
         { path: 'logbook/:incidentId', element: <Logbook /> },
         { path: 'tasks', element: <Tasks /> },
-        { path: 'tasks/:incidentId', element: <IncidentTasks /> },
+        { path: 'tasks/:taskId', element: <IncidentTask /> },
         { path: 'incidents/pick', element: <IncidentPickerPage /> },
         { path: 'forms/:incidentId', element: <LogForms /> },
         { path: 'location/:incidentId', element: <Location /> },

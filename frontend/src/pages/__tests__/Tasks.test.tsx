@@ -130,7 +130,7 @@ describe('Tasks Page', () => {
     const firstTask = screen.getByText('High Priority Task');
     fireEvent.click(firstTask);
 
-    expect(mockNavigate).toHaveBeenCalledWith('/tasks/incident-1#task-1');
+    expect(mockNavigate).toHaveBeenCalledWith('/tasks/task-1');
   });
 
   it('opens sort and filter dialog when button clicked', () => {
