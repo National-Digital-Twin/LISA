@@ -7,5 +7,4 @@ export const TABS = {
   LOCATION: '#location',
   FILES: '#files',
   SKETCH: '#sketch',
-  TASK: '#task'
 };
