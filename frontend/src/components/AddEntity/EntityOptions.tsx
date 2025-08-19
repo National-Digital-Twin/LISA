@@ -6,6 +6,7 @@ import AttachFileIcon from '@mui/icons-material/AttachFile';
 import DrawOutlinedIcon from '@mui/icons-material/DrawOutlined';
 import { ValidationError } from '../../utils/types';
 import { EntityOption } from './EntityOption';
+import { SituationReport } from 'common/LogEntryTypes/SituationReport';
 
 export type EntityOptionData = {
   id: string;
@@ -20,23 +21,48 @@ export type EntityOptionData = {
 
 const forms = (data: EntityOptionData[], errors: ValidationError[]) => {
   const descriptionOptionData = data.find((x) => x.id === 'description');
+  const siteRepDetailsOptionData = data.find((x) => x.id === 'siteRepDetails');
   const fieldsOptionData = data.filter((x) => x.id.includes('field'));
   const dateAndTimeOptionData = data.find((x) => x.id === 'dateAndTime');
   const locationOptionData = data.find((x) => x.id === 'location');
   const attachmentsOptionData = data.find((x) => x.id === 'attachments');
   const sketchOptionData = data.find((x) => x.id === 'sketch');
 
+  const siteRepFieldIds = SituationReport.fields({})
+    .filter((field) => field.id !== 'ExactLocation')
+    .map((field) => field.id);
+
   return [
-    <EntityOption
-      key="description-option"
-      icon={<TextSnippetOutlinedIcon />}
-      onClick={descriptionOptionData!.onClick}
-      required={!!descriptionOptionData?.required}
-      value={descriptionOptionData?.value}
-      label={descriptionOptionData?.value ?? 'Add a description'}
-      supportedOffline={!!descriptionOptionData?.supportedOffline}
-      errored={!!errors.find((error) => error.fieldId === 'content')}
-    />,
+    ...[
+      (descriptionOptionData && (
+        <EntityOption
+          key="description-option"
+          icon={<TextSnippetOutlinedIcon />}
+          onClick={descriptionOptionData!.onClick}
+          required={!!descriptionOptionData?.required}
+          value={descriptionOptionData?.value}
+          label={descriptionOptionData?.value ?? 'Add a description'}
+          supportedOffline={!!descriptionOptionData?.supportedOffline}
+          errored={!!errors.find((error) => error.fieldId === 'content')}
+        />
+      )) ??
+        []
+    ],
+    ...[
+      (siteRepDetailsOptionData && (
+        <EntityOption
+          key="site-rep-details-option"
+          icon={<TextSnippetOutlinedIcon />}
+          onClick={siteRepDetailsOptionData!.onClick}
+          required={!!siteRepDetailsOptionData?.required}
+          label={siteRepDetailsOptionData.label ?? 'Add details'}
+          value={siteRepDetailsOptionData?.value}
+          supportedOffline={!!siteRepDetailsOptionData?.supportedOffline}
+          errored={!!errors.some((error) => siteRepFieldIds.includes(error.fieldId))}
+        />
+      )) ??
+        []
+    ],
     ...fieldsOptionData.map((fieldOptionData) => (
       <EntityOption
         key={`${fieldOptionData.id}-option`}
@@ -71,7 +97,7 @@ const forms = (data: EntityOptionData[], errors: ValidationError[]) => {
       onClick={locationOptionData!.onClick}
       required={!!locationOptionData?.required}
       value={locationOptionData?.value}
-      label={locationOptionData?.value ?? 'Add location(s)'}
+      label={locationOptionData?.value ?? locationOptionData?.label ?? 'Add location(s)'}
       supportedOffline={!!locationOptionData?.supportedOffline}
       errored={
         !!errors.find(

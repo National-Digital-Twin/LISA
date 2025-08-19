@@ -1,0 +1,12 @@
+@prefix ies: <http://ies.data.gov.uk/ontology/ies4#>
+@prefix lisa: <http://ndtp.co.uk/ontology/lisa#>
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>
+
+#SiteRep - (M/Ethane)
+
+lisa:siteRepMethane rdf:type lisa:Form .
+lisa:siteRepMethane ies:hasName "SiteRep (M/Ethane)"^^xsd:string .
+lisa:siteRepMethane lisa:createdAt "1970-01-01T00:00:00.000Z"^^xsd:dateTime .
+lisa:siteRepMethane lisa:hasData $FORM_DATA^^xsd:string .
+

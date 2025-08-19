@@ -1,0 +1,22 @@
+{
+  "forms": [
+    {
+      "type": "siteRepMethane",
+      "uiSchema": {
+        "ui:order": [
+          "MajorIncident",
+          "Hazards",
+          "Access",
+          "Casualties",
+          "Emergency"
+        ],
+        "ui:options": {
+          "label": false
+        },
+        "ui:submitButtonOptions": {
+          "norender": true
+        }
+      }
+    }
+  ]
+}

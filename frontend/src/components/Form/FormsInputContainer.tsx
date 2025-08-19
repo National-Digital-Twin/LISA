@@ -35,12 +35,15 @@ import { getFieldIcon } from '../../utils/Form/getFieldIcon';
 import { Field } from 'common/Field';
 import { FormFieldWithDependent } from './FormFieldWithDependent';
 import { CommunicationMethod } from 'common/Fields/CommunicationMethod';
+import { Form as CustomForm } from '../CustomForms/FormTemplates/types';
+import { FormContainer as CustomFormContainer } from '../CustomForms/FormInstances/FormContainer';
 
 type Props = {
   incident: Incident;
   entries: Array<LogEntry>;
   entry: Partial<LogEntry>;
   formFields: Array<Field>;
+  forms: Array<CustomForm>;
   mentionables: Array<Mentionable>;
   selectedFiles: Array<File>;
   recordings: Array<File>;
@@ -63,6 +66,7 @@ export const FormsInputContainer = ({
   entries,
   entry,
   formFields,
+  forms,
   mentionables,
   selectedFiles,
   recordings,
@@ -83,6 +87,7 @@ export const FormsInputContainer = ({
   const [level, setLevel] = useState<number>(0);
   const [customHeading, setCustomHeading] = useState<string>('');
   const [addingDescription, setAddingDescription] = useState<boolean>(false);
+  const [addingSiteRepDetails, setAddingSiteRepDetails] = useState<boolean>(false);
   const [addingFormFields, setAddingFormFields] = useState<boolean>(false);
   const [addingDateAndTime, setAddingDateAndTime] = useState<boolean>(false);
   const [addingLocation, setAddingLocation] = useState<boolean>(false);
@@ -95,6 +100,7 @@ export const FormsInputContainer = ({
   const setLevelAndClearState = (level: number) => {
     setLevel(level);
     setAddingDescription(false);
+    setAddingSiteRepDetails(false);
     setAddingFormFields(false);
     setAddingDateAndTime(false);
     setAddingLocation(false);
@@ -161,12 +167,15 @@ export const FormsInputContainer = ({
     return value;
   };
 
-  const dependentFieldIds = formFields.map((formField) => formField.dependentFieldId);
-  const parentFormFields = formFields.filter(
+  const filteredFormFieldsForView = entry.type === 'SituationReport' ? [] : formFields;
+  const dependentFieldIds = filteredFormFieldsForView.map(
+    (formField) => formField.dependentFieldId
+  );
+  const parentFormFields = filteredFormFieldsForView.filter(
     (formField) => !dependentFieldIds.includes(formField.id)
   );
 
-  const entityOptionsData: EntityOptionData[] = [
+  const descriptionOptionData: EntityOptionData[] = [
     {
       id: 'description',
       onClick: () => {
@@ -176,7 +185,39 @@ export const FormsInputContainer = ({
       },
       value: entry?.content?.text ? entry.content.text : undefined,
       supportedOffline: true
-    },
+    }
+  ];
+
+  const siteRepDetailOptionData: EntityOptionData[] = [
+    {
+      id: 'siteRepDetails',
+      onClick: () => {
+        setCustomHeading('Details');
+        setAddingSiteRepDetails(true);
+        setLevel(2);
+      },
+      label: formFields
+        .filter((formField) => formField.id !== 'ExactLocation')
+        .every((formField) => getFieldValue(formField, entry))
+        ? 'View details'
+        : undefined,
+      value: 'Details',
+      required: true,
+      supportedOffline: true
+    }
+  ];
+
+  const formTypeLabel = LogEntryTypes[entry.type as LogEntryType].label;
+
+  const addLocationHeading =
+    entry.type === 'SituationReport' ? 'Add exact location' : 'Add location(s)';
+
+  const viewLocationHeading =
+    entry.type === 'SituationReport' ? 'View exact location' : 'View location(s)';
+
+  const entityOptionsData: EntityOptionData[] = [
+    ...(entry.type === 'SituationReport' ? [] : descriptionOptionData),
+    ...(entry.type === 'SituationReport' ? siteRepDetailOptionData : []),
     ...parentFormFields.map(
       (field) =>
         ({
@@ -215,11 +256,12 @@ export const FormsInputContainer = ({
     {
       id: 'location',
       onClick: () => {
-        setCustomHeading('Add location(s)');
+        setCustomHeading(addLocationHeading);
         setAddingLocation(true);
         setLevel(2);
       },
-      value: entry.location ? 'View location(s)' : undefined,
+      label: addLocationHeading,
+      value: entry.location ? viewLocationHeading : undefined,
       required: LogEntryTypes[entry.type as LogEntryType].requireLocation
     },
     {
@@ -270,16 +312,15 @@ export const FormsInputContainer = ({
       )
     },
     {
-      heading: `Add form - ${entry.type}`,
+      heading: `Add form - ${formTypeLabel}`,
       inputControls: (
         <>
           <Box display="flex">
             <CircleIcon sx={{ opacity: 0 }} />
             <Typography variant="body1" padding={1}>
-              {entry.type}
+              {formTypeLabel}
             </Typography>
           </Box>
-          <EntityDivider />
           <EntityOptionsContainer entityType="forms" data={entityOptionsData} errors={errors} />
         </>
       )
@@ -299,6 +340,16 @@ export const FormsInputContainer = ({
                 onChange={onContentChange}
                 error={false}
                 mentionables={mentionables}
+              />
+            </Box>
+          )}
+          {addingSiteRepDetails && forms && (
+            <Box flexGrow={1}>
+              <CustomFormContainer
+                entry={entry}
+                selectedForm={forms.find((form) => form.id === 'siteRepMethane')!}
+                fields={formFields}
+                onFieldChange={onNestedFieldChange}
               />
             </Box>
           )}

@@ -1,0 +1,44 @@
+{
+  "forms": [
+    {
+      "type": "siteRepMethane",
+      "dataSchema": {
+        "title": "SiteRep (M/Ethane)",
+        "type": "object",
+        "properties": {
+          "MajorIncident": {
+            "title": "Has a major incident been declared?",
+            "type": "string",
+            "enum": [
+              "Yes",
+              "No"
+            ]
+          },
+          "Hazards": {
+            "title": "Hazards present or suspected",
+            "type": "string"
+          },
+          "Access": {
+            "title": "Access routes that are safe to use",
+            "type": "string"
+          },
+          "Casualties": {
+            "title": "Number, type, and severity of casualties",
+            "type": "string"
+          },
+          "Emergency": {
+            "title": "Emergency services present and those required",
+            "type": "string"
+          }
+        },
+        "required": [
+          "MajorIncident",
+          "Hazards",
+          "Access",
+          "Casualties",
+          "Emergency"
+        ]
+      }
+    }
+  ]
+}

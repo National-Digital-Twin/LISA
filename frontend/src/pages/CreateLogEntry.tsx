@@ -19,6 +19,7 @@ import { useIsOnline } from '../hooks/useIsOnline';
 import { Field } from 'common/Field';
 import { LogEntryTypes } from 'common/LogEntryTypes';
 import { LogEntryType } from 'common/LogEntryType';
+import { useFormTemplates } from '../hooks/Forms/useFormTemplates';
 
 export const CreateLogEntry = () => {
   const { incidentId } = useParams();
@@ -27,6 +28,7 @@ export const CreateLogEntry = () => {
   const { logEntries } = useLogEntries(incidentId);
   const { attachments: incidentAttachments } = useAttachments(incident?.id);
   const { users } = useUsers();
+  const { forms } = useFormTemplates();
   const navigate = useNavigate();
   const { createLogEntry } = useCreateLogEntry(incidentId, () =>
     navigate(`/logbook/${incidentId}`)
@@ -101,7 +103,9 @@ export const CreateLogEntry = () => {
   };
 
   const onLocationChange = (location: Partial<Location>) => {
-    setEntry((prev) => ({ ...prev, location }) as LogEntry);
+    if (isOnline) {
+      setEntry((prev) => ({ ...prev, location }) as LogEntry);
+    }
   };
 
   const getUniqueFiles = (newFiles: File[], existingFiles: File[]): File[] =>
@@ -161,6 +165,7 @@ export const CreateLogEntry = () => {
         entries={logEntries ?? []}
         entry={entry}
         formFields={formFields}
+        forms={forms ?? []}
         errors={validationErrors}
         onFieldChange={onFieldChange}
         onFilesSelected={onFilesSelected}
