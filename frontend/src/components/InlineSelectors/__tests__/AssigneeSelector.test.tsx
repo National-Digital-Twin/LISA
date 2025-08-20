@@ -49,7 +49,11 @@ describe('AssigneeSelector', () => {
     expect(menu).toBeInTheDocument();
 
     expect(trigger).toHaveAttribute('aria-expanded', 'true');
-    expect(trigger).toHaveAttribute('aria-controls', 'stage-select-menu');
+    const controlsId = trigger.getAttribute('aria-controls');
+    expect(controlsId).toBeTruthy();
+    const container = screen.getByRole('presentation', { hidden: true });
+    expect(container).toHaveAttribute('id', controlsId);
+    expect(container).toContainElement(menu);
 
     const items = within(menu).getAllByRole('menuitem');
     expect(items).toHaveLength(USERS.length);
