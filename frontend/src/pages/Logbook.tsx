@@ -47,7 +47,7 @@ const Logbook = () => {
   const { isMobile } = useResponsive();
   const navigate = useNavigate();
 
-  
+
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [queryState, setQueryState] = useState<QueryState>({
     values: {},
@@ -70,12 +70,12 @@ const Logbook = () => {
       })
       .sort((a, b) => a.localeCompare(b));
   }, [logEntries]);
-  
+
   const logFilters = useMemo(() => {
     const templates = forms ?? [];
     return buildLogFilters(templates, allAuthors);
   }, [allAuthors, forms]);
-  
+
   useEffect(() => {
     const preventRefresh = (ev: BeforeUnloadEvent) => {
       const lastEntry = logEntries?.at(-1);
@@ -89,6 +89,10 @@ const Logbook = () => {
   useEffect(() => {
     if (isOnline) startPolling();
     else clearPolling();
+
+    return () => {
+      clearPolling();
+    };
   }, [isOnline, startPolling, clearPolling]);
 
   const incident = query?.data?.find((inc) => inc.id === incidentId);
@@ -184,19 +188,19 @@ const Logbook = () => {
     const getTypeIds = (e: LogEntry): string[] => {
       const t = e.type;
       if (!t) return [];
-  
+
       const raw = (typeof t === 'string' && t) || '';
       if (!raw) return [];
-  
+
       const id = toId(raw);
       const ids: string[] = [id];
-  
+
       return ids;
     };
 
     const matchesAttachmentFilter = (entry: LogEntry, selected: Set<string>): boolean => {
       if (selected.size === 0) return true;
-    
+
       return Array.from(selected).some((type) => {
         if (type === 'location') return !!entry.location;
         if (type === 'file') return entry.attachments?.some((a) => a.type === 'File');
@@ -205,7 +209,7 @@ const Logbook = () => {
         return false;
       });
     };
-    
+
     // Search terms
     const searchTerm = ((v.search as string) ?? '').trim().toLowerCase();
 
@@ -230,7 +234,7 @@ const Logbook = () => {
     // Date range
     const customTimeRange = v.timeRange as { from?: string; to?: string } | undefined;
     const preset = v.time as string | undefined;
-    
+
     const {from, to} = getFromAndToFromTimeSelection(preset, customTimeRange);
 
     const filtered = items.filter((e) => {
@@ -248,7 +252,7 @@ const Logbook = () => {
       // types
       if (selectedTypes.size > 0) {
         const types = getTypeIds(e);
-      
+
         const isFormMatch = selectedTypes.has(`form::${(e.details?.submittedFormTemplateId ?? '')}`) ?? false;
         const hasAny = types.some((t) => selectedTypes.has(t));
 
@@ -347,7 +351,7 @@ const Logbook = () => {
             </Menu>
           </Box>
         </Box>
-  
+
         {!adding && (
           <Box
             display="flex"
@@ -398,14 +402,14 @@ const Logbook = () => {
               <Typography mt={1}>There are currently no log entries.</Typography>
             </Box>
           )}
-      
+
           {logEntries && logEntries.length > 0 && visibleEntries.length === 0 && (
             <Box p={2} bgcolor="background.default">
               <Typography variant="h6">No results found.</Typography>
               <Typography mt={1}>Try adjusting your filters.</Typography>
             </Box>
           )}
-      
+
           {logEntries && logEntries.length > 0 && visibleEntries.length > 0 && (
             <EntryList
               entries={visibleEntries}
