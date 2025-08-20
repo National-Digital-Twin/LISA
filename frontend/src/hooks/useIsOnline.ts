@@ -1,40 +1,14 @@
-import { useEffect, useState } from 'react';
-import { onlineManager } from '@tanstack/react-query';
+// SPDX-License-Identifier: Apache-2.0
+// © Crown Copyright 2025. This work has been developed by the National Digital Twin Programme
+// and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
-const PING_INTERVAL_MS = 2500; // polls every 2.5s
-const PING_URL = '/api/ping'; 
+import { useContext } from 'react';
+import { OnlineContext } from '../context/OnlineContext';
 
 export function useIsOnline(): boolean {
-  const [isOnline, setIsOnline] = useState(onlineManager.isOnline());
-
-  useEffect(() => {
-    const unsubscribe = onlineManager.subscribe(setIsOnline);
-
-    const ping = async () => {
-      if (!navigator.onLine) {
-        onlineManager.setOnline(false);
-        return;
-      }
-
-      try {
-        const response = await fetch(PING_URL, {
-          method: 'HEAD',
-          cache: 'no-store',
-        });
-        onlineManager.setOnline(response.ok);
-      } catch {
-        onlineManager.setOnline(false);
-      }
-    };
-
-    ping();
-    const intervalId = setInterval(ping, PING_INTERVAL_MS);
-
-    return () => {
-      clearInterval(intervalId);
-      unsubscribe();
-    };
-  }, []);
-
-  return isOnline;
+  const context = useContext(OnlineContext);
+  if (context === undefined) {
+    throw new Error('useIsOnline must be used within OnlineProvider');
+  }
+  return context.isOnline;
 }

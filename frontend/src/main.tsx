@@ -14,6 +14,7 @@ import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client
 // Local imports
 import App from './App';
 import { FetchError, post } from './api';
+import OnlineProvider from './providers/OnlineProvider';
 
 // Styles
 import './App.scss';
@@ -68,7 +69,9 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <PersistQueryClientProvider client={queryClient} persistOptions={{ persister }}>
     <React.StrictMode>
       <ThemeProvider theme={theme}>
-        <App />
+        <OnlineProvider>
+          <App />
+        </OnlineProvider>
       </ThemeProvider>
     </React.StrictMode>
     <ReactQueryDevtools />
