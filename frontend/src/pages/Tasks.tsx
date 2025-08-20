@@ -47,7 +47,7 @@ export default function Tasks() {
   if (mine && user?.current?.username) {
     initialValues.assignee = [user.current?.username];
   }
-  
+
   if (status) {
     initialValues.status = [status];
   }
@@ -64,7 +64,7 @@ export default function Tasks() {
     } else {
       clearPolling();
     }
-    
+
     return () => {
       clearPolling();
     };
@@ -187,13 +187,13 @@ export default function Tasks() {
         </Box>
       </Box>
 
-      <PageWrapper backgroundColor="#f7f7f7">
+      <PageWrapper>
         <Box
           sx={{
             display: 'flex',
             gap: 2,
             flexWrap: 'wrap',
-            justifyContent: 'flex-end' // added
+            justifyContent: 'flex-end'
           }}
         >
           <Button
@@ -223,10 +223,7 @@ export default function Tasks() {
 
         <Box
           sx={{
-            flex: 1,
-            overflow: 'auto',
-            backgroundColor: 'background.default',
-            p: { xs: 0, md: 0 }
+            backgroundColor: 'background.default'
           }}
         >
           {visibleTasks.length === 0 ? (
