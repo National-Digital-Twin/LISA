@@ -92,11 +92,11 @@ export const FormContainer = ({ entry, selectedForm, fields, onFieldChange }: Pr
 
   const prefilledFormData = fields
     ? JSON.parse(
-        `{ ${fields
-          .map((field) => getPrefilledJsonProperty(field))
-          .filter((properties) => properties)
-          .join(',')} }`
-      )
+      `{ ${fields
+        .map((field) => getPrefilledJsonProperty(field))
+        .filter((properties) => properties)
+        .join(',')} }`
+    )
     : {};
 
   return (
