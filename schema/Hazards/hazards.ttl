@@ -1,0 +1,120 @@
+# SPDX-License-Identifier: Apache-2.0
+# © Crown Copyright 2025. This work has been developed by the National Digital Twin Programme
+# and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
+
+@prefix ies: <http://ies.data.gov.uk/ontology/ies4#>
+@prefix lisa: <http://ndtp.co.uk/ontology/lisa#>
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>
+
+#Hazard - Flood water
+
+lisa:haz_floodwater rdf:type lisa:Form .
+lisa:haz_floodwater ies:hasName "Hazard - Floodwater"^^xsd:string .
+lisa:haz_floodwater lisa:createdAt "1970-01-01T00:00:00.000Z"^^xsd:dateTime .
+lisa:haz_floodwater lisa:hasData $FORM_DATA^^xsd:string .
+
+#Hazard - Fire
+
+lisa:haz_fire rdf:type lisa:Form .
+lisa:haz_fire ies:hasName "Hazard - Fire"^^xsd:string .
+lisa:haz_fire lisa:createdAt "1970-01-01T00:00:00.000Z"^^xsd:dateTime .
+lisa:haz_fire lisa:hasData $FORM_DATA^^xsd:string .
+
+#Hazard - Substances
+
+lisa:haz_substances rdf:type lisa:Form .
+lisa:haz_substances ies:hasName "Hazard - Substances"^^xsd:string .
+lisa:haz_substances lisa:createdAt "1970-01-01T00:00:00.000Z"^^xsd:dateTime .
+lisa:haz_substances lisa:hasData $FORM_DATA^^xsd:string .
+
+#Hazard - Slips trips falls
+
+lisa:haz_slipstripsfalls rdf:type lisa:Form .
+lisa:haz_slipstripsfalls ies:hasName "Hazard - Slips trips falls"^^xsd:string .
+lisa:haz_slipstripsfalls lisa:createdAt "1970-01-01T00:00:00.000Z"^^xsd:dateTime .
+lisa:haz_slipstripsfalls lisa:hasData $FORM_DATA^^xsd:string .
+
+#Hazard - Vehicles
+
+lisa:haz_vehicles rdf:type lisa:Form .
+lisa:haz_vehicles ies:hasName "Hazard - Vehicles"^^xsd:string .
+lisa:haz_vehicles lisa:createdAt "1970-01-01T00:00:00.000Z"^^xsd:dateTime .
+lisa:haz_vehicles lisa:hasData $FORM_DATA^^xsd:string .
+
+#Hazard - Falling objects
+
+lisa:haz_fallingobjects rdf:type lisa:Form .
+lisa:haz_fallingobjects ies:hasName "Hazard - Falling objects"^^xsd:string .
+lisa:haz_fallingobjects lisa:createdAt "1970-01-01T00:00:00.000Z"^^xsd:dateTime .
+lisa:haz_fallingobjects lisa:hasData $FORM_DATA^^xsd:string .
+
+#Hazard - Biological
+
+lisa:haz_biological rdf:type lisa:Form .
+lisa:haz_biological ies:hasName "Hazard - Biological"^^xsd:string .
+lisa:haz_biological lisa:createdAt "1970-01-01T00:00:00.000Z"^^xsd:dateTime .
+lisa:haz_biological lisa:hasData $FORM_DATA^^xsd:string .
+
+#Hazard - Environment
+
+lisa:haz_environment rdf:type lisa:Form .
+lisa:haz_environment ies:hasName "Hazard - Environment"^^xsd:string .
+lisa:haz_environment lisa:createdAt "1970-01-01T00:00:00.000Z"^^xsd:dateTime .
+lisa:haz_environment lisa:hasData $FORM_DATA^^xsd:string .
+
+#Hazard - Manual handling
+
+lisa:haz_manualhandling rdf:type lisa:Form .
+lisa:haz_manualhandling ies:hasName "Hazard - Manual handling"^^xsd:string .
+lisa:haz_manualhandling lisa:createdAt "1970-01-01T00:00:00.000Z"^^xsd:dateTime .
+lisa:haz_manualhandling lisa:hasData $FORM_DATA^^xsd:string .
+
+#Hazard - Weather
+
+lisa:haz_weather rdf:type lisa:Form .
+lisa:haz_weather ies:hasName "Hazard - Weather"^^xsd:string .
+lisa:haz_weather lisa:createdAt "1970-01-01T00:00:00.000Z"^^xsd:dateTime .
+lisa:haz_weather lisa:hasData $FORM_DATA^^xsd:string .
+
+#Hazard - Contamination
+
+lisa:haz_contamination rdf:type lisa:Form .
+lisa:haz_contamination ies:hasName "Hazard - Contamination"^^xsd:string .
+lisa:haz_contamination lisa:createdAt "1970-01-01T00:00:00.000Z"^^xsd:dateTime .
+lisa:haz_contamination lisa:hasData $FORM_DATA^^xsd:string .
+
+#Hazard - Fatigue
+
+lisa:haz_fatigue rdf:type lisa:Form .
+lisa:haz_fatigue ies:hasName "Hazard - Fatigue"^^xsd:string .
+lisa:haz_fatigue lisa:createdAt "1970-01-01T00:00:00.000Z"^^xsd:dateTime .
+lisa:haz_fatigue lisa:hasData $FORM_DATA^^xsd:string .
+
+#Hazard - Working at height
+
+lisa:haz_workingatheight rdf:type lisa:Form .
+lisa:haz_workingatheight ies:hasName "Hazard - Working at height"^^xsd:string .
+lisa:haz_workingatheight lisa:createdAt "1970-01-01T00:00:00.000Z"^^xsd:dateTime .
+lisa:haz_workingatheight lisa:hasData $FORM_DATA^^xsd:string .
+
+#Hazard - Enclosed spaces
+
+lisa:haz_enclosedspaces rdf:type lisa:Form .
+lisa:haz_enclosedspaces ies:hasName "Hazard - Enclosed spaces"^^xsd:string .
+lisa:haz_enclosedspaces lisa:createdAt "1970-01-01T00:00:00.000Z"^^xsd:dateTime .
+lisa:haz_enclosedspaces lisa:hasData $FORM_DATA^^xsd:string .
+
+#Hazard - New mothers
+
+lisa:haz_newmothers rdf:type lisa:Form .
+lisa:haz_newmothers ies:hasName "Hazard - New mothers"^^xsd:string .
+lisa:haz_newmothers lisa:createdAt "1970-01-01T00:00:00.000Z"^^xsd:dateTime .
+lisa:haz_newmothers lisa:hasData $FORM_DATA^^xsd:string .
+
+#Hazard - LA support staff
+
+lisa:haz_lasupportstaff rdf:type lisa:Form .
+lisa:haz_lasupportstaff ies:hasName "Hazard - Local authority support staff"^^xsd:string .
+lisa:haz_lasupportstaff lisa:createdAt "1970-01-01T00:00:00.000Z"^^xsd:dateTime .
+lisa:haz_lasupportstaff lisa:hasData $FORM_DATA^^xsd:string .

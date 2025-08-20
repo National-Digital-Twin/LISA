@@ -4,6 +4,7 @@
 
 import { Request, Response } from 'express';
 import { randomUUID } from 'crypto';
+import * as sparql from 'rdf-sparql-builder';
 import { literalDate, literalString, nodeValue, ns } from '../rdfutil';
 import * as ia from '../ia';
 
@@ -47,8 +48,10 @@ export async function get(req: Request, res: Response) {
         ['?formId', ns.ies.hasName, '?title'],
         ['?formId', ns.lisa.createdAt, '?createdAt'],
         ['?formId', ns.lisa.hasData, '?formData'],
-        ['?author', ns.ies.isParticipantIn, '?formId'],
-        ['?author', ns.ies.hasName, '?authorName']
+        sparql.optional([
+          ['?author', ns.ies.isParticipantIn, '?formId'],
+          ['?author', ns.ies.hasName, '?authorName']
+        ])
       ],
       orderBy: [['?createdAt', 'DESC']]
     });

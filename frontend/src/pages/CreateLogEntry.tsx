@@ -1,3 +1,7 @@
+// SPDX-License-Identifier: Apache-2.0
+// © Crown Copyright 2025. This work has been developed by the National Digital Twin Programme
+// and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
+
 import { useNavigate, useParams } from 'react-router-dom';
 import { MouseEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { v4 as uuidV4 } from 'uuid';
@@ -19,6 +23,7 @@ import { useIsOnline } from '../hooks/useIsOnline';
 import { Field } from 'common/Field';
 import { LogEntryTypes } from 'common/LogEntryTypes';
 import { LogEntryType } from 'common/LogEntryType';
+import { useFormTemplates } from '../hooks/Forms/useFormTemplates';
 
 export const CreateLogEntry = () => {
   const { incidentId } = useParams();
@@ -27,6 +32,7 @@ export const CreateLogEntry = () => {
   const { logEntries } = useLogEntries(incidentId);
   const { attachments: incidentAttachments } = useAttachments(incident?.id);
   const { users } = useUsers();
+  const { forms } = useFormTemplates();
   const navigate = useNavigate();
   const { createLogEntry } = useCreateLogEntry(incidentId, () =>
     navigate(`/logbook/${incidentId}`)
@@ -101,7 +107,9 @@ export const CreateLogEntry = () => {
   };
 
   const onLocationChange = (location: Partial<Location>) => {
-    setEntry((prev) => ({ ...prev, location }) as LogEntry);
+    if (isOnline) {
+      setEntry((prev) => ({ ...prev, location }) as LogEntry);
+    }
   };
 
   const getUniqueFiles = (newFiles: File[], existingFiles: File[]): File[] =>
@@ -161,6 +169,7 @@ export const CreateLogEntry = () => {
         entries={logEntries ?? []}
         entry={entry}
         formFields={formFields}
+        forms={forms ?? []}
         errors={validationErrors}
         onFieldChange={onFieldChange}
         onFilesSelected={onFilesSelected}

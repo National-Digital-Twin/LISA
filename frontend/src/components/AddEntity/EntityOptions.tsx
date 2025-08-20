@@ -1,3 +1,7 @@
+// SPDX-License-Identifier: Apache-2.0
+// © Crown Copyright 2025. This work has been developed by the National Digital Twin Programme
+// and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
+
 import { ReactNode } from 'react';
 import TextSnippetOutlinedIcon from '@mui/icons-material/TextSnippetOutlined';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
@@ -11,6 +15,7 @@ import LocationOnIcon from '@mui/icons-material/LocationOn';
 import DrawIcon from '@mui/icons-material/Draw';
 import { ValidationError } from '../../utils/types';
 import { EntityOption } from './EntityOption';
+import { SituationReport } from 'common/LogEntryTypes/SituationReport';
 
 export type EntityOptionData = {
   id: string;
@@ -25,23 +30,42 @@ export type EntityOptionData = {
 
 const forms = (data: EntityOptionData[], errors: ValidationError[]) => {
   const descriptionOptionData = data.find((x) => x.id === 'description');
+  const siteRepDetailsOptionData = data.find((x) => x.id === 'siteRepDetails');
   const fieldsOptionData = data.filter((x) => x.id.includes('field'));
   const dateAndTimeOptionData = data.find((x) => x.id === 'dateAndTime');
   const locationOptionData = data.find((x) => x.id === 'location');
   const attachmentsOptionData = data.find((x) => x.id === 'attachments');
   const sketchOptionData = data.find((x) => x.id === 'sketch');
 
+  const siteRepFieldIds = SituationReport.fields({})
+    .filter((field) => field.id !== 'ExactLocation')
+    .map((field) => field.id);
+
   return [
-    <EntityOption
-      key="description-option"
-      icon={<TextSnippetOutlinedIcon />}
-      onClick={descriptionOptionData!.onClick}
-      required={!!descriptionOptionData?.required}
-      value={descriptionOptionData?.value}
-      label={descriptionOptionData?.value ?? 'Add a description'}
-      supportedOffline={!!descriptionOptionData?.supportedOffline}
-      errored={!!errors.find((error) => error.fieldId === 'content')}
-    />,
+    descriptionOptionData && (
+      <EntityOption
+        key="description-option"
+        icon={<TextSnippetOutlinedIcon />}
+        onClick={descriptionOptionData!.onClick}
+        required={!!descriptionOptionData?.required}
+        value={descriptionOptionData?.value}
+        label={descriptionOptionData?.value ?? 'Add a description'}
+        supportedOffline={!!descriptionOptionData?.supportedOffline}
+        errored={!!errors.find((error) => error.fieldId === 'content')}
+      />
+    ),
+    siteRepDetailsOptionData && (
+      <EntityOption
+        key="site-rep-details-option"
+        icon={<TextSnippetOutlinedIcon />}
+        onClick={siteRepDetailsOptionData!.onClick}
+        required={!!siteRepDetailsOptionData?.required}
+        label={siteRepDetailsOptionData.label ?? 'Add details'}
+        value={siteRepDetailsOptionData?.value}
+        supportedOffline={!!siteRepDetailsOptionData?.supportedOffline}
+        errored={!!errors.some((error) => siteRepFieldIds.includes(error.fieldId))}
+      />
+    ),
     ...fieldsOptionData.map((fieldOptionData) => (
       <EntityOption
         key={`${fieldOptionData.id}-option`}
@@ -76,7 +100,7 @@ const forms = (data: EntityOptionData[], errors: ValidationError[]) => {
       onClick={locationOptionData!.onClick}
       required={!!locationOptionData?.required}
       value={locationOptionData?.value}
-      label={locationOptionData?.value ?? 'Add location(s)'}
+      label={locationOptionData?.value ?? locationOptionData?.label ?? 'Add location(s)'}
       supportedOffline={!!locationOptionData?.supportedOffline}
       errored={
         !!errors.find(
@@ -108,7 +132,7 @@ const forms = (data: EntityOptionData[], errors: ValidationError[]) => {
       supportedOffline={!!sketchOptionData?.supportedOffline}
       errored={false}
     />
-  ];
+  ].filter(Boolean);
 };
 
 const tasks = (data: EntityOptionData[], errors: ValidationError[]) => {
@@ -120,66 +144,78 @@ const tasks = (data: EntityOptionData[], errors: ValidationError[]) => {
   const sketchOptionData = data.find((x) => x.id === 'sketch');
 
   return [
-    nameOptionData && <EntityOption
-      key="name-1"
-      icon={<BadgeOutlinedIcon />}
-      onClick={nameOptionData.onClick}
-      required={!!nameOptionData?.required}
-      value={nameOptionData.value}
-      label={nameOptionData.value || 'Task name'}
-      supportedOffline={!!nameOptionData.supportedOffline}
-      errored={!!errors.find((error) => error.fieldId === 'task_name')}
-    />,
-    assigneeOptionData && <EntityOption
-      key="assignee-1"
-      icon={<AssignmentTurnedInOutlinedIcon />}
-      onClick={assigneeOptionData.onClick}
-      required={!!assigneeOptionData.required}
-      value={assigneeOptionData.value}
-      label={assigneeOptionData.value || 'Assign to'}
-      supportedOffline={!!assigneeOptionData.supportedOffline}
-      errored={!!errors.find((error) => error.fieldId === 'task_assignee')}
-    />,
-    descriptionOptionData && <EntityOption
-      key="description-1"
-      icon={<NotesOutlinedIcon />}
-      onClick={descriptionOptionData.onClick}
-      required={!!descriptionOptionData.required}
-      value={descriptionOptionData.value}
-      label={descriptionOptionData.value || 'Add task description'}
-      supportedOffline={!!descriptionOptionData.supportedOffline}
-      errored={!!errors.find((error) => error.fieldId === 'task_description')}
-    />,
-    locationOptionData && <EntityOption
-      key="location-1"
-      icon={<LocationOnIcon />}
-      onClick={locationOptionData.onClick}
-      required={!!locationOptionData.required}
-      value={locationOptionData.value}
-      label={locationOptionData.value || 'Add location(s)'}
-      supportedOffline={!!locationOptionData.supportedOffline}
-      errored={false}
-    />,
-    attachmentsOptionData && <EntityOption
-      key="attachments-1"
-      icon={<AttachFileIcon />}
-      onClick={attachmentsOptionData.onClick}
-      required={!!attachmentsOptionData.required}
-      value={attachmentsOptionData.value}
-      label={attachmentsOptionData.value || 'Add attachments'}
-      supportedOffline={!!attachmentsOptionData.supportedOffline}
-      errored={false}
-    />,
-    sketchOptionData && <EntityOption
-      key="sketch-1"
-      icon={<DrawIcon />}
-      onClick={sketchOptionData.onClick}
-      required={!!sketchOptionData.required}
-      value={sketchOptionData.value}
-      label={sketchOptionData.value || 'Add sketch'}
-      supportedOffline={!!sketchOptionData.supportedOffline}
-      errored={false}
-    />
+    nameOptionData && (
+      <EntityOption
+        key="name-1"
+        icon={<BadgeOutlinedIcon />}
+        onClick={nameOptionData.onClick}
+        required={!!nameOptionData?.required}
+        value={nameOptionData.value}
+        label={nameOptionData.value || 'Task name'}
+        supportedOffline={!!nameOptionData.supportedOffline}
+        errored={!!errors.find((error) => error.fieldId === 'task_name')}
+      />
+    ),
+    assigneeOptionData && (
+      <EntityOption
+        key="assignee-1"
+        icon={<AssignmentTurnedInOutlinedIcon />}
+        onClick={assigneeOptionData.onClick}
+        required={!!assigneeOptionData.required}
+        value={assigneeOptionData.value}
+        label={assigneeOptionData.value || 'Assign to'}
+        supportedOffline={!!assigneeOptionData.supportedOffline}
+        errored={!!errors.find((error) => error.fieldId === 'task_assignee')}
+      />
+    ),
+    descriptionOptionData && (
+      <EntityOption
+        key="description-1"
+        icon={<NotesOutlinedIcon />}
+        onClick={descriptionOptionData.onClick}
+        required={!!descriptionOptionData.required}
+        value={descriptionOptionData.value}
+        label={descriptionOptionData.value || 'Add task description'}
+        supportedOffline={!!descriptionOptionData.supportedOffline}
+        errored={!!errors.find((error) => error.fieldId === 'task_description')}
+      />
+    ),
+    locationOptionData && (
+      <EntityOption
+        key="location-1"
+        icon={<LocationOnIcon />}
+        onClick={locationOptionData.onClick}
+        required={!!locationOptionData.required}
+        value={locationOptionData.value}
+        label={locationOptionData.value || 'Add location(s)'}
+        supportedOffline={!!locationOptionData.supportedOffline}
+        errored={false}
+      />
+    ),
+    attachmentsOptionData && (
+      <EntityOption
+        key="attachments-1"
+        icon={<AttachFileIcon />}
+        onClick={attachmentsOptionData.onClick}
+        required={!!attachmentsOptionData.required}
+        value={attachmentsOptionData.value}
+        label={attachmentsOptionData.value || 'Add attachments'}
+        supportedOffline={!!attachmentsOptionData.supportedOffline}
+        errored={false}
+      />
+    ),
+    sketchOptionData && (
+      <EntityOption
+        key="sketch-1"
+        icon={<DrawIcon />}
+        onClick={sketchOptionData.onClick}
+        required={!!sketchOptionData.required}
+        value={sketchOptionData.value}
+        label={sketchOptionData.value || 'Add sketch'}
+        supportedOffline={!!sketchOptionData.supportedOffline}
+        errored={false}
+      />
+    )
   ].filter(Boolean);
 };
 
