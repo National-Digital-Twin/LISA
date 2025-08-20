@@ -50,7 +50,6 @@ test('opens, wires aria-controls, renders options, highlights selected', async (
   const menu = await screen.findByRole('menu');
   expect(trigger).toHaveAttribute('aria-expanded', 'true');
 
-  // Avoid direct Node access — use role queries only
   const controlsId = trigger.getAttribute('aria-controls');
   expect(controlsId).toBeTruthy();
   const presented = screen.getByRole('presentation', { hidden: true });
