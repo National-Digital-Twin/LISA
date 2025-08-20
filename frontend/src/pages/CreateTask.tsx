@@ -31,7 +31,6 @@ export default function CreateTaskPage() {
     task: CreateTask & Required<Pick<CreateTask, 'id' | 'status'>>,
     files: File[]
   ) => {
-    console.log(`this is your incident id bro: ${incidentId}`)
     createTask.mutate(
       { task, files },
       {

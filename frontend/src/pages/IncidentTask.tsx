@@ -14,9 +14,10 @@ import { useTasks, useUpdateTaskStatus, useUpdateTaskAssignee  } from '../hooks/
 import { GridListItem } from '../components/GridListItem';
 import AssigneeSelector from '../components/InlineSelectors/AssigneeSelector';
 import TaskStatusSelector from '../components/InlineSelectors/TaskStatusSelector';
-import { STATUS_LABELS } from '../components/Tasks/utils/statusLabelMapper';
+import { STATUS_LABELS, toStatusHumanReadable } from '../components/Tasks/utils/statusLabelMapper';
 import { Format } from '../utils';
 import { logInfo } from '../utils/logger';
+import StatusMini from '../components/Tasks/StatusMini';
 
 const IncidentTask = () => {
   const { taskId } = useParams();
@@ -113,7 +114,21 @@ const IncidentTask = () => {
           {canUpdateTask ? (
             <TaskStatusSelector value={task.status} onChange={onChangeStatus} />
           ) : (
-            <GridListItem title="Task status" text={STATUS_LABELS[task.status]} />
+            <GridListItem title="Stage">
+              <Box display="flex" alignItems="center" gap={1} flexWrap="nowrap">
+                <Box sx={{ display: 'inline-flex', alignItems: 'center', transform: 'translateY(-1px)' }}>
+                  <StatusMini status={task.status} />
+                </Box>
+                <Typography
+                  component="span"
+                  variant="body1"
+                  noWrap
+                  sx={{ lineHeight: 1, m: 0 }}
+                >
+                  {toStatusHumanReadable(task.status)}
+                </Typography>
+              </Box>
+            </GridListItem>
           )}
           <GridListItem title="Task description" text={task.description} />
           <GridListItem title="Assigned by" text={task.author.displayName} />
