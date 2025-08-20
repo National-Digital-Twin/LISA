@@ -6,11 +6,11 @@ import { Box, Typography, Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { Task } from 'common/Task';
 import WidgetBase from './WidgetBase';
-import { useAllTasks } from '../../hooks/useTasks';
+import { useTasks } from '../../hooks/useTasks';
 import { useAuth } from '../../hooks';
 
 const TasksWidget = () => {
-  const { data: tasks, isLoading } = useAllTasks();
+  const { data: tasks, isLoading } = useTasks();
   const { user } = useAuth();
   const navigate = useNavigate();
 

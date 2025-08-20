@@ -16,18 +16,11 @@ import {
 import { addOptimisticTask } from './useTaskUpdates';
 
 export const useTasks = (incidentId?: string) =>
-  useQuery<Task[]>({
-    queryKey: [`incident/${incidentId}/tasks`],
-    queryFn: () => get(`/incident/${incidentId}/tasks`),
-    enabled: !!incidentId,
-    staleTime: 10_000 // 10 seconds
-  });
-
-export const useAllTasks = () =>
-  useQuery<Task[]>({
+  useQuery<Task[], Error>({
     queryKey: ['tasks'],
     queryFn: () => get('/tasks'),
-    staleTime: 10_000 // 10 seconds
+    staleTime: 10_000, // 10 seconds
+    select: (tasks) => (incidentId ? tasks.filter(t => t.incidentId === incidentId) : tasks)
   });
 
 type CreateTaskInput = {
@@ -50,7 +43,7 @@ export const useCreateTask = ({ author, incidentId }: { author: User; incidentId
       return post(`/incident/${task.incidentId}/tasks`, task);
     },
     onMutate: async ({ task }) => {
-      await queryClient.cancelQueries({ queryKey: [`incident/${task.incidentId}/tasks`] });
+      await queryClient.cancelQueries({ queryKey: ['tasks'] });
 
       const optimisticTask: Task = {
         ...task,
@@ -60,19 +53,16 @@ export const useCreateTask = ({ author, incidentId }: { author: User; incidentId
         attachments: task.attachments ?? [],
       };
 
-      const { previousTasks, previousAllTasks } = await addOptimisticTask(
+      const { previousTasks } = await addOptimisticTask(
         queryClient,
         optimisticTask
       );
 
-      return { previousTasks, previousAllTasks };
+      return { previousTasks };
     },
-    onError: (_error, variables, context) => {
+    onError: (_error, _variables, context) => {
       if (context?.previousTasks) {
-        queryClient.setQueryData([`incident/${variables.task.incidentId}/tasks`], context.previousTasks);
-      }
-      if (context?.previousAllTasks) {
-        queryClient.setQueryData(['tasks'], context.previousAllTasks);
+        queryClient.setQueryData(['tasks'], context.previousTasks);
       }
     },
     onSuccess: (_data, variables) => {
@@ -99,13 +89,13 @@ export const useUpdateTaskStatus = (incidentId?: string) => {
 
     onMutate: async ({ task }) => {
       await queryClient.cancelQueries({
-        queryKey: [`incident/${incidentId}/tasks`]
+        queryKey: ['tasks']
       });
 
-      const previousTasks = queryClient.getQueryData<Task[]>([`incident/${incidentId}/tasks`]);
+      const previousTasks = queryClient.getQueryData<Task[]>(['tasks']);
 
       queryClient.setQueryData<Task[]>(
-        [`incident/${incidentId}/tasks`],
+        ['tasks'],
         previousTasks?.map((t) => {
           if (t.id === task.id) {
             return {
@@ -122,7 +112,7 @@ export const useUpdateTaskStatus = (incidentId?: string) => {
 
     onError: (_err, _vars, context) => {
       if (context?.previousTasks) {
-        queryClient.setQueryData([`incident/${incidentId}/tasks`], context.previousTasks);
+        queryClient.setQueryData(['tasks'], context.previousTasks);
       }
     },
 
@@ -149,13 +139,13 @@ export const useUpdateTaskAssignee = (incidentId?: string) => {
 
     onMutate: async ({ task }) => {
       await queryClient.cancelQueries({
-        queryKey: [`incident/${incidentId}/tasks`]
+        queryKey: ['tasks']
       });
 
-      const previousTasks = queryClient.getQueryData<Task[]>([`incident/${incidentId}/tasks`]);
+      const previousTasks = queryClient.getQueryData<Task[]>(['tasks']);
 
       queryClient.setQueryData<Task[]>(
-        [`incident/${incidentId}/tasks`],
+        ['tasks'],
         previousTasks?.map((t) => {
           if (t.id === task.id) {
             return {
@@ -172,7 +162,7 @@ export const useUpdateTaskAssignee = (incidentId?: string) => {
 
     onError: (_err, _vars, context) => {
       if (context?.previousTasks) {
-        queryClient.setQueryData([`incident/${incidentId}/tasks`], context.previousTasks);
+        queryClient.setQueryData(['tasks'], context.previousTasks);
       }
     },
 

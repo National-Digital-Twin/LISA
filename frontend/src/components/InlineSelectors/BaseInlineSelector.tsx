@@ -2,25 +2,41 @@
 // © Crown Copyright 2025. This work has been developed by the National Digital Twin Programme
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
-import { useState, MouseEvent } from 'react';
+import { useState, MouseEvent, ReactNode } from 'react';
 import { Box, ButtonBase, Menu, MenuItem, ListItemIcon, ListItemText, Typography, Grid2 as Grid } from '@mui/material';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import { type IncidentStage } from 'common/IncidentStage';
-import StageMini from './StageMini';
-import Format from '../../utils/Format';
 
-const STAGES: IncidentStage[] = ['Monitoring', 'Response', 'Recovery', 'Closed'];
-
-type Props = {
-  value: IncidentStage;
-  onChange: (next: IncidentStage) => void;
-  disabled?: boolean;
+type RenderOptionResult = {
+  icon?: ReactNode;
+  label: string;
 };
 
-export default function StageSelectListItem({ value, onChange, disabled = false }: Readonly<Props>) {
+type BaseInlineSelectorProps<T> = {
+  label: string;
+  valueNode: ReactNode;
+  options: readonly T[];
+  onChange: (next: T) => void;
+  getOptionKey: (opt: T) => string;
+  renderOption: (opt: T) => RenderOptionResult;
+  isSelected: (opt: T) => boolean;
+  disabled?: boolean;
+  idSeed?: string;
+};
+
+export default function BaseInlineSelector<T>({
+  label,
+  valueNode,
+  options,
+  onChange,
+  getOptionKey,
+  renderOption,
+  isSelected,
+  disabled = false,
+  idSeed = label.toLowerCase().replace(/\s+/g, '-'),
+}: Readonly<BaseInlineSelectorProps<T>>) {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const open = Boolean(anchorEl);
-  const menuId = 'stage-select-menu';
+  const menuId = `${idSeed}-inline-select-menu`;
 
   const handleOpen = (e: MouseEvent<HTMLElement>) => setAnchorEl(e.currentTarget);
   const handleClose = () => setAnchorEl(null);
@@ -29,7 +45,7 @@ export default function StageSelectListItem({ value, onChange, disabled = false 
     <Grid component="li" size={{ xs: 12, md: 6 }}>
       <Box display="flex" flexDirection="column" gap={1}>
         <ButtonBase
-          color='primary'
+          color="primary"
           onClick={handleOpen}
           disabled={disabled}
           aria-haspopup="menu"
@@ -47,28 +63,35 @@ export default function StageSelectListItem({ value, onChange, disabled = false 
             color: 'primary.main',
           }}
         >
-          <Typography variant="h3" fontWeight="bold" component="span" sx={{ fontSize: 'inherit', lineHeight: 1, m: 0 }}>
-            Stage
+          <Typography
+            variant="h3"
+            fontWeight="bold"
+            component="span"
+            sx={{ fontSize: 'inherit', lineHeight: 1, m: 0 }}
+          >
+            {label}
           </Typography>
           <ArrowDropDownIcon fontSize="small" />
         </ButtonBase>
 
         <Box display="flex" alignItems="center" gap={1}>
-          <StageMini stage={value} size={12} />
-          <Typography variant="body1">{Format.incident.stage(value)}</Typography>
+          {valueNode}
         </Box>
 
         <Menu id={menuId} anchorEl={anchorEl} open={open} onClose={handleClose}>
-          {STAGES.map((s) => (
-            <MenuItem
-              key={s}
-              selected={s === value}
-              onClick={() => { onChange(s); handleClose(); }}
-            >
-              <ListItemIcon><StageMini stage={s} size={12} /></ListItemIcon>
-              <ListItemText primary={Format.incident.stage(s)} />
-            </MenuItem>
-          ))}
+          {options.map((opt) => {
+            const { icon, label } = renderOption(opt);
+            return (
+              <MenuItem
+                key={getOptionKey(opt)}
+                selected={isSelected(opt)}
+                onClick={() => { onChange(opt); handleClose(); }}
+              >
+                {icon ? <ListItemIcon>{icon}</ListItemIcon> : null}
+                <ListItemText primary={label} />
+              </MenuItem>
+            );
+          })}
         </Menu>
       </Box>
     </Grid>

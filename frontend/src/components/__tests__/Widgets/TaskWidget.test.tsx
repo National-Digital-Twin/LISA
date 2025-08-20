@@ -6,7 +6,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import type { Task } from 'common/Task';
 import { useNavigate } from 'react-router-dom';
 import TasksWidget from '../../Widgets/TaskWidget';
-import { useAllTasks } from '../../../hooks/useTasks';
+import { useTasks } from '../../../hooks/useTasks';
 import { useAuth } from '../../../hooks';
 
 jest.mock('../../../hooks/useTasks');
@@ -31,7 +31,7 @@ describe('TasksWidget', () => {
   });
 
   it('renders loading state', () => {
-    (useAllTasks as jest.Mock).mockReturnValue({
+    (useTasks as jest.Mock).mockReturnValue({
       data: undefined,
       isLoading: true
     });
@@ -52,7 +52,7 @@ describe('TasksWidget', () => {
     ];
 
 
-    (useAllTasks as jest.Mock).mockReturnValue({
+    (useTasks as jest.Mock).mockReturnValue({
       data: mockTasks,
       isLoading: false
     });
@@ -76,7 +76,7 @@ describe('TasksWidget', () => {
         { id: '1', status, assignee: { username: 'test.user1', displayName: 'Test user 1' } }
       ];
   
-      (useAllTasks as jest.Mock).mockReturnValue({
+      (useTasks as jest.Mock).mockReturnValue({
         data: mockTasks,
         isLoading: false
       });
@@ -90,7 +90,7 @@ describe('TasksWidget', () => {
   
 
   it('navigates to tasks when header arrow clicked', () => {
-    (useAllTasks as jest.Mock).mockReturnValue({
+    (useTasks as jest.Mock).mockReturnValue({
       data: [],
       isLoading: false
     });
