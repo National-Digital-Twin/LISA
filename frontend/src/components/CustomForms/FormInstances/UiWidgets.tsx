@@ -10,7 +10,7 @@ const selectWidget = (props: WidgetProps) => (
       component="span"
       id={`${props.id}-label`}
       sx={{
-        color: (props.rawErrors?.length ?? 0 > 0) ? '#EB2626' : 'initial',
+        color: (props.rawErrors?.length ?? 0) > 0 ? '#EB2626' : 'initial',
         fontWeight: 'bold',
         whiteSpace: 'normal'
       }}

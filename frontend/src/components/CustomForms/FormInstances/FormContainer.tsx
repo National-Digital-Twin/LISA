@@ -71,7 +71,7 @@ export const FormContainer = ({ entry, selectedForm, fields, onFieldChange }: Pr
     if (id) {
       const { formData } = data;
       const key = id.replace('root_', '');
-      if (formData && formData[key]) {
+      if (formData?.[key]) {
         onFieldChange(key, formData[key]);
       }
     }
