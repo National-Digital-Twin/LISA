@@ -14,7 +14,7 @@ import { useTasks, useUpdateTaskStatus, useUpdateTaskAssignee  } from '../hooks/
 import { GridListItem } from '../components/GridListItem';
 import AssigneeSelector from '../components/InlineSelectors/AssigneeSelector';
 import TaskStatusSelector from '../components/InlineSelectors/TaskStatusSelector';
-import { STATUS_LABELS, toStatusHumanReadable } from '../components/Tasks/utils/statusLabelMapper';
+import { toStatusHumanReadable } from '../components/Tasks/utils/statusLabelMapper';
 import { Format } from '../utils';
 import { logInfo } from '../utils/logger';
 import StatusMini from '../components/Tasks/StatusMini';

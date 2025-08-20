@@ -35,7 +35,6 @@ export default function CreateTaskPage() {
       { task, files },
       {
         onSuccess: (data) => {
-          console.log(`navigating to yr incident: ${incidentId}`)
           navigate(`/tasks/${data.id}`);
         },
         onError: (error) => {
