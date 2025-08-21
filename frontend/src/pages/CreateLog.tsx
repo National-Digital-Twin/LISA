@@ -11,15 +11,17 @@ import { v4 as uuidv4 } from 'uuid';
 import { type Referrer, type Incident } from 'common/Incident';
 import { Box, Typography, Grid2 as Grid, useMediaQuery } from '@mui/material';
 import { FormField, FormFooter } from '../components/Form';
-import { useCreateIncident } from '../hooks';
+import { useCreateIncident, useAuth } from '../hooks';
 import { Form, Incident as IncidentUtil, Validate } from '../utils';
 import { type FieldValueType, type ValidationError } from '../utils/types';
 import { PageTitle } from '../components';
 import PageWrapper from '../components/PageWrapper';
 import theme from '../theme';
+import { isAdmin } from '../utils/userRoles';
 
 const CreateLog = () => {
   const { createIncident } = useCreateIncident();
+  const { user } = useAuth();
 
   const [incident, setIncident] = useState<Partial<Incident>>({
     stage: 'Monitoring',
@@ -30,6 +32,12 @@ const CreateLog = () => {
   const [showValidationErrors, setShowValidationErrors] = useState<boolean>(false);
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!isAdmin(user.current)) {
+      navigate('/');
+    }
+  }, [user.current, navigate]);
 
   // Go back to where we've just come from.
   const onCancel = () => navigate(-1);

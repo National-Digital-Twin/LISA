@@ -5,7 +5,7 @@
 // Global imports
 import { Incident } from 'common/Incident';
 import { IncidentTypes } from 'common/IncidentTypes';
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 // Local imports
@@ -14,6 +14,7 @@ import {
   Button,
   Typography
 } from '@mui/material';
+import AddCircleIcon from '@mui/icons-material/AddCircle';
 
 import { PageTitle } from '../components';
 import DataList, { ListRow } from '../components/DataList';
@@ -30,12 +31,24 @@ import {
   incidentSort
 } from '../components/SortFilter/schemas/incident-schema';
 import { SortAndFilter } from '../components/SortFilter/SortAndFilter';
-import { useIncidents } from '../hooks';
+import { useIncidents, useAuth } from '../hooks';
 import { Format } from '../utils';
+import { isAdmin } from '../utils/userRoles';
 
-const Incidents = () => {
+interface IncidentsProps {
+  isManaging?: boolean;
+}
+
+const Incidents = ({ isManaging = false }: Readonly<IncidentsProps>) => {
   const query = useIncidents();
   const navigate = useNavigate();
+  const { user } = useAuth();
+
+  useEffect(() => {
+    if (isManaging && !isAdmin(user.current)) {
+      navigate('/');
+    }
+  }, [isManaging, user.current, navigate]);
 
   const incidents = query.data;
 
@@ -175,6 +188,7 @@ const Incidents = () => {
         }}
       >
         <Box
+          data-testid="incidents-header"
           sx={{
             display: 'flex',
             alignItems: 'center',
@@ -183,23 +197,61 @@ const Incidents = () => {
             textDecoration: 'none'
           }}
         >
-          <PageTitle title="Incidents" />
-          <Button
-            color="primary"
-            variant="contained"
-            onClick={handleOpenFilters}
-            size="small"
-            sx={{
-              minWidth: '140px',
-              height: '32px'
-            }}
-          >
-            Sort & Filter{activeFilterCount > 0 ? ` (${activeFilterCount})` : ''}
-          </Button>
+          <PageTitle title={isManaging ? "Manage incidents" : "Incidents"} />
+          {!isManaging && (
+            <Button
+              color="primary"
+              variant="contained"
+              onClick={handleOpenFilters}
+              size="small"
+              sx={{
+                minWidth: '140px',
+                height: '32px'
+              }}
+            >
+              Sort & Filter{activeFilterCount > 0 ? ` (${activeFilterCount})` : ''}
+            </Button>
+          )}
         </Box>
       </Box>
 
       <PageWrapper>
+        {isManaging && (
+          <Box
+            data-testid="incidents-management-buttons"
+            sx={{
+              display: 'flex',
+              gap: 2,
+              flexWrap: 'wrap',
+              justifyContent: 'flex-end',
+              mb: 2
+            }}
+          >
+            <Button
+              variant="contained"
+              startIcon={<AddCircleIcon />}
+              onClick={() => navigate('/createlog')}
+              color="primary"
+              sx={{
+                flex: { xs: 1, sm: '0 0 auto' },
+                maxWidth: { sm: '200px' }
+              }}
+            >
+              Add incident
+            </Button>
+            <Button
+              variant="contained"
+              onClick={handleOpenFilters}
+              color="primary"
+              sx={{
+                flex: { xs: 1, sm: '0 0 auto' },
+                maxWidth: { sm: '200px' }
+              }}
+            >
+              Sort & Filter{activeFilterCount > 0 ? ` (${activeFilterCount})` : ''}
+            </Button>
+          </Box>
+        )}
 
         <Box
           sx={{
