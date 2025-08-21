@@ -53,6 +53,7 @@ const AppWrapper = () => {
         { path: 'files/:incidentId', element: <Files /> },
         { path: 'notifications', element: <Notifications /> },
         { path: 'settings', element: <Settings /> },
+        { path: 'settings/incidents', element: <Incidents isManaging={true} /> },
         { path: 'settings/my-profile', element: <MyProfile /> },
         { path: 'settings/users', element: <AdminUserList /> },
         { path: 'settings/user-profile', element: <AdminViewUser /> },

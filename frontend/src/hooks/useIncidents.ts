@@ -3,7 +3,6 @@
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
 // Global imports
-import { v4 as uuidV4 } from 'uuid';
 import { QueryClient, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 // Local imports
@@ -91,7 +90,6 @@ export const useCreateIncident = () => {
       const previousIncidents = queryClient.getQueryData<Incident[]>(['incidents']);
       const newIncidentOffline = {
         ...newIncident,
-        id: uuidV4(),
         offline: true
       };
       queryClient.setQueryData<Incident[]>(
