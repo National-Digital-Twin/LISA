@@ -2,15 +2,13 @@
 // © Crown Copyright 2025. This work has been developed by the National Digital Twin Programme
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
-import { ReactNode } from 'react';
+import { PropsWithChildren } from 'react';
 import { Box, Typography } from '@mui/material';
 import { Link } from 'react-router-dom';
 
-type InfoItemProps = {
-  label: string;
-  children: ReactNode;
-  mb?: number;
-};
+
+type InfoItemProps = Readonly<PropsWithChildren<{ label: string; mb?: number }>>;
+type TaskLinkProps = Readonly<PropsWithChildren<{ taskId?: string }>>;
 
 export function InfoItem({ label, children, mb = 2 }: InfoItemProps) {
   return (
@@ -30,25 +28,11 @@ export function InfoItem({ label, children, mb = 2 }: InfoItemProps) {
 export function TaskLink({
   taskId,
   children,
-}: {
-  taskId: string | undefined;
-  children: ReactNode;
-}) {
+}: TaskLinkProps) {
   if (!taskId) return <>{children}</>;
   return (
     <Typography component={Link} to={`/tasks/${taskId}`} color="primary" fontWeight="bold">
       {children}
     </Typography>
   );
-}
-
-// Normalise details fields between "created*" and "changed*"
-export function getTaskIdentity(details?: Record<string, unknown>) {
-  const id =
-    (details?.createdTaskId as string | undefined) ??
-    (details?.changedTaskId as string | undefined);
-  const name =
-    (details?.createdTaskName as string | undefined) ??
-    (details?.changedTaskName as string | undefined);
-  return { id, name };
 }
