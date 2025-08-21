@@ -69,11 +69,12 @@ export const useCreateTask = ({ author, incidentId }: { author: User; incidentId
       const taskId = variables.task.id;
       const taskName = variables.task.name;
       const taskIncidentId = variables.task.incidentId;
+      const taskAssignee = variables.task.assignee.displayName;
 
-      if (!taskIncidentId || !taskId || !taskName) return;
+      if (!taskIncidentId || !taskId || !taskName || !taskAssignee) return;
 
       const logEntry = {
-        ...createLogEntryFromTaskCreation(taskId, taskName, taskIncidentId)
+        ...createLogEntryFromTaskCreation(taskId, taskName, taskAssignee, taskIncidentId)
       } as Omit<LogEntry, 'id' | 'author'>;
       createLogEntry({ logEntry });
     }

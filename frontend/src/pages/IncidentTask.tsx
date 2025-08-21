@@ -138,8 +138,23 @@ const IncidentTask = () => {
             <GridListItem title="Assigned to" text={task.assignee.displayName} />
           )}
           <GridListItem title="Date and time recorded" text={Format.dateAndTimeMobile(task.createdAt)} />
-          <GridListItem title="Location" text="PLACEHOLDER" />
-          <GridListItem title="Attachments" text="PLACEHOLDER" />
+          <Box
+            component={Grid}
+            size={{ xs: 12, md: 6 }}
+            aria-disabled
+            sx={{ '& .MuiTypography-root': { color: 'text.disabled' } }}
+          >
+            <GridListItem title="Location" text="(Coming soon)" />
+          </Box>
+
+          <Box
+            component={Grid}
+            size={{ xs: 12, md: 6 }}
+            aria-disabled
+            sx={{ '& .MuiTypography-root': { color: 'text.disabled' } }}
+          >
+            <GridListItem title="Attachments" text="(Coming soon)" />
+          </Box>
 
           <Typography component={Link} to={`/logbook/${task.incidentId}?taskId=${task.id}`} variant="body1">
               View log entry

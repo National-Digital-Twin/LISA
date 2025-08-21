@@ -31,6 +31,7 @@ const Home = () => {
               variant="contained"
               startIcon={<AddCircleIcon />}
               onClick={handleOnAddNew}
+              disabled={true}
             >
               Add new
             </Button>
