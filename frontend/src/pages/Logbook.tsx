@@ -105,7 +105,7 @@ const Logbook = () => {
       (e) => e.details?.createdTaskId && e.details.createdTaskId === taskId
     );
   
-    if (match && match.id) {
+    if (match?.id) {
       usedTaskIdRef.current = taskId;
       navigate(`#${match.id}`, { replace: true });
     }
