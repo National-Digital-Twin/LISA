@@ -2,8 +2,8 @@
 // © Crown Copyright 2025. This work has been developed by the National Digital Twin Programme
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
-import { MouseEvent, useEffect, useMemo, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { MouseEvent, useEffect, useMemo, useRef, useState } from 'react';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { Box, Button, IconButton, Menu, MenuItem, Typography } from '@mui/material';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
@@ -29,7 +29,7 @@ import { logInfo } from '../utils/logger';
 
 // Sort & Filter schema + types
 import { SortAndFilter } from '../components/SortFilter/SortAndFilter';
-import { buildLogFilters, logSort } from '../components/SortFilter/schemas/log-schema';
+import { buildLogFilters, logSort, TASK_TYPES } from '../components/SortFilter/schemas/log-schema';
 import { type QueryState } from '../components/SortFilter/filter-types';
 import { useFormTemplates } from '../hooks/Forms/useFormTemplates';
 import { getFromAndToFromTimeSelection } from '../components/SortFilter/filter-utils';
@@ -46,7 +46,9 @@ const Logbook = () => {
   const [adding, setAdding] = useState<boolean>(false);
   const { isMobile } = useResponsive();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
+  const usedTaskIdRef = useRef<string | null>(null);
 
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [queryState, setQueryState] = useState<QueryState>({
@@ -94,6 +96,20 @@ const Logbook = () => {
       clearPolling();
     };
   }, [isOnline, startPolling, clearPolling]);
+
+  useEffect(() => {
+    const taskId = searchParams.get('taskId');
+    if (!taskId || usedTaskIdRef.current === taskId) return;
+  
+    const match = (logEntries ?? []).find(
+      (e) => e.details?.createdTaskId && e.details.createdTaskId === taskId
+    );
+  
+    if (match?.id) {
+      usedTaskIdRef.current = taskId;
+      navigate(`#${match.id}`, { replace: true });
+    }
+  }, [searchParams, logEntries, navigate]);
 
   const incident = query?.data?.find((inc) => inc.id === incidentId);
 
@@ -193,8 +209,13 @@ const Logbook = () => {
       if (!raw) return [];
 
       const id = toId(raw);
-      const ids: string[] = [id];
+      const ids: string[] = [];
 
+      if (id) {
+        ids.push(id);
+        if (TASK_TYPES.has(id)) ids.push('task');
+      }
+    
       return ids;
     };
 
