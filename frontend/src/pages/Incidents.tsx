@@ -5,27 +5,20 @@
 // Global imports
 import { Incident } from 'common/Incident';
 import { IncidentTypes } from 'common/IncidentTypes';
-import { useMemo, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useMemo, useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 // Local imports
 import {
   Box,
   Button,
-  Card,
-  CardContent,
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
   Typography
 } from '@mui/material';
-
 import AddCircleIcon from '@mui/icons-material/AddCircle';
+
 import { PageTitle } from '../components';
+import DataList, { ListRow } from '../components/DataList';
+import StageMini from '../components/Stage/StageMini';
 import PageWrapper from '../components/PageWrapper';
 import { QueryState } from '../components/SortFilter/filter-types';
 import {
@@ -38,21 +31,26 @@ import {
   incidentSort
 } from '../components/SortFilter/schemas/incident-schema';
 import { SortAndFilter } from '../components/SortFilter/SortAndFilter';
-import Stage from '../components/Stage';
-import { useIncidents } from '../hooks';
-import { useResponsive } from '../hooks/useResponsiveHook';
+import { useIncidents, useAuth } from '../hooks';
 import { Format } from '../utils';
+import { isAdmin } from '../utils/userRoles';
 
-const Incidents = () => {
-  const { isMobile } = useResponsive();
+interface IncidentsProps {
+  isManaging?: boolean;
+}
+
+const Incidents = ({ isManaging = false }: Readonly<IncidentsProps>) => {
   const query = useIncidents();
   const navigate = useNavigate();
+  const { user } = useAuth();
+
+  useEffect(() => {
+    if (isManaging && !isAdmin(user.current)) {
+      navigate('/');
+    }
+  }, [isManaging, user.current, navigate]);
 
   const incidents = query.data;
-
-  const onAddIncident = () => {
-    navigate('/createlog');
-  };
 
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [queryState, setQueryState] = useState<QueryState>({
@@ -105,8 +103,6 @@ const Incidents = () => {
   );
 
   const handleOpenFilters = () => setFiltersOpen(true);
-
-  const tableHeaders = isMobile ? ['Incident'] : ['Incident name', 'Reported by', 'Date', 'Stage'];
 
   const getAuthor = (e: Incident) => {
     const a = e.reportedBy;
@@ -182,7 +178,7 @@ const Incidents = () => {
   }, [incidentFilters, incidents, queryState.sort?.by, queryState.values]);
 
   return (
-    <>
+    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       <Box
         sx={{
           width: '100%',
@@ -192,126 +188,110 @@ const Incidents = () => {
         }}
       >
         <Box
+          data-testid="incidents-header"
           sx={{
             display: 'flex',
             alignItems: 'center',
+            justifyContent: 'space-between',
             color: 'inherit',
-            textDecoration: 'none',
-            mr: 2
+            textDecoration: 'none'
           }}
         >
-          <PageTitle title="Incidents" />
+          <PageTitle title={isManaging ? "Manage incidents" : "Incidents"} />
+          {!isManaging && (
+            <Button
+              color="primary"
+              variant="contained"
+              onClick={handleOpenFilters}
+              size="small"
+              sx={{
+                minWidth: '140px',
+                height: '32px'
+              }}
+            >
+              Sort & Filter{activeFilterCount > 0 ? ` (${activeFilterCount})` : ''}
+            </Button>
+          )}
         </Box>
       </Box>
 
-      <PageWrapper backgroundColor="#f7f7f7">
+      <PageWrapper>
+        {isManaging && (
+          <Box
+            data-testid="incidents-management-buttons"
+            sx={{
+              display: 'flex',
+              gap: 2,
+              flexWrap: 'wrap',
+              justifyContent: 'flex-end',
+              mb: 2
+            }}
+          >
+            <Button
+              variant="contained"
+              startIcon={<AddCircleIcon />}
+              onClick={() => navigate('/createlog')}
+              color="primary"
+              sx={{
+                flex: { xs: 1, sm: '0 0 auto' },
+                maxWidth: { sm: '200px' }
+              }}
+            >
+              Add incident
+            </Button>
+            <Button
+              variant="contained"
+              onClick={handleOpenFilters}
+              color="primary"
+              sx={{
+                flex: { xs: 1, sm: '0 0 auto' },
+                maxWidth: { sm: '200px' }
+              }}
+            >
+              Sort & Filter{activeFilterCount > 0 ? ` (${activeFilterCount})` : ''}
+            </Button>
+          </Box>
+        )}
+
         <Box
           sx={{
-            display: 'flex',
-            gap: 2,
-            flexWrap: 'wrap',
-            justifyContent: 'flex-end'
+            backgroundColor: 'background.default'
           }}
         >
-          <Button
-            color="primary"
-            startIcon={<AddCircleIcon />}
-            variant="contained"
-            onClick={onAddIncident}
-            sx={{
-              flex: { xs: 1, sm: '0 0 auto' },
-              maxWidth: { sm: '200px' }
-            }}
-          >
-            Add New Incident
-          </Button>
-
-          <Button
-            color="primary"
-            variant="contained"
-            sx={{
-              flex: { xs: 1, sm: '0 0 auto' },
-              maxWidth: { sm: '200px' }
-            }}
-            onClick={handleOpenFilters}
-          >
-          Sort & Filter{activeFilterCount > 0 ? ` (${activeFilterCount})` : ''}
-          </Button>
+          {visibleIncidents.length === 0 ? (
+            <Box
+              sx={{
+                display: 'flex',
+                padding: 4,
+                flexDirection: 'column',
+                alignItems: 'center',
+                color: 'text.secondary'
+              }}
+            >
+              <Typography variant="h6">
+                {incidents?.length === 0 ? 'No incidents found' : 'No results found'}
+              </Typography>
+              <Typography variant="body2">
+                {incidents?.length === 0
+                  ? 'There are currently no incidents.'
+                  : 'There are no incidents matching your filters.'}
+              </Typography>
+            </Box>
+          ) : (
+            <DataList
+              items={visibleIncidents.map<ListRow>((incident) => ({
+                key: incident.id,
+                title: incident.name,
+                content: (
+                  <Typography variant="body2">{getAuthor(incident)}</Typography>
+                ),
+                footer: Format.date(incident.startedAt),
+                titleDot: <StageMini stage={incident.stage} />,
+                onClick: () => navigate(`/logbook/${incident.id}`)
+              }))}
+            />
+          )}
         </Box>
-
-        <Card variant="outlined" sx={{ borderRadius: 2 }}>
-          <CardContent>
-            <TableContainer sx={{ boxShadow: 0 }} component={Paper}>
-              <Table>
-                <TableHead sx={{ backgroundColor: 'background.default' }}>
-                  <TableRow>
-                    {tableHeaders.map((value) => (
-                      <TableCell key={value} align="left">
-                        <Typography variant="body1" fontWeight="600" padding={0} margin={0}>
-                          {value}
-                        </Typography>
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {visibleIncidents.map((incident) => {
-                    const { id, name, reportedBy, startedAt } = incident;
-                    return isMobile ? (
-                      <TableRow key={id}>
-                        <TableCell width="70%">
-                          <Box display="flex" flexDirection="column" gap="0.3rem">
-                            <Typography
-                              component={Link}
-                              to={`/logbook/${id}`}
-                              variant="body1"
-                              color="primary"
-                              fontWeight="bold"
-                            >
-                              {name}
-                            </Typography>
-
-                            <Typography variant="body2">{reportedBy?.username}</Typography>
-                            <Typography variant="body2">{Format.date(startedAt)}</Typography>
-
-                            <Box>
-                              <Stage
-                                label={Format.incident.stage(incident.stage).toUpperCase()}
-                                stage={incident.stage}
-                              />
-                            </Box>
-                          </Box>
-                        </TableCell>
-                      </TableRow>
-                    ) : (
-                      <TableRow key={id}>
-                        <TableCell>
-                          <Typography
-                            component={Link}
-                            to={`/logbook/${id}`}
-                            variant="body1"
-                            color="primary"
-                            fontWeight="bold"
-                          >
-                            {name}
-                          </Typography>
-                        </TableCell>
-                        <TableCell>{reportedBy?.username}</TableCell>
-                        <TableCell>{Format.date(startedAt)}</TableCell>
-                        <TableCell>
-                          <Stage
-                            label={Format.incident.stage(incident.stage).toUpperCase()}
-                            stage={incident.stage}
-                          />
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </CardContent>
-        </Card>
         <SortAndFilter
           open={filtersOpen}
           onClose={() => setFiltersOpen(false)}
@@ -324,7 +304,7 @@ const Incidents = () => {
           }}
         />
       </PageWrapper>
-    </>
+    </Box>
   );
 };
 
