@@ -20,7 +20,9 @@ export const EntityOptionsContainer = ({ entityType, data, errors }: Props) => {
     <Box>
       {entityOptions.map((entityOption, index) => (
         <Box key={data[index].id}>
-          {entityOption}
+          <Box sx={{ py: 0.8 }}>
+            {entityOption}
+          </Box>
           <EntityDivider />
         </Box>
       ))}
