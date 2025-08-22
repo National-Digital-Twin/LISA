@@ -4,7 +4,7 @@
 
 import { MouseEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
-import { Box, Button, IconButton, Menu, MenuItem, Typography } from '@mui/material';
+import { Box, Button, Divider, IconButton, Menu, MenuItem, Typography } from '@mui/material';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { v4 as uuidV4 } from 'uuid';
@@ -100,11 +100,11 @@ const Logbook = () => {
   useEffect(() => {
     const taskId = searchParams.get('taskId');
     if (!taskId || usedTaskIdRef.current === taskId) return;
-  
+
     const match = (logEntries ?? []).find(
       (e) => e.details?.createdTaskId && e.details.createdTaskId === taskId
     );
-  
+
     if (match?.id) {
       usedTaskIdRef.current = taskId;
       navigate(`#${match.id}`, { replace: true });
@@ -115,6 +115,9 @@ const Logbook = () => {
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
+
+  const [addMenuAnchorEl, setAddMenuAnchorEl] = useState<null | HTMLElement>(null);
+  const addMenuOpen = Boolean(addMenuAnchorEl);
 
   const handleClick = (event: MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -127,6 +130,14 @@ const Logbook = () => {
   const handleOverview = () => {
     handleClose();
     navigate(`/incident/${incident?.id}`);
+  };
+
+  const handleAddMenuClick = (event: MouseEvent<HTMLElement>) => {
+    setAddMenuAnchorEl(event.currentTarget);
+  };
+
+  const handleAddMenuClose = () => {
+    setAddMenuAnchorEl(null);
   };
 
   const onCancel = () => {
@@ -215,7 +226,7 @@ const Logbook = () => {
         ids.push(id);
         if (TASK_TYPES.has(id)) ids.push('task');
       }
-    
+
       return ids;
     };
 
@@ -388,7 +399,7 @@ const Logbook = () => {
               variant="contained"
               size={isMobile ? 'medium' : 'large'}
               startIcon={<AddCircleIcon />}
-              onClick={onAddEntryClick}
+              onClick={handleAddMenuClick}
               sx={{ flex: 1 }}
             >
               Add new
@@ -404,6 +415,41 @@ const Logbook = () => {
             </Button>
           </Box>
         )}
+
+        <Menu
+          anchorEl={addMenuAnchorEl}
+          open={addMenuOpen}
+          onClose={handleAddMenuClose}
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'left'
+          }}
+          transformOrigin={{
+            vertical: 'top',
+            horizontal: 'left'
+          }}
+          slotProps={{
+            paper: {
+              sx: {
+                minWidth: 200
+              }
+            }
+          }}
+        >
+          <MenuItem onClick={() => {
+            handleAddMenuClose();
+            onAddEntryClick();
+          }}>
+            <Typography sx={{ fontWeight: 'bold' }}>ENTRY</Typography>
+          </MenuItem>
+          <Divider />
+          <MenuItem onClick={() => {
+            handleAddMenuClose();
+            navigate(`/tasks/create/${incidentId}`);
+          }}>
+            <Typography sx={{ fontWeight: 'bold' }}>TASK</Typography>
+          </MenuItem>
+        </Menu>
       </PageTitle>
 
       {adding && (
