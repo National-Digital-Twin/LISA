@@ -85,7 +85,10 @@ const AddEntry = ({
       ...(getSortedEntriesWithDisplaySequence(false, entries)?.map((e) =>
         Format.mentionable.entry(e)
       ) ?? []),
-      ...(users?.filter((user) => user.displayName).map(Format.mentionable.user) ?? []),
+      ...(users
+        ?.filter((user) => user.displayName)
+        .sort((a, b) => a.displayName.localeCompare(b.displayName))
+        .map(Format.mentionable.user) ?? []),
       ...selectedFiles.map((file) =>
         Format.mentionable.attachment({ name: file.name, type: 'File' })
       ),

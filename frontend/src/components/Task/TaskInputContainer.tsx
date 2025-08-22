@@ -114,6 +114,7 @@ export const TaskInputContainer = ({
   const assigneeOptions = useMemo(() => {
     return users
       ?.filter((user) => user.displayName)
+      .sort((a, b) => a.displayName.localeCompare(b.displayName))
       .map((user) => ({ value: user.username, label: user.displayName }));
   }, [users]);
 

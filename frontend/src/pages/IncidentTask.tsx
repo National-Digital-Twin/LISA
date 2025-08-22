@@ -101,7 +101,9 @@ const TaskContent = ({ header, task, users }: Readonly<TaskContentProps>) => {
           {canUpdateTask ? (
             <AssigneeSelector
               value={task.assignee}
-              availableValues={users?.filter((u) => u.displayName && u.username !== user.current?.username) ?? []}
+              availableValues={users
+                ?.filter((u) => u.displayName && u.username !== user.current?.username)
+                .sort((a, b) => a.displayName.localeCompare(b.displayName)) ?? []}
               onChange={onChangeAssignee}
             />
           ) : (
