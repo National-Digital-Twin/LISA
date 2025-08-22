@@ -18,6 +18,7 @@ const TasksWidget = () => {
 
   const toDoCount = tasks?.filter((t: Task) => t.status === 'ToDo' && (currentUsername && t.assignee.username === currentUsername)).length ?? 0;
   const inProgressCount = tasks?.filter((t: Task) => t.status === 'InProgress' && (currentUsername && t.assignee.username === currentUsername)).length ?? 0;
+  const overDueCount = 0;
 
   const onNavigateToDo = () => navigate('/tasks?mine=true&status=ToDo');
   const onNavigateInProgress = () => navigate('/tasks?mine=true&status=InProgress');
@@ -87,8 +88,8 @@ const TasksWidget = () => {
         <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
           {renderCount(toDoCount, onNavigateToDo)}
           {renderCount(inProgressCount, onNavigateInProgress)}
-          <Box flex={1} textAlign="center">
-            <Typography variant="h5" sx={{ visibility: 'hidden' }}>0</Typography>
+          <Box flex={1} textAlign="center" sx={{ color: 'lightgrey' }}>
+            {renderCount(overDueCount, () => { return false; })}
           </Box>
         </Box>
 
