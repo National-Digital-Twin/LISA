@@ -19,6 +19,7 @@ import {
   useIncidents,
   useLogEntries,
   useLogEntriesUpdates,
+  useMenu,
 } from '../hooks';
 import { Format } from '../utils';
 import { type OnCreateEntry } from '../utils/handlers';
@@ -111,33 +112,23 @@ const Logbook = () => {
     }
   }, [searchParams, logEntries, navigate]);
 
+  useEffect(() => {
+    const addParam = searchParams.get('add');
+    if (addParam === 'entry') {
+      setAdding(true);
+      // Clean up URL
+      navigate(`${window.location.pathname}${window.location.hash}`, { replace: true });
+    }
+  }, [searchParams, navigate]);
+
   const incident = query?.data?.find((inc) => inc.id === incidentId);
 
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const open = Boolean(anchorEl);
-
-  const [addMenuAnchorEl, setAddMenuAnchorEl] = useState<null | HTMLElement>(null);
-  const addMenuOpen = Boolean(addMenuAnchorEl);
-
-  const handleClick = (event: MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
+  const optionsMenu = useMenu();
+  const addMenu = useMenu();
 
   const handleOverview = () => {
-    handleClose();
+    optionsMenu.handleClose();
     navigate(`/incident/${incident?.id}`);
-  };
-
-  const handleAddMenuClick = (event: MouseEvent<HTMLElement>) => {
-    setAddMenuAnchorEl(event.currentTarget);
-  };
-
-  const handleAddMenuClose = () => {
-    setAddMenuAnchorEl(null);
   };
 
   const onCancel = () => {
@@ -363,13 +354,13 @@ const Logbook = () => {
               </Typography>
             </Box>
 
-            <IconButton aria-label="More options" onClick={handleClick}>
+            <IconButton aria-label="More options" onClick={optionsMenu.handleOpen}>
               <MoreVertIcon />
             </IconButton>
             <Menu
-              anchorEl={anchorEl}
-              open={open}
-              onClose={handleClose}
+              anchorEl={optionsMenu.anchorEl}
+              open={optionsMenu.open}
+              onClose={optionsMenu.handleClose}
               anchorOrigin={{
                 vertical: 'bottom',
                 horizontal: 'right'
@@ -399,7 +390,7 @@ const Logbook = () => {
               variant="contained"
               size={isMobile ? 'medium' : 'large'}
               startIcon={<AddCircleIcon />}
-              onClick={handleAddMenuClick}
+              onClick={addMenu.handleOpen}
               sx={{ flex: 1 }}
             >
               Add new
@@ -417,9 +408,9 @@ const Logbook = () => {
         )}
 
         <Menu
-          anchorEl={addMenuAnchorEl}
-          open={addMenuOpen}
-          onClose={handleAddMenuClose}
+          anchorEl={addMenu.anchorEl}
+          open={addMenu.open}
+          onClose={addMenu.handleClose}
           anchorOrigin={{
             vertical: 'bottom',
             horizontal: 'left'
@@ -437,14 +428,14 @@ const Logbook = () => {
           }}
         >
           <MenuItem onClick={() => {
-            handleAddMenuClose();
+            addMenu.handleClose();
             onAddEntryClick();
           }}>
             <Typography sx={{ fontWeight: 'bold' }}>ENTRY</Typography>
           </MenuItem>
           <Divider />
           <MenuItem onClick={() => {
-            handleAddMenuClose();
+            addMenu.handleClose();
             navigate(`/tasks/create/${incidentId}`);
           }}>
             <Typography sx={{ fontWeight: 'bold' }}>TASK</Typography>

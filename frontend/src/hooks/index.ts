@@ -11,6 +11,7 @@ import { useNotifications, useReadNotification } from './useNotifications';
 import { useOutsideClick } from './useOutsideClick';
 import { useTasks, useUpdateTaskAssignee, useUpdateTaskStatus } from './useTasks';
 import { useToast, useToastEntries } from './useToasts';
+import { useMenu } from './useMenu';
 
 export {
   useAuth,
@@ -28,5 +29,6 @@ export {
   useUsers,
   useOutsideClick,
   useToast,
-  useToastEntries
+  useToastEntries,
+  useMenu
 };
