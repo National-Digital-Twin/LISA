@@ -135,33 +135,52 @@ const AdminUserList = () => {
 
 
         <TableContainer component={Card} variant="outlined" sx={{ borderRadius: 2 }}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell sx={visuallyHidden}>User</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {visibleUsers.map((user) => (
-                <TableRow key={user.email}>
-                  <TableCell>
-                    <Typography
-                      variant="body1"
-                      color="primary"
-                      fontWeight="bold"
-                      component={Link}
-                      to={`/settings/user-profile?user=${encodeURIComponent(user.email || '')}`}
-                    >
-                      {user.displayName}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      {user.email?.split('@')[1] || ''}
-                    </Typography>
-                  </TableCell>
+          {visibleUsers.length === 0 ? (
+            <Box
+              sx={{
+                display: 'flex',
+                padding: 4,
+                flexDirection: 'column',
+                alignItems: 'center',
+                color: 'text.secondary'
+              }}
+            >
+              <Typography variant="h6">
+                No results found
+              </Typography>
+              <Typography variant="body2">
+                There are no users matching your filters.
+              </Typography>
+            </Box>
+          ) : (
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell sx={visuallyHidden}>User</TableCell>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHead>
+              <TableBody>
+                {visibleUsers.map((user) => (
+                  <TableRow key={user.email}>
+                    <TableCell>
+                      <Typography
+                        variant="body1"
+                        color="primary"
+                        fontWeight="bold"
+                        component={Link}
+                        to={`/settings/user-profile?user=${encodeURIComponent(user.email || '')}`}
+                      >
+                        {user.displayName}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        {user.email?.split('@')[1] || ''}
+                      </Typography>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
         </TableContainer>
 
         <SortAndFilter
