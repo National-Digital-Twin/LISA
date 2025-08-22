@@ -99,7 +99,11 @@ const TaskContent = ({ header, task, users }: Readonly<TaskContentProps>) => {
           <GridListItem title="Task description" text={task.description} />
           <GridListItem title="Assigned by" text={task.author.displayName} />
           {canUpdateTask ? (
-            <AssigneeSelector value={task.assignee} availableValues={users?.filter((u) => u.username !== user.current?.username)} onChange={onChangeAssignee} />
+            <AssigneeSelector
+              value={task.assignee}
+              availableValues={users?.filter((u) => u.displayName && u.username !== user.current?.username) ?? []}
+              onChange={onChangeAssignee}
+            />
           ) : (
             <GridListItem title="Assigned to" text={task.assignee.displayName} />
           )}

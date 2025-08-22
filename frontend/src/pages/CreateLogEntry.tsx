@@ -65,7 +65,7 @@ export const CreateLogEntry = () => {
       ...(getSortedEntriesWithDisplaySequence(false, logEntries ?? [])?.map((e) =>
         Format.mentionable.entry(e)
       ) ?? []),
-      ...(users?.map(Format.mentionable.user) ?? []),
+      ...(users?.filter((user) => user.displayName).map(Format.mentionable.user) ?? []),
       ...selectedFiles.map((file) =>
         Format.mentionable.attachment({ name: file.name, type: 'File' })
       ),
