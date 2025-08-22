@@ -4,8 +4,8 @@
 
 import { Box, Grid2 as Grid, IconButton, Typography } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import { Link, useNavigate, useParams } from 'react-router-dom';
-import { TaskStatus } from 'common/Task';
+import { Link, NavigateFunction, useNavigate, useParams } from 'react-router-dom';
+import { Task, TaskStatus } from 'common/Task';
 import { User } from 'common/User';
 import { PageTitle } from '../components';
 import PageWrapper from '../components/PageWrapper';
@@ -19,64 +19,31 @@ import { Format } from '../utils';
 import { logInfo } from '../utils/logger';
 import StatusMini from '../components/Tasks/StatusMini';
 
-const IncidentTask = () => {
-  const { taskId } = useParams();
-  const { data: tasks } = useTasks();
-  const { users } = useUsers();
-  const navigate = useNavigate();
+const TaskFallback = ({ header, message }: Readonly<{ header: React.ReactNode, message: string }>) => {
+  return (
+    <>
+      {header}
+      <PageWrapper>
+        <Box sx={{ padding: 3 }}>
+          <Typography variant="body1">{message}</Typography>
+        </Box>
+      </PageWrapper>
+    </>
+  );
+};
 
-  const task = tasks?.find((task) => task.id === taskId);
+interface TaskContentProps {
+  header: React.ReactNode;
+  task: Task;
+  users: User[];
+}
 
-  const { mutate: updateStatus } = useUpdateTaskStatus(task?.incidentId);
-  const { mutate: updateAssignee } = useUpdateTaskAssignee(task?.incidentId);
-
+const TaskContent = ({ header, task, users }: Readonly<TaskContentProps>) => {
+  const { mutate: updateStatus } = useUpdateTaskStatus(task.incidentId);
+  const { mutate: updateAssignee } = useUpdateTaskAssignee(task.incidentId);
   const { user } = useAuth();
 
-  const header = (
-    <Box
-      sx={{
-        width: '100%',
-        backgroundColor: 'white',
-        paddingX: { xs: '1rem', md: '60px' },
-        paddingTop: '1.3rem'
-      }}
-    >
-      <Box
-        sx={{
-          display: 'flex',
-          alignItems: 'center',
-          color: 'inherit',
-          textDecoration: 'none',
-          mr: 2
-        }}
-      >
-        <PageTitle
-          title={task?.name ?? 'Task does not exist'}
-          titleStart={
-            <IconButton aria-label="Back" onClick={() => { navigate(-1) }} >
-              <ArrowBackIcon />
-            </IconButton>
-          }
-        />
-      </Box>
-    </Box>
-  );
-
-  if (!task) {
-    return (
-      <>
-        {header}
-        <PageWrapper>
-          <Box sx={{ padding: 3 }}>
-            <Typography variant="body1">Cannot find task.</Typography>
-          </Box>
-        </PageWrapper>
-      </>
-    );
-  }
-
   const onChangeAssignee = (newAssignee: User) => {
-    if (!task) return;
     updateAssignee(
       { task: { ...task, assignee: newAssignee } },
       {
@@ -87,7 +54,6 @@ const IncidentTask = () => {
   };
 
   const onChangeStatus = (newStatus: TaskStatus) => {
-    if (!task) return;
     updateStatus(
       { task: { ...task, status: newStatus } },
       {
@@ -97,7 +63,7 @@ const IncidentTask = () => {
     );
   };
 
-  const canUpdateTask = user.current?.username === task?.assignee?.username;
+  const canUpdateTask = user.current?.username === task.assignee?.username;
 
   return (
     <>
@@ -163,6 +129,54 @@ const IncidentTask = () => {
       </Box>
     </>
   );
+};
+
+const IncidentTask = () => {
+  const { taskId } = useParams();
+  const { data: tasks, isLoading } = useTasks();
+  const { users } = useUsers();
+  const navigate = useNavigate();
+
+  const renderHeader = (title: string, navigate: NavigateFunction) => (
+    <Box
+      sx={{
+        width: '100%',
+        backgroundColor: 'white',
+        paddingX: { xs: '1rem', md: '60px' },
+        paddingTop: '1.3rem'
+      }}
+    >
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          color: 'inherit',
+          textDecoration: 'none',
+          mr: 2
+        }}
+      >
+        <PageTitle
+          title={title}
+          titleStart={
+            <IconButton aria-label="Back" onClick={() => { navigate(-1) }} >
+              <ArrowBackIcon />
+            </IconButton>
+          }
+        />
+      </Box>
+    </Box>
+  );
+
+  if (isLoading || !tasks) {
+    return <TaskFallback header={renderHeader('Loading task...', navigate)} message="Loading task..." />;
+  }
+
+  const task = tasks.find((task) => task.id === taskId);
+  if (!task) {
+    return <TaskFallback header={renderHeader('No task found', navigate)} message="Cannot find task." />;
+  }
+
+  return <TaskContent header={renderHeader(task.name, navigate)} task={task} users={users ?? []} />;
 };
 
 export default IncidentTask;
