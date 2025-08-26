@@ -20,8 +20,8 @@
   "author": "NDTP",
   "license": "ISC",
   "devDependencies": {
-    "@cucumber/cucumber": "12.1.0",
-    "@playwright/test": "1.54.2",
+    "@cucumber/cucumber": "12.2.0",
+    "@playwright/test": "1.55.0",
     "@types/node": "24.3.0",
     "cross-env": "^10.0.0",
     "dotenv": "17.2.1",
@@ -33,7 +33,7 @@
     "winston": "^3.17.0"
   },
   "dependencies": {
-    "@faker-js/faker": "9.9.0",
+    "@faker-js/faker": "10.0.0",
     "chrome-launcher": "1.2.0",
     "unique-names-generator": "^4.7.1"
   }
