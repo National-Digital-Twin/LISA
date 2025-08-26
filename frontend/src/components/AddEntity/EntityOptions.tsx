@@ -13,9 +13,12 @@ import AssignmentTurnedInOutlinedIcon from '@mui/icons-material/AssignmentTurned
 import NotesOutlinedIcon from '@mui/icons-material/NotesOutlined';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import DrawIcon from '@mui/icons-material/Draw';
+import WarningAmberOutlinedIcon from '@mui/icons-material/WarningAmberOutlined';
+import AddCommentOutlinedIcon from '@mui/icons-material/AddCommentOutlined';
 import { ValidationError } from '../../utils/types';
 import { EntityOption } from './EntityOption';
 import { SituationReport } from 'common/LogEntryTypes/SituationReport';
+import { RelevantHazards } from 'common/LogEntryTypes/RiskAssessment/hazards/RelevantHazards';
 
 export type EntityOptionData = {
   id: string;
@@ -26,11 +29,15 @@ export type EntityOptionData = {
   supportedOffline?: boolean;
   icon?: ReactNode;
   label?: string;
+  removable?: boolean;
+  onRemove?: () => void;
 };
 
 const forms = (data: EntityOptionData[], errors: ValidationError[]) => {
   const descriptionOptionData = data.find((x) => x.id === 'description');
   const siteRepDetailsOptionData = data.find((x) => x.id === 'siteRepDetails');
+  const hazardsOptionData = data.filter((x) => x.id.includes('selectHazard'));
+  const addCommentsOptionData = data.find((x) => x.id === 'addComments');
   const fieldsOptionData = data.filter((x) => x.id.includes('field'));
   const dateAndTimeOptionData = data.find((x) => x.id === 'dateAndTime');
   const locationOptionData = data.find((x) => x.id === 'location');
@@ -52,6 +59,8 @@ const forms = (data: EntityOptionData[], errors: ValidationError[]) => {
         label={descriptionOptionData?.value ?? 'Add a description'}
         supportedOffline={!!descriptionOptionData?.supportedOffline}
         errored={!!errors.find((error) => error.fieldId === 'content')}
+        removable={!!descriptionOptionData.removable}
+        onRemove={descriptionOptionData.removable ? descriptionOptionData.onRemove! : () => {}}
       />
     ),
     siteRepDetailsOptionData && (
@@ -64,6 +73,38 @@ const forms = (data: EntityOptionData[], errors: ValidationError[]) => {
         value={siteRepDetailsOptionData?.value}
         supportedOffline={!!siteRepDetailsOptionData?.supportedOffline}
         errored={!!errors.some((error) => siteRepFieldIds.includes(error.fieldId))}
+        removable={!!siteRepDetailsOptionData.removable}
+        onRemove={
+          siteRepDetailsOptionData.removable ? siteRepDetailsOptionData.onRemove! : () => {}
+        }
+      />
+    ),
+    ...hazardsOptionData.map((hazardOptionData) => (
+      <EntityOption
+        key={`${hazardOptionData.id}-option`}
+        icon={<WarningAmberOutlinedIcon />}
+        onClick={hazardOptionData!.onClick}
+        required={!!hazardOptionData.required}
+        value={hazardOptionData.value}
+        label={hazardOptionData?.value ?? hazardOptionData.label!}
+        supportedOffline={!!hazardOptionData.supportedOffline}
+        errored={!!errors.some((error) => error.fieldId.includes(hazardOptionData.value ?? 'N/A'))}
+        removable={!!hazardOptionData.removable}
+        onRemove={hazardOptionData.removable ? hazardOptionData.onRemove! : () => {}}
+      />
+    )),
+    addCommentsOptionData && (
+      <EntityOption
+        key={`${addCommentsOptionData.id}-option`}
+        icon={<AddCommentOutlinedIcon />}
+        onClick={addCommentsOptionData!.onClick}
+        required={!!addCommentsOptionData.required}
+        value={addCommentsOptionData.value}
+        label={addCommentsOptionData.value ?? addCommentsOptionData.label!}
+        supportedOffline={!!addCommentsOptionData.supportedOffline}
+        errored={!!errors.find((x) => x.fieldId === 'content')}
+        removable={!!addCommentsOptionData.removable}
+        onRemove={addCommentsOptionData.removable ? addCommentsOptionData.onRemove! : () => {}}
       />
     ),
     ...fieldsOptionData.map((fieldOptionData) => (
@@ -79,9 +120,12 @@ const forms = (data: EntityOptionData[], errors: ValidationError[]) => {
           !!errors.find(
             (error) =>
               error.fieldId === fieldOptionData.id.split('-')?.[1] ||
-              error.fieldId === fieldOptionData.dependentId
+              error.fieldId === fieldOptionData.dependentId ||
+              error.fieldId === RelevantHazards.id
           )
         }
+        removable={!!fieldOptionData.removable}
+        onRemove={fieldOptionData.removable ? fieldOptionData.onRemove! : () => {}}
       />
     )),
     <EntityOption
@@ -93,6 +137,8 @@ const forms = (data: EntityOptionData[], errors: ValidationError[]) => {
       label={dateAndTimeOptionData?.value ?? 'Add date and time'}
       supportedOffline={!!dateAndTimeOptionData?.supportedOffline}
       errored={!!errors.find((error) => error.fieldId === 'dateTime')}
+      removable={!!dateAndTimeOptionData?.removable}
+      onRemove={dateAndTimeOptionData?.removable ? dateAndTimeOptionData.onRemove! : () => {}}
     />,
     <EntityOption
       key="location-option"
@@ -111,6 +157,8 @@ const forms = (data: EntityOptionData[], errors: ValidationError[]) => {
             error.fieldId === 'location.coordinates'
         )
       }
+      removable={!!locationOptionData?.removable}
+      onRemove={locationOptionData?.removable ? locationOptionData.onRemove! : () => {}}
     />,
     <EntityOption
       key="attachments-option"
@@ -121,6 +169,8 @@ const forms = (data: EntityOptionData[], errors: ValidationError[]) => {
       label={attachmentsOptionData?.value ?? 'Add attachement(s)'}
       supportedOffline={!!attachmentsOptionData?.supportedOffline}
       errored={false}
+      removable={!!attachmentsOptionData?.removable}
+      onRemove={attachmentsOptionData?.removable ? attachmentsOptionData.onRemove! : () => {}}
     />,
     <EntityOption
       key="sketch-option"
@@ -131,6 +181,8 @@ const forms = (data: EntityOptionData[], errors: ValidationError[]) => {
       label={sketchOptionData?.value ?? 'Add sketch'}
       supportedOffline={!!sketchOptionData?.supportedOffline}
       errored={false}
+      removable={!!sketchOptionData?.removable}
+      onRemove={sketchOptionData?.removable ? sketchOptionData.onRemove! : () => {}}
     />
   ].filter(Boolean);
 };
@@ -154,6 +206,8 @@ const tasks = (data: EntityOptionData[], errors: ValidationError[]) => {
         label={nameOptionData.value || 'Task name'}
         supportedOffline={!!nameOptionData.supportedOffline}
         errored={!!errors.find((error) => error.fieldId === 'task_name')}
+        removable={!!nameOptionData.removable}
+        onRemove={nameOptionData.removable ? nameOptionData.onRemove! : () => {}}
       />
     ),
     assigneeOptionData && (
@@ -166,6 +220,8 @@ const tasks = (data: EntityOptionData[], errors: ValidationError[]) => {
         label={assigneeOptionData.value || 'Assign to'}
         supportedOffline={!!assigneeOptionData.supportedOffline}
         errored={!!errors.find((error) => error.fieldId === 'task_assignee')}
+        removable={!!assigneeOptionData.removable}
+        onRemove={assigneeOptionData.removable ? assigneeOptionData.onRemove! : () => {}}
       />
     ),
     descriptionOptionData && (
@@ -178,6 +234,8 @@ const tasks = (data: EntityOptionData[], errors: ValidationError[]) => {
         label={descriptionOptionData.value || 'Add task description'}
         supportedOffline={!!descriptionOptionData.supportedOffline}
         errored={!!errors.find((error) => error.fieldId === 'task_description')}
+        removable={!!descriptionOptionData.removable}
+        onRemove={descriptionOptionData.removable ? descriptionOptionData.onRemove! : () => {}}
       />
     ),
     locationOptionData && (
@@ -190,6 +248,8 @@ const tasks = (data: EntityOptionData[], errors: ValidationError[]) => {
         label={locationOptionData.value || 'Add location(s)'}
         supportedOffline={!!locationOptionData.supportedOffline}
         errored={false}
+        removable={!!locationOptionData.removable}
+        onRemove={locationOptionData.removable ? locationOptionData.onRemove! : () => {}}
       />
     ),
     attachmentsOptionData && (
@@ -202,6 +262,8 @@ const tasks = (data: EntityOptionData[], errors: ValidationError[]) => {
         label={attachmentsOptionData.value || 'Add attachments'}
         supportedOffline={!!attachmentsOptionData.supportedOffline}
         errored={false}
+        removable={!!attachmentsOptionData.removable}
+        onRemove={attachmentsOptionData.removable ? attachmentsOptionData.onRemove! : () => {}}
       />
     ),
     sketchOptionData && (
@@ -214,6 +276,8 @@ const tasks = (data: EntityOptionData[], errors: ValidationError[]) => {
         label={sketchOptionData.value || 'Add sketch'}
         supportedOffline={!!sketchOptionData.supportedOffline}
         errored={false}
+        removable={!!sketchOptionData.removable}
+        onRemove={sketchOptionData.removable ? sketchOptionData.onRemove! : () => {}}
       />
     )
   ].filter(Boolean);
