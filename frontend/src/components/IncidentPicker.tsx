@@ -4,25 +4,9 @@
 
 import { Box, Typography } from '@mui/material';
 import { type Incident } from 'common/Incident';
-import { IncidentStage } from 'common/IncidentStage';
 import DataList, { type ListRow } from './DataList';
 import { Format } from '../utils';
-
-function StageDot({ stage }: Readonly<{ stage: IncidentStage }>) {
-  return (
-    <Box
-      sx={{
-        width: 12,
-        height: 12,
-        borderRadius: '50%',
-        backgroundColor: `stage.${stage.toLowerCase()}.secondary`,
-        border: '1px solid',
-        borderColor: `stage.${stage.toLowerCase()}.primary`,
-        flexShrink: 0
-      }}
-    />
-  );
-}
+import StageMini from './Stage/StageMini';
 
 type Props = {
   incidents: Incident[];
@@ -37,9 +21,9 @@ export default function IncidentPicker({
   const items: ListRow[] = incidents.map((i) => ({
     key: i.id,
     title: i.name,
-    titleDot: <StageDot stage={i.stage} />,
+    titleDot: <StageMini stage={i.stage} />,
     content: <Typography variant="body2">{Format.user(i.reportedBy)}</Typography>,
-    footer: Format.date(i.createdAt),
+    footer: Format.date(i.startedAt),
     onClick: () => onSelect(i)
   }));
 

@@ -16,7 +16,9 @@ export default function IncidentPickerPage() {
   const searchParams = new URLSearchParams(window.location.search);
   const next = searchParams.get('next');
 
-  const { data: incidents } = useIncidents();
+  const { data } = useIncidents();
+
+  const incidents = data?.filter((inc) => inc.stage !== 'Closed');
 
   return (
     <PageWrapper>
