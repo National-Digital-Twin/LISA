@@ -26,69 +26,66 @@ import ReactDOM from 'react-dom';
 import PersonIcon from '@mui/icons-material/Person';
 import ArticleIcon from '@mui/icons-material/Article';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
+import TaskIcon from '@mui/icons-material/Task';
 
 // Local imports
 import { type MentionableType, type Mentionable } from 'common/Mentionable';
 import { $createMentionNode } from './nodes/MentionNode';
 
+// longest triggers first for future key shortcuts
 const TRIGGERS = {
-  USER: '@',
-  LOG: '#',
-  FILE: '$'
+  USER: '@u',
+  LOG: '@l',
+  FILE: '@f',
+  TASK: '@t',
+  DEFAULT: '@'
 } as const;
 
 const TRIGGER_TO_TYPE: Record<string, MentionableType> = {
   [TRIGGERS.USER]: 'User',
   [TRIGGERS.LOG]: 'LogEntry',
-  [TRIGGERS.FILE]: 'File'
+  [TRIGGERS.FILE]: 'File',
+  [TRIGGERS.TASK]: 'Task'
 };
 
 const PUNCTUATION = '\\.,\\+\\*\\?\\$\\@\\|{}\\(\\)\\^\\-\\[\\]\\\\/!%\'"~=<>_:;';
 const VALID_CHARS = `[^${PUNCTUATION}\\s]`;
-const VALID_JOINS = [
-  '(?:',
-  '\\.[ |$]|',
-  ' |',
-  '[',
-  PUNCTUATION,
-  ']|',
-  ')'
-].join('');
+const VALID_JOINS = ['(?:', '\\.[ |$]|', ' |', '[', PUNCTUATION, ']|', ')'].join('');
 
 const LENGTH_LIMIT = 75;
 const SUGGESTION_LIST_LENGTH_LIMIT = 5;
 const LOOKUP_TIMEOUT = 100;
 
 function createTriggerRegex(trigger: string): RegExp {
-  return new RegExp([
-    '(^|\\s|\\()(',
-    '[',
-    trigger,
-    ']',
-    '((?:',
-    VALID_CHARS,
-    VALID_JOINS,
-    '){0,',
-    LENGTH_LIMIT,
-    '})',
-    ')$'
-  ].join(''));
+  return new RegExp(
+    [
+      '(^|\\s|\\()(',
+      '(',
+      trigger,
+      ')',
+      '((?:',
+      VALID_CHARS,
+      VALID_JOINS,
+      '){0,',
+      LENGTH_LIMIT,
+      '})',
+      ')$'
+    ].join('')
+  );
 }
 
 const lookupService = {
   search(
     data: Array<Mentionable>,
-    trigger: string,
-    searchString: string,
+    type: string,
+    searchString: string | null,
     callback: (results: Array<Mentionable>) => void
   ): void {
     setTimeout(() => {
-      const type = TRIGGER_TO_TYPE[trigger];
-      const match = searchString.trim().toLowerCase();
-      
-      const results = data.filter((mention) => 
-        mention.type === type && 
-        mention.label.toLowerCase().includes(match)
+      const match = searchString !== null ? searchString.trim().toLowerCase() : '';
+
+      const results = data.filter(
+        (mention) => mention.type === type && mention.label.toLowerCase().includes(match)
       );
       callback(results);
     }, LOOKUP_TIMEOUT);
@@ -96,35 +93,35 @@ const lookupService = {
 };
 
 function useMentionLookupService(
-  mentionables: Array<Mentionable>, 
-  trigger: string | null, 
+  mentionables: Array<Mentionable>,
+  type: MentionableType | null,
   mentionString: string | null
 ) {
   const [results, setResults] = useState<Array<Mentionable>>([]);
 
   useEffect(() => {
-    if (trigger == null || mentionString == null) {
+    if (type == null) {
       setResults([]);
       return;
     }
-    lookupService.search(mentionables, trigger, mentionString, setResults);
-  }, [mentionables, trigger, mentionString]);
+    lookupService.search(mentionables, type, mentionString, setResults);
+  }, [mentionables, type, mentionString]);
 
   return results;
 }
 
 function checkForMentions(text: string, minMatchLength: number): MenuTextMatch | null {
   const triggerList = Object.values(TRIGGERS);
-  
+
   const match = triggerList
-    .map(trigger => ({ trigger, regex: createTriggerRegex(trigger) }))
+    .map((trigger) => ({ trigger, regex: createTriggerRegex(trigger) }))
     .map(({ trigger, regex }) => ({ trigger, match: regex.exec(text) }))
     .find(({ match }) => match !== null);
-  
+
   if (match?.match) {
     const maybeLeadingWhitespace = match.match[1];
     const matchingString = match.match[3];
-    
+
     if (matchingString.length >= minMatchLength) {
       return {
         leadOffset: match.match.index + maybeLeadingWhitespace.length,
@@ -147,14 +144,16 @@ class MentionTypeaheadOption extends MenuOption {
 
   name: string;
 
-  trigger: string;
+  trigger: string | null;
+  map: boolean;
 
-  constructor(mention: Mentionable, trigger: string) {
+  constructor(mention: Mentionable, trigger: string | null, map: boolean) {
     super(mention.label);
     this.id = mention.id;
     this.type = mention.type;
     this.name = mention.label;
     this.trigger = trigger;
+    this.map = map;
   }
 }
 
@@ -163,7 +162,7 @@ function MentionsTypeaheadMenuItem({
   isSelected,
   onClick,
   onMouseEnter,
-  option,
+  option
 }: Readonly<{
   index: number;
   isSelected: boolean;
@@ -172,13 +171,13 @@ function MentionsTypeaheadMenuItem({
   option: MentionTypeaheadOption;
 }>) {
   const className = `item${isSelected ? ' selected' : ''}`;
-  
+
   const onKeyDown = (evt: KeyboardEvent) => {
     if (evt.key === 'Enter') {
       onClick();
     }
   };
-  
+
   const getIcon = () => {
     switch (option.type) {
       case 'User':
@@ -187,6 +186,8 @@ function MentionsTypeaheadMenuItem({
         return <ArticleIcon />;
       case 'File':
         return <AttachFileIcon />;
+      case 'Task':
+        return <TaskIcon />;
       default:
         return null;
     }
@@ -215,45 +216,69 @@ type MentionsPluginProps = {
   mentionables: Array<Mentionable>;
 };
 
-export default function MentionsPlugin({ mentionables }: Readonly<MentionsPluginProps>):
-  JSX.Element | null {
+export default function MentionsPlugin({
+  mentionables
+}: Readonly<MentionsPluginProps>): JSX.Element | null {
   const [editor] = useLexicalComposerContext();
   const [queryString, setQueryString] = useState<string | null>(null);
-  const [currentTrigger, setCurrentTrigger] = useState<string | null>(null);
+  const [currentFilter, setCurrentFilter] = useState<string | null>(null);
 
-  const results = useMentionLookupService(mentionables, currentTrigger, queryString);
+  // remove leading filter
+  const results = useMentionLookupService(
+    mentionables,
+    TRIGGER_TO_TYPE[currentFilter || TRIGGERS.DEFAULT],
+    queryString ? queryString.slice( 2) : ''
+  );
 
   const checkForSlashTriggerMatch = useBasicTypeaheadTriggerMatch('/', {
-    minLength: 0,
+    minLength: 0
   });
 
-  const options = useMemo(
-    () => results
-      .map((result) => new MentionTypeaheadOption(result, currentTrigger || TRIGGERS.USER))
-      .slice(0, SUGGESTION_LIST_LENGTH_LIMIT),
-    [results, currentTrigger],
+  const defaultOptions = [
+    new MentionTypeaheadOption({ id: '0', label: 'User', type: 'User' }, TRIGGERS.USER, true),
+    new MentionTypeaheadOption({ id: '1', label: 'File', type: 'File' }, TRIGGERS.FILE, true),
+    new MentionTypeaheadOption(
+      { id: '2', label: 'Log Entry', type: 'LogEntry' },
+      TRIGGERS.LOG,
+      true
+    ),
+    new MentionTypeaheadOption({ id: '3', label: 'Task', type: 'Task' }, TRIGGERS.TASK, true)
+  ];
+
+  const mentionOptions = useMemo(
+    () =>
+      results
+        .map((result) => new MentionTypeaheadOption(result, currentFilter, false))
+        .slice(0, SUGGESTION_LIST_LENGTH_LIMIT),
+    [results, currentFilter]
   );
+
+  const options = currentFilter !== TRIGGERS['DEFAULT'] ? mentionOptions : defaultOptions;
 
   const onSelectOption = useCallback(
     (
       selectedOption: MentionTypeaheadOption,
       nodeToReplace: TextNode | null,
-      closeMenu: () => void,
+      closeMenu: () => void
     ) => {
-      editor.update(() => {
-        const mentionNode = $createMentionNode(
-          selectedOption.id,
-          selectedOption.type,
-          selectedOption.name
-        );
-        if (nodeToReplace) {
-          nodeToReplace.replace(mentionNode);
-        }
-        mentionNode.select();
-        closeMenu();
-      });
+      if (selectedOption.map) {
+        setCurrentFilter(selectedOption.trigger);
+      } else {
+        editor.update(() => {
+          const mentionNode = $createMentionNode(
+            selectedOption.id,
+            selectedOption.type,
+            selectedOption.name
+          );
+          if (nodeToReplace) {
+            nodeToReplace.replace(mentionNode);
+          }
+          mentionNode.select();
+          closeMenu();
+        });
+      }
     },
-    [editor],
+    [editor]
   );
 
   const checkForMentionMatch = useCallback(
@@ -264,23 +289,23 @@ export default function MentionsPlugin({ mentionables }: Readonly<MentionsPlugin
       }
       const match = getPossibleQueryMatch(text);
       if (match) {
-        const trigger = match.replaceableString.charAt(0);
-        setCurrentTrigger(trigger);
+        const trigger = match.matchingString;
+        setCurrentFilter(trigger);
       }
       return match;
     },
-    [checkForSlashTriggerMatch, editor],
+    [checkForSlashTriggerMatch, editor]
   );
 
   const menuRenderFn = (
     anchorElementRef: { current?: HTMLElement | null },
     arg1: {
-      selectedIndex: number | null,
-      selectOptionAndCleanUp: (option: MentionTypeaheadOption) => unknown,
-      setHighlightedIndex: (index: number) => unknown
+      selectedIndex: number | null;
+      selectOptionAndCleanUp: (option: MentionTypeaheadOption) => unknown;
+      setHighlightedIndex: (index: number) => unknown;
     }
   ) => {
-    if (anchorElementRef.current && results.length > 0) {
+    if (anchorElementRef.current && options?.length) {
       const { selectedIndex, selectOptionAndCleanUp, setHighlightedIndex } = arg1;
       return ReactDOM.createPortal(
         <div className="typeahead-popover mentions-menu">
