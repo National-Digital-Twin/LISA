@@ -1,12 +1,12 @@
 {
   "forms": [
     {
-      "type": "haz_floodwater",
+      "type": "haz_flood",
       "dataSchema": {
         "title": "Flood / water",
         "type": "object",
         "properties": {
-          "briefingEcc": {
+          "FloodEmergencyBriefing": {
             "title": "Briefing from Emergency Control Centre",
             "type": "string",
             "enum": [
@@ -14,7 +14,7 @@
               "No"
             ]
           },
-          "briefingFcpc": {
+          "FloodForwardBriefing": {
             "title": "Briefing from Forward Control Point Cordon",
             "type": "string",
             "enum": [
@@ -22,7 +22,7 @@
               "No"
             ]
           },
-          "cordonUnsafe": {
+          "FloodCordon": {
             "title": "Do not enter cordon/area#lbrack#s#rbrack# deemed unsafe by the Incident Commander",
             "type": "string",
             "enum": [
@@ -30,7 +30,7 @@
               "No"
             ]
           },
-          "ppe": {
+          "FloodPPE": {
             "title": "PPE",
             "type": "string",
             "enum": [
@@ -38,7 +38,7 @@
               "No"
             ]
           },
-          "otherControls": {
+          "FloodOtherControl": {
             "title": "Other controls in place",
             "type": "string",
             "enum": [
@@ -46,140 +46,140 @@
               "No"
             ]
           },
-          "furtherAction": {
+          "FloodFurtherAction": {
             "title": "Any further action required or risks identified #lbrack#optional#rbrack#",
             "type": "string"
           }
         },
         "required": [
-          "briefingEcc",
-          "briefingFcpc",
-          "cordonUnsafe",
-          "ppe",
-          "otherControls"
+          "FloodEmergencyBriefing",
+          "FloodForwardBriefing",
+          "FloodCordon",
+          "FloodPPE",
+          "FloodOtherControl"
         ],
         "dependencies": {
-          "briefingEcc": {
+          "FloodEmergencyBriefing": {
             "oneOf": [
               {
                 "properties": {
-                  "briefingEcc": {
+                  "FloodEmergencyBriefing": {
                     "const": "Yes"
                   }
                 }
               },
               {
                 "properties": {
-                  "briefingEcc": {
+                  "FloodEmergencyBriefing": {
                     "const": "No"
                   },
-                  "reasonEcc": {
+                  "FloodReasonEmergencyBriefingNotInPlace": {
                     "title": "Reason why this is not in place",
                     "type": "string"
                   }
                 },
                 "required": [
-                  "reasonEcc"
+                  "FloodReasonEmergencyBriefingNotInPlace"
                 ]
               }
             ]
           },
-          "briefingFcpc": {
+          "FloodForwardBriefing": {
             "oneOf": [
               {
                 "properties": {
-                  "briefingFcpc": {
+                  "FloodForwardBriefing": {
                     "const": "Yes"
                   }
                 }
               },
               {
                 "properties": {
-                  "briefingFcpc": {
+                  "FloodForwardBriefing": {
                     "const": "No"
                   },
-                  "reasonFcpc": {
+                  "FloodReasonForwardBriefingNotInPlace": {
                     "title": "Reason why this is not in place",
                     "type": "string"
                   }
                 },
                 "required": [
-                  "reasonFcpc"
+                  "FloodReasonForwardBriefingNotInPlace"
                 ]
               }
             ]
           },
-          "cordonUnsafe": {
+          "FloodCordon": {
             "oneOf": [
               {
                 "properties": {
-                  "cordonUnsafe": {
+                  "FloodCordon": {
                     "const": "Yes"
                   }
                 }
               },
               {
                 "properties": {
-                  "cordonUnsafe": {
+                  "FloodCordon": {
                     "const": "No"
                   },
-                  "reasonCordonUnsafe": {
+                  "FloodReasonCordonNotInPlace": {
                     "title": "Reason why this is not in place",
                     "type": "string"
                   }
                 },
                 "required": [
-                  "reasonCordonUnsafe"
+                  "FloodReasonCordonNotInPlace"
                 ]
               }
             ]
           },
-          "ppe": {
+          "FloodPPE": {
             "oneOf": [
               {
                 "properties": {
-                  "ppe": {
+                  "FloodPPE": {
                     "const": "Yes"
                   }
                 }
               },
               {
                 "properties": {
-                  "ppe": {
+                  "FloodPPE": {
                     "const": "No"
                   },
-                  "reasonPpe": {
+                  "FloodReasonPPENotInPlace": {
                     "title": "Reason why this is not in place",
                     "type": "string"
                   }
                 },
                 "required": [
-                  "reasonPpe"
+                  "FloodReasonPPENotInPlace"
                 ]
               }
             ]
           },
-          "otherControls": {
+          "FloodOtherControl": {
             "oneOf": [
               {
                 "properties": {
-                  "otherControls": {
+                  "FloodOtherControl": {
                     "const": "No"
                   }
                 }
               },
               {
                 "properties": {
-                  "otherControls": {
+                  "FloodOtherControl": {
                     "const": "Yes"
                   },
-                  "reasonOtherControls": {
+                  "FloodOtherControlDescription": {
                     "title": "Describe other controls in place",
                     "type": "string"
                   }
                 },
                 "required": [
-                  "reasonOtherControls"
+                  "FloodOtherControlDescription"
                 ]
               }
             ]
@@ -193,7 +193,7 @@
         "title": "Fire",
         "type": "object",
         "properties": {
-          "briefingEcc": {
+          "FireEmergencyBriefing": {
             "title": "Briefing from Emergency Control Centre",
             "type": "string",
             "enum": [
@@ -201,7 +201,7 @@
               "No"
             ]
           },
-          "briefingFcpc": {
+          "FireForwardBriefing": {
             "title": "Briefing from Forward Control Point Cordon",
             "type": "string",
             "enum": [
@@ -209,7 +209,7 @@
               "No"
             ]
           },
-          "windCordon": {
+          "FireCordon": {
             "title": "Wind direction cordon",
             "type": "string",
             "enum": [
@@ -217,7 +217,7 @@
               "No"
             ]
           },
-          "otherControls": {
+          "FireOtherControl": {
             "title": "Other controls in place",
             "type": "string",
             "enum": [
@@ -225,114 +225,114 @@
               "No"
             ]
           },
-          "furtherAction": {
+          "FireFurtherAction": {
             "title": "Any further action required or risks identified #lbrack#optional#rbrack#",
             "type": "string"
           }
         },
         "required": [
-          "briefingEcc",
-          "briefingFcpc",
-          "windCordon",
-          "otherControls"
+          "FireEmergencyBriefing",
+          "FireForwardBriefing",
+          "FireCordon",
+          "FireOtherControl"
         ],
         "dependencies": {
-          "briefingEcc": {
+          "FireEmergencyBriefing": {
             "oneOf": [
               {
                 "properties": {
-                  "briefingEcc": {
+                  "FireEmergencyBriefing": {
                     "const": "Yes"
                   }
                 }
               },
               {
                 "properties": {
-                  "briefingEcc": {
+                  "FireEmergencyBriefing": {
                     "const": "No"
                   },
-                  "reasonEcc": {
+                  "FireReasonEmergencyBriefingNotInPlace": {
                     "title": "Reason why this is not in place",
                     "type": "string"
                   }
                 },
                 "required": [
-                  "reasonEcc"
+                  "FireReasonEmergencyBriefingNotInPlace"
                 ]
               }
             ]
           },
-          "briefingFcpc": {
+          "FireForwardBriefing": {
             "oneOf": [
               {
                 "properties": {
-                  "briefingFcpc": {
+                  "FireForwardBriefing": {
                     "const": "Yes"
                   }
                 }
               },
               {
                 "properties": {
-                  "briefingFcpc": {
+                  "FireForwardBriefing": {
                     "const": "No"
                   },
-                  "reasonFcpc": {
+                  "FireReasonForwardBriefingNotInPlace": {
                     "title": "Reason why this is not in place",
                     "type": "string"
                   }
                 },
                 "required": [
-                  "reasonFcpc"
+                  "FireReasonForwardBriefingNotInPlace"
                 ]
               }
             ]
           },
-          "windCordon": {
+          "FireCordon": {
             "oneOf": [
               {
                 "properties": {
-                  "windCordon": {
+                  "FireCordon": {
                     "const": "Yes"
                   }
                 }
               },
               {
                 "properties": {
-                  "windCordon": {
+                  "FireCordon": {
                     "const": "No"
                   },
-                  "reasonWindCordon": {
+                  "FireReasonCordonNotInPlace": {
                     "title": "Reason why this is not in place",
                     "type": "string"
                   }
                 },
                 "required": [
-                  "reasonWindCordon"
+                  "FireReasonCordonNotInPlace"
                 ]
               }
             ]
           },
-          "otherControls": {
+          "FireOtherControl": {
             "oneOf": [
               {
                 "properties": {
-                  "otherControls": {
+                  "FireOtherControl": {
                     "const": "No"
                   }
                 }
               },
               {
                 "properties": {
-                  "otherControls": {
+                  "FireOtherControl": {
                     "const": "Yes"
                   },
-                  "reasonOtherControls": {
+                  "FireOtherControlDescription": {
                     "title": "Describe other controls in place",
                     "type": "string"
                   }
                 },
                 "required": [
-                  "reasonOtherControls"
+                  "FireOtherControlDescription"
                 ]
               }
             ]
@@ -346,7 +346,7 @@
         "title": "Hazardous Substances",
         "type": "object",
         "properties": {
-          "briefingEcc": {
+          "SubstancesEmergencyBriefing": {
             "title": "Briefing from Emergency Control Centre",
             "type": "string",
             "enum": [
@@ -354,7 +354,7 @@
               "No"
             ]
           },
-          "briefingFcpc": {
+          "SubstancesForwardBriefing": {
             "title": "Briefing from Forward Control Point Cordon",
             "type": "string",
             "enum": [
@@ -362,7 +362,7 @@
               "No"
             ]
           },
-          "windCordon": {
+          "SubstancesCordon": {
             "title": "Wind direction cordon",
             "type": "string",
             "enum": [
@@ -370,7 +370,7 @@
               "No"
             ]
           },
-          "ppe": {
+          "SubstancesPPE": {
             "title": "PPE - Face masks/goggles, etc",
             "type": "string",
             "enum": [
@@ -378,7 +378,7 @@
               "No"
             ]
           },
-          "otherControls": {
+          "SubstancesOtherControl": {
             "title": "Other controls in place",
             "type": "string",
             "enum": [
@@ -386,140 +386,140 @@
               "No"
             ]
           },
-          "furtherAction": {
+          "SubstancesFurtherAction": {
             "title": "Any further action required or risks identified #lbrack#optional#rbrack#",
             "type": "string"
           }
         },
         "required": [
-          "briefingEcc",
-          "briefingFcpc",
-          "windCordon",
-          "ppe",
-          "otherControls"
+          "SubstancesEmergencyBriefing",
+          "SubstancesForwardBriefing",
+          "SubstancesCordon",
+          "SubstancesPPE",
+          "SubstancesOtherControl"
         ],
         "dependencies": {
-          "briefingEcc": {
+          "SubstancesEmergencyBriefing": {
             "oneOf": [
               {
                 "properties": {
-                  "briefingEcc": {
+                  "SubstancesEmergencyBriefing": {
                     "const": "Yes"
                   }
                 }
               },
               {
                 "properties": {
-                  "briefingEcc": {
+                  "SubstancesEmergencyBriefing": {
                     "const": "No"
                   },
-                  "reasonEcc": {
+                  "SubstancesReasonEmergencyBriefingNotInPlace": {
                     "title": "Reason why this is not in place",
                     "type": "string"
                   }
                 },
                 "required": [
-                  "reasonEcc"
+                  "SubstancesReasonEmergencyBriefingNotInPlace"
                 ]
               }
             ]
           },
-          "briefingFcpc": {
+          "SubstancesForwardBriefing": {
             "oneOf": [
               {
                 "properties": {
-                  "briefingFcpc": {
+                  "SubstancesForwardBriefing": {
                     "const": "Yes"
                   }
                 }
               },
               {
                 "properties": {
-                  "briefingFcpc": {
+                  "SubstancesForwardBriefing": {
                     "const": "No"
                   },
-                  "reasonFcpc": {
+                  "SubstancesReasonForwardBriefingNotInPlace": {
                     "title": "Reason why this is not in place",
                     "type": "string"
                   }
                 },
                 "required": [
-                  "reasonFcpc"
+                  "SubstancesReasonForwardBriefingNotInPlace"
                 ]
               }
             ]
           },
-          "ppe": {
+          "SubstancesPPE": {
             "oneOf": [
               {
                 "properties": {
-                  "ppe": {
+                  "SubstancesPPE": {
                     "const": "Yes"
                   }
                 }
               },
               {
                 "properties": {
-                  "ppe": {
+                  "SubstancesPPE": {
                     "const": "No"
                   },
-                  "reasonPpe": {
+                  "SubstancesReasonPPENotInPlace": {
                     "title": "Reason why this is not in place",
                     "type": "string"
                   }
                 },
                 "required": [
-                  "reasonPpe"
+                  "SubstancesReasonPPENotInPlace"
                 ]
               }
             ]
           },
-          "windCordon": {
+          "SubstancesCordon": {
             "oneOf": [
               {
                 "properties": {
-                  "windCordon": {
+                  "SubstancesCordon": {
                     "const": "Yes"
                   }
                 }
               },
               {
                 "properties": {
-                  "windCordon": {
+                  "SubstancesCordon": {
                     "const": "No"
                   },
-                  "reasonWindCordon": {
+                  "SubstancesReasonCordonNotInPlace": {
                     "title": "Reason why this is not in place",
                     "type": "string"
                   }
                 },
                 "required": [
-                  "reasonWindCordon"
+                  "SubstancesReasonCordonNotInPlace"
                 ]
               }
             ]
           },
-          "otherControls": {
+          "SubstancesOtherControl": {
             "oneOf": [
               {
                 "properties": {
-                  "otherControls": {
+                  "SubstancesOtherControl": {
                     "const": "No"
                   }
                 }
               },
               {
                 "properties": {
-                  "otherControls": {
+                  "SubstancesOtherControl": {
                     "const": "Yes"
                   },
-                  "reasonOtherControls": {
+                  "SubstancesOtherControlDescription": {
                     "title": "Describe other controls in place",
                     "type": "string"
                   }
                 },
                 "required": [
-                  "reasonOtherControls"
+                  "SubstancesOtherControlDescription"
                 ]
               }
             ]
@@ -533,7 +533,7 @@
         "title": "Slips, trips and falls",
         "type": "object",
         "properties": {
-          "briefingEcc": {
+          "SlipsTripsFallsEmergencyBriefing": {
             "title": "Briefing from Emergency Control Centre",
             "type": "string",
             "enum": [
@@ -541,7 +541,7 @@
               "No"
             ]
           },
-          "briefingFcpc": {
+          "SlipsTripsFallsForwardBriefing": {
             "title": "Briefing from Forward Control Point Cordon",
             "type": "string",
             "enum": [
@@ -549,7 +549,7 @@
               "No"
             ]
           },
-          "ppe": {
+          "SlipsTripsFallsPPE": {
             "title": "PPE - Safety boots",
             "type": "string",
             "enum": [
@@ -557,7 +557,7 @@
               "No"
             ]
           },
-          "torch": {
+          "SlipsTripsFallsTorch": {
             "title": "Torch",
             "type": "string",
             "enum": [
@@ -565,7 +565,7 @@
               "No"
             ]
           },
-          "planRoute": {
+          "SlipsTripsFallsPlanRoute": {
             "title": "Plan route",
             "type": "string",
             "enum": [
@@ -573,7 +573,7 @@
               "No"
             ]
           },
-          "otherControls": {
+          "SlipsTripsFallsOtherControl": {
             "title": "Other controls in place",
             "type": "string",
             "enum": [
@@ -581,166 +581,166 @@
               "No"
             ]
           },
-          "furtherAction": {
+          "SlipsTripsFallsFurtherAction": {
             "title": "Any further action required or risks identified #lbrack#optional#rbrack#",
             "type": "string"
           }
         },
         "required": [
-          "briefingEcc",
-          "briefingFcpc",
-          "ppe",
-          "torch",
-          "planRoute",
-          "otherControls"
+          "SlipsTripsFallsEmergencyBriefing",
+          "SlipsTripsFallsForwardBriefing",
+          "SlipsTripsFallsPPE",
+          "SlipsTripsFallsTorch",
+          "SlipsTripsFallsPlanRoute",
+          "SlipsTripsFallsOtherControl"
         ],
         "dependencies": {
-          "briefingEcc": {
+          "SlipsTripsFallsEmergencyBriefing": {
             "oneOf": [
               {
                 "properties": {
-                  "briefingEcc": {
+                  "SlipsTripsFallsEmergencyBriefing": {
                     "const": "Yes"
                   }
                 }
               },
               {
                 "properties": {
-                  "briefingEcc": {
+                  "SlipsTripsFallsEmergencyBriefing": {
                     "const": "No"
                   },
-                  "reasonEcc": {
+                  "SlipsTripsFallsReasonEmergencyBriefingNotInPlace": {
                     "title": "Reason why this is not in place",
                     "type": "string"
                   }
                 },
                 "required": [
-                  "reasonEcc"
+                  "SlipsTripsFallsReasonEmergencyBriefingNotInPlace"
                 ]
               }
             ]
           },
-          "briefingFcpc": {
+          "SlipsTripsFallsForwardBriefing": {
             "oneOf": [
               {
                 "properties": {
-                  "briefingFcpc": {
+                  "SlipsTripsFallsForwardBriefing": {
                     "const": "Yes"
                   }
                 }
               },
               {
                 "properties": {
-                  "briefingFcpc": {
+                  "SlipsTripsFallsForwardBriefing": {
                     "const": "No"
                   },
-                  "reasonFcpc": {
+                  "SlipsTripsFallsReasonForwardBriefingNotInPlace": {
                     "title": "Reason why this is not in place",
                     "type": "string"
                   }
                 },
                 "required": [
-                  "reasonFcpc"
+                  "SlipsTripsFallsReasonForwardBriefingNotInPlace"
                 ]
               }
             ]
           },
-          "ppe": {
+          "SlipsTripsFallsPPE": {
             "oneOf": [
               {
                 "properties": {
-                  "ppe": {
+                  "SlipsTripsFallsPPE": {
                     "const": "Yes"
                   }
                 }
               },
               {
                 "properties": {
-                  "ppe": {
+                  "SlipsTripsFallsPPE": {
                     "const": "No"
                   },
-                  "reasonPpe": {
+                  "SlipsTripsFallsReasonPPENotInPlace": {
                     "title": "Reason why this is not in place",
                     "type": "string"
                   }
                 },
                 "required": [
-                  "reasonPpe"
+                  "SlipsTripsFallsReasonPPENotInPlace"
                 ]
               }
             ]
           },
-          "torch": {
+          "SlipsTripsFallsTorch": {
             "oneOf": [
               {
                 "properties": {
-                  "torch": {
+                  "SlipsTripsFallsTorch": {
                     "const": "Yes"
                   }
                 }
               },
               {
                 "properties": {
-                  "torch": {
+                  "SlipsTripsFallsTorch": {
                     "const": "No"
                   },
-                  "reasonTorch": {
+                  "SlipsTripsFallsReasonTorchNotInPlace": {
                     "title": "Reason why this is not in place",
                     "type": "string"
                   }
                 },
                 "required": [
-                  "reasonTorch"
+                  "SlipsTripsFallsReasonTorchNotInPlace"
                 ]
               }
             ]
           },
-          "planRoute": {
+          "SlipsTripsFallsPlanRoute": {
             "oneOf": [
               {
                 "properties": {
-                  "planRoute": {
+                  "SlipsTripsFallsPlanRoute": {
                     "const": "Yes"
                   }
                 }
               },
               {
                 "properties": {
-                  "planRoute": {
+                  "SlipsTripsFallsPlanRoute": {
                     "const": "No"
                   },
-                  "reasonPlanRoute": {
+                  "SlipsTripsFallsReasonPlanRouteNotInPlace": {
                     "title": "Reason why this is not in place",
                     "type": "string"
                   }
                 },
                 "required": [
-                  "reasonPlanRoute"
+                  "SlipsTripsFallsReasonPlanRouteNotInPlace"
                 ]
               }
             ]
           },
-          "otherControls": {
+          "SlipsTripsFallsOtherControl": {
             "oneOf": [
               {
                 "properties": {
-                  "otherControls": {
+                  "SlipsTripsFallsOtherControl": {
                     "const": "No"
                   }
                 }
               },
               {
                 "properties": {
-                  "otherControls": {
+                  "SlipsTripsFallsOtherControl": {
                     "const": "Yes"
                   },
-                  "reasonOtherControls": {
+                  "SlipsTripsFallsOtherControlDescription": {
                     "title": "Describe other controls in place",
                     "type": "string"
                   }
                 },
                 "required": [
-                  "reasonOtherControls"
+                  "SlipsTripsFallsOtherControlDescription"
                 ]
               }
             ]
@@ -754,7 +754,7 @@
         "title": "Vehicles",
         "type": "object",
         "properties": {
-          "briefingEcc": {
+          "VehiclesEmergencyBriefing": {
             "title": "Briefing from Emergency Control Centre",
             "type": "string",
             "enum": [
@@ -762,7 +762,7 @@
               "No"
             ]
           },
-          "briefingFcpc": {
+          "VehiclesForwardBriefing": {
             "title": "Briefing from Forward Control Point Cordon",
             "type": "string",
             "enum": [
@@ -770,7 +770,7 @@
               "No"
             ]
           },
-          "ppe": {
+          "VehiclesPPE": {
             "title": "PPE - Hi Viz vest, safety boots",
             "type": "string",
             "enum": [
@@ -778,7 +778,7 @@
               "No"
             ]
           },
-          "otherControls": {
+          "VehiclesOtherControl": {
             "title": "Other controls in place",
             "type": "string",
             "enum": [
@@ -786,114 +786,114 @@
               "No"
             ]
           },
-          "furtherAction": {
+          "VehiclesFurtherAction": {
             "title": "Any further action required or risks identified #lbrack#optional#rbrack#",
             "type": "string"
           }
         },
         "required": [
-          "briefingEcc",
-          "briefingFcpc",
-          "ppe",
-          "otherControls"
+          "VehiclesEmergencyBriefing",
+          "VehiclesForwardBriefing",
+          "VehiclesPPE",
+          "VehiclesOtherControl"
         ],
         "dependencies": {
-          "briefingEcc": {
+          "VehiclesEmergencyBriefing": {
             "oneOf": [
               {
                 "properties": {
-                  "briefingEcc": {
+                  "VehiclesEmergencyBriefing": {
                     "const": "Yes"
                   }
                 }
               },
               {
                 "properties": {
-                  "briefingEcc": {
+                  "VehiclesEmergencyBriefing": {
                     "const": "No"
                   },
-                  "reasonEcc": {
+                  "VehiclesReasonEmergencyBriefingNotInPlace": {
                     "title": "Reason why this is not in place",
                     "type": "string"
                   }
                 },
                 "required": [
-                  "reasonEcc"
+                  "VehiclesReasonEmergencyBriefingNotInPlace"
                 ]
               }
             ]
           },
-          "briefingFcpc": {
+          "VehiclesForwardBriefing": {
             "oneOf": [
               {
                 "properties": {
-                  "briefingFcpc": {
+                  "VehiclesForwardBriefing": {
                     "const": "Yes"
                   }
                 }
               },
               {
                 "properties": {
-                  "briefingFcpc": {
+                  "VehiclesForwardBriefing": {
                     "const": "No"
                   },
-                  "reasonFcpc": {
+                  "VehiclesReasonForwardBriefingNotInPlace": {
                     "title": "Reason why this is not in place",
                     "type": "string"
                   }
                 },
                 "required": [
-                  "reasonFcpc"
+                  "VehiclesReasonForwardBriefingNotInPlace"
                 ]
               }
             ]
           },
-          "ppe": {
+          "VehiclesPPE": {
             "oneOf": [
               {
                 "properties": {
-                  "ppe": {
+                  "VehiclesPPE": {
                     "const": "Yes"
                   }
                 }
               },
               {
                 "properties": {
-                  "ppe": {
+                  "VehiclesPPE": {
                     "const": "No"
                   },
-                  "reasonPpe": {
+                  "VehiclesReasonPPENotInPlace": {
                     "title": "Reason why this is not in place",
                     "type": "string"
                   }
                 },
                 "required": [
-                  "reasonPpe"
+                  "VehiclesReasonPPENotInPlace"
                 ]
               }
             ]
           },
-          "otherControls": {
+          "VehiclesOtherControl": {
             "oneOf": [
               {
                 "properties": {
-                  "otherControls": {
+                  "VehiclesOtherControl": {
                     "const": "No"
                   }
                 }
               },
               {
                 "properties": {
-                  "otherControls": {
+                  "VehiclesOtherControl": {
                     "const": "Yes"
                   },
-                  "reasonOtherControls": {
+                  "VehiclesOtherControlDescription": {
                     "title": "Describe other controls in place",
                     "type": "string"
                   }
                 },
                 "required": [
-                  "reasonOtherControls"
+                  "VehiclesOtherControlDescription"
                 ]
               }
             ]
@@ -907,7 +907,7 @@
         "title": "Falling Objects",
         "type": "object",
         "properties": {
-          "briefingEcc": {
+          "FallingObjectsEmergencyBriefing": {
             "title": "Briefing from Emergency Control Centre",
             "type": "string",
             "enum": [
@@ -915,7 +915,7 @@
               "No"
             ]
           },
-          "briefingFcpc": {
+          "FallingObjectsForwardBriefing": {
             "title": "Briefing from Forward Control Point Cordon",
             "type": "string",
             "enum": [
@@ -923,7 +923,7 @@
               "No"
             ]
           },
-          "ppe": {
+          "FallingObjectsPPE": {
             "title": "PPE - Safety helmet",
             "type": "string",
             "enum": [
@@ -931,7 +931,7 @@
               "No"
             ]
           },
-          "otherControls": {
+          "FallingObjectsOtherControl": {
             "title": "Other controls in place",
             "type": "string",
             "enum": [
@@ -939,114 +939,114 @@
               "No"
             ]
           },
-          "furtherAction": {
+          "FallingObjectsFurtherAction": {
             "title": "Any further action required or risks identified #lbrack#optional#rbrack#",
             "type": "string"
           }
         },
         "required": [
-          "briefingEcc",
-          "briefingFcpc",
-          "ppe",
-          "otherControls"
+          "FallingObjectsEmergencyBriefing",
+          "FallingObjectsForwardBriefing",
+          "FallingObjectsPPE",
+          "FallingObjectsOtherControl"
         ],
         "dependencies": {
-          "briefingEcc": {
+          "FallingObjectsEmergencyBriefing": {
             "oneOf": [
               {
                 "properties": {
-                  "briefingEcc": {
+                  "FallingObjectsEmergencyBriefing": {
                     "const": "Yes"
                   }
                 }
               },
               {
                 "properties": {
-                  "briefingEcc": {
+                  "FallingObjectsEmergencyBriefing": {
                     "const": "No"
                   },
-                  "reasonEcc": {
+                  "FallingObjectsReasonEmergencyBriefingNotInPlace": {
                     "title": "Reason why this is not in place",
                     "type": "string"
                   }
                 },
                 "required": [
-                  "reasonEcc"
+                  "FallingObjectsReasonEmergencyBriefingNotInPlace"
                 ]
               }
             ]
           },
-          "briefingFcpc": {
+          "FallingObjectsForwardBriefing": {
             "oneOf": [
               {
                 "properties": {
-                  "briefingFcpc": {
+                  "FallingObjectsForwardBriefing": {
                     "const": "Yes"
                   }
                 }
               },
               {
                 "properties": {
-                  "briefingFcpc": {
+                  "FallingObjectsForwardBriefing": {
                     "const": "No"
                   },
-                  "reasonFcpc": {
+                  "FallingObjectsReasonForwardBriefingNotInPlace": {
                     "title": "Reason why this is not in place",
                     "type": "string"
                   }
                 },
                 "required": [
-                  "reasonFcpc"
+                  "FallingObjectsReasonForwardBriefingNotInPlace"
                 ]
               }
             ]
           },
-          "ppe": {
+          "FallingObjectsPPE": {
             "oneOf": [
               {
                 "properties": {
-                  "ppe": {
+                  "FallingObjectsPPE": {
                     "const": "Yes"
                   }
                 }
               },
               {
                 "properties": {
-                  "ppe": {
+                  "FallingObjectsPPE": {
                     "const": "No"
                   },
-                  "reasonPpe": {
+                  "FallingObjectsReasonPPENotInPlace": {
                     "title": "Reason why this is not in place",
                     "type": "string"
                   }
                 },
                 "required": [
-                  "reasonPpe"
+                  "FallingObjectsReasonPPENotInPlace"
                 ]
               }
             ]
           },
-          "otherControls": {
+          "FallingObjectsOtherControl": {
             "oneOf": [
               {
                 "properties": {
-                  "otherControls": {
+                  "FallingObjectsOtherControl": {
                     "const": "No"
                   }
                 }
               },
               {
                 "properties": {
-                  "otherControls": {
+                  "FallingObjectsOtherControl": {
                     "const": "Yes"
                   },
-                  "reasonOtherControls": {
+                  "FallingObjectsOtherControlDescription": {
                     "title": "Describe other controls in place",
                     "type": "string"
                   }
                 },
                 "required": [
-                  "reasonOtherControls"
+                  "FallingObjectsOtherControlDescription"
                 ]
               }
             ]
@@ -1060,7 +1060,7 @@
         "title": "Biological",
         "type": "object",
         "properties": {
-          "briefingEcc": {
+          "BiologicalEmergencyBriefing": {
             "title": "Briefing from Emergency Control Centre",
             "type": "string",
             "enum": [
@@ -1068,7 +1068,7 @@
               "No"
             ]
           },
-          "briefingFcpc": {
+          "BiologicalForwardBriefing": {
             "title": "Briefing from Forward Control Point",
             "type": "string",
             "enum": [
@@ -1076,7 +1076,7 @@
               "No"
             ]
           },
-          "needles": {
+          "BiologicalNeedles": {
             "title": "Do not touch needles, etc.",
             "type": "string",
             "enum": [
@@ -1084,7 +1084,7 @@
               "No"
             ]
           },
-          "ppe": {
+          "BiologicalPPE": {
             "title": "PPE - Gloves, etc.",
             "type": "string",
             "enum": [
@@ -1092,7 +1092,7 @@
               "No"
             ]
           },
-          "otherControls": {
+          "BiologicalOtherControl": {
             "title": "Other controls in place",
             "type": "string",
             "enum": [
@@ -1100,140 +1100,140 @@
               "No"
             ]
           },
-          "furtherAction": {
+          "BiologicalFurtherAction": {
             "title": "Any further action required or risks identified #lbrack#optional#rbrack#",
             "type": "string"
           }
         },
         "required": [
-          "briefingEcc",
-          "briefingFcpc",
-          "needles",
-          "ppe",
-          "otherControls"
+          "BiologicalEmergencyBriefing",
+          "BiologicalForwardBriefing",
+          "BiologicalNeedles",
+          "BiologicalPPE",
+          "BiologicalOtherControl"
         ],
         "dependencies": {
-          "briefingEcc": {
+          "BiologicalEmergencyBriefing": {
             "oneOf": [
               {
                 "properties": {
-                  "briefingEcc": {
+                  "BiologicalEmergencyBriefing": {
                     "const": "Yes"
                   }
                 }
               },
               {
                 "properties": {
-                  "briefingEcc": {
+                  "BiologicalEmergencyBriefing": {
                     "const": "No"
                   },
-                  "reasonEcc": {
+                  "BiologicalReasonEmergencyBriefingNotInPlace": {
                     "title": "Reason why this is not in place",
                     "type": "string"
                   }
                 },
                 "required": [
-                  "reasonEcc"
+                  "BiologicalReasonEmergencyBriefingNotInPlace"
                 ]
               }
             ]
           },
-          "briefingFcpc": {
+          "BiologicalForwardBriefing": {
             "oneOf": [
               {
                 "properties": {
-                  "briefingFcpc": {
+                  "BiologicalForwardBriefing": {
                     "const": "Yes"
                   }
                 }
               },
               {
                 "properties": {
-                  "briefingFcpc": {
+                  "BiologicalForwardBriefing": {
                     "const": "No"
                   },
-                  "reasonFcpc": {
+                  "BiologicalReasonForwardBriefingNotInPlace": {
                     "title": "Reason why this is not in place",
                     "type": "string"
                   }
                 },
                 "required": [
-                  "reasonFcpc"
+                  "BiologicalReasonForwardBriefingNotInPlace"
                 ]
               }
             ]
           },
-          "needles": {
+          "BiologicalNeedles": {
             "oneOf": [
               {
                 "properties": {
-                  "needles": {
+                  "BiologicalNeedles": {
                     "const": "Yes"
                   }
                 }
               },
               {
                 "properties": {
-                  "needles": {
+                  "BiologicalNeedles": {
                     "const": "No"
                   },
-                  "reasonNeedles": {
+                  "BiologicalReasonNeedlesNotInPlace": {
                     "title": "Reason why this is not in place",
                     "type": "string"
                   }
                 },
                 "required": [
-                  "reasonNeedles"
+                  "BiologicalReasonNeedlesNotInPlace"
                 ]
               }
             ]
           },
-          "ppe": {
+          "BiologicalPPE": {
             "oneOf": [
               {
                 "properties": {
-                  "ppe": {
+                  "BiologicalPPE": {
                     "const": "Yes"
                   }
                 }
               },
               {
                 "properties": {
-                  "ppe": {
+                  "BiologicalPPE": {
                     "const": "No"
                   },
-                  "reasonPpe": {
+                  "BiologicalReasonPPENotInPlace": {
                     "title": "Reason why this is not in place",
                     "type": "string"
                   }
                 },
                 "required": [
-                  "reasonPpe"
+                  "BiologicalReasonPPENotInPlace"
                 ]
               }
             ]
           },
-          "otherControls": {
+          "BiologicalOtherControl": {
             "oneOf": [
               {
                 "properties": {
-                  "otherControls": {
+                  "BiologicalOtherControl": {
                     "const": "No"
                   }
                 }
               },
               {
                 "properties": {
-                  "otherControls": {
+                  "BiologicalOtherControl": {
                     "const": "Yes"
                   },
-                  "reasonOtherControls": {
+                  "BiologicalOtherControlDescription": {
                     "title": "Describe other controls in place",
                     "type": "string"
                   }
                 },
                 "required": [
-                  "reasonOtherControls"
+                  "BiologicalOtherControlDescription"
                 ]
               }
             ]
@@ -1247,7 +1247,7 @@
         "title": "Environment",
         "type": "object",
         "properties": {
-          "briefingEcc": {
+          "EnvironmentEmergencyBriefing": {
             "title": "Briefing from Emergency Control Centre",
             "type": "string",
             "enum": [
@@ -1255,7 +1255,7 @@
               "No"
             ]
           },
-          "briefingFcpc": {
+          "EnvironmentForwardBriefing": {
             "title": "Briefing from Forward Control Point",
             "type": "string",
             "enum": [
@@ -1263,7 +1263,7 @@
               "No"
             ]
           },
-          "ppe": {
+          "EnvironmentPPE": {
             "title": "PPE - Safety boots",
             "type": "string",
             "enum": [
@@ -1271,7 +1271,7 @@
               "No"
             ]
           },
-          "otherControls": {
+          "EnvironmentOtherControl": {
             "title": "Other controls in place",
             "type": "string",
             "enum": [
@@ -1279,114 +1279,114 @@
               "No"
             ]
           },
-          "furtherAction": {
+          "EnvironmentFurtherAction": {
             "title": "Any further action required or risks identified #lbrack#optional#rbrack#",
             "type": "string"
           }
         },
         "required": [
-          "briefingEcc",
-          "briefingFcpc",
-          "ppe",
-          "otherControls"
+          "EnvironmentEmergencyBriefing",
+          "EnvironmentForwardBriefing",
+          "EnvironmentPPE",
+          "EnvironmentOtherControl"
         ],
         "dependencies": {
-          "briefingEcc": {
+          "EnvironmentEmergencyBriefing": {
             "oneOf": [
               {
                 "properties": {
-                  "briefingEcc": {
+                  "EnvironmentEmergencyBriefing": {
                     "const": "Yes"
                   }
                 }
               },
               {
                 "properties": {
-                  "briefingEcc": {
+                  "EnvironmentEmergencyBriefing": {
                     "const": "No"
                   },
-                  "reasonEcc": {
+                  "EnvironmentReasonEmergencyBriefingNotInPlace": {
                     "title": "Reason why this is not in place",
                     "type": "string"
                   }
                 },
                 "required": [
-                  "reasonEcc"
+                  "EnvironmentReasonEmergencyBriefingNotInPlace"
                 ]
               }
             ]
           },
-          "briefingFcpc": {
+          "EnvironmentForwardBriefing": {
             "oneOf": [
               {
                 "properties": {
-                  "briefingFcpc": {
+                  "EnvironmentForwardBriefing": {
                     "const": "Yes"
                   }
                 }
               },
               {
                 "properties": {
-                  "briefingFcpc": {
+                  "EnvironmentForwardBriefing": {
                     "const": "No"
                   },
-                  "reasonFcpc": {
+                  "EnvironmentReasonForwardBriefingNotInPlace": {
                     "title": "Reason why this is not in place",
                     "type": "string"
                   }
                 },
                 "required": [
-                  "reasonFcpc"
+                  "EnvironmentReasonForwardBriefingNotInPlace"
                 ]
               }
             ]
           },
-          "ppe": {
+          "EnvironmentPPE": {
             "oneOf": [
               {
                 "properties": {
-                  "ppe": {
+                  "EnvironmentPPE": {
                     "const": "Yes"
                   }
                 }
               },
               {
                 "properties": {
-                  "ppe": {
+                  "EnvironmentPPE": {
                     "const": "No"
                   },
-                  "reasonPpe": {
+                  "EnvironmentReasonPPENotInPlace": {
                     "title": "Reason why this is not in place",
                     "type": "string"
                   }
                 },
                 "required": [
-                  "reasonPpe"
+                  "EnvironmentReasonPPENotInPlace"
                 ]
               }
             ]
           },
-          "otherControls": {
+          "EnvironmentOtherControl": {
             "oneOf": [
               {
                 "properties": {
-                  "otherControls": {
+                  "EnvironmentOtherControl": {
                     "const": "No"
                   }
                 }
               },
               {
                 "properties": {
-                  "otherControls": {
+                  "EnvironmentOtherControl": {
                     "const": "Yes"
                   },
-                  "reasonOtherControls": {
+                  "EnvironmentOtherControlDescription": {
                     "title": "Describe other controls in place",
                     "type": "string"
                   }
                 },
                 "required": [
-                  "reasonOtherControls"
+                  "EnvironmentOtherControlDescription"
                 ]
               }
             ]
@@ -1395,12 +1395,12 @@
       }
     },
     {
-      "type": "haz_manualhandling",
+      "type": "haz_handling",
       "dataSchema": {
         "title": "Manual Handling",
         "type": "object",
         "properties": {
-          "briefingEcc": {
+          "HandlingEmergencyBriefing": {
             "title": "Briefing from Emergency Control Centre",
             "type": "string",
             "enum": [
@@ -1408,7 +1408,7 @@
               "No"
             ]
           },
-          "briefingFcpc": {
+          "HandlingForwardBriefing": {
             "title": "Briefing from Forward Control Point",
             "type": "string",
             "enum": [
@@ -1416,7 +1416,7 @@
               "No"
             ]
           },
-          "training": {
+          "HandlingTraining": {
             "title": "Manual handling training",
             "type": "string",
             "enum": [
@@ -1424,7 +1424,7 @@
               "No"
             ]
           },
-          "ppe": {
+          "HandlingPPE": {
             "title": "PPE - Safety boots",
             "type": "string",
             "enum": [
@@ -1432,7 +1432,7 @@
               "No"
             ]
           },
-          "equipment": {
+          "HandlingEquipment": {
             "title": "Use of manual handling equipment if available and if trained to do so",
             "type": "string",
             "enum": [
@@ -1440,7 +1440,7 @@
               "No"
             ]
           },
-          "otherControls": {
+          "HandlingOtherControl": {
             "title": "Other controls in place",
             "type": "string",
             "enum": [
@@ -1448,166 +1448,166 @@
               "No"
             ]
           },
-          "furtherAction": {
+          "HandlingFurtherAction": {
             "title": "Any further action required or risks identified #lbrack#optional#rbrack#",
             "type": "string"
           }
         },
         "required": [
-          "briefingEcc",
-          "briefingFcpc",
-          "training",
-          "ppe",
-          "equipment",
-          "otherControls"
+          "HandlingEmergencyBriefing",
+          "HandlingForwardBriefing",
+          "HandlingTraining",
+          "HandlingPPE",
+          "HandlingEquipment",
+          "HandlingOtherControl"
         ],
         "dependencies": {
-          "briefingEcc": {
+          "HandlingEmergencyBriefing": {
             "oneOf": [
               {
                 "properties": {
-                  "briefingEcc": {
+                  "HandlingEmergencyBriefing": {
                     "const": "Yes"
                   }
                 }
               },
               {
                 "properties": {
-                  "briefingEcc": {
+                  "HandlingEmergencyBriefing": {
                     "const": "No"
                   },
-                  "reasonEcc": {
+                  "HandlingReasonEmergencyBriefingNotInPlace": {
                     "title": "Reason why this is not in place",
                     "type": "string"
                   }
                 },
                 "required": [
-                  "reasonEcc"
+                  "HandlingReasonEmergencyBriefingNotInPlace"
                 ]
               }
             ]
           },
-          "briefingFcpc": {
+          "HandlingForwardBriefing": {
             "oneOf": [
               {
                 "properties": {
-                  "briefingFcpc": {
+                  "HandlingForwardBriefing": {
                     "const": "Yes"
                   }
                 }
               },
               {
                 "properties": {
-                  "briefingFcpc": {
+                  "HandlingForwardBriefing": {
                     "const": "No"
                   },
-                  "reasonFcpc": {
+                  "HandlingReasonForwardBriefingNotInPlace": {
                     "title": "Reason why this is not in place",
                     "type": "string"
                   }
                 },
                 "required": [
-                  "reasonFcpc"
+                  "HandlingReasonForwardBriefingNotInPlace"
                 ]
               }
             ]
           },
-          "training": {
+          "HandlingTraining": {
             "oneOf": [
               {
                 "properties": {
-                  "training": {
+                  "HandlingTraining": {
                     "const": "Yes"
                   }
                 }
               },
               {
                 "properties": {
-                  "training": {
+                  "HandlingTraining": {
                     "const": "No"
                   },
-                  "reasonTraining": {
+                  "HandlingReasonTrainingNotInPlace": {
                     "title": "Reason why this is not in place",
                     "type": "string"
                   }
                 },
                 "required": [
-                  "reasonTraining"
+                  "HandlingReasonTrainingNotInPlace"
                 ]
               }
             ]
           },
-          "ppe": {
+          "HandlingPPE": {
             "oneOf": [
               {
                 "properties": {
-                  "ppe": {
+                  "HandlingPPE": {
                     "const": "Yes"
                   }
                 }
               },
               {
                 "properties": {
-                  "ppe": {
+                  "HandlingPPE": {
                     "const": "No"
                   },
-                  "reasonPpe": {
+                  "HandlingReasonPPENotInPlace": {
                     "title": "Reason why this is not in place",
                     "type": "string"
                   }
                 },
                 "required": [
-                  "reasonPpe"
+                  "HandlingReasonPPENotInPlace"
                 ]
               }
             ]
           },
-          "equipment": {
+          "HandlingEquipment": {
             "oneOf": [
               {
                 "properties": {
-                  "equipment": {
+                  "HandlingEquipment": {
                     "const": "Yes"
                   }
                 }
               },
               {
                 "properties": {
-                  "equipment": {
+                  "HandlingEquipment": {
                     "const": "No"
                   },
-                  "reasonEquipment": {
+                  "HandlingReasonEquipmentNotInPlace": {
                     "title": "Reason why this is not in place",
                     "type": "string"
                   }
                 },
                 "required": [
-                  "reasonEquipment"
+                  "HandlingReasonEquipmentNotInPlace"
                 ]
               }
             ]
           },
-          "otherControls": {
+          "HandlingOtherControl": {
             "oneOf": [
               {
                 "properties": {
-                  "otherControls": {
+                  "HandlingOtherControl": {
                     "const": "No"
                   }
                 }
               },
               {
                 "properties": {
-                  "otherControls": {
+                  "HandlingOtherControl": {
                     "const": "Yes"
                   },
-                  "reasonOtherControls": {
+                  "HandlingOtherControlDescription": {
                     "title": "Describe other controls in place",
                     "type": "string"
                   }
                 },
                 "required": [
-                  "reasonOtherControls"
+                  "HandlingOtherControlDescription"
                 ]
               }
             ]
@@ -1621,7 +1621,7 @@
         "title": "Weather Conditions",
         "type": "object",
         "properties": {
-          "briefingEcc": {
+          "WeatherEmergencyBriefing": {
             "title": "Briefing from Emergency Control Centre",
             "type": "string",
             "enum": [
@@ -1629,7 +1629,7 @@
               "No"
             ]
           },
-          "briefingFcpc": {
+          "WeatherForwardBriefing": {
             "title": "Briefing from Forward Control Point",
             "type": "string",
             "enum": [
@@ -1637,7 +1637,7 @@
               "No"
             ]
           },
-          "ppe": {
+          "WeatherPPE": {
             "title": "PPE - Waterproof coat, gloves, hat, bottled water",
             "type": "string",
             "enum": [
@@ -1645,7 +1645,7 @@
               "No"
             ]
           },
-          "otherControls": {
+          "WeatherOtherControl": {
             "title": "Other controls in place",
             "type": "string",
             "enum": [
@@ -1653,114 +1653,114 @@
               "No"
             ]
           },
-          "furtherAction": {
+          "WeatherFurtherAction": {
             "title": "Any further action required or risks identified #lbrack#optional#rbrack#",
             "type": "string"
           }
         },
         "required": [
-          "briefingEcc",
-          "briefingFcpc",
-          "ppe",
-          "otherControls"
+          "WeatherEmergencyBriefing",
+          "WeatherForwardBriefing",
+          "WeatherPPE",
+          "WeatherOtherControl"
         ],
         "dependencies": {
-          "briefingEcc": {
+          "WeatherEmergencyBriefing": {
             "oneOf": [
               {
                 "properties": {
-                  "briefingEcc": {
+                  "WeatherEmergencyBriefing": {
                     "const": "Yes"
                   }
                 }
               },
               {
                 "properties": {
-                  "briefingEcc": {
+                  "WeatherEmergencyBriefing": {
                     "const": "No"
                   },
-                  "reasonEcc": {
+                  "WeatherReasonEmergencyBriefingNotInPlace": {
                     "title": "Reason why this is not in place",
                     "type": "string"
                   }
                 },
                 "required": [
-                  "reasonEcc"
+                  "WeatherReasonEmergencyBriefingNotInPlace"
                 ]
               }
             ]
           },
-          "briefingFcpc": {
+          "WeatherForwardBriefing": {
             "oneOf": [
               {
                 "properties": {
-                  "briefingFcpc": {
+                  "WeatherForwardBriefing": {
                     "const": "Yes"
                   }
                 }
               },
               {
                 "properties": {
-                  "briefingFcpc": {
+                  "WeatherForwardBriefing": {
                     "const": "No"
                   },
-                  "reasonFcpc": {
+                  "WeatherReasonForwardBriefingNotInPlace": {
                     "title": "Reason why this is not in place",
                     "type": "string"
                   }
                 },
                 "required": [
-                  "reasonFcpc"
+                  "WeatherReasonForwardBriefingNotInPlace"
                 ]
               }
             ]
           },
-          "ppe": {
+          "WeatherPPE": {
             "oneOf": [
               {
                 "properties": {
-                  "ppe": {
+                  "WeatherPPE": {
                     "const": "Yes"
                   }
                 }
               },
               {
                 "properties": {
-                  "ppe": {
+                  "WeatherPPE": {
                     "const": "No"
                   },
-                  "reasonPpe": {
+                  "WeatherReasonPPENotInPlace": {
                     "title": "Reason why this is not in place",
                     "type": "string"
                   }
                 },
                 "required": [
-                  "reasonPpe"
+                  "WeatherReasonPPENotInPlace"
                 ]
               }
             ]
           },
-          "otherControls": {
+          "WeatherOtherControl": {
             "oneOf": [
               {
                 "properties": {
-                  "otherControls": {
+                  "WeatherOtherControl": {
                     "const": "No"
                   }
                 }
               },
               {
                 "properties": {
-                  "otherControls": {
+                  "WeatherOtherControl": {
                     "const": "Yes"
                   },
-                  "reasonOtherControls": {
+                  "WeatherOtherControlDescription": {
                     "title": "Describe other controls in place",
                     "type": "string"
                   }
                 },
                 "required": [
-                  "reasonOtherControls"
+                  "WeatherOtherControlDescription"
                 ]
               }
             ]
@@ -1774,7 +1774,7 @@
         "title": "Hygeine / Welfare - Contamination",
         "type": "object",
         "properties": {
-          "briefingEcc": {
+          "ContaminationEmergencyBriefing": {
             "title": "Briefing from Emergency Control Centre",
             "type": "string",
             "enum": [
@@ -1782,7 +1782,7 @@
               "No"
             ]
           },
-          "briefingFcpc": {
+          "ContaminationForwardBriefing": {
             "title": "Briefing from Forward Control Point",
             "type": "string",
             "enum": [
@@ -1790,7 +1790,7 @@
               "No"
             ]
           },
-          "ppe": {
+          "ContaminationPPE": {
             "title": "PPE - gloves",
             "type": "string",
             "enum": [
@@ -1798,7 +1798,7 @@
               "No"
             ]
           },
-          "washhands": {
+          "ContaminationWashHands": {
             "title": "Wash hands before eating, drinking or smoking",
             "type": "string",
             "enum": [
@@ -1806,7 +1806,7 @@
               "No"
             ]
           },
-          "otherControls": {
+          "ContaminationOtherControl": {
             "title": "Other controls in place",
             "type": "string",
             "enum": [
@@ -1814,140 +1814,140 @@
               "No"
             ]
           },
-          "furtherAction": {
+          "ContaminationFurtherAction": {
             "title": "Any further action required or risks identified #lbrack#optional#rbrack#",
             "type": "string"
           }
         },
         "required": [
-          "briefingEcc",
-          "briefingFcpc",
-          "ppe",
-          "washhands",
-          "otherControls"
+          "ContaminationEmergencyBriefing",
+          "ContaminationForwardBriefing",
+          "ContaminationPPE",
+          "ContaminationWashHands",
+          "ContaminationOtherControl"
         ],
         "dependencies": {
-          "briefingEcc": {
+          "ContaminationEmergencyBriefing": {
             "oneOf": [
               {
                 "properties": {
-                  "briefingEcc": {
+                  "ContaminationEmergencyBriefing": {
                     "const": "Yes"
                   }
                 }
               },
               {
                 "properties": {
-                  "briefingEcc": {
+                  "ContaminationEmergencyBriefing": {
                     "const": "No"
                   },
-                  "reasonEcc": {
+                  "ContaminationReasonEmergencyBriefingNotInPlace": {
                     "title": "Reason why this is not in place",
                     "type": "string"
                   }
                 },
                 "required": [
-                  "reasonEcc"
+                  "ContaminationReasonEmergencyBriefingNotInPlace"
                 ]
               }
             ]
           },
-          "briefingFcpc": {
+          "ContaminationForwardBriefing": {
             "oneOf": [
               {
                 "properties": {
-                  "briefingFcpc": {
+                  "ContaminationForwardBriefing": {
                     "const": "Yes"
                   }
                 }
               },
               {
                 "properties": {
-                  "briefingFcpc": {
+                  "ContaminationForwardBriefing": {
                     "const": "No"
                   },
-                  "reasonFcpc": {
+                  "ContaminationReasonForwardBriefingNotInPlace": {
                     "title": "Reason why this is not in place",
                     "type": "string"
                   }
                 },
                 "required": [
-                  "reasonFcpc"
+                  "ContaminationReasonForwardBriefingNotInPlace"
                 ]
               }
             ]
           },
-          "ppe": {
+          "ContaminationPPE": {
             "oneOf": [
               {
                 "properties": {
-                  "ppe": {
+                  "ContaminationPPE": {
                     "const": "Yes"
                   }
                 }
               },
               {
                 "properties": {
-                  "ppe": {
+                  "ContaminationPPE": {
                     "const": "No"
                   },
-                  "reasonPpe": {
+                  "ContaminationReasonPPENotInPlace": {
                     "title": "Reason why this is not in place",
                     "type": "string"
                   }
                 },
                 "required": [
-                  "reasonPpe"
+                  "ContaminationReasonPPENotInPlace"
                 ]
               }
             ]
           },
-          "washhands": {
+          "ContaminationWashHands": {
             "oneOf": [
               {
                 "properties": {
-                  "washhands": {
+                  "ContaminationWashHands": {
                     "const": "Yes"
                   }
                 }
               },
               {
                 "properties": {
-                  "washhands": {
+                  "ContaminationWashHands": {
                     "const": "No"
                   },
-                  "reasonWashHands": {
+                  "ContaminationReasonWashHandsNotInPlace": {
                     "title": "Reason why this is not in place",
                     "type": "string"
                   }
                 },
                 "required": [
-                  "reasonWashHands"
+                  "ContaminationReasonWashHandsNotInPlace"
                 ]
               }
             ]
           },
-          "otherControls": {
+          "ContaminationOtherControl": {
             "oneOf": [
               {
                 "properties": {
-                  "otherControls": {
+                  "ContaminationOtherControl": {
                     "const": "No"
                   }
                 }
               },
               {
                 "properties": {
-                  "otherControls": {
+                  "ContaminationOtherControl": {
                     "const": "Yes"
                   },
-                  "reasonOtherControls": {
+                  "ContaminationOtherControlDescription": {
                     "title": "Describe other controls in place",
                     "type": "string"
                   }
                 },
                 "required": [
-                  "reasonOtherControls"
+                  "ContaminationOtherControlDescription"
                 ]
               }
             ]
@@ -1961,7 +1961,7 @@
         "title": "Hygeine / Welfare - Fatigue",
         "type": "object",
         "properties": {
-          "briefingEcc": {
+          "FatigueEmergencyBriefing": {
             "title": "Briefing from Emergency Control Centre, maintaining contact with Emergency Control Centre Shift changes",
             "type": "string",
             "enum": [
@@ -1969,7 +1969,7 @@
               "No"
             ]
           },
-          "guidance": {
+          "FatigueCommanderGuidance": {
             "title": "Guidance from Incident Commander",
             "type": "string",
             "enum": [
@@ -1977,7 +1977,7 @@
               "No"
             ]
           },
-          "otherControls": {
+          "FatigueOtherControl": {
             "title": "Other controls in place",
             "type": "string",
             "enum": [
@@ -1985,88 +1985,88 @@
               "No"
             ]
           },
-          "furtherAction": {
+          "FatigueFurtherAction": {
             "title": "Any further action required or risks identified #lbrack#optional#rbrack#",
             "type": "string"
           }
         },
         "required": [
-          "briefingEcc",
-          "guidance",
-          "otherControls"
+          "FatigueEmergencyBriefing",
+          "FatigueCommanderGuidance",
+          "FatigueOtherControl"
         ],
         "dependencies": {
-          "briefingEcc": {
+          "FatigueEmergencyBriefing": {
             "oneOf": [
               {
                 "properties": {
-                  "briefingEcc": {
+                  "FatigueEmergencyBriefing": {
                     "const": "Yes"
                   }
                 }
               },
               {
                 "properties": {
-                  "briefingEcc": {
+                  "FatigueEmergencyBriefing": {
                     "const": "No"
                   },
-                  "reasonEcc": {
+                  "FatigueReasonEmergencyBriefingNotInPlace": {
                     "title": "Reason why this is not in place",
                     "type": "string"
                   }
                 },
                 "required": [
-                  "reasonEcc"
+                  "FatigueReasonEmergencyBriefingNotInPlace"
                 ]
               }
             ]
           },
-          "guidance": {
+          "FatigueCommanderGuidance": {
             "oneOf": [
               {
                 "properties": {
-                  "guidance": {
+                  "FatigueCommanderGuidance": {
                     "const": "Yes"
                   }
                 }
               },
               {
                 "properties": {
-                  "guidance": {
+                  "FatigueCommanderGuidance": {
                     "const": "No"
                   },
-                  "reasonGuidance": {
+                  "FatigueReasonCommanderGuidanceNotInPlace": {
                     "title": "Reason why this is not in place",
                     "type": "string"
                   }
                 },
                 "required": [
-                  "reasonGuidance"
+                  "FatigueReasonCommanderGuidanceNotInPlace"
                 ]
               }
             ]
           },
-          "otherControls": {
+          "FatigueOtherControl": {
             "oneOf": [
               {
                 "properties": {
-                  "otherControls": {
+                  "FatigueOtherControl": {
                     "const": "No"
                   }
                 }
               },
               {
                 "properties": {
-                  "otherControls": {
+                  "FatigueOtherControl": {
                     "const": "Yes"
                   },
-                  "reasonOtherControls": {
+                  "FatigueOtherControlDescription": {
                     "title": "Describe other controls in place",
                     "type": "string"
                   }
                 },
                 "required": [
-                  "reasonOtherControls"
+                  "FatigueOtherControlDescription"
                 ]
               }
             ]
@@ -2075,12 +2075,12 @@
       }
     },
     {
-      "type": "haz_workingatheight",
+      "type": "haz_height",
       "dataSchema": {
         "title": "Working at height",
         "type": "object",
         "properties": {
-          "briefingEcc": {
+          "HeightEmergencyBriefing": {
             "title": "Briefing from Emergency Control Centre",
             "type": "string",
             "enum": [
@@ -2088,7 +2088,7 @@
               "No"
             ]
           },
-          "briefingFcpc": {
+          "HeightForwardBriefing": {
             "title": "Briefing from Forward Control Point",
             "type": "string",
             "enum": [
@@ -2096,7 +2096,7 @@
               "No"
             ]
           },
-          "unsafeCordon": {
+          "HeightCordon": {
             "title": "Do not enter cordon/area#lbrack#s#rbrack# deemed unsafe by the Incident Commander",
             "type": "string",
             "enum": [
@@ -2104,7 +2104,7 @@
               "No"
             ]
           },
-          "otherControls": {
+          "HeightOtherControl": {
             "title": "Other controls in place",
             "type": "string",
             "enum": [
@@ -2112,114 +2112,114 @@
               "No"
             ]
           },
-          "furtherAction": {
+          "HeightFurtherAction": {
             "title": "Any further action required or risks identified #lbrack#optional#rbrack#",
             "type": "string"
           }
         },
         "required": [
-          "briefingEcc",
-          "briefingFcpc",
-          "unsafeCordon",
-          "otherControls"
+          "HeightEmergencyBriefing",
+          "HeightForwardBriefing",
+          "HeightCordon",
+          "HeightOtherControl"
         ],
         "dependencies": {
-          "briefingEcc": {
+          "HeightEmergencyBriefing": {
             "oneOf": [
               {
                 "properties": {
-                  "briefingEcc": {
+                  "HeightEmergencyBriefing": {
                     "const": "Yes"
                   }
                 }
               },
               {
                 "properties": {
-                  "briefingEcc": {
+                  "HeightEmergencyBriefing": {
                     "const": "No"
                   },
-                  "reasonEcc": {
+                  "HeightReasonEmergencyBriefingNotInPlace": {
                     "title": "Reason why this is not in place",
                     "type": "string"
                   }
                 },
                 "required": [
-                  "reasonEcc"
+                  "HeightReasonEmergencyBriefingNotInPlace"
                 ]
               }
             ]
           },
-          "briefingFcpc": {
+          "HeightForwardBriefing": {
             "oneOf": [
               {
                 "properties": {
-                  "briefingFcpc": {
+                  "HeightForwardBriefing": {
                     "const": "Yes"
                   }
                 }
               },
               {
                 "properties": {
-                  "briefingFcpc": {
+                  "HeightForwardBriefing": {
                     "const": "No"
                   },
-                  "reasonFcpc": {
+                  "HeightReasonForwardBriefingNotInPlace": {
                     "title": "Reason why this is not in place",
                     "type": "string"
                   }
                 },
                 "required": [
-                  "reasonFcpc"
+                  "HeightReasonForwardBriefingNotInPlace"
                 ]
               }
             ]
           },
-          "unsafeCordon": {
+          "HeightCordon": {
             "oneOf": [
               {
                 "properties": {
-                  "unsafeCordon": {
+                  "HeightCordon": {
                     "const": "Yes"
                   }
                 }
               },
               {
                 "properties": {
-                  "unsafeCordon": {
+                  "HeightCordon": {
                     "const": "No"
                   },
-                  "reasonUnsafeCordon": {
+                  "HeightReasonCordonNotInPlace": {
                     "title": "Reason why this is not in place",
                     "type": "string"
                   }
                 },
                 "required": [
-                  "reasonUnsafeCordon"
+                  "HeightReasonCordonNotInPlace"
                 ]
               }
             ]
           },
-          "otherControls": {
+          "HeightOtherControl": {
             "oneOf": [
               {
                 "properties": {
-                  "otherControls": {
+                  "HeightOtherControl": {
                     "const": "No"
                   }
                 }
               },
               {
                 "properties": {
-                  "otherControls": {
+                  "HeightOtherControl": {
                     "const": "Yes"
                   },
-                  "reasonOtherControls": {
+                  "HeightOtherControlDescription": {
                     "title": "Describe other controls in place",
                     "type": "string"
                   }
                 },
                 "required": [
-                  "reasonOtherControls"
+                  "HeightOtherControlDescription"
                 ]
               }
             ]
@@ -2228,12 +2228,12 @@
       }
     },
     {
-      "type": "haz_enclosedspaces",
+      "type": "haz_enclosed",
       "dataSchema": {
         "title": "Enclosed Spaces",
         "type": "object",
         "properties": {
-          "briefingEcc": {
+          "EnclosedEmergencyBriefing": {
             "title": "Briefing from Emergency Control Centre",
             "type": "string",
             "enum": [
@@ -2241,7 +2241,7 @@
               "No"
             ]
           },
-          "briefingFcpc": {
+          "EnclosedForwardBriefing": {
             "title": "Briefing from Forward Control Point",
             "type": "string",
             "enum": [
@@ -2249,7 +2249,7 @@
               "No"
             ]
           },
-          "unsafeCordon": {
+          "EnclosedCordon": {
             "title": "Do not enter cordon/area#lbrack#s#rbrack# deemed unsafe by the Incident Commander",
             "type": "string",
             "enum": [
@@ -2257,7 +2257,7 @@
               "No"
             ]
           },
-          "otherControls": {
+          "EnclosedOtherControl": {
             "title": "Other controls in place",
             "type": "string",
             "enum": [
@@ -2265,114 +2265,114 @@
               "No"
             ]
           },
-          "furtherAction": {
+          "EnclosedFurtherAction": {
             "title": "Any further action required or risks identified #lbrack#optional#rbrack#",
             "type": "string"
           }
         },
         "required": [
-          "briefingEcc",
-          "briefingFcpc",
-          "unsafeCordon",
-          "otherControls"
+          "EnclosedEmergencyBriefing",
+          "EnclosedForwardBriefing",
+          "EnclosedCordon",
+          "EnclosedOtherControl"
         ],
         "dependencies": {
-          "briefingEcc": {
+          "EnclosedEmergencyBriefing": {
             "oneOf": [
               {
                 "properties": {
-                  "briefingEcc": {
+                  "EnclosedEmergencyBriefing": {
                     "const": "Yes"
                   }
                 }
               },
               {
                 "properties": {
-                  "briefingEcc": {
+                  "EnclosedEmergencyBriefing": {
                     "const": "No"
                   },
-                  "reasonEcc": {
+                  "EnclosedReasonEmergencyBriefingNotInPlace": {
                     "title": "Reason why this is not in place",
                     "type": "string"
                   }
                 },
                 "required": [
-                  "reasonEcc"
+                  "EnclosedReasonEmergencyBriefingNotInPlace"
                 ]
               }
             ]
           },
-          "briefingFcpc": {
+          "EnclosedForwardBriefing": {
             "oneOf": [
               {
                 "properties": {
-                  "briefingFcpc": {
+                  "EnclosedForwardBriefing": {
                     "const": "Yes"
                   }
                 }
               },
               {
                 "properties": {
-                  "briefingFcpc": {
+                  "EnclosedForwardBriefing": {
                     "const": "No"
                   },
-                  "reasonFcpc": {
+                  "EnclosedReasonForwardBriefingNotInPlace": {
                     "title": "Reason why this is not in place",
                     "type": "string"
                   }
                 },
                 "required": [
-                  "reasonFcpc"
+                  "EnclosedReasonForwardBriefingNotInPlace"
                 ]
               }
             ]
           },
-          "unsafeCordon": {
+          "EnclosedCordon": {
             "oneOf": [
               {
                 "properties": {
-                  "unsafeCordon": {
+                  "EnclosedCordon": {
                     "const": "Yes"
                   }
                 }
               },
               {
                 "properties": {
-                  "unsafeCordon": {
+                  "EnclosedCordon": {
                     "const": "No"
                   },
-                  "reasonUnsafeCordon": {
+                  "EnclosedReasonCordonNotInPlace": {
                     "title": "Reason why this is not in place",
                     "type": "string"
                   }
                 },
                 "required": [
-                  "reasonUnsafeCordon"
+                  "EnclosedReasonCordonNotInPlace"
                 ]
               }
             ]
           },
-          "otherControls": {
+          "EnclosedOtherControl": {
             "oneOf": [
               {
                 "properties": {
-                  "otherControls": {
+                  "EnclosedOtherControl": {
                     "const": "No"
                   }
                 }
               },
               {
                 "properties": {
-                  "otherControls": {
+                  "EnclosedOtherControl": {
                     "const": "Yes"
                   },
-                  "reasonOtherControls": {
+                  "EnclosedOtherControlDescription": {
                     "title": "Describe other controls in place",
                     "type": "string"
                   }
                 },
                 "required": [
-                  "reasonOtherControls"
+                  "EnclosedOtherControlDescription"
                 ]
               }
             ]
@@ -2381,12 +2381,12 @@
       }
     },
     {
-      "type": "haz_newmothers",
+      "type": "haz_mothers",
       "dataSchema": {
         "title": "New and Expectant Mothers",
         "type": "object",
         "properties": {
-          "briefingEcc": {
+          "MothersEmergencyBriefing": {
             "title": "Briefing from Emergency Control Centre",
             "type": "string",
             "enum": [
@@ -2394,7 +2394,7 @@
               "No"
             ]
           },
-          "briefingFcpc": {
+          "MothersForwardBriefing": {
             "title": "Briefing from Forward Control Point",
             "type": "string",
             "enum": [
@@ -2402,7 +2402,7 @@
               "No"
             ]
           },
-          "unsafeAreas": {
+          "MothersCordon": {
             "title": "Do not enter areas deemed unsafe",
             "type": "string",
             "enum": [
@@ -2410,7 +2410,7 @@
               "No"
             ]
           },
-          "otherControls": {
+          "MothersOtherControl": {
             "title": "Other controls in place",
             "type": "string",
             "enum": [
@@ -2418,114 +2418,114 @@
               "No"
             ]
           },
-          "furtherAction": {
+          "MothersFurtherAction": {
             "title": "Any further action required or risks identified #lbrack#optional#rbrack#",
             "type": "string"
           }
         },
         "required": [
-          "briefingEcc",
-          "briefingFcpc",
-          "unsafeAreas",
-          "otherControls"
+          "MothersEmergencyBriefing",
+          "MothersForwardBriefing",
+          "MothersCordon",
+          "MothersOtherControl"
         ],
         "dependencies": {
-          "briefingEcc": {
+          "MothersEmergencyBriefing": {
             "oneOf": [
               {
                 "properties": {
-                  "briefingEcc": {
+                  "MothersEmergencyBriefing": {
                     "const": "Yes"
                   }
                 }
               },
               {
                 "properties": {
-                  "briefingEcc": {
+                  "MothersEmergencyBriefing": {
                     "const": "No"
                   },
-                  "reasonEcc": {
+                  "MothersReasonEmergencyBriefingNotInPlace": {
                     "title": "Reason why this is not in place",
                     "type": "string"
                   }
                 },
                 "required": [
-                  "reasonEcc"
+                  "MothersReasonEmergencyBriefingNotInPlace"
                 ]
               }
             ]
           },
-          "briefingFcpc": {
+          "MothersForwardBriefing": {
             "oneOf": [
               {
                 "properties": {
-                  "briefingFcpc": {
+                  "MothersForwardBriefing": {
                     "const": "Yes"
                   }
                 }
               },
               {
                 "properties": {
-                  "briefingFcpc": {
+                  "MothersForwardBriefing": {
                     "const": "No"
                   },
-                  "reasonFcpc": {
+                  "MothersReasonForwardBriefingNotInPlace": {
                     "title": "Reason why this is not in place",
                     "type": "string"
                   }
                 },
                 "required": [
-                  "reasonFcpc"
+                  "MothersReasonForwardBriefingNotInPlace"
                 ]
               }
             ]
           },
-          "unsafeAreas": {
+          "MothersCordon": {
             "oneOf": [
               {
                 "properties": {
-                  "unsafeAreas": {
+                  "MothersCordon": {
                     "const": "Yes"
                   }
                 }
               },
               {
                 "properties": {
-                  "unsafeAreas": {
+                  "MothersCordon": {
                     "const": "No"
                   },
-                  "reasonUnsafeAreas": {
+                  "MothersReasonCordonNotInPlace": {
                     "title": "Reason why this is not in place",
                     "type": "string"
                   }
                 },
                 "required": [
-                  "reasonUnsafeAreas"
+                  "MothersReasonCordonNotInPlace"
                 ]
               }
             ]
           },
-          "otherControls": {
+          "MothersOtherControl": {
             "oneOf": [
               {
                 "properties": {
-                  "otherControls": {
+                  "MothersOtherControl": {
                     "const": "No"
                   }
                 }
               },
               {
                 "properties": {
-                  "otherControls": {
+                  "MothersOtherControl": {
                     "const": "Yes"
                   },
-                  "reasonOtherControls": {
+                  "MothersOtherControlDescription": {
                     "title": "Describe other controls in place",
                     "type": "string"
                   }
                 },
                 "required": [
-                  "reasonOtherControls"
+                  "MothersOtherControlDescription"
                 ]
               }
             ]
@@ -2534,12 +2534,12 @@
       }
     },
     {
-      "type": "haz_lasupportstaff",
+      "type": "haz_staff",
       "dataSchema": {
         "title": "Local Authority Support Staff",
         "type": "object",
         "properties": {
-          "briefingLiaison": {
+          "StaffBriefing": {
             "title": "Briefing from Liaison Officer",
             "type": "string",
             "enum": [
@@ -2547,7 +2547,7 @@
               "No"
             ]
           },
-          "ppe": {
+          "StaffPPE": {
             "title": "PPE - Hi Viz vest",
             "type": "string",
             "enum": [
@@ -2555,7 +2555,7 @@
               "No"
             ]
           },
-          "staffregister": {
+          "StaffRegister": {
             "title": "Register of staff on site",
             "type": "string",
             "enum": [
@@ -2563,7 +2563,7 @@
               "No"
             ]
           },
-          "otherControls": {
+          "StaffOtherControl": {
             "title": "Other controls in place",
             "type": "string",
             "enum": [
@@ -2571,114 +2571,114 @@
               "No"
             ]
           },
-          "furtherAction": {
+          "StaffFurtherAction": {
             "title": "Any further action required or risks identified #lbrack#optional#rbrack#",
             "type": "string"
           }
         },
         "required": [
-          "briefingLiaison",
-          "ppe",
-          "staffregister",
-          "otherControls"
+          "StaffBriefing",
+          "StaffPPE",
+          "StaffRegister",
+          "StaffOtherControl"
         ],
         "dependencies": {
-          "briefingLiaison": {
+          "StaffBriefing": {
             "oneOf": [
               {
                 "properties": {
-                  "briefingLiaison": {
+                  "StaffBriefing": {
                     "const": "Yes"
                   }
                 }
               },
               {
                 "properties": {
-                  "briefingLiaison": {
+                  "StaffBriefing": {
                     "const": "No"
                   },
-                  "reasonLiaison": {
+                  "StaffReasonBriefingNotInPlace": {
                     "title": "Reason why this is not in place",
                     "type": "string"
                   }
                 },
                 "required": [
-                  "reasonLiaison"
+                  "StaffReasonBriefingNotInPlace"
                 ]
               }
             ]
           },
-          "ppe": {
+          "StaffPPE": {
             "oneOf": [
               {
                 "properties": {
-                  "ppe": {
+                  "StaffPPE": {
                     "const": "Yes"
                   }
                 }
               },
               {
                 "properties": {
-                  "ppe": {
+                  "StaffPPE": {
                     "const": "No"
                   },
-                  "reasonPpe": {
+                  "StaffReasonPPENotInPlace": {
                     "title": "Reason why this is not in place",
                     "type": "string"
                   }
                 },
                 "required": [
-                  "reasonPpe"
+                  "StaffReasonPPENotInPlace"
                 ]
               }
             ]
           },
-          "staffregister": {
+          "StaffRegister": {
             "oneOf": [
               {
                 "properties": {
-                  "staffregister": {
+                  "StaffRegister": {
                     "const": "Yes"
                   }
                 }
               },
               {
                 "properties": {
-                  "staffregister": {
+                  "StaffRegister": {
                     "const": "No"
                   },
-                  "reasonStaffRegister": {
+                  "StaffReasonRegisterNotInPlace": {
                     "title": "Reason why this is not in place",
                     "type": "string"
                   }
                 },
                 "required": [
-                  "reasonStaffRegister"
+                  "StaffReasonRegisterNotInPlace"
                 ]
               }
             ]
           },
-          "otherControls": {
+          "StaffOtherControl": {
             "oneOf": [
               {
                 "properties": {
-                  "otherControls": {
+                  "StaffOtherControl": {
                     "const": "No"
                   }
                 }
               },
               {
                 "properties": {
-                  "otherControls": {
+                  "StaffOtherControl": {
                     "const": "Yes"
                   },
-                  "reasonOtherControls": {
+                  "StaffOtherControlDescription": {
                     "title": "Describe other controls in place",
                     "type": "string"
                   }
                 },
                 "required": [
-                  "reasonOtherControls"
+                  "StaffOtherControlDescription"
                 ]
               }
             ]

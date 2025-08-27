@@ -65,3 +65,7 @@ export function getRelevantHazards(): Field {
 export function getRelevantHazard(): Field {
   return { ...RelevantHazard, options: getHazardTypes() };
 }
+
+export function getHazardLabel(id: string): string | undefined {
+  return HAZARDS.find((hazard) => hazard.id === id)?.label;
+}

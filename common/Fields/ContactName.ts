@@ -8,7 +8,8 @@ import { type Field } from '../Field';
 const ContactName: Field = {
   id: 'ContactName',
   label: `Correspondent's name`,
-  type: 'Input'
+  type: 'Input',
+  title: 'corespondents name'
 };
 
 export function getContactName(): Field {

@@ -27,7 +27,9 @@ export default tsEslint.config(js.configs.recommended, ...tsEslint.configs.recom
     parser: tsEslint.parser,
     ecmaVersion: 'latest',
     sourceType: 'module',
-    parserOptions: {}
+    parserOptions: {
+      tsconfigRootDir: 'frontend'
+    }
   },
 
   extends: fixupPluginRules(compat.extends('prettier')),

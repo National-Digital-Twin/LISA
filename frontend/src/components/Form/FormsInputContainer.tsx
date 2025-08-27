@@ -42,7 +42,7 @@ import { CommunicationMethod } from 'common/Fields/CommunicationMethod';
 import { Form as CustomForm } from '../CustomForms/FormTemplates/types';
 import { FormContainer as CustomFormContainer } from '../CustomForms/FormInstances/FormContainer';
 import { RelevantHazards } from 'common/LogEntryTypes/RiskAssessment/hazards/RelevantHazards';
-import { getRelevantHazard } from 'common/LogEntryTypes/RiskAssessment/hazards';
+import { getRelevantHazard, getHazardLabel } from 'common/LogEntryTypes/RiskAssessment/hazards';
 import FormField from './FormField';
 
 type Props = {
@@ -116,6 +116,7 @@ export const FormsInputContainer = ({
     setAddingSiteRepDetails(false);
     setAddingHazard(false);
     setAddingComments(false);
+    setAddingFormFields(false);
     setAddingDateAndTime(false);
     setAddingLocation(false);
     setAddingAttachments(false);
@@ -227,6 +228,7 @@ export const FormsInputContainer = ({
     ...option,
     id: `selectHazard-${index}`,
     value: value ? value : option.value,
+    valueLabel: value ? getHazardLabel(value) : option.valueLabel,
     onClick: () =>
       onHazardOptionClick(
         index,
@@ -478,12 +480,18 @@ export const FormsInputContainer = ({
     {
       id: 'addComments',
       onClick: () => {
-        setCustomHeading('Add comment');
+        setCustomHeading('Add comments');
+        setFormField(formFields.find((formField) => formField.id === 'Comments')!);
         setAddingComments(true);
         setLevel(2);
       },
       label: 'Add comments',
-      value: entry.content?.text ? entry.content.text : undefined,
+      value:
+        (entry.type === 'RiskAssessment' &&
+          formFields
+            .filter((formField) => formField.id === 'Comments')
+            .map((formField) => getFieldValue(formField, entry)?.toString())?.[0]) ||
+        undefined,
       supportedOffline: true
     }
   ];
@@ -508,7 +516,7 @@ export const FormsInputContainer = ({
           id: `field-${field.id}`,
           dependentId: field.dependentFieldId,
           onClick: () => {
-            setCustomHeading('Add field');
+            setCustomHeading(`Add ${field.title ?? 'field'}`);
             setAddingFormFields(true);
             setFormField(field);
             setLevel(2);
@@ -551,6 +559,7 @@ export const FormsInputContainer = ({
     {
       id: 'attachments',
       onClick: () => {
+        setCustomHeading('Add attachment(s)');
         setAddingAttachments(true);
         setLevel(2);
       },
@@ -560,6 +569,7 @@ export const FormsInputContainer = ({
     {
       id: 'sketch',
       onClick: () => {
+        setCustomHeading('Add sketch');
         setAddingSketch(true);
         setLevel(2);
       },
@@ -611,7 +621,7 @@ export const FormsInputContainer = ({
       heading: customHeading,
       inputControls: (
         <>
-          {(addingDescription || addingComments) && (
+          {addingDescription && (
             <Box flexGrow={1}>
               <EntryContent
                 id="content"
@@ -648,6 +658,15 @@ export const FormsInputContainer = ({
                 errors={errors}
               />
             </Box>
+          )}
+          {addingComments && formFields && formField && (
+            <FormField
+              field={formField}
+              entry={entry}
+              entries={entries}
+              onChange={onNestedFieldChange}
+              error={errors.find((error) => error.fieldId === 'Comments')}
+            />
           )}
           {addingHazard && formField && (
             <Box display="flex" flexDirection="column" flexGrow={1} gap={2}>
