@@ -60,8 +60,6 @@ jobs:
   frontend-ci:
     needs: [versioning]
     uses: ./.github/workflows/frontend-ci-pr.yml
-    secrets:
-      VITE_MAP_TILER_TOKEN: ${{ secrets.VITE_MAP_TILER_TOKEN }}
 
   proxy-ci:
     needs: [versioning]
@@ -72,27 +70,24 @@ jobs:
     uses: ./.github/workflows/backend-cd-push-to-ECR.yml
     with:
       aws_account_number: "${{ vars.STAGING_AWS_ACCOUNT_ID }}"
-      repo_name: "vista/python-api"
-      app_name: "backend"
+      repo_name: "lisa/api"
+      app_name: "lisa/api"
       version: ${{ needs.versioning.outputs.version }}
 
   frontend-push-to-ECR:
     needs: [frontend-ci, versioning]
     uses: ./.github/workflows/frontend-cd-push-to-ECR.yml
-    secrets:
-      VITE_MAP_TILER_TOKEN: ${{ secrets.VITE_MAP_TILER_TOKEN }}
     with:
       aws_account_number: "${{ vars.STAGING_AWS_ACCOUNT_ID }}"
-      repo_name: "vista/frontend"
-      app_name: "frontend"
+      repo_name: "lisa/webapp"
+      app_name: "lisa/webapp"
       version: ${{ needs.versioning.outputs.version }}
-      environment: demo
 
   proxy-push-to-ECR:
     needs: [proxy-ci, versioning]
     uses: ./.github/workflows/transparent-proxy-cd-push-to-ECR.yml
     with:
       aws_account_number: "${{ vars.STAGING_AWS_ACCOUNT_ID }}"
-      repo_name: "vista/transparent-proxy"
+      repo_name: "lisa/transparent-proxy"
       app_name: "transparent-proxy"
       version: ${{ needs.versioning.outputs.version }}
