@@ -15,6 +15,7 @@ export const BaseNotification = Record({
   id: String,
   recipient: String,
   read: Boolean,
+  seen: Boolean,
   dateTime: String,
   incidentTitle: String
 });

@@ -75,6 +75,7 @@ function getUserMentionNotification(
   recipient: string,
   dateTime: string,
   read: boolean,
+  seen: boolean,
   incidentTitle: string,
   row: ResultRow
 ): UserMentionNotification {
@@ -84,6 +85,7 @@ function getUserMentionNotification(
     recipient,
     dateTime,
     read,
+    seen,
     incidentTitle,
     entry: {
       id: nodeValue(row.entryId.value),
@@ -102,6 +104,7 @@ function getTaskAssignedNotification(
   recipient: string,
   dateTime: string,
   read: boolean,
+  seen: boolean,
   incidentTitle: string,
   row: ResultRow
 ): TaskAssignedNotification {
@@ -111,6 +114,7 @@ function getTaskAssignedNotification(
     recipient,
     dateTime,
     read,
+    seen,
     incidentTitle,
     task: {
       id: nodeValue(row.taskId.value),
@@ -130,14 +134,15 @@ export function parseNotification(row: ResultRow): Notification {
   const recipient = row.recipient.value;
   const dateTime = row.createdAt.value;
   const read = row.read?.value !== undefined;
+  const seen = row.seen?.value !== undefined || read;
   const incidentTitle = row.incidentName.value;
 
   switch (type) {
     case 'UserMentionNotification':
-      return getUserMentionNotification(id, type, recipient, dateTime, read, incidentTitle, row);
+      return getUserMentionNotification(id, type, recipient, dateTime, read, seen, incidentTitle, row);
 
     case 'TaskAssignedNotification':
-      return getTaskAssignedNotification(id, type, recipient, dateTime, read, incidentTitle, row);
+      return getTaskAssignedNotification(id, type, recipient, dateTime, read, seen, incidentTitle, row);
 
     default:
       throw new ApplicationError(`unknown notification type ${type} could not be parsed`);
