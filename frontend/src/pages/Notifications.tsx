@@ -177,7 +177,10 @@ export default function Notifications() {
           <Tab label="All" sx={{ textTransform: 'none' }} />
           <Tab
             label={unreadCount > 0 ? `Unread (${unreadCount})` : 'Unread'}
-            sx={{ textTransform: 'none' }}
+            sx={{ 
+              textTransform: 'none', 
+              color: unreadCount > 0 ? 'red' : 'inherit'
+            }}
           />
         </Tabs>
       </Box>
