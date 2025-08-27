@@ -5,7 +5,6 @@
 import { type ReactNode, useEffect, useMemo, useState } from 'react';
 import { onlineManager } from '@tanstack/react-query';
 import { OnlineContext } from '../context/OnlineContext';
-import { redirectToLanding } from '../utils/authRedirect';
 
 const PING_INTERVAL_MS = 2500; // polls every 2.5s
 const PING_URL = '/api/ping';
@@ -31,12 +30,6 @@ const OnlineProvider = ({ children }: Readonly<OnlineProviderProps>) => {
           method: 'HEAD',
           cache: 'no-store'
         });
-
-        if (response.status === 401 || response.status === 403) {
-          redirectToLanding();
-          return;
-        }
-
         onlineManager.setOnline(response.ok);
       } catch {
         onlineManager.setOnline(false);
