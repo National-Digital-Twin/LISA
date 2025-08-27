@@ -4,17 +4,15 @@
 
 import { ReactNode } from 'react';
 import TextSnippetOutlinedIcon from '@mui/icons-material/TextSnippetOutlined';
-import AccessTimeIcon from '@mui/icons-material/AccessTime';
-import LocationOnOutlinedIcon from '@mui/icons-material/LocationOnOutlined';
-import AttachFileIcon from '@mui/icons-material/AttachFile';
-import DrawOutlinedIcon from '@mui/icons-material/DrawOutlined';
+import AccessTimeOutlinedIcon from '@mui/icons-material/AccessTimeOutlined';
+import AttachFileOutlinedIcon from '@mui/icons-material/AttachFileOutlined';
 import BadgeOutlinedIcon from '@mui/icons-material/BadgeOutlined';
 import AssignmentTurnedInOutlinedIcon from '@mui/icons-material/AssignmentTurnedInOutlined';
 import NotesOutlinedIcon from '@mui/icons-material/NotesOutlined';
-import LocationOnIcon from '@mui/icons-material/LocationOn';
-import DrawIcon from '@mui/icons-material/Draw';
 import WarningAmberOutlinedIcon from '@mui/icons-material/WarningAmberOutlined';
 import AddCommentOutlinedIcon from '@mui/icons-material/AddCommentOutlined';
+import LocationOnOutlinedIcon from '@mui/icons-material/LocationOnOutlined';
+import DrawOutlinedIcon from '@mui/icons-material/DrawOutlined';
 import { ValidationError } from '../../utils/types';
 import { EntityOption } from './EntityOption';
 import { SituationReport } from 'common/LogEntryTypes/SituationReport';
@@ -139,7 +137,7 @@ const forms = (data: EntityOptionData[], errors: ValidationError[]) => {
     )),
     <EntityOption
       key="date-and-time-option"
-      icon={<AccessTimeIcon />}
+      icon={<AccessTimeOutlinedIcon />}
       onClick={dateAndTimeOptionData!.onClick}
       required={!!dateAndTimeOptionData?.required}
       value={dateAndTimeOptionData?.value}
@@ -178,7 +176,7 @@ const forms = (data: EntityOptionData[], errors: ValidationError[]) => {
     />,
     <EntityOption
       key="attachments-option"
-      icon={<AttachFileIcon />}
+      icon={<AttachFileOutlinedIcon />}
       onClick={attachmentsOptionData!.onClick}
       required={!!attachmentsOptionData?.required}
       value={attachmentsOptionData?.value}
@@ -261,7 +259,7 @@ const tasks = (data: EntityOptionData[], errors: ValidationError[]) => {
     locationOptionData && (
       <EntityOption
         key="location-1"
-        icon={<LocationOnIcon />}
+        icon={<LocationOnOutlinedIcon />}
         onClick={locationOptionData.onClick}
         required={!!locationOptionData.required}
         value={locationOptionData.value}
@@ -275,7 +273,7 @@ const tasks = (data: EntityOptionData[], errors: ValidationError[]) => {
     attachmentsOptionData && (
       <EntityOption
         key="attachments-1"
-        icon={<AttachFileIcon />}
+        icon={<AttachFileOutlinedIcon />}
         onClick={attachmentsOptionData.onClick}
         required={!!attachmentsOptionData.required}
         value={attachmentsOptionData.value}
@@ -289,7 +287,7 @@ const tasks = (data: EntityOptionData[], errors: ValidationError[]) => {
     sketchOptionData && (
       <EntityOption
         key="sketch-1"
-        icon={<DrawIcon />}
+        icon={<DrawOutlinedIcon />}
         onClick={sketchOptionData.onClick}
         required={!!sketchOptionData.required}
         value={sketchOptionData.value}

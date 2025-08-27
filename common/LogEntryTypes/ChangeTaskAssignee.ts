@@ -6,7 +6,7 @@
 import { type LogEntryTypesDictItem } from './types';
 
 export const ChangeTaskAssignee: LogEntryTypesDictItem = {
-  label: 'Task assignee changed',
+  label: 'Task updated',
   colour: 'yellow',
   fields: () => [],
   noContent: true,

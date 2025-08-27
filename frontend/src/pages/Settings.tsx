@@ -57,7 +57,7 @@ const Settings = () => {
                   </ListItemButton>
                   <Divider />
 
-                  <ListItemButton sx={{ pl: 0 }} component={Link} to="/incidents">
+                  <ListItemButton sx={{ pl: 0 }} component={Link} to="/settings/incidents">
                     <ListItemText primary="Manage incidents" />
                     <ChevronRightIcon />
                   </ListItemButton>

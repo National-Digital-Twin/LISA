@@ -19,7 +19,7 @@ import { useAuth, useCreateLogEntry } from '../hooks';
 import PageWrapper from '../components/PageWrapper';
 import { GridListItem } from '../components/GridListItem';
 import StageMini from '../components/Stage/StageMini';
-import StageSelect from '../components/Stage/StageSelect';
+import StageSelector from '../components/InlineSelectors/StageSelector';
 import { isAdmin } from '../utils/userRoles';
 
 const Overview = () => {
@@ -134,7 +134,7 @@ const Overview = () => {
           </Typography>
           <Grid component="ul" container padding={3} spacing={4} bgcolor="background.default">
             {isUserAdmin ? (
-              <StageSelect value={incident.stage} onChange={onChangeStage} />
+              <StageSelector value={incident.stage} onChange={onChangeStage} />
             ) : (
               <GridListItem title="Stage">
                 <Box display="flex" alignItems="center" gap={1} flexWrap="nowrap">

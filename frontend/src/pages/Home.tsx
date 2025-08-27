@@ -2,17 +2,29 @@
 // © Crown Copyright 2025. This work has been developed by the National Digital Twin Programme
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
-import { Box, Button } from '@mui/material';
+import { Box, Button, Menu, MenuItem, Typography, Divider } from '@mui/material';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
+import { useNavigate } from 'react-router-dom';
 import { PageTitle } from '../components';
 import PageWrapper from '../components/PageWrapper';
 import AlertsWidget from '../components/Widgets/AlertsWidget';
 import IntroWidget from '../components/Widgets/IntroWidget';
 import TasksWidget from '../components/Widgets/TaskWidget';
-import { logInfo } from '../utils/logger';
+import { useMenu } from '../hooks';
 
 const Home = () => {
-  const handleOnAddNew = () => logInfo('Add New clicked')
+  const navigate = useNavigate();
+  const addMenu = useMenu();
+
+  const handleAddTask = () => {
+    addMenu.handleClose();
+    navigate('/incidents/pick?next=/tasks/create/:incidentId');
+  };
+
+  const handleAddEntry = () => {
+    addMenu.handleClose();
+    navigate('/incidents/pick?next=/logbook/:incidentId?add=entry');
+  };
 
   return (
     <>
@@ -24,13 +36,13 @@ const Home = () => {
           paddingY: '1.3rem'
         }}
       >
-        <PageTitle title="Summary" 
+        <PageTitle title="Summary"
           subtitleComponent={
             <Button
               type="button"
               variant="contained"
               startIcon={<AddCircleIcon />}
-              onClick={handleOnAddNew}
+              onClick={addMenu.handleOpen}
             >
               Add new
             </Button>
@@ -43,6 +55,35 @@ const Home = () => {
         <TasksWidget />
         <AlertsWidget />
       </PageWrapper>
+
+      <Menu
+        anchorEl={addMenu.anchorEl}
+        open={addMenu.open}
+        onClose={addMenu.handleClose}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'left'
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'left'
+        }}
+        slotProps={{
+          paper: {
+            sx: {
+              minWidth: 200
+            }
+          }
+        }}
+      >
+        <MenuItem onClick={handleAddEntry}>
+          <Typography sx={{ fontWeight: 'bold' }}>ENTRY</Typography>
+        </MenuItem>
+        <Divider />
+        <MenuItem onClick={handleAddTask}>
+          <Typography sx={{ fontWeight: 'bold' }}>TASK</Typography>
+        </MenuItem>
+      </Menu>
     </>
   );
 }

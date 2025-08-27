@@ -1,0 +1,93 @@
+# SPDX-License-Identifier: Apache-2.0
+# © Crown Copyright 2025. This work has been developed by the National Digital Twin Programme and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
+
+name: Release on New Release Branch
+
+on:
+  push:
+    branches:
+      - "release/*"
+
+permissions:
+  id-token: write
+  contents: write
+  packages: read
+  statuses: write
+
+jobs:
+  versioning:
+    name: Extract Version
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.extract_version.outputs.VERSION }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Ensure full history for tagging
+
+      - name: Extract version from branch name
+        id: extract_version
+        run: |
+          VERSION=$(echo "${GITHUB_REF#refs/heads/release/}")
+          # Replace hyphens with dots if needed
+          if [[ ! "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            VERSION=$(echo "$VERSION" | tr '-' '.')
+          fi
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Validate Version Format (Semantic Versioning)
+        run: |
+          if [[ ! "${{ env.VERSION }}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "❌ Invalid version format! Expected x.y.z (e.g., 1.2.3)"
+            exit 1
+          fi
+
+      - name: Print Extracted Version
+        run: |
+          echo "Tag Version: ${{ env.VERSION }}"
+          echo "Branch Name: $GITHUB_REF"
+
+      - name: Print docker image tag Version
+        run: |
+          echo "Generated Version: ${{ steps.extract_version.outputs.version }}"
+
+  backend-ci:
+    needs: [versioning]
+    uses: ./.github/workflows/backend-ci-pr.yml
+
+  frontend-ci:
+    needs: [versioning]
+    uses: ./.github/workflows/frontend-ci-pr.yml
+
+  proxy-ci:
+    needs: [versioning]
+    uses: ./.github/workflows/transparent-proxy-ci-pr.yml
+
+  backend-push-to-ECR:
+    needs: [backend-ci, versioning]
+    uses: ./.github/workflows/backend-cd-push-to-ECR.yml
+    with:
+      aws_account_number: "${{ vars.STAGING_AWS_ACCOUNT_ID }}"
+      repo_name: "lisa/api"
+      app_name: "lisa/api"
+      version: ${{ needs.versioning.outputs.version }}
+
+  frontend-push-to-ECR:
+    needs: [frontend-ci, versioning]
+    uses: ./.github/workflows/frontend-cd-push-to-ECR.yml
+    with:
+      aws_account_number: "${{ vars.STAGING_AWS_ACCOUNT_ID }}"
+      repo_name: "lisa/webapp"
+      app_name: "lisa/webapp"
+      version: ${{ needs.versioning.outputs.version }}
+
+  proxy-push-to-ECR:
+    needs: [proxy-ci, versioning]
+    uses: ./.github/workflows/transparent-proxy-cd-push-to-ECR.yml
+    with:
+      aws_account_number: "${{ vars.STAGING_AWS_ACCOUNT_ID }}"
+      repo_name: "lisa/transparent-proxy"
+      app_name: "transparent-proxy"
+      version: ${{ needs.versioning.outputs.version }}

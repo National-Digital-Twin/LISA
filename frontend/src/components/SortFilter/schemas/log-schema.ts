@@ -12,6 +12,12 @@ export const logSort: SortOption[] = [
   { id: 'date_asc', label: 'Date created (Oldest - newest)' },
 ];
 
+export const TASK_TYPES = new Set([
+  'taskcreated',
+  'changetaskassignee',
+  'changetaskstatus',
+]);
+
 export const buildLogFilters = (
   templateForms: { id: string; title: string }[],
   authors: string[] = []
@@ -55,6 +61,7 @@ export const buildLogFilters = (
         })),
       ]),
       ...makeOptions([
+        { id: 'task', label: 'Task'},
         { id: 'general', label: 'Update' },
       ]),
     ]),

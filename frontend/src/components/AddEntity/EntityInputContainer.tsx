@@ -38,11 +38,25 @@ export const EntityInputContainer = ({
   const handleBackClick = () => (level > 0 ? setLevel(level - 1) : onMainBackClick());
   return (
     <Box display="flex" flexDirection="column">
-      <Box display="flex" marginBottom={1}>
+      <Box display="flex" marginBottom={1} alignItems="center" gap={1}>
         <IconButton onClick={handleBackClick}>
           <ArrowBackIcon />
         </IconButton>
-        <Typography component="h1" padding={1}>
+        <Typography
+          fontSize="1.5rem"
+          variant="h1"
+          className="title"
+          fontWeight={400}
+          sx={{
+            mb: 0,
+            lineHeight: 1.15,
+            minWidth: 0,
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+            flex: '1 1 auto'
+          }}
+        >
           {entityInputItem.heading}
         </Typography>
       </Box>

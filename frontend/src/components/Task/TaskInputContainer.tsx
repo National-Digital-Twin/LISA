@@ -34,7 +34,13 @@ const fieldConfigs = {
   sketch: { heading: 'Add sketch', required: false, supportedOffline: true }
 };
 
-export const TaskInputContainer = ({ users, incidentId, onSubmit, onCancel, isSubmitting = false }: Readonly<Props>) => {
+export const TaskInputContainer = ({
+  users,
+  incidentId,
+  onSubmit,
+  onCancel,
+  isSubmitting = false
+}: Readonly<Props>) => {
   const [level, setLevel] = useState<number>(0);
   const [activeField, setActiveField] = useState<FieldType | null>(null);
 
@@ -105,7 +111,12 @@ export const TaskInputContainer = ({ users, incidentId, onSubmit, onCancel, isSu
     setSelectedFiles((prev) => prev.filter((f) => f.name !== name));
   };
 
-  const assigneeOptions = users?.map((user) => ({ value: user.username, label: user.displayName }));
+  const assigneeOptions = useMemo(() => {
+    return users
+      ?.filter((user) => user.displayName)
+      .sort((a, b) => a.displayName.localeCompare(b.displayName))
+      .map((user) => ({ value: user.username, label: user.displayName }));
+  }, [users]);
 
   const handleSubmit = () => {
     const validationErrors = validateTask(task);

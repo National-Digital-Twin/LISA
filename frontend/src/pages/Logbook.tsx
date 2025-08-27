@@ -2,9 +2,9 @@
 // © Crown Copyright 2025. This work has been developed by the National Digital Twin Programme
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
-import { MouseEvent, useEffect, useMemo, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { Box, Button, IconButton, Menu, MenuItem, Typography } from '@mui/material';
+import { MouseEvent, useEffect, useMemo, useRef, useState } from 'react';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { Box, Button, Divider, IconButton, Menu, MenuItem, Typography } from '@mui/material';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { v4 as uuidV4 } from 'uuid';
@@ -19,6 +19,7 @@ import {
   useIncidents,
   useLogEntries,
   useLogEntriesUpdates,
+  useMenu,
 } from '../hooks';
 import { Format } from '../utils';
 import { type OnCreateEntry } from '../utils/handlers';
@@ -29,7 +30,7 @@ import { logInfo } from '../utils/logger';
 
 // Sort & Filter schema + types
 import { SortAndFilter } from '../components/SortFilter/SortAndFilter';
-import { buildLogFilters, logSort } from '../components/SortFilter/schemas/log-schema';
+import { buildLogFilters, logSort, TASK_TYPES } from '../components/SortFilter/schemas/log-schema';
 import { type QueryState } from '../components/SortFilter/filter-types';
 import { useFormTemplates } from '../hooks/Forms/useFormTemplates';
 import { getFromAndToFromTimeSelection } from '../components/SortFilter/filter-utils';
@@ -46,8 +47,10 @@ const Logbook = () => {
   const [adding, setAdding] = useState<boolean>(false);
   const { isMobile } = useResponsive();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
-  
+  const usedTaskIdRef = useRef<string | null>(null);
+
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [queryState, setQueryState] = useState<QueryState>({
     values: {},
@@ -70,12 +73,12 @@ const Logbook = () => {
       })
       .sort((a, b) => a.localeCompare(b));
   }, [logEntries]);
-  
+
   const logFilters = useMemo(() => {
     const templates = forms ?? [];
     return buildLogFilters(templates, allAuthors);
   }, [allAuthors, forms]);
-  
+
   useEffect(() => {
     const preventRefresh = (ev: BeforeUnloadEvent) => {
       const lastEntry = logEntries?.at(-1);
@@ -89,23 +92,42 @@ const Logbook = () => {
   useEffect(() => {
     if (isOnline) startPolling();
     else clearPolling();
+
+    return () => {
+      clearPolling();
+    };
   }, [isOnline, startPolling, clearPolling]);
+
+  useEffect(() => {
+    const taskId = searchParams.get('taskId');
+    if (!taskId || usedTaskIdRef.current === taskId) return;
+
+    const match = (logEntries ?? []).find(
+      (e) => e.details?.createdTaskId && e.details.createdTaskId === taskId
+    );
+
+    if (match?.id) {
+      usedTaskIdRef.current = taskId;
+      navigate(`#${match.id}`, { replace: true });
+    }
+  }, [searchParams, logEntries, navigate]);
+
+  useEffect(() => {
+    const addParam = searchParams.get('add');
+    if (addParam === 'entry') {
+      setAdding(true);
+      // Clean up URL
+      navigate(`${window.location.pathname}${window.location.hash}`, { replace: true });
+    }
+  }, [searchParams, navigate]);
 
   const incident = query?.data?.find((inc) => inc.id === incidentId);
 
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const open = Boolean(anchorEl);
-
-  const handleClick = (event: MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
+  const optionsMenu = useMenu();
+  const addMenu = useMenu();
 
   const handleOverview = () => {
-    handleClose();
+    optionsMenu.handleClose();
     navigate(`/incident/${incident?.id}`);
   };
 
@@ -184,19 +206,24 @@ const Logbook = () => {
     const getTypeIds = (e: LogEntry): string[] => {
       const t = e.type;
       if (!t) return [];
-  
+
       const raw = (typeof t === 'string' && t) || '';
       if (!raw) return [];
-  
+
       const id = toId(raw);
-      const ids: string[] = [id];
-  
+      const ids: string[] = [];
+
+      if (id) {
+        ids.push(id);
+        if (TASK_TYPES.has(id)) ids.push('task');
+      }
+
       return ids;
     };
 
     const matchesAttachmentFilter = (entry: LogEntry, selected: Set<string>): boolean => {
       if (selected.size === 0) return true;
-    
+
       return Array.from(selected).some((type) => {
         if (type === 'location') return !!entry.location;
         if (type === 'file') return entry.attachments?.some((a) => a.type === 'File');
@@ -205,7 +232,7 @@ const Logbook = () => {
         return false;
       });
     };
-    
+
     // Search terms
     const searchTerm = ((v.search as string) ?? '').trim().toLowerCase();
 
@@ -230,7 +257,7 @@ const Logbook = () => {
     // Date range
     const customTimeRange = v.timeRange as { from?: string; to?: string } | undefined;
     const preset = v.time as string | undefined;
-    
+
     const {from, to} = getFromAndToFromTimeSelection(preset, customTimeRange);
 
     const filtered = items.filter((e) => {
@@ -248,7 +275,7 @@ const Logbook = () => {
       // types
       if (selectedTypes.size > 0) {
         const types = getTypeIds(e);
-      
+
         const isFormMatch = selectedTypes.has(`form::${(e.details?.submittedFormTemplateId ?? '')}`) ?? false;
         const hasAny = types.some((t) => selectedTypes.has(t));
 
@@ -327,13 +354,13 @@ const Logbook = () => {
               </Typography>
             </Box>
 
-            <IconButton aria-label="More options" onClick={handleClick}>
+            <IconButton aria-label="More options" onClick={optionsMenu.handleOpen}>
               <MoreVertIcon />
             </IconButton>
             <Menu
-              anchorEl={anchorEl}
-              open={open}
-              onClose={handleClose}
+              anchorEl={optionsMenu.anchorEl}
+              open={optionsMenu.open}
+              onClose={optionsMenu.handleClose}
               anchorOrigin={{
                 vertical: 'bottom',
                 horizontal: 'right'
@@ -347,7 +374,7 @@ const Logbook = () => {
             </Menu>
           </Box>
         </Box>
-  
+
         {!adding && (
           <Box
             display="flex"
@@ -363,7 +390,7 @@ const Logbook = () => {
               variant="contained"
               size={isMobile ? 'medium' : 'large'}
               startIcon={<AddCircleIcon />}
-              onClick={onAddEntryClick}
+              onClick={addMenu.handleOpen}
               sx={{ flex: 1 }}
             >
               Add new
@@ -379,6 +406,41 @@ const Logbook = () => {
             </Button>
           </Box>
         )}
+
+        <Menu
+          anchorEl={addMenu.anchorEl}
+          open={addMenu.open}
+          onClose={addMenu.handleClose}
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'left'
+          }}
+          transformOrigin={{
+            vertical: 'top',
+            horizontal: 'left'
+          }}
+          slotProps={{
+            paper: {
+              sx: {
+                minWidth: 200
+              }
+            }
+          }}
+        >
+          <MenuItem onClick={() => {
+            addMenu.handleClose();
+            onAddEntryClick();
+          }}>
+            <Typography sx={{ fontWeight: 'bold' }}>ENTRY</Typography>
+          </MenuItem>
+          <Divider />
+          <MenuItem onClick={() => {
+            addMenu.handleClose();
+            navigate(`/tasks/create/${incidentId}`);
+          }}>
+            <Typography sx={{ fontWeight: 'bold' }}>TASK</Typography>
+          </MenuItem>
+        </Menu>
       </PageTitle>
 
       {adding && (
@@ -398,14 +460,14 @@ const Logbook = () => {
               <Typography mt={1}>There are currently no log entries.</Typography>
             </Box>
           )}
-      
+
           {logEntries && logEntries.length > 0 && visibleEntries.length === 0 && (
             <Box p={2} bgcolor="background.default">
               <Typography variant="h6">No results found.</Typography>
               <Typography mt={1}>Try adjusting your filters.</Typography>
             </Box>
           )}
-      
+
           {logEntries && logEntries.length > 0 && visibleEntries.length > 0 && (
             <EntryList
               entries={visibleEntries}

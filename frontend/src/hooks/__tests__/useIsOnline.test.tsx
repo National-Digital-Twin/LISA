@@ -1,111 +1,42 @@
-import { renderHook, act } from '@testing-library/react';
-import { onlineManager } from '@tanstack/react-query';
+// SPDX-License-Identifier: Apache-2.0
+// © Crown Copyright 2025. This work has been developed by the National Digital Twin Programme
+// and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
+
+import React from 'react';
+import { renderHook } from '@testing-library/react';
 import { useIsOnline } from '../useIsOnline';
-
-jest.useFakeTimers();
-
-let isOnlineState = true;
-const listeners: ((online: boolean) => void)[] = [];
-
-beforeAll(() => {
-  onlineManager.isOnline = () => isOnlineState;
-
-  onlineManager.subscribe = (cb: (online: boolean) => void) => {
-    listeners.push(cb);
-    cb(isOnlineState);
-    return () => {
-      const index = listeners.indexOf(cb);
-      if (index > -1) listeners.splice(index, 1);
-    };
-  };
-
-  onlineManager.setOnline = (value: boolean) => {
-    isOnlineState = value;
-    act(() => {
-      listeners.forEach((cb) => cb(value));
-    });
-  };
-});
+import { OnlineContext } from '../../context/OnlineContext';
 
 describe('useIsOnline', () => {
-  beforeEach(() => {
-    global.fetch = jest.fn();
-    isOnlineState = true;
-    listeners.length = 0;
+  it('throws error when used outside OnlineProvider', () => {
+    const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
 
-    Object.defineProperty(navigator, 'onLine', {
-      configurable: true,
-      get: () => true,
-    });
+    expect(() => {
+      renderHook(() => useIsOnline());
+    }).toThrow('useIsOnline must be used within OnlineProvider');
+
+    consoleSpy.mockRestore();
   });
 
-  afterEach(() => {
-    jest.clearAllMocks();
-    jest.clearAllTimers();
-  });
+  it('returns true when context indicates online', () => {
+    const wrapper = ({ children }: { children: React.ReactNode }) => (
+      <OnlineContext.Provider value={{ isOnline: true }}>
+        {children}
+      </OnlineContext.Provider>
+    );
 
-  it('returns true if onlineManager is online', () => {
-    const { result } = renderHook(() => useIsOnline());
+    const { result } = renderHook(() => useIsOnline(), { wrapper });
     expect(result.current).toBe(true);
   });
 
-  it('sets false if ping fails', async () => {
-    (fetch as jest.Mock).mockRejectedValue(new Error('fail'));
+  it('returns false when context indicates offline', () => {
+    const wrapper = ({ children }: { children: React.ReactNode }) => (
+      <OnlineContext.Provider value={{ isOnline: false }}>
+        {children}
+      </OnlineContext.Provider>
+    );
 
-    const { result } = renderHook(() => useIsOnline());
-
-    await act(async () => {
-      jest.runOnlyPendingTimers();
-      await Promise.resolve();
-    });
-
+    const { result } = renderHook(() => useIsOnline(), { wrapper });
     expect(result.current).toBe(false);
-  });
-
-  it('sets true if ping succeeds', async () => {
-    (fetch as jest.Mock).mockResolvedValue({ ok: true });
-    isOnlineState = false;
-
-    const { result } = renderHook(() => useIsOnline());
-
-    await act(async () => {
-      jest.runOnlyPendingTimers();
-      await Promise.resolve();
-    });
-
-    expect(result.current).toBe(true);
-  });
-
-  it('sets false immediately if navigator.onLine is false', async () => {
-    Object.defineProperty(navigator, 'onLine', {
-      configurable: true,
-      get: () => false,
-    });
-
-    const { result } = renderHook(() => useIsOnline());
-
-    await act(async () => {
-      jest.runOnlyPendingTimers();
-    });
-
-    expect(result.current).toBe(false);
-  });
-
-  it('cleans up interval and unsubscribes on unmount', () => {
-    const clearIntervalSpy = jest.spyOn(global, 'clearInterval');
-    const unsubscribeMock = jest.fn();
-
-    // Override onlineManager.subscribe just for this test
-    const originalSubscribe = onlineManager.subscribe;
-    onlineManager.subscribe = () => unsubscribeMock;
-
-    const { unmount } = renderHook(() => useIsOnline());
-    unmount();
-
-    expect(clearIntervalSpy).toHaveBeenCalled();
-    expect(unsubscribeMock).toHaveBeenCalled();
-
-    // Restore original
-    onlineManager.subscribe = originalSubscribe;
   });
 });

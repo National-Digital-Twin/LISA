@@ -18,7 +18,7 @@ import Location from '../pages/Location';
 import Logbook from '../pages/Logbook';
 import Notifications from '../pages/Notifications';
 import Overview from '../pages/Overview';
-import IncidentTasks from '../pages/IncidentTasks';
+import IncidentTask from '../pages/IncidentTask';
 import IncidentPickerPage from '../pages/IncidentPickerPage';
 import Settings from '../pages/Settings';
 import Tasks from '../pages/Tasks';
@@ -45,7 +45,7 @@ const AppWrapper = () => {
         { path: 'logbook/:incidentId', element: <Logbook /> },
         { path: 'logbook/:incidentId/create', element: <CreateLogEntry /> },
         { path: 'tasks', element: <Tasks /> },
-        { path: 'tasks/:incidentId', element: <IncidentTasks /> },
+        { path: 'tasks/:taskId', element: <IncidentTask /> },
         { path: 'tasks/create/:incidentId', element: <CreateTask /> },
         { path: 'incidents/pick', element: <IncidentPickerPage /> },
         { path: 'forms/:incidentId', element: <LogForms /> },
@@ -53,6 +53,7 @@ const AppWrapper = () => {
         { path: 'files/:incidentId', element: <Files /> },
         { path: 'notifications', element: <Notifications /> },
         { path: 'settings', element: <Settings /> },
+        { path: 'settings/incidents', element: <Incidents isManaging={true} /> },
         { path: 'settings/my-profile', element: <MyProfile /> },
         { path: 'settings/users', element: <AdminUserList /> },
         { path: 'settings/user-profile', element: <AdminViewUser /> },
