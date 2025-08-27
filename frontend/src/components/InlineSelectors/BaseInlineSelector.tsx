@@ -78,7 +78,28 @@ export default function BaseInlineSelector<T>({
           {valueNode}
         </Box>
 
-        <Menu id={menuId} anchorEl={anchorEl} open={open} onClose={handleClose}>
+        <Menu
+          id={menuId}
+          anchorEl={anchorEl}
+          open={open}
+          onClose={handleClose}
+          marginThreshold={12}
+          anchorOrigin={{ horizontal: 'left',  vertical: 'bottom' }}
+          transformOrigin={{ horizontal: 'left', vertical: 'top' }}
+          slotProps={{
+            paper: {
+              sx: {
+                width: '95dvw',
+                maxWidth: '95dvw',
+                maxHeight: 'calc(100dvh - 72px)',
+                overflowY: 'auto',
+              },
+            },
+            list: {
+              sx: { px: 2 },
+            },
+          }}
+        >
           {options.map((opt) => {
             const { icon, label } = renderOption(opt);
             return (
