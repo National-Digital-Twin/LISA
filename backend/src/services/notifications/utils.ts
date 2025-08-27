@@ -10,7 +10,7 @@ import {
   UserMentionNotification,
   type Notification
 } from 'common/Notification';
-import { type NotificationInput } from './types';
+import { ExtractNotification, type NotificationInput } from './types';
 import { ResultRow } from '../../ia';
 import { nodeValue, ns } from '../../rdfutil';
 import { ApplicationError } from '../../errors';
@@ -70,15 +70,10 @@ export function getFetchOptionals(): unknown[] {
 }
 
 function getUserMentionNotification(
-  id: string,
-  type: NotificationType,
-  recipient: string,
-  dateTime: string,
-  read: boolean,
-  seen: boolean,
-  incidentTitle: string,
-  row: ResultRow
+  extract: ExtractNotification
 ): UserMentionNotification {
+  const { id, type, recipient, dateTime, read, seen, incidentTitle, row } = extract;
+
   return {
     id,
     type,
@@ -99,15 +94,10 @@ function getUserMentionNotification(
 }
 
 function getTaskAssignedNotification(
-  id: string,
-  type: NotificationType,
-  recipient: string,
-  dateTime: string,
-  read: boolean,
-  seen: boolean,
-  incidentTitle: string,
-  row: ResultRow
+  extract: ExtractNotification
 ): TaskAssignedNotification {
+  const { id, type, recipient, dateTime, read, seen, incidentTitle, row } = extract;
+
   return {
     id,
     type,
@@ -129,22 +119,26 @@ function getTaskAssignedNotification(
 }
 
 export function parseNotification(row: ResultRow): Notification {
-  const id = nodeValue(row.id.value);
-  const type = nodeValue(row.type.value) as NotificationType;
-  const recipient = row.recipient.value;
-  const dateTime = row.createdAt.value;
-  const read = row.read?.value !== undefined;
-  const seen = row.seen?.value !== undefined || read;
-  const incidentTitle = row.incidentName.value;
+  const read = row.read?.value !== undefined
+  const extract: ExtractNotification = {
+    id: nodeValue(row.id.value),
+    type: nodeValue(row.type.value) as NotificationType,
+    recipient: row.recipient.value,
+    dateTime: row.createdAt.value,
+    read,
+    seen: row.seen?.value !== undefined || read,
+    incidentTitle: row.incidentName.value,
+    row,
+  };
 
-  switch (type) {
+  switch (extract.type) {
     case 'UserMentionNotification':
-      return getUserMentionNotification(id, type, recipient, dateTime, read, seen, incidentTitle, row);
+      return getUserMentionNotification(extract);
 
     case 'TaskAssignedNotification':
-      return getTaskAssignedNotification(id, type, recipient, dateTime, read, seen, incidentTitle, row);
+      return getTaskAssignedNotification(extract);
 
     default:
-      throw new ApplicationError(`unknown notification type ${type} could not be parsed`);
+      throw new ApplicationError(`unknown notification type ${extract.type} could not be parsed`);
   }
 }

@@ -9,6 +9,36 @@ import { useCallback } from 'react';
 import { FetchError, get, post, put } from '../api';
 import { useNotificationContext } from './useNotificationContext';
 
+type PendingPredicate = (list: Notification[]) => boolean;
+
+const NOTIFICATIONS_KEY = ['notifications'] as const;
+
+const predicateHasBeenRead =
+  (id: string): PendingPredicate =>
+    (list) =>
+      list.some((n) => n.id === id && n.read === true);
+
+const predicateIsSeenById =
+  (id: string): PendingPredicate =>
+    (list) =>
+      list.find((n) => n.id === id)?.seen === true;
+
+const schedulePending = (
+  addPendingChange: (key: string, predicate: PendingPredicate) => void,
+  key: string,
+  predicate: PendingPredicate,
+  delay = 1000
+) => setTimeout(() => addPendingChange(key, predicate), delay);
+
+const optimisticRead = (prev: Notification[] | undefined, id: string) =>
+  prev ? prev.map((n) => (n.id === id ? { ...n, read: true, seen: true } : n)) : prev;
+
+const optimisticMarkAllSeen = (prev: Notification[] | undefined) =>
+  prev ? prev.map((n) => ({ ...n, seen: true })) : prev;
+
+const firstUnseenId = (list: Notification[] | undefined) =>
+  list?.find((n) => !n.seen)?.id;
+
 
 export function useNotifications() {
   const queryClient = useQueryClient();
@@ -37,90 +67,64 @@ export function useNotifications() {
 export function useReadNotification() {
   const queryClient = useQueryClient();
   const { addPendingChange } = useNotificationContext();
-  
-  const readNotification = useMutation<
+
+  return useMutation<
     { id: string },
     Error,
     string,
     { previousNotifications?: Notification[] }
   >({
-    mutationFn: (id: string) => put(`/notifications/${id}`, {}),
-    onSuccess: async (data) =>
-      setTimeout(() => {
-        addPendingChange(
-          `read-${data.id}`,
-          (notifications) =>
-            notifications.find(
-              (notification) => notification.id === data.id && notification.read
-            ) !== undefined
-        );
-      }, 1000),
-    onError: (_variables, _error, context) => {
+    mutationFn: (id) => put(`/notifications/${id}`, {}),
+    onSuccess: ({ id }) => {
+      schedulePending(addPendingChange, `read-${id}`, predicateHasBeenRead(id));
+    },
+    onError: (_v, _e, context) => {
       if (context?.previousNotifications) {
-        queryClient.setQueryData(['notifications'], context.previousNotifications);
+        queryClient.setQueryData(NOTIFICATIONS_KEY, context.previousNotifications);
       }
     },
-    onMutate: async (id: string) => {
-      await queryClient.cancelQueries({ queryKey: ['notifications'] });
-      const previousNotifications = queryClient.getQueryData<Notification[]>(['notifications']);
-
-      const updatedNotifications = previousNotifications!.map((notification) =>
-        notification.id === id
-          ? { ...notification, read: true, seen: true }
-          : notification
-      );
-      queryClient.setQueryData<Notification[]>(['notifications'], updatedNotifications);
-
-      return { previousNotifications };
+    onMutate: async (id) => {
+      await queryClient.cancelQueries({ queryKey: NOTIFICATIONS_KEY });
+      const previous = queryClient.getQueryData<Notification[]>(NOTIFICATIONS_KEY);
+      const updated = optimisticRead(previous, id);
+      if (updated) queryClient.setQueryData(NOTIFICATIONS_KEY, updated);
+      return { previousNotifications: previous };
     }
   });
-  return readNotification;
 }
 
 export function useMarkAllAsSeen() {
   const queryClient = useQueryClient();
   const { addPendingChange } = useNotificationContext();
-  
-  const markAllAsSeen = useMutation<
+
+  return useMutation<
     { markedAsSeen: number },
     Error,
     void,
     { previousNotifications?: Notification[]; firstUnseenId?: string }
   >({
     mutationFn: () => post('/notifications/actions/markSeen', {}),
-    onSuccess: async (data, __, context) => {
+    onSuccess: (data, _vars, context) => {
       if (context?.firstUnseenId && data.markedAsSeen > 0) {
-        setTimeout(() => {
-          addPendingChange(
-            `seen-${context.firstUnseenId}`,
-            (notifications) =>
-              notifications.find((n) => n.id === context.firstUnseenId)?.seen === true
-          );
-        }, 1000);
+        schedulePending(
+          addPendingChange,
+          `seen-${context.firstUnseenId}`,
+          predicateIsSeenById(context.firstUnseenId)
+        );
       }
     },
-    onError: (_variables, _error, context) => {
+    onError: (_v, _e, context) => {
       if (context?.previousNotifications) {
-        queryClient.setQueryData(['notifications'], context.previousNotifications);
+        queryClient.setQueryData(NOTIFICATIONS_KEY, context.previousNotifications);
       }
     },
     onMutate: async () => {
-      await queryClient.cancelQueries({ queryKey: ['notifications'] });
-      const previousNotifications = queryClient.getQueryData<Notification[]>(['notifications']);
-
-      if (previousNotifications) {
-        const firstUnseenId = previousNotifications.find((n) => !n.seen)?.id;
-        const updatedNotifications = previousNotifications.map((notification) => ({
-          ...notification,
-          seen: true
-        }));
-        queryClient.setQueryData<Notification[]>(['notifications'], updatedNotifications);
-
-        return { previousNotifications, firstUnseenId };
-      }
-
-      return { previousNotifications };
+      await queryClient.cancelQueries({ queryKey: NOTIFICATIONS_KEY });
+      const previous = queryClient.getQueryData<Notification[]>(NOTIFICATIONS_KEY);
+      const updated = optimisticMarkAllSeen(previous);
+      const firstId = firstUnseenId(previous);
+      if (updated) queryClient.setQueryData(NOTIFICATIONS_KEY, updated);
+      return { previousNotifications: previous, firstUnseenId: firstId };
     }
   });
-  return markAllAsSeen;
 }
