@@ -606,7 +606,7 @@ export const FormsInputContainer = ({
       heading: `Add form - ${formTypeLabel}`,
       inputControls: (
         <>
-          <Box display="flex">
+          <Box display="flex" sx={{ py: 0.8 }}>
             <CircleIcon sx={{ opacity: 0 }} />
             <Typography variant="body1" padding={1}>
               {formTypeLabel}

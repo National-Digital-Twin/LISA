@@ -9,6 +9,7 @@
           "FloodEmergencyBriefing": {
             "title": "Briefing from Emergency Control Centre",
             "type": "string",
+            "default": false,
             "enum": [
               "Yes",
               "No"
@@ -17,6 +18,7 @@
           "FloodForwardBriefing": {
             "title": "Briefing from Forward Control Point Cordon",
             "type": "string",
+            "default": false,
             "enum": [
               "Yes",
               "No"
@@ -25,6 +27,7 @@
           "FloodCordon": {
             "title": "Do not enter cordon/area#lbrack#s#rbrack# deemed unsafe by the Incident Commander",
             "type": "string",
+            "default": false,
             "enum": [
               "Yes",
               "No"
@@ -33,6 +36,7 @@
           "FloodPPE": {
             "title": "PPE",
             "type": "string",
+            "default": false,
             "enum": [
               "Yes",
               "No"
@@ -41,6 +45,7 @@
           "FloodOtherControl": {
             "title": "Other controls in place",
             "type": "string",
+            "default": false,
             "enum": [
               "Yes",
               "No"
@@ -196,6 +201,7 @@
           "FireEmergencyBriefing": {
             "title": "Briefing from Emergency Control Centre",
             "type": "string",
+            "default": false,
             "enum": [
               "Yes",
               "No"
@@ -204,6 +210,7 @@
           "FireForwardBriefing": {
             "title": "Briefing from Forward Control Point Cordon",
             "type": "string",
+            "default": false,
             "enum": [
               "Yes",
               "No"
@@ -212,6 +219,7 @@
           "FireCordon": {
             "title": "Wind direction cordon",
             "type": "string",
+            "default": false,
             "enum": [
               "Yes",
               "No"
@@ -220,6 +228,7 @@
           "FireOtherControl": {
             "title": "Other controls in place",
             "type": "string",
+            "default": false,
             "enum": [
               "Yes",
               "No"
@@ -349,6 +358,7 @@
           "SubstancesEmergencyBriefing": {
             "title": "Briefing from Emergency Control Centre",
             "type": "string",
+            "default": false,
             "enum": [
               "Yes",
               "No"
@@ -357,6 +367,7 @@
           "SubstancesForwardBriefing": {
             "title": "Briefing from Forward Control Point Cordon",
             "type": "string",
+            "default": false,
             "enum": [
               "Yes",
               "No"
@@ -365,6 +376,7 @@
           "SubstancesCordon": {
             "title": "Wind direction cordon",
             "type": "string",
+            "default": false,
             "enum": [
               "Yes",
               "No"
@@ -373,6 +385,7 @@
           "SubstancesPPE": {
             "title": "PPE - Face masks/goggles, etc",
             "type": "string",
+            "default": false,
             "enum": [
               "Yes",
               "No"
@@ -381,6 +394,7 @@
           "SubstancesOtherControl": {
             "title": "Other controls in place",
             "type": "string",
+            "default": false,
             "enum": [
               "Yes",
               "No"
@@ -536,6 +550,7 @@
           "SlipsTripsFallsEmergencyBriefing": {
             "title": "Briefing from Emergency Control Centre",
             "type": "string",
+            "default": false,
             "enum": [
               "Yes",
               "No"
@@ -544,6 +559,7 @@
           "SlipsTripsFallsForwardBriefing": {
             "title": "Briefing from Forward Control Point Cordon",
             "type": "string",
+            "default": false,
             "enum": [
               "Yes",
               "No"
@@ -552,6 +568,7 @@
           "SlipsTripsFallsPPE": {
             "title": "PPE - Safety boots",
             "type": "string",
+            "default": false,
             "enum": [
               "Yes",
               "No"
@@ -560,6 +577,7 @@
           "SlipsTripsFallsTorch": {
             "title": "Torch",
             "type": "string",
+            "default": false,
             "enum": [
               "Yes",
               "No"
@@ -568,6 +586,7 @@
           "SlipsTripsFallsPlanRoute": {
             "title": "Plan route",
             "type": "string",
+            "default": false,
             "enum": [
               "Yes",
               "No"
@@ -576,6 +595,7 @@
           "SlipsTripsFallsOtherControl": {
             "title": "Other controls in place",
             "type": "string",
+            "default": false,
             "enum": [
               "Yes",
               "No"
@@ -757,6 +777,7 @@
           "VehiclesEmergencyBriefing": {
             "title": "Briefing from Emergency Control Centre",
             "type": "string",
+            "default": false,
             "enum": [
               "Yes",
               "No"
@@ -765,6 +786,7 @@
           "VehiclesForwardBriefing": {
             "title": "Briefing from Forward Control Point Cordon",
             "type": "string",
+            "default": false,
             "enum": [
               "Yes",
               "No"
@@ -773,6 +795,7 @@
           "VehiclesPPE": {
             "title": "PPE - Hi Viz vest, safety boots",
             "type": "string",
+            "default": false,
             "enum": [
               "Yes",
               "No"
@@ -781,6 +804,7 @@
           "VehiclesOtherControl": {
             "title": "Other controls in place",
             "type": "string",
+            "default": false,
             "enum": [
               "Yes",
               "No"
@@ -910,6 +934,7 @@
           "FallingObjectsEmergencyBriefing": {
             "title": "Briefing from Emergency Control Centre",
             "type": "string",
+            "default": false,
             "enum": [
               "Yes",
               "No"
@@ -918,6 +943,7 @@
           "FallingObjectsForwardBriefing": {
             "title": "Briefing from Forward Control Point Cordon",
             "type": "string",
+            "default": false,
             "enum": [
               "Yes",
               "No"
@@ -926,6 +952,7 @@
           "FallingObjectsPPE": {
             "title": "PPE - Safety helmet",
             "type": "string",
+            "default": false,
             "enum": [
               "Yes",
               "No"
@@ -934,6 +961,7 @@
           "FallingObjectsOtherControl": {
             "title": "Other controls in place",
             "type": "string",
+            "default": false,
             "enum": [
               "Yes",
               "No"
@@ -1063,6 +1091,7 @@
           "BiologicalEmergencyBriefing": {
             "title": "Briefing from Emergency Control Centre",
             "type": "string",
+            "default": false,
             "enum": [
               "Yes",
               "No"
@@ -1071,6 +1100,7 @@
           "BiologicalForwardBriefing": {
             "title": "Briefing from Forward Control Point",
             "type": "string",
+            "default": false,
             "enum": [
               "Yes",
               "No"
@@ -1079,6 +1109,7 @@
           "BiologicalNeedles": {
             "title": "Do not touch needles, etc.",
             "type": "string",
+            "default": false,
             "enum": [
               "Yes",
               "No"
@@ -1087,6 +1118,7 @@
           "BiologicalPPE": {
             "title": "PPE - Gloves, etc.",
             "type": "string",
+            "default": false,
             "enum": [
               "Yes",
               "No"
@@ -1095,6 +1127,7 @@
           "BiologicalOtherControl": {
             "title": "Other controls in place",
             "type": "string",
+            "default": false,
             "enum": [
               "Yes",
               "No"
@@ -1250,6 +1283,7 @@
           "EnvironmentEmergencyBriefing": {
             "title": "Briefing from Emergency Control Centre",
             "type": "string",
+            "default": false,
             "enum": [
               "Yes",
               "No"
@@ -1258,6 +1292,7 @@
           "EnvironmentForwardBriefing": {
             "title": "Briefing from Forward Control Point",
             "type": "string",
+            "default": false,
             "enum": [
               "Yes",
               "No"
@@ -1266,6 +1301,7 @@
           "EnvironmentPPE": {
             "title": "PPE - Safety boots",
             "type": "string",
+            "default": false,
             "enum": [
               "Yes",
               "No"
@@ -1274,6 +1310,7 @@
           "EnvironmentOtherControl": {
             "title": "Other controls in place",
             "type": "string",
+            "default": false,
             "enum": [
               "Yes",
               "No"
@@ -1403,6 +1440,7 @@
           "HandlingEmergencyBriefing": {
             "title": "Briefing from Emergency Control Centre",
             "type": "string",
+            "default": false,
             "enum": [
               "Yes",
               "No"
@@ -1411,6 +1449,7 @@
           "HandlingForwardBriefing": {
             "title": "Briefing from Forward Control Point",
             "type": "string",
+            "default": false,
             "enum": [
               "Yes",
               "No"
@@ -1419,6 +1458,7 @@
           "HandlingTraining": {
             "title": "Manual handling training",
             "type": "string",
+            "default": false,
             "enum": [
               "Yes",
               "No"
@@ -1427,6 +1467,7 @@
           "HandlingPPE": {
             "title": "PPE - Safety boots",
             "type": "string",
+            "default": false,
             "enum": [
               "Yes",
               "No"
@@ -1435,6 +1476,7 @@
           "HandlingEquipment": {
             "title": "Use of manual handling equipment if available and if trained to do so",
             "type": "string",
+            "default": false,
             "enum": [
               "Yes",
               "No"
@@ -1443,6 +1485,7 @@
           "HandlingOtherControl": {
             "title": "Other controls in place",
             "type": "string",
+            "default": false,
             "enum": [
               "Yes",
               "No"
@@ -1624,6 +1667,7 @@
           "WeatherEmergencyBriefing": {
             "title": "Briefing from Emergency Control Centre",
             "type": "string",
+            "default": false,
             "enum": [
               "Yes",
               "No"
@@ -1632,6 +1676,7 @@
           "WeatherForwardBriefing": {
             "title": "Briefing from Forward Control Point",
             "type": "string",
+            "default": false,
             "enum": [
               "Yes",
               "No"
@@ -1640,6 +1685,7 @@
           "WeatherPPE": {
             "title": "PPE - Waterproof coat, gloves, hat, bottled water",
             "type": "string",
+            "default": false,
             "enum": [
               "Yes",
               "No"
@@ -1648,6 +1694,7 @@
           "WeatherOtherControl": {
             "title": "Other controls in place",
             "type": "string",
+            "default": false,
             "enum": [
               "Yes",
               "No"
@@ -1777,6 +1824,7 @@
           "ContaminationEmergencyBriefing": {
             "title": "Briefing from Emergency Control Centre",
             "type": "string",
+            "default": false,
             "enum": [
               "Yes",
               "No"
@@ -1785,6 +1833,7 @@
           "ContaminationForwardBriefing": {
             "title": "Briefing from Forward Control Point",
             "type": "string",
+            "default": false,
             "enum": [
               "Yes",
               "No"
@@ -1793,6 +1842,7 @@
           "ContaminationPPE": {
             "title": "PPE - gloves",
             "type": "string",
+            "default": false,
             "enum": [
               "Yes",
               "No"
@@ -1801,6 +1851,7 @@
           "ContaminationWashHands": {
             "title": "Wash hands before eating, drinking or smoking",
             "type": "string",
+            "default": false,
             "enum": [
               "Yes",
               "No"
@@ -1809,6 +1860,7 @@
           "ContaminationOtherControl": {
             "title": "Other controls in place",
             "type": "string",
+            "default": false,
             "enum": [
               "Yes",
               "No"
@@ -1964,6 +2016,7 @@
           "FatigueEmergencyBriefing": {
             "title": "Briefing from Emergency Control Centre, maintaining contact with Emergency Control Centre Shift changes",
             "type": "string",
+            "default": false,
             "enum": [
               "Yes",
               "No"
@@ -1972,6 +2025,7 @@
           "FatigueCommanderGuidance": {
             "title": "Guidance from Incident Commander",
             "type": "string",
+            "default": false,
             "enum": [
               "Yes",
               "No"
@@ -1980,6 +2034,7 @@
           "FatigueOtherControl": {
             "title": "Other controls in place",
             "type": "string",
+            "default": false,
             "enum": [
               "Yes",
               "No"
@@ -2083,6 +2138,7 @@
           "HeightEmergencyBriefing": {
             "title": "Briefing from Emergency Control Centre",
             "type": "string",
+            "default": false,
             "enum": [
               "Yes",
               "No"
@@ -2091,6 +2147,7 @@
           "HeightForwardBriefing": {
             "title": "Briefing from Forward Control Point",
             "type": "string",
+            "default": false,
             "enum": [
               "Yes",
               "No"
@@ -2099,6 +2156,7 @@
           "HeightCordon": {
             "title": "Do not enter cordon/area#lbrack#s#rbrack# deemed unsafe by the Incident Commander",
             "type": "string",
+            "default": false,
             "enum": [
               "Yes",
               "No"
@@ -2107,6 +2165,7 @@
           "HeightOtherControl": {
             "title": "Other controls in place",
             "type": "string",
+            "default": false,
             "enum": [
               "Yes",
               "No"
@@ -2236,6 +2295,7 @@
           "EnclosedEmergencyBriefing": {
             "title": "Briefing from Emergency Control Centre",
             "type": "string",
+            "default": false,
             "enum": [
               "Yes",
               "No"
@@ -2244,6 +2304,7 @@
           "EnclosedForwardBriefing": {
             "title": "Briefing from Forward Control Point",
             "type": "string",
+            "default": false,
             "enum": [
               "Yes",
               "No"
@@ -2252,6 +2313,7 @@
           "EnclosedCordon": {
             "title": "Do not enter cordon/area#lbrack#s#rbrack# deemed unsafe by the Incident Commander",
             "type": "string",
+            "default": false,
             "enum": [
               "Yes",
               "No"
@@ -2260,6 +2322,7 @@
           "EnclosedOtherControl": {
             "title": "Other controls in place",
             "type": "string",
+            "default": false,
             "enum": [
               "Yes",
               "No"
@@ -2389,6 +2452,7 @@
           "MothersEmergencyBriefing": {
             "title": "Briefing from Emergency Control Centre",
             "type": "string",
+            "default": false,
             "enum": [
               "Yes",
               "No"
@@ -2397,6 +2461,7 @@
           "MothersForwardBriefing": {
             "title": "Briefing from Forward Control Point",
             "type": "string",
+            "default": false,
             "enum": [
               "Yes",
               "No"
@@ -2405,6 +2470,7 @@
           "MothersCordon": {
             "title": "Do not enter areas deemed unsafe",
             "type": "string",
+            "default": false,
             "enum": [
               "Yes",
               "No"
@@ -2413,6 +2479,7 @@
           "MothersOtherControl": {
             "title": "Other controls in place",
             "type": "string",
+            "default": false,
             "enum": [
               "Yes",
               "No"
@@ -2542,6 +2609,7 @@
           "StaffBriefing": {
             "title": "Briefing from Liaison Officer",
             "type": "string",
+            "default": false,
             "enum": [
               "Yes",
               "No"
@@ -2550,6 +2618,7 @@
           "StaffPPE": {
             "title": "PPE - Hi Viz vest",
             "type": "string",
+            "default": false,
             "enum": [
               "Yes",
               "No"
@@ -2558,6 +2627,7 @@
           "StaffRegister": {
             "title": "Register of staff on site",
             "type": "string",
+            "default": false,
             "enum": [
               "Yes",
               "No"
@@ -2566,6 +2636,7 @@
           "StaffOtherControl": {
             "title": "Other controls in place",
             "type": "string",
+            "default": false,
             "enum": [
               "Yes",
               "No"

@@ -28,7 +28,9 @@ const selectWidget = (props: WidgetProps) => (
       label={props.value ? '' : 'Select...'}
       required={false}
       error={false}
-      sx={{ '.MuiSelect-select': { paddingTop: '17px', paddingBottom: '16px' } }}
+      sx={{
+        '.MuiSelect-select': { paddingTop: '17px', paddingBottom: '16px' }
+      }}
     />
   </Box>
 );

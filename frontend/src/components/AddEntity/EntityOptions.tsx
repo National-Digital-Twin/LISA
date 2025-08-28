@@ -181,7 +181,7 @@ const forms = (data: EntityOptionData[], errors: ValidationError[]) => {
       required={!!attachmentsOptionData?.required}
       value={attachmentsOptionData?.value}
       label={
-        attachmentsOptionData?.valueLabel ?? attachmentsOptionData?.value ?? 'Add attachement(s)'
+        attachmentsOptionData?.valueLabel ?? attachmentsOptionData?.value ?? 'Add attachment(s)'
       }
       supportedOffline={!!attachmentsOptionData?.supportedOffline}
       errored={false}
