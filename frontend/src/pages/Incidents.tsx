@@ -46,7 +46,7 @@ const Incidents = ({ isManaging = false }: Readonly<IncidentsProps>) => {
 
   useEffect(() => {
     if (isManaging && !isAdmin(user.current)) {
-      navigate('/');
+      navigate('/incidents');
     }
   }, [isManaging, user.current, navigate]);
 
@@ -230,7 +230,7 @@ const Incidents = ({ isManaging = false }: Readonly<IncidentsProps>) => {
             <Button
               variant="contained"
               startIcon={<AddCircleIcon />}
-              onClick={() => navigate('/createlog')}
+              onClick={() => navigate('/create')}
               color="primary"
               sx={{
                 flex: { xs: 1, sm: '0 0 auto' },

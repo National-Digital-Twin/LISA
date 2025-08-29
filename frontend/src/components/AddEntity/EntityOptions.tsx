@@ -13,9 +13,18 @@ import WarningAmberOutlinedIcon from '@mui/icons-material/WarningAmberOutlined';
 import AddCommentOutlinedIcon from '@mui/icons-material/AddCommentOutlined';
 import LocationOnOutlinedIcon from '@mui/icons-material/LocationOnOutlined';
 import DrawOutlinedIcon from '@mui/icons-material/DrawOutlined';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import PersonOutlineOutlinedIcon from '@mui/icons-material/PersonOutlineOutlined';
+import CorporateFareOutlinedIcon from '@mui/icons-material/CorporateFareOutlined';
+import LocalPhoneOutlinedIcon from '@mui/icons-material/LocalPhoneOutlined';
+import EmailOutlinedIcon from '@mui/icons-material/EmailOutlined';
+import SupportOutlinedIcon from '@mui/icons-material/SupportOutlined';
 import { ValidationError } from '../../utils/types';
 import { EntityOption } from './EntityOption';
 import { SituationReport } from 'common/LogEntryTypes/SituationReport';
+import { Format } from '../../utils';
+import { IncidentType } from 'common/IncidentType';
+import { Box } from '@mui/material';
 import { RelevantHazards } from 'common/LogEntryTypes/RiskAssessment/hazards/RelevantHazards';
 
 export type EntityOptionData = {
@@ -277,7 +286,7 @@ const taskNameOptionDataComponent = (
   return undefined;
 };
 
-const taskAsigneeOptionDataComponent = (
+const taskAssigneeOptionDataComponent = (
   key: string,
   data: EntityOptionData[],
   errors: ValidationError[]
@@ -290,11 +299,152 @@ const taskAsigneeOptionDataComponent = (
       optionData,
       <AssignmentTurnedInOutlinedIcon />,
       'Assign to',
-      !!errors.find((error) => error.fieldId === 'task_asignee')
+      !!errors.find((error) => error.fieldId === 'task_assignee')
     );
   }
 
   return undefined;
+};
+
+const getIncOption = (id: string, data: EntityOptionData[]) => data.find(x => x.id === id);
+
+const BlankIcon = <Box sx={{ width: 24, height: 24 }} aria-hidden />;
+
+const incidentTypeOptionDataComponent = (
+  data: EntityOptionData[],
+  errors: ValidationError[]
+) => {
+  const optionData = getIncOption('type', data);
+  if (!optionData) return undefined;
+
+  const valueLabel =
+    optionData.value ? Format.incident.type(optionData.value as IncidentType) : undefined;
+
+  return optionDataComponent(
+    'inc_type',
+    { ...optionData, valueLabel },
+    BlankIcon,
+    'Select incident type',
+    !!errors.find((e) => e.fieldId === 'incident_type')
+  );
+};
+
+const incidentTimeOptionDataComponent = (
+  data: EntityOptionData[],
+  errors: ValidationError[]
+) => {
+  const optionData = getIncOption('time', data);
+  if (!optionData) return undefined;
+
+  const valueLabel = optionData.value ? Format.dateAndTimeMobile(optionData.value) : undefined;
+
+  return optionDataComponent(
+    'inc_time',
+    { ...optionData, valueLabel },
+    <AccessTimeIcon />,
+    'Add date and time',
+    !!errors.find((e) => e.fieldId === 'incident_time')
+  );
+};
+
+const incidentNameOptionDataComponent = (
+  data: EntityOptionData[],
+  errors: ValidationError[]
+) => {
+  const optionData = getIncOption('name', data);
+  if (!optionData) return undefined;
+
+  return optionDataComponent(
+    'inc_name',
+    optionData,
+    <TextSnippetOutlinedIcon />,
+    'Add incident name',
+    !!errors.find((e) => e.fieldId === 'incident_name')
+  );
+};
+
+const incidentReferrerOptionDataComponent = (
+  data: EntityOptionData[],
+  errors: ValidationError[]
+) => {
+  const optionData = getIncOption('referrer', data);
+  if (!optionData) return undefined;
+
+  return optionDataComponent(
+    'inc_referrer',
+    optionData,
+    <PersonOutlineOutlinedIcon />,
+    'Referred by',
+    !!errors.find((e) => e.fieldId === 'incident_referrer')
+  );
+};
+
+const incidentOrganisationOptionDataComponent = (
+  data: EntityOptionData[],
+  errors: ValidationError[]
+) => {
+  const optionData = getIncOption('organisation', data);
+  if (!optionData) return undefined;
+
+  return optionDataComponent(
+    'inc_organisation',
+    optionData,
+    <CorporateFareOutlinedIcon />,
+    'Organisation',
+    !!errors.find((e) => e.fieldId === 'incident_organisation')
+  );
+};
+
+const incidentPhoneOptionDataComponent = (
+  data: EntityOptionData[],
+  errors: ValidationError[]
+) => {
+  const optionData = getIncOption('phone', data);
+  if (!optionData) return undefined;
+
+  return optionDataComponent(
+    'inc_phone',
+    optionData,
+    <LocalPhoneOutlinedIcon />,
+    'Telephone number',
+    !!errors.find((e) => e.fieldId === 'incident_phone')
+  );
+};
+
+const incidentEmailOptionDataComponent = (
+  data: EntityOptionData[],
+  errors: ValidationError[]
+) => {
+  const optionData = getIncOption('email', data);
+  if (!optionData) return undefined;
+
+  return optionDataComponent(
+    'inc_email',
+    optionData,
+    <EmailOutlinedIcon />,
+    'Email',
+    !!errors.find((e) => e.fieldId === 'incident_email')
+  );
+};
+
+const incidentSupportRequestedOptionDataComponent = (
+  data: EntityOptionData[],
+  errors: ValidationError[]
+) => {
+  const optionData = getIncOption('supportRequested', data);
+  if (!optionData) return undefined;
+
+  return optionDataComponent(
+    'inc_support',
+    optionData,
+    <SupportOutlinedIcon />,
+    'Has the referrer requested support from the local resilience team?',
+    !!errors.find(
+      (e) =>
+        e.fieldId === 'incident_supportRequested' ||
+        e.fieldId === 'incident_supportDescription'
+    )
+  );
 };
 
 const forms = (data: EntityOptionData[], errors: ValidationError[]) => {
@@ -325,7 +475,7 @@ const forms = (data: EntityOptionData[], errors: ValidationError[]) => {
 const tasks = (data: EntityOptionData[], errors: ValidationError[]) => {
   return [
     taskNameOptionDataComponent('name', data, errors),
-    taskAsigneeOptionDataComponent('assignee', data, errors),
+    taskAssigneeOptionDataComponent('assignee', data, errors),
     descriptionOptionDataComponent(
       'description',
       data,
@@ -339,6 +489,19 @@ const tasks = (data: EntityOptionData[], errors: ValidationError[]) => {
   ].filter((x) => !!x);
 };
 
+const incidents = (data: EntityOptionData[], errors: ValidationError[]) => {
+  return [
+    incidentTypeOptionDataComponent(data, errors),
+    incidentTimeOptionDataComponent(data, errors),
+    incidentNameOptionDataComponent(data, errors),
+    incidentReferrerOptionDataComponent(data, errors),
+    incidentOrganisationOptionDataComponent(data, errors),
+    incidentPhoneOptionDataComponent(data, errors),
+    incidentEmailOptionDataComponent(data, errors),
+    incidentSupportRequestedOptionDataComponent(data, errors),
+  ].filter(Boolean);
+};
+
 export const getEntityOptions = (
   entityType: string,
   data: EntityOptionData[],
@@ -349,6 +512,8 @@ export const getEntityOptions = (
       return forms(data, errors);
     case 'tasks':
       return tasks(data, errors);
+    case 'incidents':
+      return incidents(data, errors);
     default:
       return [];
   }
