@@ -199,7 +199,7 @@ describe('Incidents Page', () => {
 
       providersRender(<Incidents isManaging={true} />);
 
-      expect(mockNavigate).toHaveBeenCalledWith('/');
+      expect(mockNavigate).toHaveBeenCalledWith('/incidents');
     });
 
     it('allows admin users to access management view', () => {

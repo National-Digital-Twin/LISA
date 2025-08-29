@@ -3,6 +3,7 @@
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
 import { useCallback, useMemo, useState } from 'react';
+import { v4 as uuidV4 } from 'uuid';
 import { Box, FormControl, ListSubheader, MenuItem, TextField } from '@mui/material';
 import { IncidentTypes as INCIDENT_TYPE_OPTIONS } from '../../utils/Incident/IncidentTypes';
 import { ValidationError } from '../../utils/types';
@@ -43,7 +44,7 @@ export const IncidentInputContainer = ({
 
   const [incident, setIncident] = useState<Partial<Incident>>({
     name: '',
-    id: crypto.randomUUID(),
+    id: uuidV4(),
     stage: 'Monitoring',
     referrer: {
       name: '',
@@ -73,7 +74,7 @@ export const IncidentInputContainer = ({
     if (!r?.name) {
       errors.push({
         fieldId: 'incident_referrer',
-        error: 'Referrer is required',
+        error: 'Referred by is required',
       });
     }
 
@@ -233,11 +234,14 @@ export const IncidentInputContainer = ({
     }
   };
 
+  const displayValue = (v?: string) =>
+    typeof v === 'string' && v.trim() === '' ? undefined : v;
+
   const entityOptionData: EntityOptionData[] = (Object.keys(fieldConfigs) as FieldType[]).map(
     (field) => ({
       id: field,
       onClick: () => activateField(field),
-      value: getFieldValue(field),
+      value: displayValue(getFieldValue(field) as string | undefined),
       required: fieldConfigs[field].required,
       supportedOffline: fieldConfigs[field].supportedOffline
     })
@@ -341,7 +345,7 @@ export const IncidentInputContainer = ({
             <TextField
               hiddenLabel
               variant="filled"
-              placeholder="Referred by (name)"
+              placeholder="Referred by"
               value={incident.referrer?.name ?? ''}
               onChange={(e) => onReferrerChange({ name: e.target.value })}
               error={!!getFieldError('incident_referrer')}
