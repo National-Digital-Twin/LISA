@@ -71,6 +71,7 @@ type EntryContentProps = {
   onChange?: (id: string, json: string, text: string) => void;
   onRecording?: (active: boolean) => void;
   error: boolean;
+  placeholder?: string;
 };
 const EntryContent = ({
   id,
@@ -80,6 +81,7 @@ const EntryContent = ({
   recordingActive,
   onChange = undefined,
   onRecording = undefined,
+  placeholder = undefined,
   error
 }: EntryContentProps) => {
   const [json, setJSON] = useState<string | undefined>(_json);
@@ -114,7 +116,7 @@ const EntryContent = ({
         <div className="editor-inner">
           <PlainTextPlugin
             contentEditable={<ContentEditable className="editor-input" />}
-            placeholder={null}
+            placeholder={<div>{placeholder}</div>}
             ErrorBoundary={LexicalErrorBoundary}
           />
           <HistoryPlugin />

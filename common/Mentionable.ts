@@ -9,6 +9,7 @@ export const MentionableType = Union(
   Literal('User'),
   Literal('LogEntry'),
   Literal('File'),
+  Literal('Task'),
 );
 
 export type MentionableType = Static<typeof MentionableType>;

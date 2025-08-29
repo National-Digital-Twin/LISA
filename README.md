@@ -37,6 +37,12 @@ Build the docker image for the Secure Agent Graph. This can be done by navigatin
 docker build -t lisa/secure-agent-graph .
 ```
 
+Start the docker container(s):
+
+```bash
+docker compose up
+```
+
 Run the following command to start the frontend:
 
 ```bash
