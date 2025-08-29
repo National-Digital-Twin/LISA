@@ -116,6 +116,26 @@ const hazardsOptionDataComponents = (
   );
 };
 
+const riskAssessmentReviewOptionDataComponent = (
+  key: string,
+  data: EntityOptionData[],
+  errors: ValidationError[]
+) => {
+  const optionData = data.find((x) => x.id === key);
+
+  if (optionData) {
+    return optionDataComponent(
+      `${key}-option`,
+      optionData,
+      <TextSnippetOutlinedIcon />,
+      'Select risk assessment to review',
+      !!errors.find((error) => error.fieldId === 'Review')
+    );
+  }
+
+  return undefined;
+};
+
 const addCommentsOptionDataComponent = (
   key: string,
   data: EntityOptionData[],
@@ -291,6 +311,7 @@ const forms = (data: EntityOptionData[], errors: ValidationError[]) => {
       errors
     ),
     siteRepDetailsOptionDataComponent('sitRepDetails', data, siteRepFieldIds, errors),
+    riskAssessmentReviewOptionDataComponent('riskAssessmentReview', data, errors),
     ...hazardsOptionDataComponents('selectHazard', data, errors),
     addCommentsOptionDataComponent('addComments', data, errors),
     ...fieldsOptionDataComponents('field', data, errors),

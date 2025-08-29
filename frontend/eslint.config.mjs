@@ -38,7 +38,9 @@ export default tsEslint.config(
 
       ecmaVersion: 'latest',
       sourceType: 'module',
-      parserOptions: {}
+      parserOptions: {
+        tsconfigRootDir: __dirname
+      }
     },
 
     plugins: {
