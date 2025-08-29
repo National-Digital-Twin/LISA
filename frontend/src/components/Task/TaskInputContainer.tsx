@@ -1,5 +1,6 @@
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { Stage } from 'konva/lib/Stage';
+import { v4 as uuidV4 } from 'uuid';
 import { Box, FormControl, MenuItem, TextField } from '@mui/material';
 import { type CreateTask } from 'common/Task';
 import { type User } from 'common/User';
@@ -44,10 +45,7 @@ export const TaskInputContainer = ({
   const [level, setLevel] = useState<number>(0);
   const [activeField, setActiveField] = useState<FieldType | null>(null);
 
-  const [task, setTask] = useState<Omit<CreateTask, 'incidentId'>>({
-    name: '',
-    description: '',
-    assignee: { username: '', displayName: '' },
+  const [task, setTask] = useState<Partial<Omit<CreateTask, 'incidentId'>>>({
     sequence: createSequenceNumber()
   });
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
@@ -55,19 +53,22 @@ export const TaskInputContainer = ({
   const [sketchFile, setSketchFile] = useState<File | null>(null);
   const canvasRef = useRef<Stage>(null);
 
-  const validateTask = useCallback((task: Omit<CreateTask, 'incidentId'>): ValidationError[] => {
-    const errors: ValidationError[] = [];
-    if (!task.name?.trim()) {
-      errors.push({ fieldId: 'task_name', error: 'Task name is required' });
-    }
-    if (!task.assignee?.username?.trim()) {
-      errors.push({ fieldId: 'task_assignee', error: 'Please select an assignee' });
-    }
-    if (!task.description?.trim()) {
-      errors.push({ fieldId: 'task_description', error: 'Add a description' });
-    }
-    return errors;
-  }, []);
+  const validateTask = useCallback(
+    (task: Partial<Omit<CreateTask, 'incidentId'>>): ValidationError[] => {
+      const errors: ValidationError[] = [];
+      if (!task.name?.trim()) {
+        errors.push({ fieldId: 'task_name', error: 'Task name is required' });
+      }
+      if (!task.assignee?.username?.trim()) {
+        errors.push({ fieldId: 'task_assignee', error: 'Please select an assignee' });
+      }
+      if (!task.description?.trim()) {
+        errors.push({ fieldId: 'task_description', error: 'Add a description' });
+      }
+      return errors;
+    },
+    []
+  );
 
   const errors = useMemo(() => validateTask(task), [task, validateTask]);
 
@@ -136,10 +137,10 @@ export const TaskInputContainer = ({
     }
 
     const completeTask: CreateTask & Required<Pick<CreateTask, 'id' | 'status'>> = {
-      id: crypto.randomUUID(),
+      id: uuidV4(),
       status: 'ToDo',
       incidentId,
-      ...task,
+      ...(task as Omit<CreateTask, 'incidentId'>),
       attachments: attachments.length > 0 ? attachments : undefined
     };
 

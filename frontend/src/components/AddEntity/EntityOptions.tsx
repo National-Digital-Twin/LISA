@@ -58,6 +58,8 @@ function optionDataComponent(
 const descriptionOptionDataComponent = (
   key: string,
   data: EntityOptionData[],
+  icon: ReactNode,
+  label: string,
   errors: ValidationError[]
 ) => {
   const optionData = data.find((x) => x.id === key);
@@ -66,9 +68,9 @@ const descriptionOptionDataComponent = (
     return optionDataComponent(
       `${key}-option`,
       optionData,
-      <TextSnippetOutlinedIcon />,
-      'Add a description',
-      !!errors.find((error) => error.fieldId === 'content')
+      icon,
+      label,
+      !!errors.find((error) => error.fieldId === 'content' || error.fieldId === 'task_description')
     );
   }
 
@@ -145,7 +147,7 @@ const fieldsOptionDataComponents = (
     optionDataComponent(
       `${optionData.id}-option`,
       optionData,
-      optionData.icon!,
+      optionData.icon,
       optionData.label!,
       !!errors.find(
         (error) =>
@@ -235,13 +237,59 @@ const sketchOptionDataComponent = (key: string, data: EntityOptionData[]) => {
   return undefined;
 };
 
+const taskNameOptionDataComponent = (
+  key: string,
+  data: EntityOptionData[],
+  errors: ValidationError[]
+) => {
+  const optionData = data.find((x) => x.id === key);
+
+  if (optionData) {
+    return optionDataComponent(
+      `${key}-option`,
+      optionData,
+      <BadgeOutlinedIcon />,
+      'Task name',
+      !!errors.find((error) => error.fieldId === 'task_name')
+    );
+  }
+
+  return undefined;
+};
+
+const taskAsigneeOptionDataComponent = (
+  key: string,
+  data: EntityOptionData[],
+  errors: ValidationError[]
+) => {
+  const optionData = data.find((x) => x.id === key);
+
+  if (optionData) {
+    return optionDataComponent(
+      `${key}-option`,
+      optionData,
+      <AssignmentTurnedInOutlinedIcon />,
+      'Assign to',
+      !!errors.find((error) => error.fieldId === 'task_asignee')
+    );
+  }
+
+  return undefined;
+};
+
 const forms = (data: EntityOptionData[], errors: ValidationError[]) => {
   const siteRepFieldIds = SituationReport.fields({})
     .filter((field) => field.id !== 'ExactLocation')
     .map((field) => field.id);
 
   return [
-    descriptionOptionDataComponent('description', data, errors),
+    descriptionOptionDataComponent(
+      'description',
+      data,
+      <TextSnippetOutlinedIcon />,
+      'Add a description',
+      errors
+    ),
     siteRepDetailsOptionDataComponent('sitRepDetails', data, siteRepFieldIds, errors),
     ...hazardsOptionDataComponents('selectHazard', data, errors),
     addCommentsOptionDataComponent('addComments', data, errors),
@@ -254,101 +302,20 @@ const forms = (data: EntityOptionData[], errors: ValidationError[]) => {
 };
 
 const tasks = (data: EntityOptionData[], errors: ValidationError[]) => {
-  const nameOptionData = data.find((x) => x.id === 'name');
-  const assigneeOptionData = data.find((x) => x.id === 'assignee');
-  const descriptionOptionData = data.find((x) => x.id === 'description');
-  const locationOptionData = data.find((x) => x.id === 'location');
-  const attachmentsOptionData = data.find((x) => x.id === 'attachments');
-  const sketchOptionData = data.find((x) => x.id === 'sketch');
-
   return [
-    nameOptionData && (
-      <EntityOption
-        key="name-1"
-        icon={<BadgeOutlinedIcon />}
-        onClick={nameOptionData.onClick}
-        required={!!nameOptionData?.required}
-        value={nameOptionData.value}
-        label={nameOptionData.valueLabel || nameOptionData.value || 'Task name'}
-        supportedOffline={!!nameOptionData.supportedOffline}
-        errored={!!errors.find((error) => error.fieldId === 'task_name')}
-        removable={!!nameOptionData.removable}
-        onRemove={nameOptionData.removable ? nameOptionData.onRemove! : () => {}}
-      />
+    taskNameOptionDataComponent('name', data, errors),
+    taskAsigneeOptionDataComponent('assignee', data, errors),
+    descriptionOptionDataComponent(
+      'description',
+      data,
+      <NotesOutlinedIcon />,
+      'Add task description',
+      errors
     ),
-    assigneeOptionData && (
-      <EntityOption
-        key="assignee-1"
-        icon={<AssignmentTurnedInOutlinedIcon />}
-        onClick={assigneeOptionData.onClick}
-        required={!!assigneeOptionData.required}
-        value={assigneeOptionData.value}
-        label={assigneeOptionData.valueLabel || assigneeOptionData.value || 'Assign to'}
-        supportedOffline={!!assigneeOptionData.supportedOffline}
-        errored={!!errors.find((error) => error.fieldId === 'task_assignee')}
-        removable={!!assigneeOptionData.removable}
-        onRemove={assigneeOptionData.removable ? assigneeOptionData.onRemove! : () => {}}
-      />
-    ),
-    descriptionOptionData && (
-      <EntityOption
-        key="description-1"
-        icon={<NotesOutlinedIcon />}
-        onClick={descriptionOptionData.onClick}
-        required={!!descriptionOptionData.required}
-        value={descriptionOptionData.value}
-        label={
-          descriptionOptionData.valueLabel || descriptionOptionData.value || 'Add task description'
-        }
-        supportedOffline={!!descriptionOptionData.supportedOffline}
-        errored={!!errors.find((error) => error.fieldId === 'task_description')}
-        removable={!!descriptionOptionData.removable}
-        onRemove={descriptionOptionData.removable ? descriptionOptionData.onRemove! : () => {}}
-      />
-    ),
-    locationOptionData && (
-      <EntityOption
-        key="location-1"
-        icon={<LocationOnOutlinedIcon />}
-        onClick={locationOptionData.onClick}
-        required={!!locationOptionData.required}
-        value={locationOptionData.value}
-        label={locationOptionData.valueLabel || locationOptionData.value || 'Add location(s)'}
-        supportedOffline={!!locationOptionData.supportedOffline}
-        errored={false}
-        removable={!!locationOptionData.removable}
-        onRemove={locationOptionData.removable ? locationOptionData.onRemove! : () => {}}
-      />
-    ),
-    attachmentsOptionData && (
-      <EntityOption
-        key="attachments-1"
-        icon={<AttachFileOutlinedIcon />}
-        onClick={attachmentsOptionData.onClick}
-        required={!!attachmentsOptionData.required}
-        value={attachmentsOptionData.value}
-        label={attachmentsOptionData.valueLabel || attachmentsOptionData.value || 'Add attachments'}
-        supportedOffline={!!attachmentsOptionData.supportedOffline}
-        errored={false}
-        removable={!!attachmentsOptionData.removable}
-        onRemove={attachmentsOptionData.removable ? attachmentsOptionData.onRemove! : () => {}}
-      />
-    ),
-    sketchOptionData && (
-      <EntityOption
-        key="sketch-1"
-        icon={<DrawOutlinedIcon />}
-        onClick={sketchOptionData.onClick}
-        required={!!sketchOptionData.required}
-        value={sketchOptionData.value}
-        label={sketchOptionData.valueLabel || sketchOptionData.value || 'Add sketch'}
-        supportedOffline={!!sketchOptionData.supportedOffline}
-        errored={false}
-        removable={!!sketchOptionData.removable}
-        onRemove={sketchOptionData.removable ? sketchOptionData.onRemove! : () => {}}
-      />
-    )
-  ].filter(Boolean);
+    locationOptionDataComponent('location', data, errors),
+    attachmentsOptionDataComponent('attachments', data),
+    sketchOptionDataComponent('sketch', data)
+  ].filter((x) => !!x);
 };
 
 export const getEntityOptions = (
