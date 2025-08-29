@@ -17,6 +17,7 @@ import { Flood } from './Flood';
 import { Handling } from './Handling';
 import { Height } from './Height';
 import { Mothers } from './Mothers';
+import { RelevantHazard } from './RelevantHazard';
 import { RelevantHazards } from './RelevantHazards';
 import { SlipsTripsFalls } from './SlipsTripsFalls';
 import { Staff } from './Staff';
@@ -59,4 +60,12 @@ export function getHazardGroups(): Array<FieldGroup> {
 
 export function getRelevantHazards(): Field {
   return { ...RelevantHazards, options: getHazardTypes() };
+}
+
+export function getRelevantHazard(): Field {
+  return { ...RelevantHazard, options: getHazardTypes() };
+}
+
+export function getHazardLabel(id: string): string | undefined {
+  return HAZARDS.find((hazard) => hazard.id === id)?.label;
 }

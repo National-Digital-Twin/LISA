@@ -48,7 +48,7 @@ function getAppicableControlsTitle(hazard: Hazard): Field {
 function getApplicableControl(
   entry: Partial<LogEntry>,
   hazard: Hazard,
-  control: { id: string, label: string }
+  control: { id: string; label: string }
 ): Array<Field> {
   const id = controlId(hazard.id, control.id);
   const inPlace = entry.fields?.find((f) => f.id === id)?.value;
@@ -63,15 +63,10 @@ function getApplicableControl(
       }
     ];
   }
-  return [
-    { id, label: control.label, type: 'YesNo', className: 'full-width horizontalYN' }
-  ];
+  return [{ id, label: control.label, type: 'YesNo', className: 'full-width horizontalYN' }];
 }
 
-function getOtherApplicableControl(
-  entry: Partial<LogEntry>,
-  hazard: Hazard
-): Array<Field> {
+function getOtherApplicableControl(entry: Partial<LogEntry>, hazard: Hazard): Array<Field> {
   const id = `${hazard.id}${OTHER_ID}`;
   const inPlace = entry.fields?.find((f) => f.id === id)?.value;
   if (inPlace === 'Yes') {
@@ -91,8 +86,8 @@ function getOtherApplicableControl(
 }
 
 function getApplicableControls(entry: Partial<LogEntry>, hazard: Hazard): Array<Field> {
-  return hazard.applicableControls.flatMap(
-    (control) => getApplicableControl(entry, hazard, control)
+  return hazard.applicableControls.flatMap((control) =>
+    getApplicableControl(entry, hazard, control)
   );
 }
 
@@ -141,7 +136,7 @@ export function hazardGroup(hazard: Hazard): FieldGroup {
       controlId(hazard.id, APPLICABLE_CONTROLS_TITLE),
       ...hazard.applicableControls.flatMap((control) => [
         controlId(hazard.id, control.id),
-        notInPlaceId(hazard.id, control.id),
+        notInPlaceId(hazard.id, control.id)
       ]),
       controlId(hazard.id, OTHER_ID),
       controlId(hazard.id, OTHER_ID, DESCRIPTION_SUFFIX),

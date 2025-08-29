@@ -16,7 +16,8 @@ export const useLogEntries = (incidentId?: string) => {
     error
   } = useQuery<LogEntry[], FetchError>({
     queryKey: [`incident/${incidentId}/logEntries`],
-    queryFn: () => get(`/incident/${incidentId}/logEntries`)
+    queryFn: () => get(`/incident/${incidentId}/logEntries`),
+    staleTime: Infinity
   });
 
   return { logEntries, isLoading, isError, error };

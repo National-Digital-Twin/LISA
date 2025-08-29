@@ -3,14 +3,31 @@ import { renderHook, act, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useNotifications } from '../useNotifications';
 import { get } from '../../api';
+import NotificationProvider from '../../providers/NotificationProvider';
 
 jest.mock('../../api');
+jest.mock('../useAuth', () => ({
+  useAuth: () => ({ user: { current: { username: 'testuser' } } })
+}));
+jest.mock('../useMessaging', () => ({
+  __esModule: true,
+  default: () => [false, jest.fn()]
+}));
 
 // Create a helper that returns a wrapper and the QueryClient instance.
 const createWrapper = () => {
-  const queryClient = new QueryClient();
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: { retry: false },
+      mutations: { retry: false }
+    }
+  });
   const wrapper = ({ children }: { children: React.ReactNode }) => (
-    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    <QueryClientProvider client={queryClient}>
+      <NotificationProvider>
+        {children}
+      </NotificationProvider>
+    </QueryClientProvider>
   );
   return { wrapper, queryClient };
 };

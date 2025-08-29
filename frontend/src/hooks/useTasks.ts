@@ -20,7 +20,7 @@ export const useTasks = (incidentId?: string) =>
     queryKey: ['tasks'],
     queryFn: () => get('/tasks'),
     staleTime: 10_000, // 10 seconds
-    select: (tasks) => (incidentId ? tasks.filter(t => t.incidentId === incidentId) : tasks)
+    select: (tasks) => (incidentId ? tasks.filter((t) => t.incidentId === incidentId) : tasks)
   });
 
 type CreateTaskInput = {
@@ -32,7 +32,12 @@ export const useCreateTask = ({ author, incidentId }: { author: User; incidentId
   const queryClient = useQueryClient();
   const { createLogEntry } = useCreateLogEntry(incidentId);
 
-  return useMutation<{ id: string }, Error, CreateTaskInput, { previousTasks?: Task[]; previousAllTasks?: Task[] }>({
+  return useMutation<
+    { id: string },
+    Error,
+    CreateTaskInput,
+    { previousTasks?: Task[]; previousAllTasks?: Task[] }
+  >({
     mutationFn: ({ task, files }) => {
       if (files && files.length > 0) {
         const formData = new FormData();
@@ -50,13 +55,10 @@ export const useCreateTask = ({ author, incidentId }: { author: User; incidentId
         author,
         createdAt: new Date().toISOString(),
         location: task.location ?? null,
-        attachments: task.attachments ?? [],
+        attachments: task.attachments ?? []
       };
 
-      const { previousTasks } = await addOptimisticTask(
-        queryClient,
-        optimisticTask
-      );
+      const { previousTasks } = await addOptimisticTask(queryClient, optimisticTask);
 
       return { previousTasks };
     },
@@ -75,7 +77,7 @@ export const useCreateTask = ({ author, incidentId }: { author: User; incidentId
 
       const logEntry = {
         ...createLogEntryFromTaskCreation(taskId, taskName, taskAssignee, taskIncidentId)
-      } as Omit<LogEntry, 'id' | 'author'>;
+      } as Omit<LogEntry, 'author'>;
       createLogEntry({ logEntry });
     }
   });
@@ -125,7 +127,7 @@ export const useUpdateTaskStatus = (incidentId?: string) => {
 
       const logEntry = {
         ...createLogEntryFromTaskStatusUpdate(taskId, taskStatus, incidentId)
-      } as Omit<LogEntry, 'id' | 'author'>;
+      } as Omit<LogEntry, 'author'>;
       createLogEntry({ logEntry });
     }
   });
@@ -175,7 +177,7 @@ export const useUpdateTaskAssignee = (incidentId?: string) => {
 
       const logEntry = {
         ...createLogEntryFromTaskAssigneeUpdate(taskId, taskAssignee, incidentId)
-      } as Omit<LogEntry, 'id' | 'author'>;
+      } as Omit<LogEntry, 'author'>;
       createLogEntry({ logEntry });
     }
   });

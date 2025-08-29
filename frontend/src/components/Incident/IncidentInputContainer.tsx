@@ -14,9 +14,10 @@ import { IncidentType } from 'common/IncidentType';
 import { DatePicker, LocalizationProvider, TimePicker } from '@mui/x-date-pickers';
 import dayjs from 'dayjs';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { FieldOption } from 'common/Field';
 
 type Props = {
-  onSubmit: (incident: Incident, files: File[]) => void;
+  onSubmit: (incident: Incident) => void;
   onCancel: () => void;
 };
 
@@ -114,6 +115,13 @@ export const IncidentInputContainer = ({
     return errors;
   }, []);
 
+  function assertValidIncident(i: Partial<Incident>): asserts i is Incident {
+    const errs = validateIncident(i);
+    if (errs.length) {
+      throw new Error('Incident is invalid');
+    }
+  }
+
   const YES_NO = ['Yes', 'No'] as const;
 
   const errors = useMemo(() => validateIncident(incident), [incident, validateIncident]);
@@ -134,11 +142,37 @@ export const IncidentInputContainer = ({
     setIncident((prev) => ({ ...prev, ...updates }));
   };
 
-  const onReferrerChange = (patch: Partial<NonNullable<Incident['referrer']>>) => {
-    setIncident(prev => ({
-      ...prev,
-      referrer: { ...(prev.referrer ?? {}), ...patch },
-    }));
+  const onReferrerChange = (
+    patch: Partial<NonNullable<Incident['referrer']>>
+  ) => {
+    setIncident((prev) => {
+      const merged = { ...(prev.referrer ?? {}), ...patch };
+
+      if (merged.supportRequested === 'Yes') {
+        const next: Extract<NonNullable<Incident['referrer']>, { supportRequested: 'Yes' }> = {
+          email: merged.email ?? '',
+          name: merged.name ?? '',
+          organisation: merged.organisation ?? '',
+          telephone: merged.telephone ?? '',
+          supportRequested: 'Yes',
+          supportDescription: merged.supportDescription ?? '',
+        };
+        return { ...prev, referrer: next };
+      }
+  
+      if (merged.supportRequested === 'No') {
+        const next: Extract<NonNullable<Incident['referrer']>, { supportRequested: 'No' }> = {
+          email: merged.email ?? '',
+          name: merged.name ?? '',
+          organisation: merged.organisation ?? '',
+          telephone: merged.telephone ?? '',
+          supportRequested: 'No',
+        };
+        return { ...prev, referrer: next };
+      }
+  
+      return { ...prev, referrer: merged as unknown as NonNullable<Incident['referrer']> };
+    });
   };
 
   const handleSupportRequestedChange: React.ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement> = (e) => {
@@ -153,20 +187,14 @@ export const IncidentInputContainer = ({
   };
 
   const handleSubmit = () => {
-    const validationErrors = validateIncident(incident);
-    if (validationErrors.length > 0) {
-      return;
-    }
-
-    /* const completeIncident: Incident = {
-      type: 'CBRNLarge',
-      ...incident,
-    };
-
-    onSubmit(completeIncident); */
+    if (errors.length > 0) return;
+  
+    assertValidIncident(incident);
+  
+    onSubmit(incident);
   };
 
-  const renderIncidentMenuItems = (items: Array<{ value: string; label: string; options?: any[] }>) =>
+  const renderIncidentMenuItems = (items: Array<{ value: string; label: string; options?: FieldOption[] }>) =>
     items.flatMap((item) =>
       item.options?.length
         ? [
