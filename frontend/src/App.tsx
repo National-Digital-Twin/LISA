@@ -16,6 +16,7 @@ import { useOfflineSync } from './hooks/useOfflineSync';
 // Styles
 import './App.scss';
 import MessagingProvider from './providers/MessagingProvider';
+import NotificationProvider from './providers/NotificationProvider';
 import ToastProvider from './providers/ToastProvider';
 import AuthContextProvider from './providers/AuthContextProvider'
 import { useOfflineBootstrap } from './hooks/useOfflineBootstrap';
@@ -46,10 +47,12 @@ const App = () => {
   return (
     <AuthContextProvider>
       <MessagingProvider>
-        <ToastProvider>
-          <Toasts />
-          <AppWrapper />
-        </ToastProvider>
+        <NotificationProvider>
+          <ToastProvider>
+            <Toasts />
+            <AppWrapper />
+          </ToastProvider>
+        </NotificationProvider>
       </MessagingProvider>
     </AuthContextProvider>
   );

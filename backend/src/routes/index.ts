@@ -61,6 +61,7 @@ apiRouter.get('/searchLocation', osMaps.searchLocation);
 
 apiRouter.get('/notifications', notifications.get);
 apiRouter.put('/notifications/:id', notifications.markRead);
+apiRouter.post('/notifications/actions/markSeen', notifications.markAllAsSeen);
 
 apiRouter.get('/tasks', task.get);
 apiRouter.get('/incident/:incidentId/tasks', task.getForIncidentId);

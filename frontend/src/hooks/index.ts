@@ -7,7 +7,8 @@ import { useCreateIncident, useIncidents } from './useIncidents';
 import { useCreateLogEntry, useLogEntries } from './useLogEntries';
 import { useLogEntriesUpdates } from './useLogEntriesUpdates';
 import { useTasksUpdates } from './useTaskUpdates';
-import { useNotifications, useReadNotification } from './useNotifications';
+import { useNotifications, useReadNotification, useMarkAllAsSeen } from './useNotifications';
+import { useNotificationContext } from './useNotificationContext';
 import { useOutsideClick } from './useOutsideClick';
 import { useTasks, useUpdateTaskAssignee, useUpdateTaskStatus } from './useTasks';
 import { useToast, useToastEntries } from './useToasts';
@@ -23,6 +24,8 @@ export {
   useTasksUpdates,
   useNotifications,
   useReadNotification,
+  useMarkAllAsSeen,
+  useNotificationContext,
   useTasks,
   useUpdateTaskAssignee,
   useUpdateTaskStatus,
