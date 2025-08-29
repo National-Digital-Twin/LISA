@@ -176,7 +176,7 @@ describe('Incidents Page', () => {
       const addButton = screen.getByText('Add incident');
       fireEvent.click(addButton);
 
-      expect(mockNavigate).toHaveBeenCalledWith('/createlog');
+      expect(mockNavigate).toHaveBeenCalledWith('/create');
     });
 
     it('renders incidents data same as regular view', () => {

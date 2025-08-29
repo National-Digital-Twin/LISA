@@ -6,7 +6,7 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
 // Local imports
-import CreateLog from '../pages/CreateLog';
+import CreateIncident from '../pages/CreateIncident';
 import Error404 from '../pages/Error404';
 import Files from '../pages/Files';
 import CreateForms from '../pages/Forms/CreateFormTemplates';
@@ -40,7 +40,7 @@ const AppWrapper = () => {
         { path: 'forms', element: <Forms /> },
         { path: 'forms/create', element: <CreateForms /> },
         { path: 'forms/preview', element: <CreateForms /> },
-        { path: 'createlog', element: <CreateLog /> },
+        { path: 'create', element: <CreateIncident /> },
         { path: 'incident/:incidentId', element: <Overview /> },
         { path: 'logbook/:incidentId', element: <Logbook /> },
         { path: 'logbook/:incidentId/create', element: <CreateLogEntry /> },

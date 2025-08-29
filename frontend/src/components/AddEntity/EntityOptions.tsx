@@ -11,9 +11,18 @@ import AssignmentTurnedInOutlinedIcon from '@mui/icons-material/AssignmentTurned
 import NotesOutlinedIcon from '@mui/icons-material/NotesOutlined';
 import LocationOnOutlinedIcon from '@mui/icons-material/LocationOnOutlined';
 import DrawOutlinedIcon from '@mui/icons-material/DrawOutlined';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import PersonOutlineOutlinedIcon from '@mui/icons-material/PersonOutlineOutlined';
+import CorporateFareOutlinedIcon from '@mui/icons-material/CorporateFareOutlined';
+import LocalPhoneOutlinedIcon from '@mui/icons-material/LocalPhoneOutlined';
+import EmailOutlinedIcon from '@mui/icons-material/EmailOutlined';
+import SupportOutlinedIcon from '@mui/icons-material/SupportOutlined';
 import { ValidationError } from '../../utils/types';
 import { EntityOption } from './EntityOption';
 import { SituationReport } from 'common/LogEntryTypes/SituationReport';
+import { Format } from '../../utils';
+import { IncidentType } from 'common/IncidentType';
+import { Box } from '@mui/material';
 
 export type EntityOptionData = {
   id: string;
@@ -217,6 +226,123 @@ const tasks = (data: EntityOptionData[], errors: ValidationError[]) => {
   ].filter(Boolean);
 };
 
+const incidents = (data: EntityOptionData[], errors: ValidationError[]) => {
+  const typeOptionData = data.find((x) => x.id === 'type');
+  const timeOptionData = data.find((x) => x.id === 'time');
+  const nameOptionData = data.find((x) => x.id === 'name');
+  const referrerOptionData = data.find((x) => x.id === 'referrer');
+  const organisationOptionData = data.find((x) => x.id === 'organisation');
+  const phoneOptionData = data.find((x) => x.id === 'phone');
+  const emailOptionData = data.find((x) => x.id === 'email');
+  const supportRequestedOptionData = data.find((x) => x.id === 'supportRequested');
+
+  return [
+    typeOptionData && (
+      <EntityOption
+        key="inc_type"
+        icon={<Box sx={{ width: 24, height: 24 }} aria-hidden role="presentation" />}
+        onClick={typeOptionData.onClick}
+        required={!!typeOptionData.required}
+        value={typeOptionData.value}
+        label={Format.incident.type(typeOptionData.value as IncidentType) || 'Select incident type'}
+        supportedOffline={!!typeOptionData.supportedOffline}
+        errored={!!errors.find((error) => error.fieldId === 'incident_type')}
+      />
+    ),
+    timeOptionData && (
+      <EntityOption
+        key="inc_time"
+        icon={<AccessTimeIcon />}
+        onClick={timeOptionData.onClick}
+        required={!!timeOptionData.required}
+        value={timeOptionData.value}
+        label={Format.dateAndTimeMobile(timeOptionData.value) || 'Add date and time'}
+        supportedOffline={!!timeOptionData.supportedOffline}
+        errored={!!errors.find((error) => error.fieldId === 'incident_time')}
+      />
+    ),
+    nameOptionData && (
+      <EntityOption
+        key="inc_name"
+        icon={<TextSnippetOutlinedIcon />}
+        onClick={nameOptionData.onClick}
+        required={!!nameOptionData?.required}
+        value={nameOptionData.value}
+        label={nameOptionData.value || 'Add incident name'}
+        supportedOffline={!!nameOptionData.supportedOffline}
+        errored={!!errors.find((error) => error.fieldId === 'incident_name')}
+      />
+    ),
+    referrerOptionData && (
+      <EntityOption
+        key="inc_referrer"
+        icon={<PersonOutlineOutlinedIcon />}
+        onClick={referrerOptionData.onClick}
+        required={!!referrerOptionData.required}
+        value={referrerOptionData.value}
+        label={referrerOptionData.value || 'Referred by'}
+        supportedOffline={!!referrerOptionData.supportedOffline}
+        errored={!!errors.find((error) => error.fieldId === 'incident_referrer')}
+      />
+    ),
+    organisationOptionData && (
+      <EntityOption
+        key="inc_organisation"
+        icon={<CorporateFareOutlinedIcon />}
+        onClick={organisationOptionData.onClick}
+        required={!!organisationOptionData.required}
+        value={organisationOptionData.value}
+        label={organisationOptionData.value || 'Organisation'}
+        supportedOffline={!!organisationOptionData.supportedOffline}
+        errored={!!errors.find((error) => error.fieldId === 'incident_organisation')}
+      />
+    ),
+    phoneOptionData && (
+      <EntityOption
+        key="inc_phone"
+        icon={<LocalPhoneOutlinedIcon />}
+        onClick={phoneOptionData.onClick}
+        required={!!phoneOptionData.required}
+        value={phoneOptionData.value}
+        label={phoneOptionData.value || 'Telephone number'}
+        supportedOffline={!!phoneOptionData.supportedOffline}
+        errored={!!errors.find((error) => error.fieldId === 'incident_phone')}
+      />
+    ),
+    emailOptionData && (
+      <EntityOption
+        key="inc_email"
+        icon={<EmailOutlinedIcon />}
+        onClick={emailOptionData.onClick}
+        required={!!emailOptionData.required}
+        value={emailOptionData.value}
+        label={emailOptionData.value || 'Email'}
+        supportedOffline={!!emailOptionData.supportedOffline}
+        errored={!!errors.find((error) => error.fieldId === 'incident_email')}
+      />
+    ),
+    supportRequestedOptionData && (
+      <EntityOption
+        key="inc_support"
+        icon={<SupportOutlinedIcon />}
+        onClick={supportRequestedOptionData.onClick}
+        required={!!supportRequestedOptionData.required}
+        value={supportRequestedOptionData.value}
+        label={
+          supportRequestedOptionData.value ||
+          'Has the referrer requested support from the local resilience team?'
+        }
+        supportedOffline={!!supportRequestedOptionData.supportedOffline}
+        errored={!!errors.find(
+          (error) =>
+            error.fieldId === 'incident_supportRequested' ||
+            error.fieldId === 'incident_supportDescription'
+        )}
+      />
+    )
+  ].filter(Boolean);
+};
+
 export const getEntityOptions = (
   entityType: string,
   data: EntityOptionData[],
@@ -227,6 +353,8 @@ export const getEntityOptions = (
       return forms(data, errors);
     case 'tasks':
       return tasks(data, errors);
+    case 'incidents':
+      return incidents(data, errors);
     default:
       return [];
   }
