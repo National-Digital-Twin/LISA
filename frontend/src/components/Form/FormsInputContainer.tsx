@@ -227,15 +227,10 @@ export const FormsInputContainer = ({
   ): EntityOptionData => ({
     ...option,
     id: `selectHazard-${index}`,
-    value: value ? value : option.value,
+    value: value ?? option.value,
     valueLabel: value ? getHazardLabel(value) : option.valueLabel,
     onClick: () =>
-      onHazardOptionClick(
-        index,
-        option.label!,
-        value ? value : option.value,
-        relevantHazards ?? []
-      ),
+      onHazardOptionClick(index, option.label!, value ?? option.value, relevantHazards ?? []),
     removable
   });
 
@@ -458,7 +453,7 @@ export const FormsInputContainer = ({
 
   const siteRepDetailOptionData: EntityOptionData[] = [
     {
-      id: 'siteRepDetails',
+      id: 'sitRepDetails',
       onClick: () => {
         setCustomHeading('Details');
         setAddingSiteRepDetails(true);
@@ -481,7 +476,7 @@ export const FormsInputContainer = ({
       id: 'addComments',
       onClick: () => {
         setCustomHeading('Add comments');
-        setFormField(formFields.find((formField) => formField.id === 'Comments')!);
+        setFormField(formFields.find((formField) => formField.id === 'Comments'));
         setAddingComments(true);
         setLevel(2);
       },
