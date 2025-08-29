@@ -37,7 +37,7 @@ export const EntityOption = ({
   const clickableEntityOption = (
     <Box
       display="flex"
-      textAlign="center"
+      textAlign="left"
       padding="10px 5px"
       gap={1}
       sx={{ cursor: isAvailable ? 'pointer' : 'initial' }}

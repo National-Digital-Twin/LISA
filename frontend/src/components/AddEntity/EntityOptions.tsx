@@ -288,7 +288,7 @@ const taskAssigneeOptionDataComponent = (
 
 const getIncOption = (id: string, data: EntityOptionData[]) => data.find(x => x.id === id);
 
-const BlankIcon = <Box sx={{ width: 24, height: 24 }} aria-hidden role="presentation" />;
+const BlankIcon = <Box sx={{ width: 24, height: 24 }} aria-hidden />;
 
 const incidentTypeOptionDataComponent = (
   data: EntityOptionData[],

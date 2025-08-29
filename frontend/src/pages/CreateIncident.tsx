@@ -15,7 +15,7 @@ export default function CreateIncident() {
   const handleSubmit = (
     incident: Incident,
   ) => {
-    createIncident(incident as Incident, {
+    createIncident(incident, {
       onSuccess: (newIncident) => {
         setTimeout(() => {
           navigate(`/logbook/${newIncident.id}`);
