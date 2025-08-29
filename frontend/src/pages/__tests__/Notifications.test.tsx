@@ -26,15 +26,17 @@ const day = 24 * hour;
 const week = 7 * day;
 
 const sampleNotifications: Notification[] = [
-  { ...newNotificationGenerator('1'), read: false, dateTime: new Date().toISOString() },
+  { ...newNotificationGenerator('1'), read: false, seen: false, dateTime: new Date().toISOString() },
   {
     ...newNotificationGenerator('2'),
     read: true,
+    seen: true,
     dateTime: new Date(Date.now() - day).toISOString()
   },
   {
     ...newNotificationGenerator('3'),
     read: false,
+    seen: false,
     dateTime: new Date(Date.now() - week).toISOString()
   }
 ];
@@ -45,6 +47,9 @@ jest.mock('../../hooks', () => ({
     invalidate: jest.fn()
   })),
   useReadNotification: jest.fn(() => ({
+    mutate: jest.fn()
+  })),
+  useMarkAllAsSeen: jest.fn(() => ({
     mutate: jest.fn()
   }))
 }));

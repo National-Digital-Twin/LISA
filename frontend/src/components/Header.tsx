@@ -24,7 +24,7 @@ import {
   useMediaQuery,
   useTheme
 } from '@mui/material';
-import React, { MouseEvent, useState } from 'react';
+import React, { MouseEvent, useState, useMemo } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 
 // Local imports
@@ -49,7 +49,7 @@ const Header = ({ onMenuClick }: HeaderProps) => {
   const [accountAnchorEl, setAccountAnchorEl] = useState<null | HTMLElement>(null);
   const [openGuide, setOpenGuide] = useState(false);
 
-  const unreadCount = notifications?.filter((n) => !n.read).length ?? 0;
+  const unseenCount = useMemo(() => notifications?.filter((n) => !n.seen).length ?? 0, [notifications]);
   const openAccount = Boolean(accountAnchorEl);
 
   const handleAccountClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -154,7 +154,7 @@ const Header = ({ onMenuClick }: HeaderProps) => {
 
         <Box display="flex" gap={1} alignItems="center">
           <IconButton component={Link} to="/notifications" onClick={handleLink}>
-            <Badge badgeContent={pathname === '/notifications' ? 0 : unreadCount} color="error">
+            <Badge badgeContent={unseenCount} color="error">
               <NotificationsNoneOutlinedIcon
                 sx={{
                   color: pathname === '/notifications' ? 'accent.main' : 'white'
