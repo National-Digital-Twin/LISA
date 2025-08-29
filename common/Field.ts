@@ -40,6 +40,7 @@ export const Field = Record({
   className: Optional(String),
   multiline: Optional(Boolean),
   rows: Optional(Number),
+  title: Optional(String),
   dependentFieldId: Optional(String)
 });
 

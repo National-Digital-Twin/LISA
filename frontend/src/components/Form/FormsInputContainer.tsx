@@ -2,7 +2,7 @@
 // © Crown Copyright 2025. This work has been developed by the National Digital Twin Programme
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
-import { RefObject, useMemo, useState } from 'react';
+import { RefObject, useEffect, useMemo, useState } from 'react';
 import { Stage } from 'konva/lib/Stage';
 import dayjs from 'dayjs';
 import { Box, FormControl, MenuItem, TextField, Typography } from '@mui/material';
@@ -41,6 +41,9 @@ import { FormFieldWithDependent } from './FormFieldWithDependent';
 import { CommunicationMethod } from 'common/Fields/CommunicationMethod';
 import { Form as CustomForm } from '../CustomForms/FormTemplates/types';
 import { FormContainer as CustomFormContainer } from '../CustomForms/FormInstances/FormContainer';
+import { RelevantHazards } from 'common/LogEntryTypes/RiskAssessment/hazards/RelevantHazards';
+import { getRelevantHazard, getHazardLabel } from 'common/LogEntryTypes/RiskAssessment/hazards';
+import FormField from './FormField';
 
 type Props = {
   incident: Incident;
@@ -92,6 +95,12 @@ export const FormsInputContainer = ({
   const [customHeading, setCustomHeading] = useState<string>('');
   const [addingDescription, setAddingDescription] = useState<boolean>(false);
   const [addingSiteRepDetails, setAddingSiteRepDetails] = useState<boolean>(false);
+  const [addingHazard, setAddingHazard] = useState<boolean>(false);
+  const [selectedHazardIndex, setSelectedHazardIndex] = useState<number>(0);
+  const [hazardValue, setHazardValue] = useState<string>();
+  const [hazardsOptionData, setHazardsOptionData] = useState<EntityOptionData[]>([]);
+  const [refreshRemoveHazardsCall, setRefreshRemoveHazardsCall] = useState<boolean>(false);
+  const [addingComments, setAddingComments] = useState<boolean>(false);
   const [addingFormFields, setAddingFormFields] = useState<boolean>(false);
   const [addingDateAndTime, setAddingDateAndTime] = useState<boolean>(false);
   const [addingLocation, setAddingLocation] = useState<boolean>(false);
@@ -105,6 +114,8 @@ export const FormsInputContainer = ({
     setLevel(level);
     setAddingDescription(false);
     setAddingSiteRepDetails(false);
+    setAddingHazard(false);
+    setAddingComments(false);
     setAddingFormFields(false);
     setAddingDateAndTime(false);
     setAddingLocation(false);
@@ -140,6 +151,252 @@ export const FormsInputContainer = ({
     onFieldChange(id, value, true);
   };
 
+  const onHazardOptionClick = (
+    index: number,
+    label: string,
+    value: string | undefined,
+    selectedRelevantHazards: string[]
+  ) => {
+    const relevantHazardField = getRelevantHazard();
+    const options = relevantHazardField.options?.filter(
+      (option) => option.value === value || !selectedRelevantHazards.includes(option.value)
+    );
+
+    setCustomHeading(label);
+    setFormField({
+      ...relevantHazardField,
+      value: value,
+      options
+    });
+    setAddingHazard(true);
+    setHazardValue(value ?? '');
+    setSelectedHazardIndex(index);
+    setLevel(2);
+  };
+
+  const hazardOptionData = (
+    index: number,
+    required: boolean,
+    label: string,
+    selectedRelevantHazards: string[]
+  ): EntityOptionData => {
+    const relevantHazardsField = formFields.find(
+      (formField) => formField.id === RelevantHazards.id
+    );
+
+    if (relevantHazardsField) {
+      const relevantHazardsValue = getFieldValue(relevantHazardsField, entry);
+
+      if (relevantHazardsValue && index < relevantHazardsValue.length - 1) {
+        return {
+          id: `selectHazard-${index}`,
+          onClick: () => onHazardOptionClick(index, label, undefined, selectedRelevantHazards),
+          label: label,
+          value: relevantHazardsValue[index],
+          required,
+          supportedOffline: true
+        };
+      }
+
+      return {
+        id: `selectHazard-${index}`,
+        onClick: () => onHazardOptionClick(index, label, undefined, selectedRelevantHazards),
+        label: label,
+        value: undefined,
+        required,
+        supportedOffline: true
+      };
+    }
+
+    return {
+      id: `selectHazard-${index}`,
+      onClick: () => onHazardOptionClick(index, label, undefined, selectedRelevantHazards),
+      label: label,
+      value: undefined,
+      required,
+      supportedOffline: true
+    };
+  };
+
+  const updateHazardOptionData = (
+    option: EntityOptionData,
+    index: number,
+    value: string | undefined,
+    relevantHazards: string[] | undefined,
+    removable: boolean
+  ): EntityOptionData => ({
+    ...option,
+    id: `selectHazard-${index}`,
+    value: value ?? option.value,
+    valueLabel: value ? getHazardLabel(value) : option.valueLabel,
+    onClick: () =>
+      onHazardOptionClick(index, option.label!, value ?? option.value, relevantHazards ?? []),
+    removable
+  });
+
+  const reconcileReleventHazards = (
+    relevantHazardsFieldValue: string | string[] | undefined,
+    value: string
+  ) => {
+    let relevantHazards = [value];
+
+    if (relevantHazardsFieldValue) {
+      if (selectedHazardIndex >= 0 && selectedHazardIndex < relevantHazardsFieldValue.length) {
+        relevantHazards = [
+          ...(selectedHazardIndex > 0
+            ? relevantHazardsFieldValue.slice(0, selectedHazardIndex)
+            : relevantHazards),
+          ...(selectedHazardIndex > 0 ? relevantHazards : []),
+          ...(selectedHazardIndex > 0
+            ? relevantHazardsFieldValue.slice(selectedHazardIndex + 1)
+            : [])
+        ];
+      } else {
+        relevantHazards = [...relevantHazardsFieldValue, ...relevantHazards];
+      }
+    }
+
+    return relevantHazards;
+  };
+
+  const onFormTypeChange = (formType: string) => {
+    onFieldChange('type', formType);
+
+    if (formType === 'RiskAssessment') {
+      setHazardsOptionData([hazardOptionData(0, true, 'Select hazard', [])]);
+    }
+
+    setLevel(1);
+  };
+
+  const onRemoveHazard = (index: number, relevantHazards: string[]) => {
+    const value = index > 0 ? relevantHazards.at(index) : undefined;
+
+    if (value) {
+      const updatedRelevantHazards =
+        index === relevantHazards.length - 1
+          ? [...relevantHazards.slice(0, index), ...relevantHazards.slice(index + 1)]
+          : undefined;
+
+      if (updatedRelevantHazards) {
+        onNestedFieldChange(RelevantHazards.id, updatedRelevantHazards);
+
+        let updatedAdditionalHazardsOptionData: EntityOptionData[] = [];
+
+        if (index === hazardsOptionData.length - 2) {
+          updatedAdditionalHazardsOptionData = [
+            ...hazardsOptionData.slice(0, index).map((data, innerIndex) => {
+              if (innerIndex === index - 1) {
+                return updateHazardOptionData(
+                  data,
+                  innerIndex,
+                  undefined,
+                  updatedRelevantHazards,
+                  innerIndex > 0
+                );
+              }
+              return updateHazardOptionData(
+                data,
+                innerIndex,
+                undefined,
+                updatedRelevantHazards,
+                false
+              );
+            }),
+            hazardOptionData(index, false, 'Add hazard', updatedRelevantHazards)
+          ];
+        }
+
+        setHazardsOptionData(updatedAdditionalHazardsOptionData);
+        setRefreshRemoveHazardsCall(true);
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (formFields) {
+      const relevantHazardsField = formFields.find(
+        (formField) => formField.id === RelevantHazards.id
+      );
+
+      if (relevantHazardsField) {
+        const relevantHazardsFieldValue = getFieldValue(relevantHazardsField, entry);
+
+        if (relevantHazardsFieldValue) {
+          if (hazardsOptionData.some((option) => option.removable)) {
+            const underlyingValue = relevantHazardsFieldValue.valueOf();
+
+            if (Array.isArray(underlyingValue)) {
+              const updateAdditionalHazardsOptionData = hazardsOptionData.map((option, index) => {
+                if (option.removable) {
+                  return {
+                    ...option,
+                    onRemove: () => onRemoveHazard(index, underlyingValue)
+                  };
+                }
+                return option;
+              });
+              setHazardsOptionData(updateAdditionalHazardsOptionData);
+            }
+          }
+        }
+      }
+    }
+
+    return setRefreshRemoveHazardsCall(false);
+  }, [refreshRemoveHazardsCall]);
+
+  const updateAdditionalOptionData = (value: string, selectedRelevantHazards: string[]) => {
+    let updatedAdditionalHazardsOptionData = hazardsOptionData;
+
+    if (updatedAdditionalHazardsOptionData.length < selectedHazardIndex + 2) {
+      updatedAdditionalHazardsOptionData.push(
+        hazardOptionData(selectedHazardIndex + 1, false, 'Add hazard', selectedRelevantHazards)
+      );
+    }
+
+    updatedAdditionalHazardsOptionData = updatedAdditionalHazardsOptionData.map((data, index) => {
+      const removable = index > 0 && index === hazardsOptionData.length - 2;
+
+      if (index === selectedHazardIndex) {
+        return updateHazardOptionData(data, index, value, selectedRelevantHazards, removable);
+      }
+
+      return updateHazardOptionData(data, index, undefined, selectedRelevantHazards, removable);
+    });
+
+    setHazardsOptionData(updatedAdditionalHazardsOptionData);
+  };
+
+  const handleRelevantHazardsChange = (id: string, value: FieldValueType) => {
+    if (id === 'RelevantHazard') {
+      const relevantHazardsField = formFields.find(
+        (formField) => formField.id === RelevantHazards.id
+      );
+
+      if (relevantHazardsField) {
+        const relevantHazardsFieldValue = getFieldValue(relevantHazardsField, entry);
+
+        if (value) {
+          const underlyingValue = value.valueOf();
+
+          if (typeof underlyingValue === 'string') {
+            const relevantHazards = reconcileReleventHazards(
+              relevantHazardsFieldValue,
+              underlyingValue
+            );
+
+            setHazardValue(underlyingValue);
+            onNestedFieldChange(RelevantHazards.id, relevantHazards);
+
+            updateAdditionalOptionData(underlyingValue, relevantHazards);
+            setRefreshRemoveHazardsCall(true);
+          }
+        }
+      }
+    }
+  };
+
   const getDateValue = () => {
     if (entry.dateTime) {
       return dayjs(new Date(Format.isoDate(entry.dateTime)));
@@ -171,7 +428,9 @@ export const FormsInputContainer = ({
     return value;
   };
 
-  const filteredFormFieldsForView = entry.type === 'SituationReport' ? [] : formFields;
+  const filteredFormFieldsForView = ['SituationReport', 'RiskAssessment'].includes(entry.type ?? '')
+    ? []
+    : formFields;
   const dependentFieldIds = filteredFormFieldsForView.map(
     (formField) => formField.dependentFieldId
   );
@@ -187,14 +446,14 @@ export const FormsInputContainer = ({
         setAddingDescription(true);
         setLevel(2);
       },
-      value: entry?.content?.text ? entry.content.text : undefined,
+      value: entry.content?.text ? entry.content.text : undefined,
       supportedOffline: true
     }
   ];
 
   const siteRepDetailOptionData: EntityOptionData[] = [
     {
-      id: 'siteRepDetails',
+      id: 'sitRepDetails',
       onClick: () => {
         setCustomHeading('Details');
         setAddingSiteRepDetails(true);
@@ -211,6 +470,27 @@ export const FormsInputContainer = ({
     }
   ];
 
+  const riskReviewOptionData: EntityOptionData[] = [
+    ...hazardsOptionData,
+    {
+      id: 'addComments',
+      onClick: () => {
+        setCustomHeading('Add comments');
+        setFormField(formFields.find((formField) => formField.id === 'Comments'));
+        setAddingComments(true);
+        setLevel(2);
+      },
+      label: 'Add comments',
+      value:
+        (entry.type === 'RiskAssessment' &&
+          formFields
+            .filter((formField) => formField.id === 'Comments')
+            .map((formField) => getFieldValue(formField, entry)?.toString())?.[0]) ||
+        undefined,
+      supportedOffline: true
+    }
+  ];
+
   const formTypeLabel = LogEntryTypes[entry.type as LogEntryType].label;
 
   const addLocationHeading =
@@ -220,15 +500,18 @@ export const FormsInputContainer = ({
     entry.type === 'SituationReport' ? 'View exact location' : 'View location(s)';
 
   const entityOptionsData: EntityOptionData[] = [
-    ...(entry.type === 'SituationReport' ? [] : descriptionOptionData),
+    ...(['SituationReport', 'RiskAssessment', 'RiskAssessmentReview'].includes(entry.type ?? '')
+      ? []
+      : descriptionOptionData),
     ...(entry.type === 'SituationReport' ? siteRepDetailOptionData : []),
+    ...(entry.type === 'RiskAssessment' ? riskReviewOptionData : []),
     ...parentFormFields.map(
       (field) =>
         ({
           id: `field-${field.id}`,
           dependentId: field.dependentFieldId,
           onClick: () => {
-            setCustomHeading('Add field');
+            setCustomHeading(`Add ${field.title ?? 'field'}`);
             setAddingFormFields(true);
             setFormField(field);
             setLevel(2);
@@ -271,6 +554,7 @@ export const FormsInputContainer = ({
     {
       id: 'attachments',
       onClick: () => {
+        setCustomHeading('Add attachment(s)');
         setAddingAttachments(true);
         setLevel(2);
       },
@@ -280,6 +564,7 @@ export const FormsInputContainer = ({
     {
       id: 'sketch',
       onClick: () => {
+        setCustomHeading('Add sketch');
         setAddingSketch(true);
         setLevel(2);
       },
@@ -298,10 +583,7 @@ export const FormsInputContainer = ({
               value={entry.type}
               variant="filled"
               label={entry.type ? '' : 'Select'}
-              onChange={(event) => {
-                onFieldChange('type', event.target.value);
-                setLevel(1);
-              }}
+              onChange={(event) => onFormTypeChange(event.target.value)}
               slotProps={{ inputLabel: { shrink: false } }}
             >
               {formTypes.map((formType) => (
@@ -319,7 +601,7 @@ export const FormsInputContainer = ({
       heading: `Add form - ${formTypeLabel}`,
       inputControls: (
         <>
-          <Box display="flex">
+          <Box display="flex" sx={{ py: 0.8 }}>
             <CircleIcon sx={{ opacity: 0 }} />
             <Typography variant="body1" padding={1}>
               {formTypeLabel}
@@ -370,6 +652,36 @@ export const FormsInputContainer = ({
                 onChange={onNestedFieldChange}
                 errors={errors}
               />
+            </Box>
+          )}
+          {addingComments && formFields && formField && (
+            <FormField
+              field={formField}
+              entry={entry}
+              entries={entries}
+              onChange={onNestedFieldChange}
+              error={errors.find((error) => error.fieldId === 'Comments')}
+            />
+          )}
+          {addingHazard && formField && (
+            <Box display="flex" flexDirection="column" flexGrow={1} gap={2}>
+              <FormField
+                field={formField}
+                entry={entry}
+                entries={entries}
+                onChange={handleRelevantHazardsChange}
+                error={errors.find((error) => error.fieldId === formField.id)}
+              />
+              {hazardValue && forms && (
+                <CustomFormContainer
+                  entry={entry}
+                  selectedForm={
+                    forms.find((form) => form.id === `haz_${hazardValue.toLowerCase()}`)!
+                  }
+                  fields={formFields}
+                  onFieldChange={onNestedFieldChange}
+                />
+              )}
             </Box>
           )}
           {addingDateAndTime && (

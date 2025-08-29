@@ -9,6 +9,7 @@
           "MajorIncident": {
             "title": "Has a major incident been declared?",
             "type": "string",
+            "default": false,
             "enum": [
               "Yes",
               "No"

@@ -18,10 +18,10 @@ run-sonar-scan:
 		-e SONAR_TOKEN="${SONAR_TOKEN}" \
 		sonarsource/sonar-scanner-cli
 
-lisa-sag-up:
+lisa-resources-up:
 	docker compose -f deployment/sag/docker-compose.yaml up -d
 
-lisa-sag-down:
+lisa-resources-down:
 	docker compose -f deployment/sag/docker-compose.yaml down
 
 upload-predefined-forms:
