@@ -99,8 +99,10 @@ export const FormsInputContainer = ({
   const [selectedHazardIndex, setSelectedHazardIndex] = useState<number>(0);
   const [hazardValue, setHazardValue] = useState<string>();
   const [hazardsOptionData, setHazardsOptionData] = useState<EntityOptionData[]>([]);
+  const [refreshHazardOptions, setRefreshHazardOptions] = useState<boolean>(false);
   const [refreshRemoveHazardsCall, setRefreshRemoveHazardsCall] = useState<boolean>(false);
   const [addingComments, setAddingComments] = useState<boolean>(false);
+  const [addingRiskAssessmentToReview, setAddingRiskAssessmentToReview] = useState<boolean>(false);
   const [addingFormFields, setAddingFormFields] = useState<boolean>(false);
   const [addingDateAndTime, setAddingDateAndTime] = useState<boolean>(false);
   const [addingLocation, setAddingLocation] = useState<boolean>(false);
@@ -116,6 +118,7 @@ export const FormsInputContainer = ({
     setAddingSiteRepDetails(false);
     setAddingHazard(false);
     setAddingComments(false);
+    setAddingRiskAssessmentToReview(false);
     setAddingFormFields(false);
     setAddingDateAndTime(false);
     setAddingLocation(false);
@@ -180,19 +183,62 @@ export const FormsInputContainer = ({
     label: string,
     selectedRelevantHazards: string[]
   ): EntityOptionData => {
-    const relevantHazardsField = formFields.find(
-      (formField) => formField.id === RelevantHazards.id
-    );
+    if (selectedRelevantHazards.length > 0) {
+      if (index < selectedRelevantHazards.length) {
+        return {
+          id: `selectHazard-${index}`,
+          onClick: () =>
+            onHazardOptionClick(
+              index,
+              label,
+              selectedRelevantHazards[index],
+              selectedRelevantHazards
+            ),
+          label: label,
+          value: selectedRelevantHazards[index],
+          required,
+          supportedOffline: true
+        };
+      }
 
-    if (relevantHazardsField) {
-      const relevantHazardsValue = getFieldValue(relevantHazardsField, entry);
+      return {
+        id: `selectHazard-${index}`,
+        onClick: () => onHazardOptionClick(index, label, undefined, selectedRelevantHazards),
+        label: label,
+        value: undefined,
+        required,
+        supportedOffline: true
+      };
+    } else {
+      const relevantHazardsField = formFields.find(
+        (formField) => formField.id === RelevantHazards.id
+      );
 
-      if (relevantHazardsValue && index < relevantHazardsValue.length - 1) {
+      if (relevantHazardsField) {
+        const relevantHazardsValue = getFieldValue(relevantHazardsField, entry);
+
+        if (relevantHazardsValue && index < relevantHazardsValue.length - 1) {
+          return {
+            id: `selectHazard-${index}`,
+            onClick: () =>
+              onHazardOptionClick(
+                index,
+                label,
+                relevantHazardsValue[index],
+                selectedRelevantHazards
+              ),
+            label: label,
+            value: relevantHazardsValue[index],
+            required,
+            supportedOffline: true
+          };
+        }
+
         return {
           id: `selectHazard-${index}`,
           onClick: () => onHazardOptionClick(index, label, undefined, selectedRelevantHazards),
           label: label,
-          value: relevantHazardsValue[index],
+          value: undefined,
           required,
           supportedOffline: true
         };
@@ -207,15 +253,6 @@ export const FormsInputContainer = ({
         supportedOffline: true
       };
     }
-
-    return {
-      id: `selectHazard-${index}`,
-      onClick: () => onHazardOptionClick(index, label, undefined, selectedRelevantHazards),
-      label: label,
-      value: undefined,
-      required,
-      supportedOffline: true
-    };
   };
 
   const updateHazardOptionData = (
@@ -397,6 +434,43 @@ export const FormsInputContainer = ({
     }
   };
 
+  useEffect(() => {
+    if (entry.type === 'RiskAssessmentReview') {
+      const relevantHazardsField = formFields.find(
+        (formField) => formField.id === RelevantHazards.id
+      );
+
+      if (relevantHazardsField) {
+        const relevantHazardsFieldValue = getFieldValue(relevantHazardsField, entry);
+
+        if (relevantHazardsFieldValue) {
+          if (Array.isArray(relevantHazardsFieldValue)) {
+            const relevantHazardOptions: EntityOptionData[] = relevantHazardsFieldValue
+              .map((_value, index) => {
+                if (index === 0) {
+                  return hazardOptionData(0, true, 'Select hazard', relevantHazardsFieldValue);
+                }
+
+                return hazardOptionData(index, false, 'Add hazard', relevantHazardsFieldValue);
+              })
+              .concat(
+                hazardOptionData(
+                  relevantHazardsFieldValue.length,
+                  false,
+                  'Add hazard',
+                  relevantHazardsFieldValue
+                )
+              );
+
+            setHazardsOptionData(relevantHazardOptions);
+          }
+        }
+      }
+    }
+
+    return setRefreshHazardOptions(false);
+  }, [refreshHazardOptions]);
+
   const getDateValue = () => {
     if (entry.dateTime) {
       return dayjs(new Date(Format.isoDate(entry.dateTime)));
@@ -428,7 +502,11 @@ export const FormsInputContainer = ({
     return value;
   };
 
-  const filteredFormFieldsForView = ['SituationReport', 'RiskAssessment'].includes(entry.type ?? '')
+  const filteredFormFieldsForView = [
+    'SituationReport',
+    'RiskAssessment',
+    'RiskAssessmentReview'
+  ].includes(entry.type ?? '')
     ? []
     : formFields;
   const dependentFieldIds = filteredFormFieldsForView.map(
@@ -482,7 +560,7 @@ export const FormsInputContainer = ({
       },
       label: 'Add comments',
       value:
-        (entry.type === 'RiskAssessment' &&
+        ((entry.type === 'RiskAssessment' || entry.type === 'RiskAssessmentReview') &&
           formFields
             .filter((formField) => formField.id === 'Comments')
             .map((formField) => getFieldValue(formField, entry)?.toString())?.[0]) ||
@@ -490,6 +568,34 @@ export const FormsInputContainer = ({
       supportedOffline: true
     }
   ];
+
+  const riskAssessmentReviewOptionData = (): EntityOptionData[] => {
+    const value =
+      (entry.type === 'RiskAssessmentReview' &&
+        formFields
+          .filter((formField) => formField.id === 'Review')
+          .map((formField) => getFieldValue(formField, entry)?.toString())?.[0]) ||
+      undefined;
+    const linkedEntry = entries.find((e) => e.id === value);
+    return [
+      {
+        id: 'riskAssessmentReview',
+        onClick: () => {
+          setCustomHeading('Select risk assessment to review');
+          setFormField(formFields.find((formField) => formField.id === 'Review'));
+          setAddingRiskAssessmentToReview(true);
+          setLevel(2);
+        },
+        label: 'Select risk assessment to review',
+        value,
+        valueLabel:
+          (linkedEntry && Format.mentionable.entry(linkedEntry as LogEntry, true)?.label) ||
+          undefined,
+        supportedOffline: true
+      },
+      ...(value ? riskReviewOptionData : [])
+    ];
+  };
 
   const formTypeLabel = LogEntryTypes[entry.type as LogEntryType].label;
 
@@ -504,6 +610,7 @@ export const FormsInputContainer = ({
       ? []
       : descriptionOptionData),
     ...(entry.type === 'SituationReport' ? siteRepDetailOptionData : []),
+    ...(entry.type === 'RiskAssessmentReview' ? riskAssessmentReviewOptionData() : []),
     ...(entry.type === 'RiskAssessment' ? riskReviewOptionData : []),
     ...parentFormFields.map(
       (field) =>
@@ -654,13 +761,22 @@ export const FormsInputContainer = ({
               />
             </Box>
           )}
-          {addingComments && formFields && formField && (
+          {(addingComments || addingRiskAssessmentToReview) && formField && (
             <FormField
               field={formField}
               entry={entry}
               entries={entries}
-              onChange={onNestedFieldChange}
-              error={errors.find((error) => error.fieldId === 'Comments')}
+              onChange={(id, value) => {
+                onNestedFieldChange(id, value);
+                if (addingRiskAssessmentToReview) {
+                  setRefreshHazardOptions(true);
+                }
+              }}
+              error={errors.find(
+                (error) =>
+                  (addingComments && error.fieldId === 'Comments') ||
+                  (addingRiskAssessmentToReview && error.fieldId === 'Review')
+              )}
             />
           )}
           {addingHazard && formField && (
