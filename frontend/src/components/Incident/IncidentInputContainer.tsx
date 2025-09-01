@@ -141,6 +141,19 @@ export const IncidentInputContainer = ({
 
   const errors = useMemo(() => validateIncident(incident), [incident, validateIncident]);
 
+  const isDirty = useMemo(() => {
+    if (!isEditing || !initialIncident) return true;
+  
+    if (errors.length > 0) return false;
+  
+    try {
+      const { isDirty } = buildSetInfoPayload(incident as Incident, initialIncident);
+      return isDirty;
+    } catch {
+      return false;
+    }
+  }, [isEditing, initialIncident, incident, errors.length]);
+
   const setLevelAndClearState = (level: number) => {
     setLevel(level);
     setActiveField(null);
@@ -506,7 +519,7 @@ export const IncidentInputContainer = ({
       onCancel={onCancel}
       level={level}
       setLevel={setLevelAndClearState}
-      disableSubmit={errors.length > 0}
+      disableSubmit={errors.length > 0 || (isEditing && !isDirty)}
     />
   );
 };

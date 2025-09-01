@@ -3,7 +3,6 @@
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
 // Global imports
-import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Box, Button, Typography, Grid2 as Grid, IconButton } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
@@ -26,7 +25,6 @@ const Overview = () => {
   const { user } = useAuth();
   const changeIncidentStage = useChangeIncidentStage();
   const navigate = useNavigate();
-  const [settingInformation, setSettingInformation] = useState<boolean>();
 
   const isUserAdmin = isAdmin(user.current);
 
@@ -54,13 +52,7 @@ const Overview = () => {
         <PageTitle
           title="Overview"
           titleStart={
-            <IconButton aria-label="Back" onClick={() => {
-              if (settingInformation) {
-                setSettingInformation(false);
-              } else {
-                navigate(-1);
-              }
-            }}>
+            <IconButton aria-label="Back" onClick={() => { navigate(-1) }}>
               <ArrowBackIcon />
             </IconButton>
           }

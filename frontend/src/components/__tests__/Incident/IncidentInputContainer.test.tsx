@@ -308,7 +308,7 @@ describe('IncidentInputContainer', () => {
 
     await userEvent.click(screen.getByText('Submit'));
 
-    expect(buildSetInfoPayload).toHaveBeenCalledTimes(1);
+    expect(buildSetInfoPayload).toHaveBeenCalled();
     expect(onSubmit).toHaveBeenCalledTimes(1);
     const payload = onSubmit.mock.calls[0][0];
     expect(payload.mode).toBe('edit');
