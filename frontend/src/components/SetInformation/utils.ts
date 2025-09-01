@@ -2,6 +2,8 @@
 // © Crown Copyright 2025. This work has been developed by the National Digital Twin Programme
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
+import { v4 as uuidV4 } from 'uuid';
+
 import { type Field } from 'common/Field';
 import { type Incident } from 'common/Incident';
 import { type LogEntry } from 'common/LogEntry';
@@ -28,6 +30,7 @@ function getIncidentValue(incident: Incident, field: Field): string | undefined 
 
 function makeEntryFromIncident(incident: Incident, entry?: Partial<LogEntry>): Partial<LogEntry> {
   const logEntry: Partial<LogEntry> = entry ?? {
+    id: uuidV4(),
     type: 'SetIncidentInformation',
     incidentId: incident.id,
     dateTime: '',
@@ -105,4 +108,28 @@ export function validate(entry: Partial<LogEntry>, incident: Incident): Validati
   }
 
   return validationErrors;
+}
+
+export function buildSetInfoEntryFromIncident(current: Incident): Partial<LogEntry> {
+  return getInitialEntry(current);
+}
+
+export function buildDirtySetInfoEntry(
+  current: Incident,
+  original: Incident
+): Partial<LogEntry> {
+  const currentEntry = getInitialEntry(current);
+  return getDirtyEntry(currentEntry, original);
+}
+
+export function buildSetInfoPayload(
+  current: Incident,
+  original?: Incident
+): { entry: Partial<LogEntry>; isDirty: boolean } {
+  const entry = original
+    ? buildDirtySetInfoEntry(current, original)
+    : buildSetInfoEntryFromIncident(current);
+
+  const isDirty = !!(entry.fields && entry.fields.length);
+  return { entry, isDirty };
 }

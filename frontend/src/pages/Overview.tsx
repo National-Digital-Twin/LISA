@@ -10,12 +10,10 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 // Local imports
 import { type IncidentStage } from 'common/IncidentStage';
-import { type LogEntry } from 'common/LogEntry';
 import { PageTitle } from '../components';
-import SetInformation from '../components/SetInformation';
 import { useChangeIncidentStage, useIncidents } from '../hooks/useIncidents';
 import { Format } from '../utils';
-import { useAuth, useCreateLogEntry } from '../hooks';
+import { useAuth } from '../hooks';
 import PageWrapper from '../components/PageWrapper';
 import { GridListItem } from '../components/GridListItem';
 import StageMini from '../components/Stage/StageMini';
@@ -28,7 +26,6 @@ const Overview = () => {
   const { user } = useAuth();
   const changeIncidentStage = useChangeIncidentStage();
   const navigate = useNavigate();
-  const { createLogEntry } = useCreateLogEntry(incidentId);
   const [settingInformation, setSettingInformation] = useState<boolean>();
 
   const isUserAdmin = isAdmin(user.current);
@@ -47,13 +44,8 @@ const Overview = () => {
     );
   };
 
-  const onSetInformation = (logEntry: Partial<LogEntry>) => {
-    createLogEntry({ logEntry: logEntry as LogEntry });
-    setSettingInformation(false);
-  };
-
   const onEditClick = () => {
-    setSettingInformation(true);
+    navigate(`edit`);
   };
 
   return (
@@ -72,7 +64,7 @@ const Overview = () => {
               <ArrowBackIcon />
             </IconButton>
           }
-          titleEnd={
+          titleEnd={isUserAdmin && 
             <Button
               type="button"
               variant="contained"
@@ -119,14 +111,6 @@ const Overview = () => {
             </Box>
           </Box>
         </PageTitle>
-
-        {settingInformation && (
-          <SetInformation
-            incident={incident}
-            onSetInformation={onSetInformation}
-            onCancel={() => setSettingInformation(false)}
-          />
-        )}
 
         <Box display="flex" flexDirection="column" gap={2}>
           <Typography variant="h6" fontWeight='bold' fontSize='1rem'>

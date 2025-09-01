@@ -42,6 +42,7 @@ const AppWrapper = () => {
         { path: 'forms/preview', element: <CreateForms /> },
         { path: 'create', element: <CreateIncident /> },
         { path: 'incident/:incidentId', element: <Overview /> },
+        { path: 'incident/:incidentId/edit', element: <CreateIncident /> },
         { path: 'logbook/:incidentId', element: <Logbook /> },
         { path: 'logbook/:incidentId/create', element: <CreateLogEntry /> },
         { path: 'tasks', element: <Tasks /> },
