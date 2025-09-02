@@ -17,7 +17,7 @@ import Location from '../AddEntry/Location';
 import Files from '../AddEntry/Files';
 import Sketch from '../AddEntry/Sketch';
 import { Attachment } from 'common/Attachment';
-import EntryContent from "../lexical/EntryContent";
+import EntryContent from '../lexical/EntryContent';
 
 type Props = {
   users: User[];
@@ -179,9 +179,10 @@ export const TaskInputContainer = ({
     })
   );
 
-    const changeEvent = (_id:string, _json: string, text: string) => onTaskChange({ description: text })
+  const changeEvent = (_id: string, _json: string, text: string) =>
+    onTaskChange({ description: text });
 
-    const renderFieldInput = () => {
+  const renderFieldInput = () => {
     if (!activeField) return null;
 
     switch (activeField) {
@@ -230,17 +231,17 @@ export const TaskInputContainer = ({
       case 'description':
         return (
           <FormControl fullWidth sx={{ marginTop: 2 }}>
-              <EntryContent
-                  id="content"
-                  json={undefined}
-                  editable
-                  mentionables={mentionables}
-                  recordingActive={false}
-                  onChange={changeEvent}
-                  onRecording={() => null}
-                  error={!!getFieldError('task_description')}
-                  placeholder={"Type @ to tag a person, log, task or file"}
-              />
+            <EntryContent
+              id="content"
+              json={undefined}
+              editable
+              mentionables={mentionables}
+              recordingActive={false}
+              onChange={changeEvent}
+              onRecording={() => null}
+              error={!!getFieldError('task_description')}
+              placeholder={'Type @ to tag a person, log, task or file'}
+            />
           </FormControl>
         );
 
