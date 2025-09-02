@@ -12,8 +12,8 @@ import { useAuth, useIncidents, useToast, useUsers } from '../hooks';
 import { useCreateTask } from '../hooks/useTasks';
 import PageWrapper from '../components/PageWrapper';
 import { TaskInputContainer } from '../components/Task/TaskInputContainer';
-import { getSortedEntriesWithDisplaySequence } from '../../../../frontend/src/utils/sortEntries';
-import { Format } from '../../../../frontend/src/utils';
+import { getSortedEntriesWithDisplaySequence } from '../utils/sortEntries';
+import { Format } from '../utils';
 import { type Mentionable } from 'common/Mentionable';
 
 export default function CreateTaskPage() {
