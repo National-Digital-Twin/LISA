@@ -18,6 +18,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { FieldOption } from 'common/Field';
 import { LogEntry } from 'common/LogEntry';
 import { buildSetInfoPayload } from '../SetInformation/utils';
+import { logError } from '../../utils/logger';
 
 type SubmitPayload =
   | { mode: 'create'; incident: Incident }
@@ -147,9 +148,11 @@ export const IncidentInputContainer = ({
     if (errors.length > 0) return false;
   
     try {
+
       const { isDirty } = buildSetInfoPayload(incident as Incident, initialIncident);
       return isDirty;
-    } catch {
+    } catch(err) {
+      logError('Error building log entry payload', err);
       return false;
     }
   }, [isEditing, initialIncident, incident, errors.length]);
