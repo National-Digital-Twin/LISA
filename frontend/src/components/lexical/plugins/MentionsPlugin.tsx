@@ -146,14 +146,16 @@ class MentionTypeaheadOption extends MenuOption {
 
   trigger: string | null;
   map: boolean;
+  disabled: boolean;
 
-  constructor(mention: Mentionable, trigger: string | null, map: boolean) {
+  constructor(mention: Mentionable, trigger: string | null, map: boolean, disabled = false) {
     super(mention.label);
     this.id = mention.id;
     this.type = mention.type;
     this.name = mention.label;
     this.trigger = trigger;
     this.map = map;
+    this.disabled = disabled;
   }
 }
 
@@ -205,6 +207,7 @@ function MentionsTypeaheadMenuItem({
       onMouseEnter={onMouseEnter}
       onClick={onClick}
       onKeyDown={onKeyDown}
+      aria-disabled={option.disabled}
     >
       {getIcon()}
       <span className="text">{option.name}</span>
@@ -233,16 +236,20 @@ export default function MentionsPlugin({ mentionables }: Readonly<MentionsPlugin
     minLength: 0
   });
 
-  const defaultOptions = [
-    new MentionTypeaheadOption({ id: '0', label: 'User', type: 'User' }, TRIGGERS.USER, true),
-    new MentionTypeaheadOption({ id: '1', label: 'File', type: 'File' }, TRIGGERS.FILE, true),
+  const defaultOptions = useMemo(() => [
+    new MentionTypeaheadOption({ id: '0', label: 'User', type: 'User' }, TRIGGERS.USER, true,
+        !mentionables.some( m => m.type === 'User')),
+    new MentionTypeaheadOption({ id: '1', label: 'File', type: 'File' }, TRIGGERS.FILE, true,
+        !mentionables.some( m => m.type === 'File')),
     new MentionTypeaheadOption(
       { id: '2', label: 'Log Entry', type: 'LogEntry' },
       TRIGGERS.LOG,
-      true
+      true,
+        !mentionables.some( m => m.type === 'LogEntry')
     ),
-    new MentionTypeaheadOption({ id: '3', label: 'Task', type: 'Task' }, TRIGGERS.TASK, true)
-  ];
+    new MentionTypeaheadOption({ id: '3', label: 'Task', type: 'Task' }, TRIGGERS.TASK, true,
+        !mentionables.some( m => m.type === 'Task'))
+  ], [mentionables]);
 
   const mentionOptions = useMemo(
     () =>

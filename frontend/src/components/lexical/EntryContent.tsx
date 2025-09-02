@@ -116,7 +116,7 @@ const EntryContent = ({
         <div className="editor-inner">
           <PlainTextPlugin
             contentEditable={<ContentEditable className="editor-input" />}
-            placeholder={<div>{placeholder}</div>}
+            placeholder={<div className='absolute top-0'>{placeholder}</div>}
             ErrorBoundary={LexicalErrorBoundary}
           />
           <HistoryPlugin />

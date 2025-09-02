@@ -5,6 +5,8 @@ import { Box, FormControl, MenuItem, TextField } from '@mui/material';
 import { type CreateTask } from 'common/Task';
 import { type User } from 'common/User';
 import { type Location as TypeOfLocation } from 'common/Location';
+import { type Mentionable } from 'common/Mentionable';
+
 import { SketchLine, ValidationError } from '../../utils/types';
 import { EntityInputContainer, EntityInputContainerData } from '../AddEntity/EntityInputContainer';
 import { EntityOptionsContainer } from '../AddEntity/EntityOptionsContainer';
@@ -15,10 +17,12 @@ import Location from '../AddEntry/Location';
 import Files from '../AddEntry/Files';
 import Sketch from '../AddEntry/Sketch';
 import { Attachment } from 'common/Attachment';
+import EntryContent from "../lexical/EntryContent";
 
 type Props = {
   users: User[];
   incidentId: string;
+  mentionables: Array<Mentionable>;
   onSubmit: (task: CreateTask & Required<Pick<CreateTask, 'id' | 'status'>>, files: File[]) => void;
   onCancel: () => void;
   isSubmitting?: boolean;
@@ -38,6 +42,7 @@ const fieldConfigs = {
 export const TaskInputContainer = ({
   users,
   incidentId,
+  mentionables,
   onSubmit,
   onCancel,
   isSubmitting = false
@@ -174,7 +179,9 @@ export const TaskInputContainer = ({
     })
   );
 
-  const renderFieldInput = () => {
+    const changeEvent = (_id:string, _json: string, text: string) => onTaskChange({ description: text })
+
+    const renderFieldInput = () => {
     if (!activeField) return null;
 
     switch (activeField) {
@@ -223,17 +230,17 @@ export const TaskInputContainer = ({
       case 'description':
         return (
           <FormControl fullWidth sx={{ marginTop: 2 }}>
-            <TextField
-              hiddenLabel
-              variant="filled"
-              multiline
-              minRows={4}
-              placeholder="Describe the task"
-              value={task.description || ''}
-              onChange={(event) => onTaskChange({ description: event.target.value })}
-              error={!!getFieldError('task_description')}
-              helperText={getFieldError('task_description')?.error}
-            />
+              <EntryContent
+                  id="content"
+                  json={undefined}
+                  editable
+                  mentionables={mentionables}
+                  recordingActive={false}
+                  onChange={changeEvent}
+                  onRecording={() => null}
+                  error={!!getFieldError('task_description')}
+                  placeholder={"Type @ to tag a person, log, task or file"}
+              />
           </FormControl>
         );
 
