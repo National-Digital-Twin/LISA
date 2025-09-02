@@ -5,9 +5,9 @@
 // Global imports
 import { Optional, Record, Static, String } from 'runtypes';
 
-export const LogEntryContent = Record({
+export const EntryContent = Record({
   json: Optional(String),
   text: Optional(String)
 });
 
-export type LogEntryContent = Static<typeof LogEntryContent>;
+export type EntryContent = Static<typeof EntryContent>;

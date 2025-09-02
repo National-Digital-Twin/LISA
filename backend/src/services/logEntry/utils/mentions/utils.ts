@@ -2,10 +2,10 @@
 // © Crown Copyright 2025. This work has been developed by the National Digital Twin Programme
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
-import { LogEntryContent } from 'common/LogEntryContent';
+import { EntryContent } from 'common/EntryContent';
 import { MentionableType, type Mentionable } from 'common/Mentionable';
 
-export function getMentions(content: LogEntryContent): Mentionable[] {
+export function getMentions(content: EntryContent): Mentionable[] {
   if (!content?.json) {
     return [];
   }
@@ -40,7 +40,7 @@ export function getMentions(content: LogEntryContent): Mentionable[] {
   return mentions;
 }
 
-export function getMentionsOfType(content: LogEntryContent, type: MentionableType): Mentionable[] {
+export function getMentionsOfType(content: EntryContent, type: MentionableType): Mentionable[] {
   const allMentions = getMentions(content);
   return allMentions.filter((m) => m.type === type);
 }

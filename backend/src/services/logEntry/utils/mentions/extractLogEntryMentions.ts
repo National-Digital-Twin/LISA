@@ -5,11 +5,11 @@
 // Local imports
 import { type LogEntry } from 'common/LogEntry';
 import { LogEntryTypes } from 'common/LogEntryTypes';
-import { LogEntryContent } from 'common/LogEntryContent';
+import { EntryContent } from 'common/EntryContent';
 import { ns } from '../../../../rdfutil';
 import { getMentionsOfType } from './utils';
 
-function getMentions(content: LogEntryContent, entryIdNode: unknown) {
+function getMentions(content: EntryContent, entryIdNode: unknown) {
   const logEntryMentions = getMentionsOfType(content, 'LogEntry');
   const mentionedIds = new Set<string>(logEntryMentions.map((l) => l.id));
   return Array.from(mentionedIds).map((id) => [ns.data(id), ns.lisa.isMentionedBy, entryIdNode]);

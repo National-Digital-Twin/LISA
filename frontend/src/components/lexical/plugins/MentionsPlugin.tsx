@@ -219,8 +219,7 @@ type MentionsPluginProps = {
   mentionables: Array<Mentionable>;
 };
 
-export default function MentionsPlugin({ mentionables }: Readonly<MentionsPluginProps>):
-    JSX.Element | null {
+export default function MentionsPlugin({ mentionables }: Readonly<MentionsPluginProps>): JSX.Element | null {
   const [editor] = useLexicalComposerContext();
   const [queryString, setQueryString] = useState<string | null>(null);
   const [currentFilter, setCurrentFilter] = useState<string | null>(null);
@@ -229,27 +228,42 @@ export default function MentionsPlugin({ mentionables }: Readonly<MentionsPlugin
   const results = useMentionLookupService(
     mentionables,
     TRIGGER_TO_TYPE[currentFilter || TRIGGERS.DEFAULT],
-    queryString ? queryString.slice( 2) : ''
+    queryString ? queryString.slice(2) : ''
   );
 
   const checkForSlashTriggerMatch = useBasicTypeaheadTriggerMatch('/', {
     minLength: 0
   });
 
-  const defaultOptions = useMemo(() => [
-    new MentionTypeaheadOption({ id: '0', label: 'User', type: 'User' }, TRIGGERS.USER, true,
-        !mentionables.some( m => m.type === 'User')),
-    new MentionTypeaheadOption({ id: '1', label: 'File', type: 'File' }, TRIGGERS.FILE, true,
-        !mentionables.some( m => m.type === 'File')),
-    new MentionTypeaheadOption(
-      { id: '2', label: 'Log Entry', type: 'LogEntry' },
-      TRIGGERS.LOG,
-      true,
-        !mentionables.some( m => m.type === 'LogEntry')
-    ),
-    new MentionTypeaheadOption({ id: '3', label: 'Task', type: 'Task' }, TRIGGERS.TASK, true,
-        !mentionables.some( m => m.type === 'Task'))
-  ], [mentionables]);
+  const defaultOptions = useMemo(
+    () => [
+      new MentionTypeaheadOption(
+        { id: '0', label: 'User', type: 'User' },
+        TRIGGERS.USER,
+        true,
+        !mentionables.some((m) => m.type === 'User')
+      ),
+      new MentionTypeaheadOption(
+        { id: '1', label: 'File', type: 'File' },
+        TRIGGERS.FILE,
+        true,
+        !mentionables.some((m) => m.type === 'File')
+      ),
+      new MentionTypeaheadOption(
+        { id: '2', label: 'Log Entry', type: 'LogEntry' },
+        TRIGGERS.LOG,
+        true,
+        !mentionables.some((m) => m.type === 'LogEntry')
+      ),
+      new MentionTypeaheadOption(
+        { id: '3', label: 'Task', type: 'Task' },
+        TRIGGERS.TASK,
+        true,
+        !mentionables.some((m) => m.type === 'Task')
+      )
+    ],
+    [mentionables]
+  );
 
   const mentionOptions = useMemo(
     () =>
@@ -268,7 +282,7 @@ export default function MentionsPlugin({ mentionables }: Readonly<MentionsPlugin
       closeMenu: () => void
     ) => {
       if (selectedOption.map) {
-        setCurrentFilter(selectedOption.trigger);
+        if (!selectedOption.disabled) setCurrentFilter(selectedOption.trigger);
       } else {
         editor.update(() => {
           const mentionNode = $createMentionNode(
