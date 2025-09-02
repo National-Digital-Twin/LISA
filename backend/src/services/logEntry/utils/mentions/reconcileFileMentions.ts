@@ -3,11 +3,11 @@
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
 import { type LogEntry } from 'common/LogEntry';
-import { LogEntryContent } from 'common/LogEntryContent';
+import { EntryContent } from 'common/EntryContent';
 import { getMentionsOfType } from './utils';
 import { FileNameMapping } from '../types';
 
-function getMentions(content: LogEntryContent, entryId: string, namesMap: FileNameMapping[]) {
+function getMentions(content: EntryContent, entryId: string, namesMap: FileNameMapping[]) {
   const fileMentions = getMentionsOfType(content, 'File');
   if (!fileMentions.length) {
     return;

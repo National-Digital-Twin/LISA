@@ -16,7 +16,7 @@ const SEARCHABLE_PROPS: Array<string> = [
  * This function uses any explicitly because it means we can
  * theoretically use it for any type of object - and in the
  * cases where this is currently called, it's used for LogEntry,
- * LogEntryContent, Location, and Field.
+ * EntryContent, Location, and Field.
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function propMatches(obj: any, text: string, path: string): boolean {
