@@ -28,7 +28,7 @@ export default function CreateIncident() {
   if (!isUserAdmin) return null;
 
   return isEditing ? (
-    <EditIncidentPage incidentId={incidentId!} />
+    <EditIncidentPage incidentId={incidentId} />
   ) : (
     <NewIncidentPage />
   );
@@ -56,7 +56,7 @@ function NewIncidentPage() {
   );
 }
 
-function EditIncidentPage({ incidentId }: { incidentId: string }) {
+function EditIncidentPage({ incidentId }: Readonly<{ incidentId: string }>) {
   const navigate = useNavigate();
   const { data: incidents = [] } = useIncidents();
   const { createLogEntry } = useCreateLogEntry(incidentId);

@@ -130,6 +130,6 @@ export function buildSetInfoPayload(
     ? buildDirtySetInfoEntry(current, original)
     : buildSetInfoEntryFromIncident(current);
 
-  const isDirty = !!(entry.fields && entry.fields.length);
+  const isDirty = !!entry.fields?.length;
   return { entry, isDirty };
 }
