@@ -52,14 +52,6 @@ export default function CreateTaskPage() {
     );
   };
 
-  if (!incident || !incidentId) {
-    return (
-      <PageWrapper>
-        <div style={{ padding: 16 }}>Loading incident...</div>
-      </PageWrapper>
-    );
-  }
-
   // only users changes at the moment so this is the only dependency
   const otherAttachments: Array<Mentionable> = [];
   const selectedFiles: Array<File> = [];
@@ -80,6 +72,14 @@ export default function CreateTaskPage() {
     ],
     [users, selectedFiles, logEntries, otherAttachments]
   );
+
+  if (!incident || !incidentId) {
+    return (
+      <PageWrapper>
+        <div style={{ padding: 16 }}>Loading incident...</div>
+      </PageWrapper>
+    );
+  }
 
   return (
     <PageWrapper>
