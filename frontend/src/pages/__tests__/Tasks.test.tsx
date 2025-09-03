@@ -51,7 +51,7 @@ const mockTasks: Task[] = [
   {
     id: 'task-1',
     name: 'High Priority Task',
-    description: 'This is a high priority task',
+    content: { text: 'This is a high priority task', json: '' },
     incidentId: 'incident-1',
     author: { username: 'john.doe', displayName: 'John Doe' },
     assignee: { username: 'jane.smith', displayName: 'Jane Smith' },
@@ -64,7 +64,7 @@ const mockTasks: Task[] = [
   {
     id: 'task-2',
     name: 'In Progress Task',
-    description: 'This task is in progress',
+    content: { text: 'This task is in progress', json: '' },
     incidentId: 'incident-2',
     author: { username: 'jane.smith', displayName: 'Jane Smith' },
     assignee: { username: 'bob.wilson', displayName: 'Bob Wilson' },
@@ -77,7 +77,7 @@ const mockTasks: Task[] = [
   {
     id: 'task-3',
     name: 'Completed Task',
-    description: 'This task is completed',
+    content: { text: 'This task is completed', json: '' },
     incidentId: 'incident-1',
     author: { username: 'alice.jones', displayName: 'Alice Jones' },
     assignee: { username: 'john.doe', displayName: 'John Doe' },
@@ -94,16 +94,22 @@ jest.mock('../../hooks', () => ({
     data: mockIncidents
   })),
   useAuth: jest.fn(() => ({
-    user: { current: { username: 'testUser', displayName: 'Test User', email: 'test@test.com', groups: [] } },
+    user: {
+      current: {
+        username: 'testUser',
+        displayName: 'Test User',
+        email: 'test@test.com',
+        groups: []
+      }
+    },
     logout: jest.fn()
   })),
-  useTasksUpdates: jest.fn(() => ({ startPolling: jest.fn(), clearPolling: jest.fn() })),
+  useTasksUpdates: jest.fn(() => ({ startPolling: jest.fn(), clearPolling: jest.fn() }))
 }));
 
 jest.mock('../../hooks/useTasks', () => ({
   useTasks: jest.fn(() => ({ data: mockTasks })),
-  useTasksUpdates: jest.fn(() => ({ startPolling: jest.fn(), clearPolling: jest.fn() })),
-  
+  useTasksUpdates: jest.fn(() => ({ startPolling: jest.fn(), clearPolling: jest.fn() }))
 }));
 
 jest.mock('../../hooks/useIsOnline', () => ({
