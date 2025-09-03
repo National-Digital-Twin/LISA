@@ -9,7 +9,6 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { IconButton } from '@mui/material';
 import { LogEntry } from 'common/LogEntry';
 import { Task } from 'common/Task';
-import { type Location as LocationUnion } from 'common/Location';
 
 // Local imports
 import { PageTitle } from '../components';
@@ -21,7 +20,7 @@ type LocationRouteState = LogEntry | Task | undefined;
 
 function normaliseLocations(entity: LocationRouteState): FullLocationType[] | undefined {
   if (!entity) return undefined;
-  const loc = (entity).location as LocationUnion | null | undefined;
+  const loc = (entity).location;
   if (!loc) return undefined;
 
   if (loc.type === 'coordinates' || loc.type === 'both') {

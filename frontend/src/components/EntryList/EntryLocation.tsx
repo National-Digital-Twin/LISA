@@ -5,7 +5,6 @@
 // Global imports
 import { Link } from 'react-router-dom';
 import { Box, Typography } from '@mui/material';
-import { type Location as LocationUnion } from 'common/Location';
 import { type LogEntry } from 'common/LogEntry';
 
 // Local imports
@@ -17,7 +16,7 @@ interface Props {
 }
 
 export default function EntryLocation({ entry }: Readonly<Props>) {
-  const displayLink = hasPlottableCoordinates(entry.location as LocationUnion | null | undefined);
+  const displayLink = hasPlottableCoordinates(entry.location);
   const link = "/location"
 
   if (!entry.location) {

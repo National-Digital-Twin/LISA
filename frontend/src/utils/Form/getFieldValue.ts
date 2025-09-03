@@ -9,8 +9,6 @@ import { type LogEntry } from 'common/LogEntry';
 
 type ValueType = string | string[] | undefined;
 
-// SH TODO - A lot of the location functionality here was removed to support the new way of generating location links (passing state)
-// is this correct? does it break anything? 
 export function getFieldValue(field: Field, entry: Partial<LogEntry>): ValueType {
   return entry.fields?.find((f) => f.id === field.id)?.value;
 }

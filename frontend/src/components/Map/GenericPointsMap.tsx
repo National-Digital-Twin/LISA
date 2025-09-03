@@ -55,7 +55,7 @@ export default function GenericPointsMap({
     const list: PointMarker[] = [];
 
     locations.forEach((loc, locIdx) => {
-      const { coordinates } = (loc || {}) as FullLocationType;
+      const { coordinates } = (loc || {});
       if (!coordinates || !Array.isArray(coordinates)) return;
 
       coordinates.forEach((coord, coordIdx) => {
@@ -78,7 +78,7 @@ export default function GenericPointsMap({
     if (!mapRef.current) return;
 
     const baseOptions: FitBoundsOptions = { padding: 60, duration: 250 };
-    const coords = (focusLocation?.coordinates || []) as Coordinates[];
+    const coords = (focusLocation?.coordinates || []);
 
     if (Array.isArray(coords) && coords.length > 1) {
       const entryBounds: LngLatBoundsLike = [

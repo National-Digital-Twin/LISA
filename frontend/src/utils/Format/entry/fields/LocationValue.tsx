@@ -5,7 +5,6 @@
 // Global imports
 import { Link } from 'react-router-dom';
 import { type LogEntry } from 'common/LogEntry';
-import { type Location as LocationUnion } from 'common/Location';
 import { Task } from 'common/Task';
 
 // Local imports
@@ -16,9 +15,9 @@ type Props = {
   entity: LogEntry | Task;
 };
 export function LocationValue({ entity }: Readonly<Props>) {
-  const text = location(entity.location);
+  const text = location(entity);
 
-  const canPlot = hasPlottableCoordinates(entity.location as LocationUnion | null | undefined);
+  const canPlot = hasPlottableCoordinates(entity.location);
 
   if (canPlot) {
     return (
