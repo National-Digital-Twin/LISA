@@ -28,8 +28,8 @@ export const CreateTask = Record({
 export const Task = Record({
   id: String,
   name: String,
-  description: String,
-  content:  EntryContent,
+  description: Optional(String),
+  content: Optional(EntryContent),
   incidentId: String,
   author: User,
   assignee: User,
@@ -38,7 +38,7 @@ export const Task = Record({
   createdAt: String,
   location: Union(Location, Null),
   attachments: Array(Attachment),
-  offline: Optional(Boolean),
+  offline: Optional(Boolean)
 });
 
 export type CreateTask = Static<typeof CreateTask>;
