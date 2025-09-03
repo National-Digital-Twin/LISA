@@ -60,9 +60,10 @@ export default function CreateTaskPage() {
     );
   }
 
+  // only users changes at the moment so this is the only dependency
   const otherAttachments: Array<Mentionable> = [];
-  const selectedFiles :Array<File> = [];
-  const logEntries:Array<LogEntry> = [];
+  const selectedFiles: Array<File> = [];
+  const logEntries: Array<LogEntry> = [];
   const mentionables: Array<Mentionable> = useMemo(
     () => [
       ...(getSortedEntriesWithDisplaySequence(false, logEntries ?? [])?.map((e) =>
@@ -77,7 +78,7 @@ export default function CreateTaskPage() {
       ),
       ...otherAttachments
     ],
-    [logEntries, users, selectedFiles, otherAttachments]
+    [users, selectedFiles, logEntries, otherAttachments]
   );
 
   return (

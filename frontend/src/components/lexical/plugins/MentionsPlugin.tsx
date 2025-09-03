@@ -261,7 +261,7 @@ export default function MentionsPlugin({ mentionables }: Readonly<MentionsPlugin
         true,
         !mentionables.some((m) => m.type === 'Task')
       )
-    ],
+    ].filter( (m) => !m.disabled),
     [mentionables]
   );
 
