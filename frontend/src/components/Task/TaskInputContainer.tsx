@@ -28,12 +28,12 @@ type Props = {
   isSubmitting?: boolean;
 };
 
-type FieldType = 'name' | 'assignee' | 'description' | 'location' | 'attachments' | 'sketch';
+type FieldType = 'name' | 'assignee' | 'content' | 'location' | 'attachments' | 'sketch' ;
 
 const fieldConfigs = {
   name: { heading: 'Task name', required: true, supportedOffline: true },
   assignee: { heading: 'Assign to', required: true, supportedOffline: true },
-  description: { heading: 'Add task description', required: true, supportedOffline: true },
+  content: { heading: 'Add task description', required: true, supportedOffline: true },
   location: { heading: 'Add location(s)', required: false, supportedOffline: false },
   attachments: { heading: 'Add attachments', required: false, supportedOffline: true },
   sketch: { heading: 'Add sketch', required: false, supportedOffline: true }
@@ -158,8 +158,8 @@ export const TaskInputContainer = ({
         return task.name;
       case 'assignee':
         return task.assignee?.displayName;
-      case 'description':
-        return task.description;
+      case 'content':
+        return task.content?.text || task.description || undefined;
       case 'location':
         return task.location ? 'View location' : undefined;
       case 'attachments':
@@ -179,8 +179,8 @@ export const TaskInputContainer = ({
     })
   );
 
-  const changeEvent = (_id: string, _json: string, text: string) =>
-    onTaskChange({ description: text });
+  const changeEvent = (_id: string, json: string, text: string) =>
+    onTaskChange({ content: { text, json } });
 
   const renderFieldInput = () => {
     if (!activeField) return null;
@@ -228,12 +228,12 @@ export const TaskInputContainer = ({
           </FormControl>
         );
 
-      case 'description':
+      case 'content':
         return (
           <FormControl fullWidth sx={{ marginTop: 2 }}>
             <EntryContent
               id="content"
-              json={undefined}
+              json={task.content?.json || undefined}
               editable
               mentionables={mentionables}
               recordingActive={false}
