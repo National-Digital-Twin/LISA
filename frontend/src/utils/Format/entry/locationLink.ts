@@ -3,16 +3,12 @@
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
 // Local imports
-import { type LogEntry } from 'common/LogEntry';
-import { type FullLocationType } from '../../types';
+import { type Location as LocationUnion } from 'common/Location';
 
-export function locationLink(entry: Partial<LogEntry>): string | undefined {
-  // Handle location with description, coordinates, or both
-  if (entry.location) {
-    const { coordinates } = entry.location as FullLocationType;
-    if (coordinates) {
-      return `/location/${entry.incidentId}#${entry.id}`;
-    }
+export function hasPlottableCoordinates(loc: LocationUnion | null | undefined): boolean {
+  if (!loc) return false;
+  if (loc.type === 'coordinates' || loc.type === 'both') {
+    return Array.isArray(loc.coordinates) && loc.coordinates.length > 0;
   }
-  return undefined;
+  return false;
 }

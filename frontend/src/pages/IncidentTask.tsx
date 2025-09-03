@@ -18,6 +18,7 @@ import { toStatusHumanReadable } from '../components/Tasks/utils/statusLabelMapp
 import { Format } from '../utils';
 import { logInfo } from '../utils/logger';
 import StatusMini from '../components/Tasks/StatusMini';
+import { LocationValue } from '../utils/Format/entry/fields/LocationValue';
 
 const TaskFallback = ({ header, message }: Readonly<{ header: React.ReactNode, message: string }>) => {
   return (
@@ -110,14 +111,13 @@ const TaskContent = ({ header, task, users }: Readonly<TaskContentProps>) => {
             <GridListItem title="Assigned to" text={task.assignee.displayName} />
           )}
           <GridListItem title="Date and time recorded" text={Format.dateAndTimeMobile(task.createdAt)} />
-          <Box
-            component={Grid}
-            size={{ xs: 12, md: 6 }}
-            aria-disabled
-            sx={{ '& .MuiTypography-root': { color: 'text.disabled' } }}
-          >
-            <GridListItem title="Location" text="(Coming soon)" />
-          </Box>
+          
+          <GridListItem title="Location" text={task.location ? undefined : "None"}>
+            { task.location ?
+              <LocationValue entity={task} />
+              : undefined
+            }
+          </GridListItem>
 
           <Box
             component={Grid}
