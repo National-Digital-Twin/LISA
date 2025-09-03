@@ -4,20 +4,29 @@
 
 // Global imports
 import { Link } from 'react-router-dom';
+import { type LogEntry } from 'common/LogEntry';
+import { type Location as LocationUnion } from 'common/Location';
+import { Task } from 'common/Task';
 
 // Local imports
-import { type LogEntry } from 'common/LogEntry';
 import { location } from '../location';
-import { locationLink } from '../locationLink';
+import { hasPlottableCoordinates } from '../locationLink';
 
 type Props = {
-  entry: LogEntry;
+  entity: LogEntry | Task;
 };
-export function LocationValue({ entry }: Readonly<Props>) {
-  const href = locationLink(entry);
-  const text = location(entry);
-  if (href) {
-    return <Link to={href}>{text}</Link>;
+export function LocationValue({ entity }: Readonly<Props>) {
+  const text = location(entity.location);
+
+  const canPlot = hasPlottableCoordinates(entity.location as LocationUnion | null | undefined);
+
+  if (canPlot) {
+    return (
+      <Link to="/location" state={entity}>
+        {text}
+      </Link>
+    );
   }
-  return text;
+
+  return <>{text}</>;
 }

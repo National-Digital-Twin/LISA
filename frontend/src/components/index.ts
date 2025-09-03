@@ -8,7 +8,7 @@ import { EntryList } from './EntryList';
 import FormField from './Form/FormField';
 import Footer from './Footer';
 import Header from './Header';
-import { IncidentMap } from './Map';
+import { GenericPointsMap } from './Map';
 import PageTitle from './PageTitle';
 import Readonly from './Readonly';
 import SelectField from './SelectField';
@@ -20,7 +20,7 @@ export {
   FormField,
   Footer,
   Header,
-  IncidentMap,
+  GenericPointsMap,
   PageTitle,
   Readonly,
   SelectField

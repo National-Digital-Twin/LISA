@@ -50,7 +50,7 @@ const AppWrapper = () => {
         { path: 'tasks/create/:incidentId', element: <CreateTask /> },
         { path: 'incidents/pick', element: <IncidentPickerPage /> },
         { path: 'forms/:incidentId', element: <LogForms /> },
-        { path: 'location/:incidentId', element: <Location /> },
+        { path: 'location', element: <Location /> },
         { path: 'files/:incidentId', element: <Files /> },
         { path: 'notifications', element: <Notifications /> },
         { path: 'settings', element: <Settings /> },
