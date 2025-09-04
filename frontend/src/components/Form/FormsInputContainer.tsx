@@ -54,6 +54,9 @@ type Props = {
   sketchLines: Array<SketchLine>;
   onFieldChange: OnFieldChange;
   onCustomFormDataChange: (id: string, label: string, value: string) => void;
+  resetEntry: () => void;
+  resetCustomForm: () => void;
+  resetCustomFormData: () => void;
   onFilesSelected: (files: Array<File>) => void;
   onRemoveSelectedFile: (filename: string) => void;
   onRemoveRecording: (recordingName: string) => void;
@@ -80,6 +83,9 @@ export const FormsInputContainer = ({
   sketchLines,
   onFieldChange,
   onCustomFormDataChange,
+  resetEntry,
+  resetCustomForm,
+  resetCustomFormData,
   onFilesSelected,
   onRemoveSelectedFile,
   onRemoveRecording,
@@ -141,20 +147,27 @@ export const FormsInputContainer = ({
 
     if (level === 0) {
       setSelectingCustomForm(false);
-      setCustomForm(null);
-    }
+      resetCustomFormData();
+      resetCustomForm();
+      resetEntry();
+    } else if (level === 1) {
+      if (selectingCustomForm) {
+        resetCustomForm();
+        resetCustomFormData();
+      }
 
-    setAddingCustomForm(false);
-    setAddingDescription(false);
-    setAddingSiteRepDetails(false);
-    setAddingHazard(false);
-    setAddingComments(false);
-    setAddingRiskAssessmentToReview(false);
-    setAddingFormFields(false);
-    setAddingDateAndTime(false);
-    setAddingLocation(false);
-    setAddingAttachments(false);
-    setAddingSketch(false);
+      setAddingCustomForm(false);
+      setAddingDescription(false);
+      setAddingSiteRepDetails(false);
+      setAddingHazard(false);
+      setAddingComments(false);
+      setAddingRiskAssessmentToReview(false);
+      setAddingFormFields(false);
+      setAddingDateAndTime(false);
+      setAddingLocation(false);
+      setAddingAttachments(false);
+      setAddingSketch(false);
+    }
   };
 
   const onContentChange = (id: string, json: string, text: string) => {
@@ -826,6 +839,7 @@ export const FormsInputContainer = ({
             <DateAndTimePicker
               dateLabel="Date"
               timeLabel="Time"
+              dateLowerBound={incident.startedAt}
               disableFuture
               value={entry.dateTime}
               onChange={dispatchOnChange}

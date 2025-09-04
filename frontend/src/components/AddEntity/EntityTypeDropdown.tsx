@@ -8,6 +8,11 @@ type Props = {
   onChange: (value: string) => void;
 };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const DropdownIconComponent = (iconProps: any, color: string) => (
+  <ArrowDropDownIcon {...{ ...iconProps, sx: { '&.MuiSvgIcon-root': { color } } }} />
+);
+
 export const EntityTypeDropdown = ({ options, value, onChange }: Props) => {
   const theme = useTheme();
 
@@ -23,11 +28,7 @@ export const EntityTypeDropdown = ({ options, value, onChange }: Props) => {
             color: theme.palette.primary.main,
             '.MuiSelect-select': { paddingTop: '17px', paddingBottom: '16px' }
           },
-          IconComponent: (props) => (
-            <ArrowDropDownIcon
-              {...{ ...props, sx: { '&.MuiSvgIcon-root': { color: theme.palette.primary.main } } }}
-            />
-          )
+          IconComponent: (props) => DropdownIconComponent(props, theme.palette.primary.main)
         },
         inputLabel: { shrink: false, sx: { color: theme.palette.primary.main } }
       }}

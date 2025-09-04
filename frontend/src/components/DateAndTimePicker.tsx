@@ -37,7 +37,7 @@ import { useResponsive } from '../hooks/useResponsiveHook';
 type Props = {
   dateLabel: string;
   timeLabel: string;
-  dateUpperLimit?: string;
+  dateLowerBound?: string;
   disableFuture: boolean;
   value: string | undefined;
   onChange: (date: string | undefined, time: string | undefined) => void;
@@ -116,18 +116,16 @@ const CustomCalendarHeader = (props: CustomCalendarHeaderProps) => {
       onMonthChange(
         currentMonth.set('month', new Date(lowerBound).getMonth()).set('year', parsedValue)
       );
-    } else {
-      if (lowerBound) {
-        const lowerBoundDate = new Date(lowerBound);
+    } else if (lowerBound) {
+      const lowerBoundDate = new Date(lowerBound);
 
-        if (lowerBoundDate.getMonth() > now.getMonth()) {
-          currentMonth.set('month', lowerBoundDate.getMonth()).set('year', parsedValue);
-        } else {
-          onMonthChange(currentMonth.set('year', parseInt(value)));
-        }
+      if (lowerBoundDate.getMonth() > now.getMonth()) {
+        currentMonth.set('month', lowerBoundDate.getMonth()).set('year', parsedValue);
       } else {
         onMonthChange(currentMonth.set('year', parseInt(value)));
       }
+    } else {
+      onMonthChange(currentMonth.set('year', parseInt(value)));
     }
   };
 
@@ -515,7 +513,7 @@ const CustomTimePicker = ({ timeLabel, time, formControlRef, setTime }: CustomTi
 export const DateAndTimePicker = ({
   dateLabel,
   timeLabel,
-  dateUpperLimit = undefined,
+  dateLowerBound = undefined,
   disableFuture,
   value,
   onChange
@@ -548,7 +546,7 @@ export const DateAndTimePicker = ({
             onChange={onDateChange}
             slots={{
               calendarHeader: (props) =>
-                CustomCalendarHeader({ lowerBound: dateUpperLimit, ...props })
+                CustomCalendarHeader({ lowerBound: dateLowerBound, ...props })
             }}
             slotProps={{
               popper: { sx: { '.MuiPickerPopper-paper': { borderRadius: '20px' } } },

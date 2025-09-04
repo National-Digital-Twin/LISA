@@ -27,6 +27,11 @@ type Props = {
   errors: Array<ValidationError>;
 };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const DropdownIconComponent = (iconProps: any, color: string) => (
+  <ArrowDropDownIcon {...{ ...iconProps, sx: { '&.MuiSvgIcon-root': { color } } }} />
+);
+
 const FormField = ({
   field,
   entry = undefined,
@@ -104,14 +109,7 @@ const FormField = ({
                 color: theme.palette.primary.main,
                 '.MuiSelect-select': { paddingTop: '17px', paddingBottom: '16px' }
               },
-              IconComponent: (props) => (
-                <ArrowDropDownIcon
-                  {...{
-                    ...props,
-                    sx: { '&.MuiSvgIcon-root': { color: theme.palette.primary.main } }
-                  }}
-                />
-              )
+              IconComponent: (props) => DropdownIconComponent(props, theme.palette.primary.main)
             },
             inputLabel: { shrink: false, sx: { color: theme.palette.primary.main } }
           }}

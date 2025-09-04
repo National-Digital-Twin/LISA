@@ -197,6 +197,15 @@ export const CreateLogEntry = () => {
     }
   };
 
+  const resetEntry = () =>
+    setEntry({
+      incidentId,
+      sequence: createSequenceNumber(),
+      content: {}
+    });
+  const resetCustomForm = () => setCustomForm(null);
+  const resetCustomFormData = () => setCustomFormData([]);
+
   if (!incident) return null;
 
   return (
@@ -212,6 +221,9 @@ export const CreateLogEntry = () => {
         forms={forms ?? []}
         onFieldChange={onFieldChange}
         onCustomFormDataChange={onCustomFormDataChange}
+        resetEntry={resetEntry}
+        resetCustomForm={resetCustomForm}
+        resetCustomFormData={resetCustomFormData}
         onFilesSelected={onFilesSelected}
         onRemoveSelectedFile={onRemoveSelectedFile}
         onRemoveRecording={onRemoveRecording}

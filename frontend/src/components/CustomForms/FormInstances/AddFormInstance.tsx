@@ -36,7 +36,7 @@ const AddFormInstance = ({
   setErrors = undefined
 }: AddFormProps) => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const formRef = useRef<any | null>(null);
+  const formRef = useRef<any>(null);
 
   useEffect(() => {
     formRef.current.validateForm();
