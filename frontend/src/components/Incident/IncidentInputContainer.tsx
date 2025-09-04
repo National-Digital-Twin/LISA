@@ -16,9 +16,18 @@ import { DatePicker, LocalizationProvider, TimePicker } from '@mui/x-date-picker
 import dayjs from 'dayjs';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { FieldOption } from 'common/Field';
+import { LogEntry } from 'common/LogEntry';
+import { buildSetInfoPayload } from '../SetInformation/utils';
+import { logError } from '../../utils/logger';
+
+type SubmitPayload =
+  | { mode: 'create'; incident: Incident }
+  | { mode: 'edit'; logEntry: Partial<LogEntry> };
 
 type Props = {
-  onSubmit: (incident: Incident) => void;
+  isEditing: boolean;
+  initialIncident?: Incident;
+  onSubmit: (payload: SubmitPayload) => void;
   onCancel: () => void;
 };
 
@@ -43,21 +52,30 @@ const fieldConfigs = {
   supportRequested: { heading: 'Support requested?', required: true, supportedOffline: true }
 };
 
-export const IncidentInputContainer = ({ onSubmit, onCancel }: Readonly<Props>) => {
+export const IncidentInputContainer = ({
+  isEditing,
+  initialIncident,
+  onSubmit,
+  onCancel
+}: Readonly<Props>) => {
   const [level, setLevel] = useState<number>(0);
   const [activeField, setActiveField] = useState<FieldType | null>(null);
 
-  const [incident, setIncident] = useState<Partial<Incident>>({
-    name: '',
-    id: uuidV4(),
-    stage: 'Monitoring',
-    referrer: {
-      name: '',
-      organisation: '',
-      telephone: '',
-      email: ''
-    } as Referrer
-  });
+  const [incident, setIncident] = useState<Partial<Incident>>(
+    initialIncident
+      ? { ...initialIncident }
+      : {
+        id: uuidV4(),
+        stage: 'Monitoring',
+        name: '',
+        referrer: {
+          name: '',
+          organisation: '',
+          telephone: '',
+          email: ''
+        } as Referrer
+      }
+  );
 
   const validateIncident = useCallback((incident: Partial<Incident>): ValidationError[] => {
     const errors: ValidationError[] = [];
@@ -132,6 +150,20 @@ export const IncidentInputContainer = ({ onSubmit, onCancel }: Readonly<Props>) 
 
   const errors = useMemo(() => validateIncident(incident), [incident, validateIncident]);
 
+  const isDirty = useMemo(() => {
+    if (!isEditing || !initialIncident) return true;
+
+    if (errors.length > 0) return false;
+
+    try {
+      const { isDirty } = buildSetInfoPayload(incident as Incident, initialIncident);
+      return isDirty;
+    } catch (err) {
+      logError('Error building log entry payload', err);
+      return false;
+    }
+  }, [isEditing, initialIncident, incident, errors.length]);
+
   const setLevelAndClearState = (level: number) => {
     setLevel(level);
     setActiveField(null);
@@ -192,14 +224,6 @@ export const IncidentInputContainer = ({ onSubmit, onCancel }: Readonly<Props>) 
     }
   };
 
-  const handleSubmit = () => {
-    if (errors.length > 0) return;
-
-    assertValidIncident(incident);
-
-    onSubmit(incident);
-  };
-
   const renderIncidentMenuItems = (
     items: Array<{ value: string; label: string; options?: FieldOption[] }>
   ) =>
@@ -253,6 +277,25 @@ export const IncidentInputContainer = ({ onSubmit, onCancel }: Readonly<Props>) 
     })
   );
 
+  function finalizeIncident(i: Partial<Incident>): Incident {
+    return i as Incident;
+  }
+
+  const handleSubmit = () => {
+    if (errors.length > 0) return;
+
+    assertValidIncident(incident);
+    const full = finalizeIncident(incident);
+
+    if (isEditing && initialIncident) {
+      const { entry, isDirty } = buildSetInfoPayload(full, initialIncident);
+      if (!isDirty) return;
+      onSubmit({ mode: 'edit', logEntry: entry });
+    } else {
+      onSubmit({ mode: 'create', incident: full });
+    }
+  };
+
   const renderFieldInput = () => {
     if (!activeField) return null;
 
@@ -272,6 +315,8 @@ export const IncidentInputContainer = ({ onSubmit, onCancel }: Readonly<Props>) 
               slotProps={{ inputLabel: { shrink: false } }}
               error={!!getFieldError('incident_type')}
               helperText={getFieldError('incident_type')?.error}
+              disabled={isEditing}
+              data-testid="incident-type-field"
             >
               {!incident.type && (
                 <MenuItem value="" disabled>
@@ -290,6 +335,9 @@ export const IncidentInputContainer = ({ onSubmit, onCancel }: Readonly<Props>) 
               <Box display="flex" flexDirection="column" gap={2}>
                 <DatePicker
                   label="Date"
+                  disableFuture
+                  disabled={isEditing}
+                  format="DD/MM/YYYY"
                   value={incident.startedAt ? dayjs(incident.startedAt) : null}
                   onChange={(newDate) => {
                     if (!newDate) {
@@ -316,6 +364,8 @@ export const IncidentInputContainer = ({ onSubmit, onCancel }: Readonly<Props>) 
                 />
                 <TimePicker
                   label="Time"
+                  disableFuture
+                  disabled={isEditing}
                   value={incident.startedAt ? dayjs(incident.startedAt) : null}
                   onChange={(newTime) => {
                     if (!newTime) {
@@ -437,6 +487,7 @@ export const IncidentInputContainer = ({ onSubmit, onCancel }: Readonly<Props>) 
               slotProps={{ inputLabel: { shrink: false } }}
               error={!!srError}
               helperText={srError?.error}
+              data-testid="support-requested-field"
             >
               <MenuItem value="" disabled>
                 Select yes/no
@@ -473,7 +524,7 @@ export const IncidentInputContainer = ({ onSubmit, onCancel }: Readonly<Props>) 
 
   const inputContainerData: EntityInputContainerData[] = [
     {
-      heading: 'Add new incident',
+      heading: isEditing ? 'Edit incident' : ' Add new incident',
       inputControls: (
         <EntityOptionsContainer entityType="incidents" data={entityOptionData} errors={errors} />
       ),
@@ -493,7 +544,7 @@ export const IncidentInputContainer = ({ onSubmit, onCancel }: Readonly<Props>) 
       onCancel={onCancel}
       level={level}
       setLevel={setLevelAndClearState}
-      disableSubmit={errors.length > 0}
+      disableSubmit={errors.length > 0 || (isEditing && !isDirty)}
     />
   );
 };
