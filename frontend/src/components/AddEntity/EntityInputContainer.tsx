@@ -11,7 +11,8 @@ import { EntityDivider } from './EntityDivider';
 export type EntityInputContainerData = {
   heading: string;
   inputControls: ReactNode;
-  hideButtons?: boolean;
+  showButtons?: boolean;
+  containerBackgroundColor?: string;
 };
 
 type Props = {
@@ -37,7 +38,7 @@ export const EntityInputContainer = ({
 
   const handleBackClick = () => (level > 0 ? setLevel(level - 1) : onMainBackClick());
   return (
-    <Box display="flex" flexDirection="column">
+    <Box display="flex" flexDirection="column" minHeight="100%">
       <Box display="flex" marginBottom={1} alignItems="center" gap={1}>
         <IconButton onClick={handleBackClick}>
           <ArrowBackIcon />
@@ -61,22 +62,29 @@ export const EntityInputContainer = ({
         </Typography>
       </Box>
       <EntityDivider />
-      {entityInputItem.inputControls}
-      {!entityInputItem?.hideButtons && (
-        <Box display="flex" alignSelf="flex-end" gap={1} marginTop={2}>
-          <Button onClick={onCancel} variant="outlined">
-            Cancel
-          </Button>
-          <Button
-            onClick={onSubmit}
-            variant="contained"
-            disabled={disableSubmit}
-            startIcon={<ImportContactsIcon />}
-          >
-            Save
-          </Button>
-        </Box>
-      )}
+      <Box
+        display="flex"
+        flexDirection="column"
+        flexGrow={1}
+        bgcolor={entityInputItem.containerBackgroundColor ?? 'initial'}
+      >
+        {entityInputItem.inputControls}
+        {(entityInputItem?.showButtons ?? false) && (
+          <Box display="flex" alignSelf="flex-end" gap={1} paddingY={2}>
+            <Button onClick={onCancel} variant="outlined">
+              Cancel
+            </Button>
+            <Button
+              onClick={onSubmit}
+              variant="contained"
+              disabled={disableSubmit}
+              startIcon={<ImportContactsIcon />}
+            >
+              Save
+            </Button>
+          </Box>
+        )}
+      </Box>
     </Box>
   );
 };

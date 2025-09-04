@@ -14,8 +14,8 @@ import { useCreateLogEntry, useIncidents, useLogEntries, useUsers } from '../hoo
 import { createSequenceNumber } from '../utils/Form/sequence';
 import PageWrapper from '../components/PageWrapper';
 import { FormsInputContainer } from '../components/Form/FormsInputContainer';
-import { FieldValueType, SketchLine, ValidationError } from '../utils/types';
-import { Document, Format, Form as FormUtils, Validate } from '../utils';
+import { FieldValueType, SketchLine } from '../utils/types';
+import { Document, Format, Form as FormUtils } from '../utils';
 import { OnCreateEntry } from '../utils/handlers';
 import { getSortedEntriesWithDisplaySequence } from '../utils/sortEntries';
 import { useAttachments } from '../hooks/useAttachments';
@@ -24,6 +24,8 @@ import { Field } from 'common/Field';
 import { LogEntryTypes } from 'common/LogEntryTypes';
 import { LogEntryType } from 'common/LogEntryType';
 import { useFormTemplates } from '../hooks/Forms/useFormTemplates';
+import { Form, FormDataProperty } from '../components/CustomForms/FormTemplates/types';
+import { useCreateFormInstance } from '../hooks/Forms/useFormInstances';
 
 export const CreateLogEntry = () => {
   const { incidentId } = useParams();
@@ -33,6 +35,9 @@ export const CreateLogEntry = () => {
   const { attachments: incidentAttachments } = useAttachments(incident?.id);
   const { users } = useUsers();
   const { forms } = useFormTemplates();
+  const { mutate: createFormInstance } = useCreateFormInstance(incidentId!, () =>
+    navigate(`/logbook/${incidentId}`)
+  );
   const navigate = useNavigate();
   const { createLogEntry } = useCreateLogEntry(incidentId, () =>
     navigate(`/logbook/${incidentId}`)
@@ -42,11 +47,12 @@ export const CreateLogEntry = () => {
   const [entry, setEntry] = useState<Partial<LogEntry>>({
     incidentId,
     sequence: createSequenceNumber(),
-    type: 'General',
     content: {}
   });
 
-  const [validationErrors, setValidationErrors] = useState<Array<ValidationError>>([]);
+  const [customForm, setCustomForm] = useState<Form | null>(null);
+  const [customFormData, setCustomFormData] = useState<FormDataProperty[]>([]);
+
   const [formFields, setFormFields] = useState<Field[]>([]);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [recordings, setRecordings] = useState<File[]>([]);
@@ -79,17 +85,15 @@ export const CreateLogEntry = () => {
   );
 
   useEffect(() => {
-    setValidationErrors(Validate.entry(entry, [...selectedFiles, ...recordings]));
-  }, [setValidationErrors, entry, selectedFiles, recordings]);
-
-  useEffect(() => {
     if (!isOnline) {
       setEntry((prev) => ({ ...prev, location: undefined }));
     }
   }, [isOnline, setEntry]);
 
   useEffect(() => {
-    setFormFields(LogEntryTypes[entry.type as LogEntryType].fields(entry));
+    if (entry.type) {
+      setFormFields(LogEntryTypes[entry.type as LogEntryType].fields(entry));
+    }
   }, [setFormFields, entry]);
 
   const onFieldChange = (id: string, value: FieldValueType, nested = false) => {
@@ -106,6 +110,12 @@ export const CreateLogEntry = () => {
         }
       }
       return updated;
+    });
+  };
+
+  const onCustomFormDataChange = (id: string, label: string, value: string | number | boolean) => {
+    setCustomFormData((prev) => {
+      return [...prev.filter((p) => p.id !== id), { id, label, value }];
     });
   };
 
@@ -137,7 +147,7 @@ export const CreateLogEntry = () => {
     return undefined;
   };
 
-  const onAddEntryClick = (evt?: MouseEvent<HTMLButtonElement>) => {
+  const onEntrySubmit = (evt?: MouseEvent<HTMLButtonElement>) => {
     evt?.preventDefault();
     const fileAttachments: Attachment[] = selectedFiles.map((file) => ({
       type: 'File',
@@ -163,6 +173,30 @@ export const CreateLogEntry = () => {
     onCreateEntry({ ...entry } as LogEntry, [...selectedFiles, ...recordings, ...sketches]);
   };
 
+  const onCustomFormSubmit = () => {
+    if (customForm && customFormData) {
+      createFormInstance({
+        formTemplateId: customForm.id,
+        title: customForm.title,
+        formData: [...customFormData]
+      });
+    }
+  };
+
+  const onSubmit = (submissionType: 'customForm' | 'entry' | null) => {
+    switch (submissionType) {
+      case 'customForm':
+        onCustomFormSubmit();
+        break;
+      case 'entry':
+        onEntrySubmit();
+        break;
+      default:
+        console.error(`Unknown submission type recieved ${submissionType}`);
+        break;
+    }
+  };
+
   if (!incident) return null;
 
   return (
@@ -171,17 +205,20 @@ export const CreateLogEntry = () => {
         incident={incident}
         entries={logEntries ?? []}
         entry={entry}
+        customForm={customForm}
+        customFormData={customFormData}
+        setCustomForm={setCustomForm}
         formFields={formFields}
         forms={forms ?? []}
-        errors={validationErrors}
         onFieldChange={onFieldChange}
+        onCustomFormDataChange={onCustomFormDataChange}
         onFilesSelected={onFilesSelected}
         onRemoveSelectedFile={onRemoveSelectedFile}
         onRemoveRecording={onRemoveRecording}
         setSketchLines={setSketchLines}
         onLocationChange={onLocationChange}
         onMainBackClick={() => navigate(`/logbook/${incidentId}`)}
-        onSubmit={onAddEntryClick}
+        onSubmit={onSubmit}
         onCancel={() => navigate(`/logbook/${incidentId}`)}
         mentionables={mentionables}
         selectedFiles={selectedFiles}

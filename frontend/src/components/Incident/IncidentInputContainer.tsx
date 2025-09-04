@@ -22,7 +22,15 @@ type Props = {
   onCancel: () => void;
 };
 
-type FieldType = 'type' | 'time' | 'name' | 'referrer' | 'organisation' | 'phone' | 'email' | 'supportRequested';
+type FieldType =
+  | 'type'
+  | 'time'
+  | 'name'
+  | 'referrer'
+  | 'organisation'
+  | 'phone'
+  | 'email'
+  | 'supportRequested';
 
 const fieldConfigs = {
   type: { heading: 'Incident type', required: true, supportedOffline: true },
@@ -35,10 +43,7 @@ const fieldConfigs = {
   supportRequested: { heading: 'Support requested?', required: true, supportedOffline: true }
 };
 
-export const IncidentInputContainer = ({
-  onSubmit,
-  onCancel
-}: Readonly<Props>) => {
+export const IncidentInputContainer = ({ onSubmit, onCancel }: Readonly<Props>) => {
   const [level, setLevel] = useState<number>(0);
   const [activeField, setActiveField] = useState<FieldType | null>(null);
 
@@ -50,8 +55,8 @@ export const IncidentInputContainer = ({
       name: '',
       organisation: '',
       telephone: '',
-      email: '',
-    } as Referrer,
+      email: ''
+    } as Referrer
   });
 
   const validateIncident = useCallback((incident: Partial<Incident>): ValidationError[] => {
@@ -64,55 +69,55 @@ export const IncidentInputContainer = ({
     if (!incident.startedAt) {
       errors.push({ fieldId: 'incident_time', error: 'Incident time is required' });
     }
-  
+
     if (!incident.name?.trim()) {
       errors.push({ fieldId: 'incident_name', error: 'Incident name is required' });
     }
-  
+
     const r = incident.referrer;
 
     if (!r?.name) {
       errors.push({
         fieldId: 'incident_referrer',
-        error: 'Referred by is required',
+        error: 'Referred by is required'
       });
     }
 
     if (!r?.organisation) {
       errors.push({
         fieldId: 'incident_organisation',
-        error: 'Organisation is required',
+        error: 'Organisation is required'
       });
     }
 
     if (!r?.telephone) {
       errors.push({
         fieldId: 'incident_phone',
-        error: 'Phone No is required',
+        error: 'Phone No is required'
       });
     }
 
     if (!r?.email) {
       errors.push({
         fieldId: 'incident_email',
-        error: 'Email is required',
+        error: 'Email is required'
       });
     }
-  
+
     if (!r?.supportRequested) {
       errors.push({
         fieldId: 'incident_supportRequested',
-        error: 'Please choose Yes or No',
+        error: 'Please choose Yes or No'
       });
     }
-    
+
     if (r?.supportRequested === 'Yes' && !r.supportDescription?.trim()) {
       errors.push({
         fieldId: 'incident_supportDescription',
-        error: 'Please describe the support requested',
+        error: 'Please describe the support requested'
       });
     }
-  
+
     return errors;
   }, []);
 
@@ -143,9 +148,7 @@ export const IncidentInputContainer = ({
     setIncident((prev) => ({ ...prev, ...updates }));
   };
 
-  const onReferrerChange = (
-    patch: Partial<NonNullable<Incident['referrer']>>
-  ) => {
+  const onReferrerChange = (patch: Partial<NonNullable<Incident['referrer']>>) => {
     setIncident((prev) => {
       const merged = { ...(prev.referrer ?? {}), ...patch };
 
@@ -156,27 +159,29 @@ export const IncidentInputContainer = ({
           organisation: merged.organisation ?? '',
           telephone: merged.telephone ?? '',
           supportRequested: 'Yes',
-          supportDescription: merged.supportDescription ?? '',
+          supportDescription: merged.supportDescription ?? ''
         };
         return { ...prev, referrer: next };
       }
-  
+
       if (merged.supportRequested === 'No') {
         const next: Extract<NonNullable<Incident['referrer']>, { supportRequested: 'No' }> = {
           email: merged.email ?? '',
           name: merged.name ?? '',
           organisation: merged.organisation ?? '',
           telephone: merged.telephone ?? '',
-          supportRequested: 'No',
+          supportRequested: 'No'
         };
         return { ...prev, referrer: next };
       }
-  
+
       return { ...prev, referrer: merged as unknown as NonNullable<Incident['referrer']> };
     });
   };
 
-  const handleSupportRequestedChange: React.ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement> = (e) => {
+  const handleSupportRequestedChange: React.ChangeEventHandler<
+    HTMLInputElement | HTMLTextAreaElement
+  > = (e) => {
     const v = e.target.value;
     if (v === 'Yes') {
       onReferrerChange({ supportRequested: 'Yes' });
@@ -189,13 +194,15 @@ export const IncidentInputContainer = ({
 
   const handleSubmit = () => {
     if (errors.length > 0) return;
-  
+
     assertValidIncident(incident);
-  
+
     onSubmit(incident);
   };
 
-  const renderIncidentMenuItems = (items: Array<{ value: string; label: string; options?: FieldOption[] }>) =>
+  const renderIncidentMenuItems = (
+    items: Array<{ value: string; label: string; options?: FieldOption[] }>
+  ) =>
     items.flatMap((item) =>
       item.options?.length
         ? [
@@ -204,12 +211,12 @@ export const IncidentInputContainer = ({
             <MenuItem key={opt.value} value={opt.value}>
               {opt.label ?? opt.value}
             </MenuItem>
-          )),
+          ))
         ]
         : [
           <MenuItem key={item.value} value={item.value}>
             {item.label ?? item.value}
-          </MenuItem>,
+          </MenuItem>
         ]
     );
 
@@ -234,8 +241,7 @@ export const IncidentInputContainer = ({
     }
   };
 
-  const displayValue = (v?: string) =>
-    typeof v === 'string' && v.trim() === '' ? undefined : v;
+  const displayValue = (v?: string) => (typeof v === 'string' && v.trim() === '' ? undefined : v);
 
   const entityOptionData: EntityOptionData[] = (Object.keys(fieldConfigs) as FieldType[]).map(
     (field) => ({
@@ -269,7 +275,7 @@ export const IncidentInputContainer = ({
             >
               {!incident.type && (
                 <MenuItem value="" disabled>
-            Select incident type
+                  Select incident type
                 </MenuItem>
               )}
               {renderIncidentMenuItems(INCIDENT_TYPE_OPTIONS)}
@@ -299,7 +305,14 @@ export const IncidentInputContainer = ({
                       .millisecond(0);
                     onIncidentChange({ startedAt: updated.toISOString() });
                   }}
-                  slotProps={{ textField: { variant: 'filled', fullWidth: true, InputLabelProps: { shrink: true }, error: !!getFieldError('incident_time') } }}
+                  slotProps={{
+                    textField: {
+                      variant: 'filled',
+                      fullWidth: true,
+                      InputLabelProps: { shrink: true },
+                      error: !!getFieldError('incident_time')
+                    }
+                  }}
                 />
                 <TimePicker
                   label="Time"
@@ -317,7 +330,14 @@ export const IncidentInputContainer = ({
                       .millisecond(0);
                     onIncidentChange({ startedAt: updated.toISOString() });
                   }}
-                  slotProps={{ textField: { variant: 'filled', fullWidth: true, InputLabelProps: { shrink: true }, error: !!getFieldError('incident_time') } }}
+                  slotProps={{
+                    textField: {
+                      variant: 'filled',
+                      fullWidth: true,
+                      InputLabelProps: { shrink: true },
+                      error: !!getFieldError('incident_time')
+                    }
+                  }}
                 />
               </Box>
             </LocalizationProvider>
@@ -419,7 +439,7 @@ export const IncidentInputContainer = ({
               helperText={srError?.error}
             >
               <MenuItem value="" disabled>
-                  Select yes/no
+                Select yes/no
               </MenuItem>
               {YES_NO.map((v) => (
                 <MenuItem key={v} value={v}>
@@ -427,7 +447,7 @@ export const IncidentInputContainer = ({
                 </MenuItem>
               ))}
             </TextField>
-        
+
             {incident.referrer?.supportRequested === 'Yes' && (
               <TextField
                 fullWidth
@@ -456,12 +476,12 @@ export const IncidentInputContainer = ({
       heading: 'Add new incident',
       inputControls: (
         <EntityOptionsContainer entityType="incidents" data={entityOptionData} errors={errors} />
-      )
+      ),
+      showButtons: true
     },
     {
       heading: activeField ? fieldConfigs[activeField].heading : '',
-      inputControls: <Box flexGrow={1}>{renderFieldInput()}</Box>,
-      hideButtons: true
+      inputControls: <Box flexGrow={1}>{renderFieldInput()}</Box>
     }
   ];
 

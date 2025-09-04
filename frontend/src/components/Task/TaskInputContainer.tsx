@@ -240,11 +240,9 @@ export const TaskInputContainer = ({
       case 'location':
         return (
           <Location.Content
-            active={true}
             location={task.location}
             validationErrors={errors}
             onLocationChange={(location) => onTaskChange({ location: location as TypeOfLocation })}
-            showValidationErrors={true}
           />
         );
 
@@ -280,12 +278,12 @@ export const TaskInputContainer = ({
       heading: 'Add new task',
       inputControls: (
         <EntityOptionsContainer entityType="tasks" data={entityOptionData} errors={errors} />
-      )
+      ),
+      showButtons: true
     },
     {
       heading: activeField ? fieldConfigs[activeField].heading : '',
-      inputControls: <Box flexGrow={1}>{renderFieldInput()}</Box>,
-      hideButtons: true
+      inputControls: <Box flexGrow={1}>{renderFieldInput()}</Box>
     }
   ];
 
