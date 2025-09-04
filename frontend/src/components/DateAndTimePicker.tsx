@@ -145,7 +145,14 @@ const CustomCalendarHeader = (props: CustomCalendarHeaderProps) => {
   ];
 
   const monthOptions = (): OptionType[] => {
-    let monthIndices = Array.from(Array(12).keys());
+    const lowerLimit = lowerBound ? new Date(lowerBound) : undefined;
+    let monthIndices = Array.from(Array(12).keys()).filter(
+      (i) =>
+        (lowerLimit &&
+          currentMonth.get('year') === lowerLimit.getFullYear() &&
+          i >= lowerLimit.getMonth()) ||
+        (!lowerLimit && i)
+    );
 
     if (disableFuture) {
       const now = new Date();
@@ -160,11 +167,16 @@ const CustomCalendarHeader = (props: CustomCalendarHeaderProps) => {
   };
 
   const yearOptions = (): OptionType[] => {
+    const now = new Date();
     const lowerLimit = lowerBound ? new Date(lowerBound) : undefined;
     let yearIndices = Array.from(
-      Array(10 - Math.max(0, lowerLimit?.getFullYear() ?? -Infinity)).keys()
+      Array(
+        Math.max(
+          1,
+          now.getFullYear() - Math.max(now.getFullYear(), lowerLimit?.getFullYear() ?? -Infinity)
+        )
+      ).keys()
     );
-    const now = new Date();
     const currentYear = now.getFullYear();
 
     if (disableFuture) {
@@ -182,7 +194,7 @@ const CustomCalendarHeader = (props: CustomCalendarHeaderProps) => {
 
   const previousMonthOptionDisabled =
     (lowerBound &&
-      currentMonth.get('month') === 0 &&
+      currentMonth.get('month') === new Date(lowerBound).getMonth() &&
       currentMonth.get('year') === new Date(lowerBound).getFullYear()) ||
     (currentMonth.get('month') === 0 && currentMonth.get('year') === new Date().getFullYear() - 10);
 
@@ -529,6 +541,20 @@ export const DateAndTimePicker = ({
     }
   };
 
+  const shouldDisableDate = (date: Dayjs) => {
+    if (dateLowerBound) {
+      const lowerLimit = new Date(dateLowerBound);
+
+      return (
+        date.get('year') === lowerLimit.getFullYear() &&
+        date.get('month') === lowerLimit.getMonth() &&
+        date.get('day') <= lowerLimit.getDay()
+      );
+    }
+
+    return false;
+  };
+
   useEffect(() => {
     if (date && time) {
       onChange(date?.format('YYYY-MM-DD'), time?.format('HH:mm:ss'));
@@ -542,6 +568,7 @@ export const DateAndTimePicker = ({
           <DatePicker
             label={dateLabel}
             disableFuture={disableFuture}
+            shouldDisableDate={shouldDisableDate}
             value={date}
             onChange={onDateChange}
             slots={{

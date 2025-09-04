@@ -27,7 +27,8 @@ import MyProfile from '../pages/MyProfile';
 import AdminUserList from '../pages/AdminUserList';
 import AdminViewUser from '../pages/AdminViewUser';
 import AdminNewUser from '../pages/AdminNewUser';
-import { CreateLogEntry } from '../pages/CreateLogEntry';
+import { CreateEntryForm } from '../pages/CreateEntryForm';
+import { CreateEntryUpdate } from '../pages/CreateEntryUpdate';
 import CreateTask from '../pages/CreateTask';
 
 const AppWrapper = () => {
@@ -44,7 +45,8 @@ const AppWrapper = () => {
         { path: 'incident/:incidentId', element: <Overview /> },
         { path: 'incident/:incidentId/edit', element: <CreateIncident /> },
         { path: 'logbook/:incidentId', element: <Logbook /> },
-        { path: 'logbook/:incidentId/create', element: <CreateLogEntry /> },
+        { path: 'logbook/:incidentId/createForm', element: <CreateEntryForm /> },
+        { path: 'logbook/:incidentId/createUpdate', element: <CreateEntryUpdate /> },
         { path: 'tasks', element: <Tasks /> },
         { path: 'tasks/:taskId', element: <IncidentTask /> },
         { path: 'tasks/create/:incidentId', element: <CreateTask /> },
