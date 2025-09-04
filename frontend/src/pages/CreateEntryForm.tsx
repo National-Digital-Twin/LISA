@@ -13,7 +13,7 @@ import { type Location } from 'common/Location';
 import { useCreateLogEntry, useIncidents, useLogEntries, useUsers } from '../hooks';
 import { createSequenceNumber } from '../utils/Form/sequence';
 import PageWrapper from '../components/PageWrapper';
-import { FormsInputContainer } from '../components/Form/FormsInputContainer';
+import { FormsInputContainer } from '../components/AddEntry/Form/FormsInputContainer';
 import { FieldValueType, SketchLine } from '../utils/types';
 import { Document, Format, Form as FormUtils } from '../utils';
 import { OnCreateEntry } from '../utils/handlers';

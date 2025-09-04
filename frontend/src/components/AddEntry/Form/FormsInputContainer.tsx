@@ -12,31 +12,34 @@ import { LogEntryTypes } from 'common/LogEntryTypes';
 import { LogEntryType } from 'common/LogEntryType';
 import { Mentionable } from 'common/Mentionable';
 import { type Location as TypeOfLocation } from 'common/Location';
-import { FieldValueType, OptionType, SketchLine, ValidationError } from '../../utils/types';
-import { EntityInputContainer, EntityInputContainerData } from '../AddEntity/EntityInputContainer';
-import { getFormTypes } from '../../utils/Form/getBaseLogEntryFields';
-import { EntityOptionsContainer } from '../AddEntity/EntityOptionsContainer';
-import { EntityOptionData } from '../AddEntity/EntityOptions';
-import { OnFieldChange } from '../../utils/handlers';
-import EntryContent from '../lexical/EntryContent';
+import { FieldValueType, OptionType, SketchLine, ValidationError } from '../../../utils/types';
+import {
+  EntityInputContainer,
+  EntityInputContainerData
+} from '../../AddEntity/EntityInputContainer';
+import { getFormTypes } from '../../../utils/Form/getBaseLogEntryFields';
+import { EntityOptionsContainer } from '../../AddEntity/EntityOptionsContainer';
+import { EntityOptionData } from '../../AddEntity/EntityOptions';
+import { OnFieldChange } from '../../../utils/handlers';
+import EntryContent from '../../lexical/EntryContent';
 
-import { Format, Validate } from '../../utils';
-import Sketch from '../AddEntry/Sketch';
-import Files from '../AddEntry/Files';
-import { EntityDivider } from '../AddEntity/EntityDivider';
-import Location from '../AddEntry/Location';
-import { getFieldValue } from '../../utils/Form/getFieldValue';
-import { getFieldIcon } from '../../utils/Form/getFieldIcon';
+import { Format, Validate } from '../../../utils';
+import Sketch from '../../AddEntry/Sketch';
+import Files from '../../AddEntry/Files';
+import { EntityDivider } from '../../AddEntity/EntityDivider';
+import Location from '../../AddEntry/Location';
+import { getFieldValue } from '../../../utils/Form/getFieldValue';
+import { getFieldIcon } from '../../../utils/Form/getFieldIcon';
 import { Field } from 'common/Field';
 import { CommunicationMethod } from 'common/Fields/CommunicationMethod';
-import { Form as CustomForm, FormDataProperty } from '../CustomForms/FormTemplates/types';
-import { FormContainer as CustomFormContainer } from '../CustomForms/FormInstances/FormContainer';
+import { Form as CustomForm, FormDataProperty } from '../../CustomForms/FormTemplates/types';
+import { FormContainer as CustomFormContainer } from '../../CustomForms/FormInstances/FormContainer';
 import { RelevantHazards } from 'common/LogEntryTypes/RiskAssessment/hazards/RelevantHazards';
 import { getRelevantHazard, getHazardLabel } from 'common/LogEntryTypes/RiskAssessment/hazards';
-import { EntityTypeDropdown } from '../AddEntity/EntityTypeDropdown';
-import { DateAndTimePicker } from '../DateAndTimePicker';
-import { GenericFormField } from './GenericFormField';
-import AddFormInstance from '../CustomForms/FormInstances/AddFormInstance';
+import { EntityTypeDropdown } from '../../AddEntity/EntityTypeDropdown';
+import { DateAndTimePicker } from '../../DateAndTimePicker';
+import { GenericFormField } from '../../Form/GenericFormField';
+import AddFormInstance from '../../CustomForms/FormInstances/AddFormInstance';
 
 type Props = {
   incident: Incident;
@@ -765,20 +768,20 @@ export const FormsInputContainer = ({
     },
     (addingCustomForm &&
       customForm && {
-      heading: `New custom form - ${customForm.title}`,
-      inputControls: (
-        <Box flexGrow={1} padding={2}>
-          <AddFormInstance
-            selectedForm={customForm}
-            selectedFormData={customFormData}
-            onChange={onCustomFormDataChange}
-            setErrors={setValidationErrors}
-          />
-        </Box>
-      ),
-      showButtons: true,
-      containerBackgroundColor: 'background.default'
-    }) || {
+        heading: `New custom form - ${customForm.title}`,
+        inputControls: (
+          <Box flexGrow={1} padding={2}>
+            <AddFormInstance
+              selectedForm={customForm}
+              selectedFormData={customFormData}
+              onChange={onCustomFormDataChange}
+              setErrors={setValidationErrors}
+            />
+          </Box>
+        ),
+        showButtons: true,
+        containerBackgroundColor: 'background.default'
+      }) || {
       heading: customHeading,
       inputControls: (
         <Box padding={2}>
@@ -805,36 +808,36 @@ export const FormsInputContainer = ({
           {(addingFormFields || addingComments || addingRiskAssessmentToReview || addingHazard) &&
             formFields &&
             formField && (
-            <Box display="flex" flexDirection="column" gap={2}>
-              <GenericFormField
-                field={formField}
-                fields={formFields}
-                entry={entry}
-                entries={entries}
-                onChange={(id, value) => {
-                  if (addingHazard) {
-                    handleRelevantHazardsChange(id, value);
-                  } else {
-                    onNestedFieldChange(id, value);
-                    if (addingRiskAssessmentToReview) {
-                      setRefreshHazardOptions(true);
-                    }
-                  }
-                }}
-                errors={validationErrors}
-              />
-              {addingHazard && hazardValue && forms && (
-                <CustomFormContainer
-                  entry={entry}
-                  selectedForm={
-                      forms.find((form) => form.id === `haz_${hazardValue.toLowerCase()}`)!
-                  }
+              <Box display="flex" flexDirection="column" gap={2}>
+                <GenericFormField
+                  field={formField}
                   fields={formFields}
-                  onFieldChange={onNestedFieldChange}
+                  entry={entry}
+                  entries={entries}
+                  onChange={(id, value) => {
+                    if (addingHazard) {
+                      handleRelevantHazardsChange(id, value);
+                    } else {
+                      onNestedFieldChange(id, value);
+                      if (addingRiskAssessmentToReview) {
+                        setRefreshHazardOptions(true);
+                      }
+                    }
+                  }}
+                  errors={validationErrors}
                 />
-              )}
-            </Box>
-          )}
+                {addingHazard && hazardValue && forms && (
+                  <CustomFormContainer
+                    entry={entry}
+                    selectedForm={
+                      forms.find((form) => form.id === `haz_${hazardValue.toLowerCase()}`)!
+                    }
+                    fields={formFields}
+                    onFieldChange={onNestedFieldChange}
+                  />
+                )}
+              </Box>
+            )}
           {addingDateAndTime && (
             <DateAndTimePicker
               dateLabel="Date"
