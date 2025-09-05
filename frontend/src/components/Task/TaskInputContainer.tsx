@@ -5,6 +5,8 @@ import { Box, FormControl, MenuItem, TextField } from '@mui/material';
 import { type CreateTask } from 'common/Task';
 import { type User } from 'common/User';
 import { type Location as TypeOfLocation } from 'common/Location';
+import { type Mentionable } from 'common/Mentionable';
+
 import { SketchLine, ValidationError } from '../../utils/types';
 import { EntityInputContainer, EntityInputContainerData } from '../AddEntity/EntityInputContainer';
 import { EntityOptionsContainer } from '../AddEntity/EntityOptionsContainer';
@@ -15,21 +17,23 @@ import Location from '../AddEntry/Location';
 import Files from '../AddEntry/Files';
 import Sketch from '../AddEntry/Sketch';
 import { Attachment } from 'common/Attachment';
+import EntryContent from '../lexical/EntryContent';
 
 type Props = {
   users: User[];
   incidentId: string;
+  mentionables: Array<Mentionable>;
   onSubmit: (task: CreateTask & Required<Pick<CreateTask, 'id' | 'status'>>, files: File[]) => void;
   onCancel: () => void;
   isSubmitting?: boolean;
 };
 
-type FieldType = 'name' | 'assignee' | 'description' | 'location' | 'attachments' | 'sketch';
+type FieldType = 'name' | 'assignee' | 'content' | 'location' | 'attachments' | 'sketch' ;
 
 const fieldConfigs = {
   name: { heading: 'Task name', required: true, supportedOffline: true },
   assignee: { heading: 'Assign to', required: true, supportedOffline: true },
-  description: { heading: 'Add task description', required: true, supportedOffline: true },
+  content: { heading: 'Add task description', required: true, supportedOffline: true },
   location: { heading: 'Add location(s)', required: false, supportedOffline: false },
   attachments: { heading: 'Add attachments', required: false, supportedOffline: true },
   sketch: { heading: 'Add sketch', required: false, supportedOffline: true }
@@ -38,6 +42,7 @@ const fieldConfigs = {
 export const TaskInputContainer = ({
   users,
   incidentId,
+  mentionables,
   onSubmit,
   onCancel,
   isSubmitting = false
@@ -153,8 +158,8 @@ export const TaskInputContainer = ({
         return task.name;
       case 'assignee':
         return task.assignee?.displayName;
-      case 'description':
-        return task.description;
+      case 'content':
+        return task.content?.text || task.description || undefined;
       case 'location':
         return task.location ? 'View location' : undefined;
       case 'attachments':
@@ -173,6 +178,9 @@ export const TaskInputContainer = ({
       supportedOffline: fieldConfigs[field].supportedOffline
     })
   );
+
+  const changeEvent = (_id: string, json: string, text: string) =>
+    onTaskChange({ content: { text, json } });
 
   const renderFieldInput = () => {
     if (!activeField) return null;
@@ -220,19 +228,19 @@ export const TaskInputContainer = ({
           </FormControl>
         );
 
-      case 'description':
+      case 'content':
         return (
           <FormControl fullWidth sx={{ marginTop: 2 }}>
-            <TextField
-              hiddenLabel
-              variant="filled"
-              multiline
-              minRows={4}
-              placeholder="Describe the task"
-              value={task.description || ''}
-              onChange={(event) => onTaskChange({ description: event.target.value })}
+            <EntryContent
+              id="content"
+              json={task.content?.json || undefined}
+              editable
+              mentionables={mentionables}
+              recordingActive={false}
+              onChange={changeEvent}
+              onRecording={() => null}
               error={!!getFieldError('task_description')}
-              helperText={getFieldError('task_description')?.error}
+              placeholder={'Type @ to tag a person, log, task or file'}
             />
           </FormControl>
         );

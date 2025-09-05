@@ -14,7 +14,6 @@ function removePrefix(uri: string): string {
   return uri.split('#').pop() || uri.split('/').pop() || uri;
 }
 
-
 async function mapResultsToTasks(
   taskResults: ResultRow[],
   attachmentResults: ResultRow[]
@@ -38,6 +37,10 @@ async function mapResultsToTasks(
         id: taskId,
         name: result.taskName.value,
         description: result.description.value,
+        content: {
+          text: result.contentText.value || result.description.value || '',
+          json: result.contentJSON.value || undefined
+        },
         incidentId,
         author: {
           username: authorUsername ?? 'unknown',
