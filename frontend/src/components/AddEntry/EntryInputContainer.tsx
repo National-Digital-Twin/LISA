@@ -928,13 +928,11 @@ export const EntryInputContainer = ({
     {
       heading: 'New update',
       inputControls: (
-        <>
-          <EntityOptionsContainer
-            entityType="updates"
-            data={entityOptionsData('update')}
-            errors={validationErrors}
-          />
-        </>
+        <EntityOptionsContainer
+          entityType="updates"
+          data={entityOptionsData('update')}
+          errors={validationErrors}
+        />
       ),
       showButtons: true
     },
