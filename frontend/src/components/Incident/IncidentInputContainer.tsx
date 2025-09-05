@@ -63,16 +63,16 @@ export const IncidentInputContainer = ({
     initialIncident
       ? { ...initialIncident }
       : {
-          id: uuidV4(),
-          stage: 'Monitoring',
+        id: uuidV4(),
+        stage: 'Monitoring',
+        name: '',
+        referrer: {
           name: '',
-          referrer: {
-            name: '',
-            organisation: '',
-            telephone: '',
-            email: ''
-          } as Referrer
-        }
+          organisation: '',
+          telephone: '',
+          email: ''
+        } as Referrer
+      }
   );
 
   const validateIncident = useCallback((incident: Partial<Incident>): ValidationError[] => {
@@ -228,18 +228,18 @@ export const IncidentInputContainer = ({
     items.flatMap((item) =>
       item.options?.length
         ? [
-            <ListSubheader key={`group-${item.value || item.label}`}>{item.label}</ListSubheader>,
-            ...item.options.map((opt) => (
-              <MenuItem key={opt.value} value={opt.value}>
-                {opt.label ?? opt.value}
-              </MenuItem>
-            ))
-          ]
-        : [
-            <MenuItem key={item.value} value={item.value}>
-              {item.label ?? item.value}
+          <ListSubheader key={`group-${item.value || item.label}`}>{item.label}</ListSubheader>,
+          ...item.options.map((opt) => (
+            <MenuItem key={opt.value} value={opt.value}>
+              {opt.label ?? opt.value}
             </MenuItem>
-          ]
+          ))
+        ]
+        : [
+          <MenuItem key={item.value} value={item.value}>
+            {item.label ?? item.value}
+          </MenuItem>
+        ]
     );
 
   const getFieldValue = (field: FieldType) => {

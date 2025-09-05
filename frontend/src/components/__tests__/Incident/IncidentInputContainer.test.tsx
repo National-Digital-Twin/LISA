@@ -44,9 +44,7 @@ jest.mock('../../AddEntity/EntityInputContainer', () => ({
 }));
 
 jest.mock('../../AddEntity/EntityOptionsContainer', () => ({
-  EntityOptionsContainer: ({
-    data
-  }: {
+  EntityOptionsContainer: ({data}: {
     data: Array<{ id: string; onClick: () => void; label?: string }>;
   }) => (
     <div>
@@ -92,6 +90,7 @@ jest.mock('@mui/x-date-pickers', () => {
     onChange,
     disabled,
     value,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     disableFuture,
     ...rest
   }) => (
