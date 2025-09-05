@@ -146,14 +146,16 @@ class MentionTypeaheadOption extends MenuOption {
 
   trigger: string | null;
   map: boolean;
+  disabled: boolean;
 
-  constructor(mention: Mentionable, trigger: string | null, map: boolean) {
+  constructor(mention: Mentionable, trigger: string | null, map: boolean, disabled = false) {
     super(mention.label);
     this.id = mention.id;
     this.type = mention.type;
     this.name = mention.label;
     this.trigger = trigger;
     this.map = map;
+    this.disabled = disabled;
   }
 }
 
@@ -205,6 +207,7 @@ function MentionsTypeaheadMenuItem({
       onMouseEnter={onMouseEnter}
       onClick={onClick}
       onKeyDown={onKeyDown}
+      aria-disabled={option.disabled}
     >
       {getIcon()}
       <span className="text">{option.name}</span>
@@ -216,8 +219,7 @@ type MentionsPluginProps = {
   mentionables: Array<Mentionable>;
 };
 
-export default function MentionsPlugin({ mentionables }: Readonly<MentionsPluginProps>):
-    JSX.Element | null {
+export default function MentionsPlugin({ mentionables }: Readonly<MentionsPluginProps>): JSX.Element | null {
   const [editor] = useLexicalComposerContext();
   const [queryString, setQueryString] = useState<string | null>(null);
   const [currentFilter, setCurrentFilter] = useState<string | null>(null);
@@ -226,23 +228,42 @@ export default function MentionsPlugin({ mentionables }: Readonly<MentionsPlugin
   const results = useMentionLookupService(
     mentionables,
     TRIGGER_TO_TYPE[currentFilter || TRIGGERS.DEFAULT],
-    queryString ? queryString.slice( 2) : ''
+    queryString ? queryString.slice(2) : ''
   );
 
   const checkForSlashTriggerMatch = useBasicTypeaheadTriggerMatch('/', {
     minLength: 0
   });
 
-  const defaultOptions = [
-    new MentionTypeaheadOption({ id: '0', label: 'User', type: 'User' }, TRIGGERS.USER, true),
-    new MentionTypeaheadOption({ id: '1', label: 'File', type: 'File' }, TRIGGERS.FILE, true),
-    new MentionTypeaheadOption(
-      { id: '2', label: 'Log Entry', type: 'LogEntry' },
-      TRIGGERS.LOG,
-      true
-    ),
-    new MentionTypeaheadOption({ id: '3', label: 'Task', type: 'Task' }, TRIGGERS.TASK, true)
-  ];
+  const defaultOptions = useMemo(
+    () => [
+      new MentionTypeaheadOption(
+        { id: '0', label: 'User', type: 'User' },
+        TRIGGERS.USER,
+        true,
+        !mentionables.some((m) => m.type === 'User')
+      ),
+      new MentionTypeaheadOption(
+        { id: '1', label: 'File', type: 'File' },
+        TRIGGERS.FILE,
+        true,
+        !mentionables.some((m) => m.type === 'File')
+      ),
+      new MentionTypeaheadOption(
+        { id: '2', label: 'Log Entry', type: 'LogEntry' },
+        TRIGGERS.LOG,
+        true,
+        !mentionables.some((m) => m.type === 'LogEntry')
+      ),
+      new MentionTypeaheadOption(
+        { id: '3', label: 'Task', type: 'Task' },
+        TRIGGERS.TASK,
+        true,
+        !mentionables.some((m) => m.type === 'Task')
+      )
+    ].filter( (m) => !m.disabled),
+    [mentionables]
+  );
 
   const mentionOptions = useMemo(
     () =>
@@ -261,7 +282,7 @@ export default function MentionsPlugin({ mentionables }: Readonly<MentionsPlugin
       closeMenu: () => void
     ) => {
       if (selectedOption.map) {
-        setCurrentFilter(selectedOption.trigger);
+        if (!selectedOption.disabled) setCurrentFilter(selectedOption.trigger);
       } else {
         editor.update(() => {
           const mentionNode = $createMentionNode(
@@ -289,7 +310,7 @@ export default function MentionsPlugin({ mentionables }: Readonly<MentionsPlugin
       const match = getPossibleQueryMatch(text);
       if (match) {
         const trigger = match.matchingString;
-        setCurrentFilter(trigger);
+        if (!currentFilter) setCurrentFilter(trigger);
       }
       return match;
     },

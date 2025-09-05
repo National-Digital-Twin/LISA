@@ -479,7 +479,7 @@ const tasks = (data: EntityOptionData[], errors: ValidationError[]) => {
     taskNameOptionDataComponent('name', data, errors),
     taskAssigneeOptionDataComponent('assignee', data, errors),
     descriptionOptionDataComponent(
-      'description',
+      'content',
       data,
       <NotesOutlinedIcon />,
       'Add task description',

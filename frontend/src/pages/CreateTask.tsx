@@ -7,11 +7,13 @@ import { type CreateTask } from 'common/Task';
 import { useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
-
 import { useAuth, useIncidents, useToast, useUsers } from '../hooks';
 import { useCreateTask } from '../hooks/useTasks';
+import { calcMentionables } from '../hooks/useMentionables';
 import PageWrapper from '../components/PageWrapper';
 import { TaskInputContainer } from '../components/Task/TaskInputContainer';
+
+import { type Mentionable } from 'common/Mentionable';
 
 export default function CreateTaskPage() {
   const { incidentId } = useParams();
@@ -49,6 +51,12 @@ export default function CreateTaskPage() {
     );
   };
 
+  // only users changes at the moment so this is the only dependency
+  const mentionables: Array<Mentionable> = useMemo(
+    () => calcMentionables( { users }),
+    [users]
+  );
+
   if (!incident || !incidentId) {
     return (
       <PageWrapper>
@@ -64,6 +72,7 @@ export default function CreateTaskPage() {
         incidentId={incidentId}
         onSubmit={handleSubmit}
         onCancel={() => navigate(-1)}
+        mentionables={mentionables}
         isSubmitting={createTask.isPending}
       />
     </PageWrapper>

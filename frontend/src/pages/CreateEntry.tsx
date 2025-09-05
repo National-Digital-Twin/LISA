@@ -21,7 +21,7 @@ import { OnCreateEntry } from '../utils/handlers';
 import { EntryInputContainer } from '../components/AddEntry/EntryInputContainer';
 import PageWrapper from '../components/PageWrapper';
 import { Location } from 'common/Location';
-import { getSortedEntriesWithDisplaySequence } from '../utils/sortEntries';
+import { calcMentionables } from '../hooks/useMentionables';
 
 type Props = {
   inputType: 'form' | 'update';
@@ -76,20 +76,14 @@ export const CreateEntry = ({ inputType }: Props) => {
   }, [incidentAttachments]);
 
   const mentionables: Array<Mentionable> = useMemo(
-    () => [
-      ...(getSortedEntriesWithDisplaySequence(false, logEntries ?? [])?.map((e) =>
-        Format.mentionable.entry(e)
-      ) ?? []),
-      ...(users
-        ?.filter((user) => user.displayName)
-        .sort((a, b) => a.displayName.localeCompare(b.displayName))
-        .map(Format.mentionable.user) ?? []),
-      ...selectedFiles.map((file) =>
-        Format.mentionable.attachment({ name: file.name, type: 'File' })
-      ),
-      ...recordings.map((file) => Format.mentionable.attachment({ name: file.name, type: 'File' })),
-      ...otherAttachments
-    ],
+    () =>
+      calcMentionables({
+        users,
+        logEntries,
+        files: selectedFiles,
+        recordings,
+        other: otherAttachments
+      }),
     [logEntries, users, selectedFiles, recordings, otherAttachments]
   );
 
