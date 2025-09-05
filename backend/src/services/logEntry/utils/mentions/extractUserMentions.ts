@@ -4,12 +4,12 @@
 
 // Local imports
 import { type LogEntry } from 'common/LogEntry';
-import { EntryContent } from 'common/EntryContent';
+import { EntityContent } from 'common/EntityContent';
 import { ns } from '../../../../rdfutil';
 import { getMentionsOfType } from './utils';
 
 function getMentions(
-  content: EntryContent,
+  content: EntityContent,
   entryIdNode
 ): Array<{ username: string; triple: unknown }> {
   const userMentions = getMentionsOfType(content, 'User');

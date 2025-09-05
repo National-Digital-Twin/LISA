@@ -11,7 +11,7 @@ import { Field } from './Field';
 import { IncidentStage } from './IncidentStage';
 import { Location } from './Location';
 import { Attachment } from './Attachment';
-import { EntryContent } from './EntryContent';
+import { EntityContent } from './EntityContent';
 import { LogEntryType } from './LogEntryType';
 import { User } from './User';
 import { Mentionable } from './Mentionable';
@@ -25,7 +25,7 @@ export const LogEntry = Record({
   dateTime: String.withConstraint(nonFuture), // User-entered, ISO-format
   createdAt: Optional(String), // system generated
   type: LogEntryType,
-  content: EntryContent,
+  content: EntityContent,
   fields: Optional(Array(Field)),
   groups: Optional(Array(FieldGroup)),
   location: Optional(Location), // User-entered
