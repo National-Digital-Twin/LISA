@@ -27,8 +27,8 @@ import MyProfile from '../pages/MyProfile';
 import AdminUserList from '../pages/AdminUserList';
 import AdminViewUser from '../pages/AdminViewUser';
 import AdminNewUser from '../pages/AdminNewUser';
-import { CreateLogEntry } from '../pages/CreateLogEntry';
 import CreateTask from '../pages/CreateTask';
+import { CreateEntry } from '../pages/CreateEntry';
 
 const AppWrapper = () => {
   const router = createBrowserRouter([
@@ -44,7 +44,8 @@ const AppWrapper = () => {
         { path: 'incident/:incidentId', element: <Overview /> },
         { path: 'incident/:incidentId/edit', element: <CreateIncident /> },
         { path: 'logbook/:incidentId', element: <Logbook /> },
-        { path: 'logbook/:incidentId/create', element: <CreateLogEntry /> },
+        { path: 'logbook/:incidentId/createForm', element: <CreateEntry inputType="form" /> },
+        { path: 'logbook/:incidentId/createUpdate', element: <CreateEntry inputType="update" /> },
         { path: 'tasks', element: <Tasks /> },
         { path: 'tasks/:taskId', element: <IncidentTask /> },
         { path: 'tasks/create/:incidentId', element: <CreateTask /> },

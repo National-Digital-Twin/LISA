@@ -39,7 +39,7 @@ const FormInstances = () => {
   }, [location]);
 
   const onAddFormClick = () => {
-    navigate(`/logbook/${incidentId}/create`);
+    navigate(`/logbook/${incidentId}/createForm?source=forms`);
   };
 
   const incident = query?.data?.find((inc) => inc.id === incidentId);

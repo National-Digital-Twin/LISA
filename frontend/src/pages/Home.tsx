@@ -21,9 +21,14 @@ const Home = () => {
     navigate('/incidents/pick?next=/tasks/create/:incidentId');
   };
 
-  const handleAddEntry = () => {
+  const handleAddForm = () => {
     addMenu.handleClose();
-    navigate('/incidents/pick?next=/logbook/:incidentId?add=entry');
+    navigate('/incidents/pick?next=/logbook/:incidentId/createForm?source=home');
+  };
+
+  const handleAddUpdate = () => {
+    addMenu.handleClose();
+    navigate('/incidents/pick?next=/logbook/:incidentId/createUpdate?source=home');
   };
 
   return (
@@ -36,7 +41,8 @@ const Home = () => {
           paddingY: '1.3rem'
         }}
       >
-        <PageTitle title="Summary"
+        <PageTitle
+          title="Summary"
           subtitleComponent={
             <Button
               type="button"
@@ -76,16 +82,20 @@ const Home = () => {
           }
         }}
       >
-        <MenuItem onClick={handleAddEntry}>
-          <Typography sx={{ fontWeight: 'bold' }}>ENTRY</Typography>
+        <MenuItem onClick={handleAddForm}>
+          <Typography sx={{ fontWeight: 'bold' }}>FORM</Typography>
         </MenuItem>
         <Divider />
         <MenuItem onClick={handleAddTask}>
           <Typography sx={{ fontWeight: 'bold' }}>TASK</Typography>
         </MenuItem>
+        <Divider />
+        <MenuItem onClick={handleAddUpdate}>
+          <Typography sx={{ fontWeight: 'bold' }}>UPDATE</Typography>
+        </MenuItem>
       </Menu>
     </>
   );
-}
+};
 
 export default Home;

@@ -39,6 +39,7 @@ export type EntityOptionData = {
   valueLabel?: string;
   removable?: boolean;
   onRemove?: () => void;
+  disabled?: boolean;
 };
 
 function optionDataComponent(
@@ -60,6 +61,7 @@ function optionDataComponent(
       errored={errored}
       removable={!!optionData.removable}
       onRemove={optionData.removable ? optionData.onRemove! : () => {}}
+      disabled={!!optionData.disabled}
     />
   );
 }
@@ -306,19 +308,17 @@ const taskAssigneeOptionDataComponent = (
   return undefined;
 };
 
-const getIncOption = (id: string, data: EntityOptionData[]) => data.find(x => x.id === id);
+const getIncOption = (id: string, data: EntityOptionData[]) => data.find((x) => x.id === id);
 
 const BlankIcon = <Box sx={{ width: 24, height: 24 }} aria-hidden />;
 
-const incidentTypeOptionDataComponent = (
-  data: EntityOptionData[],
-  errors: ValidationError[]
-) => {
+const incidentTypeOptionDataComponent = (data: EntityOptionData[], errors: ValidationError[]) => {
   const optionData = getIncOption('type', data);
   if (!optionData) return undefined;
 
-  const valueLabel =
-    optionData.value ? Format.incident.type(optionData.value as IncidentType) : undefined;
+  const valueLabel = optionData.value
+    ? Format.incident.type(optionData.value as IncidentType)
+    : undefined;
 
   return optionDataComponent(
     'inc_type',
@@ -329,10 +329,7 @@ const incidentTypeOptionDataComponent = (
   );
 };
 
-const incidentTimeOptionDataComponent = (
-  data: EntityOptionData[],
-  errors: ValidationError[]
-) => {
+const incidentTimeOptionDataComponent = (data: EntityOptionData[], errors: ValidationError[]) => {
   const optionData = getIncOption('time', data);
   if (!optionData) return undefined;
 
@@ -347,10 +344,7 @@ const incidentTimeOptionDataComponent = (
   );
 };
 
-const incidentNameOptionDataComponent = (
-  data: EntityOptionData[],
-  errors: ValidationError[]
-) => {
+const incidentNameOptionDataComponent = (data: EntityOptionData[], errors: ValidationError[]) => {
   const optionData = getIncOption('name', data);
   if (!optionData) return undefined;
 
@@ -395,10 +389,7 @@ const incidentOrganisationOptionDataComponent = (
   );
 };
 
-const incidentPhoneOptionDataComponent = (
-  data: EntityOptionData[],
-  errors: ValidationError[]
-) => {
+const incidentPhoneOptionDataComponent = (data: EntityOptionData[], errors: ValidationError[]) => {
   const optionData = getIncOption('phone', data);
   if (!optionData) return undefined;
 
@@ -411,10 +402,7 @@ const incidentPhoneOptionDataComponent = (
   );
 };
 
-const incidentEmailOptionDataComponent = (
-  data: EntityOptionData[],
-  errors: ValidationError[]
-) => {
+const incidentEmailOptionDataComponent = (data: EntityOptionData[], errors: ValidationError[]) => {
   const optionData = getIncOption('email', data);
   if (!optionData) return undefined;
 
@@ -441,8 +429,7 @@ const incidentSupportRequestedOptionDataComponent = (
     'Has the referrer requested support from the local resilience team?',
     !!errors.find(
       (e) =>
-        e.fieldId === 'incident_supportRequested' ||
-        e.fieldId === 'incident_supportDescription'
+        e.fieldId === 'incident_supportRequested' || e.fieldId === 'incident_supportDescription'
     )
   );
 };
@@ -472,6 +459,21 @@ const forms = (data: EntityOptionData[], errors: ValidationError[]) => {
   ].filter((x) => !!x);
 };
 
+const updates = (data: EntityOptionData[], errors: ValidationError[]) =>
+  [
+    descriptionOptionDataComponent(
+      'description',
+      data,
+      <NotesOutlinedIcon />,
+      'Update description',
+      errors
+    ),
+    dateAndTimeOptionDataComponent('dateAndTime', data, errors),
+    locationOptionDataComponent('location', data, errors),
+    attachmentsOptionDataComponent('attachments', data),
+    sketchOptionDataComponent('sketch', data)
+  ].filter((x) => !!x);
+
 const tasks = (data: EntityOptionData[], errors: ValidationError[]) => {
   return [
     taskNameOptionDataComponent('name', data, errors),
@@ -498,7 +500,7 @@ const incidents = (data: EntityOptionData[], errors: ValidationError[]) => {
     incidentOrganisationOptionDataComponent(data, errors),
     incidentPhoneOptionDataComponent(data, errors),
     incidentEmailOptionDataComponent(data, errors),
-    incidentSupportRequestedOptionDataComponent(data, errors),
+    incidentSupportRequestedOptionDataComponent(data, errors)
   ].filter(Boolean);
 };
 
@@ -510,6 +512,8 @@ export const getEntityOptions = (
   switch (entityType) {
     case 'forms':
       return forms(data, errors);
+    case 'updates':
+      return updates(data, errors);
     case 'tasks':
       return tasks(data, errors);
     case 'incidents':

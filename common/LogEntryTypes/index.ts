@@ -19,6 +19,7 @@ import { SetIncidentInformation } from './SetIncidentInformation';
 import { ChangeTaskStatus } from './ChangeTaskStatus';
 import { ChangeTaskAssignee } from './ChangeTaskAssignee';
 import { FormSubmitted } from './FormSubmitted';
+import { Update } from './Update';
 import { TaskCreated } from './TaskCreated';
 
 export const LogEntryTypes: LogEntryTypesDict = {
@@ -36,8 +37,9 @@ export const LogEntryTypes: LogEntryTypesDict = {
   SituationReport,
   ChangeStage,
   SetIncidentInformation,
-  TaskCreated,  
+  TaskCreated,
   ChangeTaskStatus,
   ChangeTaskAssignee,
-  FormSubmitted
+  FormSubmitted,
+  Update
 };

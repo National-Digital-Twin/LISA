@@ -7,24 +7,15 @@ import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { Box, Button, Divider, IconButton, Menu, MenuItem, Typography } from '@mui/material';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import { v4 as uuidV4 } from 'uuid';
 
 import { type Mentionable, type MentionableType } from 'common/Mentionable';
 import { type LogEntry } from 'common/LogEntry';
 
-import { AddEntry, EntryList, PageTitle } from '../components';
+import { EntryList, PageTitle } from '../components';
 import PageWrapper from '../components/PageWrapper';
-import {
-  useCreateLogEntry,
-  useIncidents,
-  useLogEntries,
-  useLogEntriesUpdates,
-  useMenu,
-} from '../hooks';
+import { useIncidents, useLogEntries, useLogEntriesUpdates, useMenu } from '../hooks';
 import { Format } from '../utils';
-import { type OnCreateEntry } from '../utils/handlers';
 import { type SpanType } from '../utils/types';
-import { useResponsive } from '../hooks/useResponsiveHook';
 import { useIsOnline } from '../hooks/useIsOnline';
 import { logInfo } from '../utils/logger';
 
@@ -35,16 +26,15 @@ import { type QueryState } from '../components/SortFilter/filter-types';
 import { useFormTemplates } from '../hooks/Forms/useFormTemplates';
 import { getFromAndToFromTimeSelection } from '../components/SortFilter/filter-utils';
 import StageMini from '../components/Stage/StageMini';
+import { useResponsive } from '../hooks/useResponsiveHook';
 
 const Logbook = () => {
   const { incidentId } = useParams();
   const query = useIncidents();
   const { logEntries } = useLogEntries(incidentId);
-  const { createLogEntry } = useCreateLogEntry(incidentId);
   const { startPolling, clearPolling } = useLogEntriesUpdates(incidentId!);
   const isOnline = useIsOnline();
   const { forms } = useFormTemplates();
-  const [adding, setAdding] = useState<boolean>(false);
   const { isMobile } = useResponsive();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -54,7 +44,7 @@ const Logbook = () => {
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [queryState, setQueryState] = useState<QueryState>({
     values: {},
-    sort: { by: "date_desc", direction: 'desc' },
+    sort: { by: 'date_desc', direction: 'desc' }
   });
 
   const allAuthors = useMemo(() => {
@@ -63,7 +53,7 @@ const Logbook = () => {
       .map((e) => {
         const a = e.author;
         if (!a) return null;
-        const name = typeof a === 'string' ? a : a.displayName ?? '';
+        const name = typeof a === 'string' ? a : (a.displayName ?? '');
         return name.trim();
       })
       .filter((name): name is string => {
@@ -78,16 +68,6 @@ const Logbook = () => {
     const templates = forms ?? [];
     return buildLogFilters(templates, allAuthors);
   }, [allAuthors, forms]);
-
-  useEffect(() => {
-    const preventRefresh = (ev: BeforeUnloadEvent) => {
-      const lastEntry = logEntries?.at(-1);
-      const hasOffline = lastEntry?.offline === true;
-      if (hasOffline || adding) ev.preventDefault();
-    };
-    window.addEventListener('beforeunload', preventRefresh);
-    return () => window.removeEventListener('beforeunload', preventRefresh);
-  }, [adding, logEntries]);
 
   useEffect(() => {
     if (isOnline) startPolling();
@@ -112,15 +92,6 @@ const Logbook = () => {
     }
   }, [searchParams, logEntries, navigate]);
 
-  useEffect(() => {
-    const addParam = searchParams.get('add');
-    if (addParam === 'entry') {
-      setAdding(true);
-      // Clean up URL
-      navigate(`${window.location.pathname}${window.location.hash}`, { replace: true });
-    }
-  }, [searchParams, navigate]);
-
   const incident = query?.data?.find((inc) => inc.id === incidentId);
 
   const optionsMenu = useMenu();
@@ -129,25 +100,6 @@ const Logbook = () => {
   const handleOverview = () => {
     optionsMenu.handleClose();
     navigate(`/incident/${incident?.id}`);
-  };
-
-  const onCancel = () => {
-    document.documentElement.scrollTo(0, 0);
-    setAdding(false);
-  };
-
-  const onAddEntryClick = () => {
-    navigate('#');
-    setAdding(true);
-  };
-
-  const onAddEntry: OnCreateEntry = (entry, files) => {
-    createLogEntry({ logEntry: { id: uuidV4(), ...entry }, attachments: files });
-    setTimeout(() => {
-      setAdding(false);
-      document.documentElement.scrollTo(0, 0);
-    }, 500);
-    return undefined;
   };
 
   const onMentionClick = (mention: Mentionable) => {
@@ -176,7 +128,7 @@ const Logbook = () => {
       onMentionClick({
         id: target.getAttribute('data-lexical-mention') as string,
         type: target.getAttribute('data-lexical-mention-type') as MentionableType,
-        label: target.textContent ?? '',
+        label: target.textContent ?? ''
       });
     } else if (target.tagName !== 'A') {
       navigate('#');
@@ -258,7 +210,7 @@ const Logbook = () => {
     const customTimeRange = v.timeRange as { from?: string; to?: string } | undefined;
     const preset = v.time as string | undefined;
 
-    const {from, to} = getFromAndToFromTimeSelection(preset, customTimeRange);
+    const { from, to } = getFromAndToFromTimeSelection(preset, customTimeRange);
 
     const filtered = items.filter((e) => {
       // search terms
@@ -268,7 +220,10 @@ const Logbook = () => {
       if (!matchesAttachmentFilter(e, selectedAttachments)) return false;
 
       // author
-      if (selectedAuthors.size > 0 && !selectedAuthors.has(getAuthor(e).toLowerCase().replace(/\s+/g, '-'))) {
+      if (
+        selectedAuthors.size > 0 &&
+        !selectedAuthors.has(getAuthor(e).toLowerCase().replace(/\s+/g, '-'))
+      ) {
         return false;
       }
 
@@ -276,7 +231,8 @@ const Logbook = () => {
       if (selectedTypes.size > 0) {
         const types = getTypeIds(e);
 
-        const isFormMatch = selectedTypes.has(`form::${(e.details?.submittedFormTemplateId ?? '')}`) ?? false;
+        const isFormMatch =
+          selectedTypes.has(`form::${e.details?.submittedFormTemplateId ?? ''}`) ?? false;
         const hasAny = types.some((t) => selectedTypes.has(t));
 
         if (!isFormMatch && !hasAny) return false;
@@ -326,7 +282,7 @@ const Logbook = () => {
               alignItems: 'center',
               gap: 1,
               width: '100%',
-              px: 0.5,
+              px: 0.5
             }}
           >
             <StageMini stage={incident?.stage ?? 'Monitoring'} size={12} />
@@ -345,8 +301,8 @@ const Logbook = () => {
                   scrollbarWidth: 'none',
                   msOverflowStyle: 'none',
                   '&::-webkit-scrollbar': {
-                    display: 'none',
-                  },
+                    display: 'none'
+                  }
                 }}
                 aria-label="Incident type"
               >
@@ -375,37 +331,29 @@ const Logbook = () => {
           </Box>
         </Box>
 
-        {!adding && (
-          <Box
-            display="flex"
-            flexDirection="row"
-            alignItems="center"
-            gap={2}
-            flexWrap="wrap"
-            width="100%"
-            displayPrint="none"
+        <Box
+          display="flex"
+          flexDirection="row"
+          alignItems="center"
+          gap={2}
+          flexWrap="wrap"
+          width="100%"
+          displayPrint="none"
+        >
+          <Button
+            type="button"
+            variant="contained"
+            size={isMobile ? 'medium' : 'large'}
+            startIcon={<AddCircleIcon />}
+            onClick={addMenu.handleOpen}
+            sx={{ flex: 1 }}
           >
-            <Button
-              type="button"
-              variant="contained"
-              size={isMobile ? 'medium' : 'large'}
-              startIcon={<AddCircleIcon />}
-              onClick={addMenu.handleOpen}
-              sx={{ flex: 1 }}
-            >
-              Add new
-            </Button>
-
-            <Button
-              type="button"
-              variant="contained"
-              onClick={handleOpenFilters}
-              sx={{ flex: 1 }}
-            >
-              Sort & Filter
-            </Button>
-          </Box>
-        )}
+            Add new
+          </Button>
+          <Button type="button" variant="contained" onClick={handleOpenFilters} sx={{ flex: 1 }}>
+            Sort & Filter
+          </Button>
+        </Box>
 
         <Menu
           anchorEl={addMenu.anchorEl}
@@ -427,56 +375,57 @@ const Logbook = () => {
             }
           }}
         >
-          <MenuItem onClick={() => {
-            addMenu.handleClose();
-            onAddEntryClick();
-          }}>
-            <Typography sx={{ fontWeight: 'bold' }}>ENTRY</Typography>
+          <MenuItem
+            onClick={() => {
+              addMenu.handleClose();
+              navigate(`/logbook/${incidentId}/createForm`);
+            }}
+          >
+            <Typography sx={{ fontWeight: 'bold' }}>FORM</Typography>
           </MenuItem>
           <Divider />
-          <MenuItem onClick={() => {
-            addMenu.handleClose();
-            navigate(`/tasks/create/${incidentId}`);
-          }}>
+          <MenuItem
+            onClick={() => {
+              addMenu.handleClose();
+              navigate(`/tasks/create/${incidentId}`);
+            }}
+          >
             <Typography sx={{ fontWeight: 'bold' }}>TASK</Typography>
+          </MenuItem>
+          <Divider />
+          <MenuItem
+            onClick={() => {
+              addMenu.handleClose();
+              navigate(`/logbook/${incidentId}/createUpdate`);
+            }}
+          >
+            <Typography sx={{ fontWeight: 'bold' }}>UPDATE</Typography>
           </MenuItem>
         </Menu>
       </PageTitle>
+      <Box display="flex" flexDirection="column" width="100%">
+        {(!logEntries || logEntries.length === 0) && (
+          <Box p={2} bgcolor="background.default">
+            <Typography variant="h6">No logs found.</Typography>
+            <Typography mt={1}>There are currently no log entries.</Typography>
+          </Box>
+        )}
 
-      {adding && (
-        <AddEntry
-          incident={incident}
-          entries={logEntries ?? []}
-          onCreateEntry={onAddEntry}
-          onCancel={onCancel}
-        />
-      )}
+        {logEntries && logEntries.length > 0 && visibleEntries.length === 0 && (
+          <Box p={2} bgcolor="background.default">
+            <Typography variant="h6">No results found.</Typography>
+            <Typography mt={1}>Try adjusting your filters.</Typography>
+          </Box>
+        )}
 
-      {!adding && (
-        <Box display="flex" flexDirection="column" width="100%">
-          {(!logEntries || logEntries.length === 0) && (
-            <Box p={2} bgcolor="background.default">
-              <Typography variant="h6">No logs found.</Typography>
-              <Typography mt={1}>There are currently no log entries.</Typography>
-            </Box>
-          )}
-
-          {logEntries && logEntries.length > 0 && visibleEntries.length === 0 && (
-            <Box p={2} bgcolor="background.default">
-              <Typography variant="h6">No results found.</Typography>
-              <Typography mt={1}>Try adjusting your filters.</Typography>
-            </Box>
-          )}
-
-          {logEntries && logEntries.length > 0 && visibleEntries.length > 0 && (
-            <EntryList
-              entries={visibleEntries}
-              onContentClick={onContentClick}
-              onMentionClick={onMentionClick}
-            />
-          )}
-        </Box>
-      )}
+        {logEntries && logEntries.length > 0 && visibleEntries.length > 0 && (
+          <EntryList
+            entries={visibleEntries}
+            onContentClick={onContentClick}
+            onMentionClick={onMentionClick}
+          />
+        )}
+      </Box>
 
       <SortAndFilter
         open={filtersOpen}
