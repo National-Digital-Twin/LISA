@@ -17,13 +17,13 @@ import { FormsInputContainer } from '../components/Form/FormsInputContainer';
 import { FieldValueType, SketchLine, ValidationError } from '../utils/types';
 import { Document, Format, Form as FormUtils, Validate } from '../utils';
 import { OnCreateEntry } from '../utils/handlers';
-import { getSortedEntriesWithDisplaySequence } from '../utils/sortEntries';
 import { useAttachments } from '../hooks/useAttachments';
 import { useIsOnline } from '../hooks/useIsOnline';
 import { Field } from 'common/Field';
 import { LogEntryTypes } from 'common/LogEntryTypes';
 import { LogEntryType } from 'common/LogEntryType';
 import { useFormTemplates } from '../hooks/Forms/useFormTemplates';
+import { calcMentionables } from '../hooks/useMentionables';
 
 export const CreateLogEntry = () => {
   const { incidentId } = useParams();
@@ -61,20 +61,14 @@ export const CreateLogEntry = () => {
   }, [incidentAttachments]);
 
   const mentionables: Array<Mentionable> = useMemo(
-    () => [
-      ...(getSortedEntriesWithDisplaySequence(false, logEntries ?? [])?.map((e) =>
-        Format.mentionable.entry(e)
-      ) ?? []),
-      ...(users
-        ?.filter((user) => user.displayName)
-        .sort((a, b) => a.displayName.localeCompare(b.displayName))
-        .map(Format.mentionable.user) ?? []),
-      ...selectedFiles.map((file) =>
-        Format.mentionable.attachment({ name: file.name, type: 'File' })
-      ),
-      ...recordings.map((file) => Format.mentionable.attachment({ name: file.name, type: 'File' })),
-      ...otherAttachments
-    ],
+    () =>
+      calcMentionables({
+        users,
+        logEntries,
+        files: selectedFiles,
+        recordings,
+        other: otherAttachments
+      }),
     [logEntries, users, selectedFiles, recordings, otherAttachments]
   );
 
