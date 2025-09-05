@@ -310,7 +310,7 @@ export default function MentionsPlugin({ mentionables }: Readonly<MentionsPlugin
       const match = getPossibleQueryMatch(text);
       if (match) {
         const trigger = match.matchingString;
-        setCurrentFilter(trigger);
+        if (!currentFilter) setCurrentFilter(trigger);
       }
       return match;
     },
