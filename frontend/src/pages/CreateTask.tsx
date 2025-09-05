@@ -4,16 +4,15 @@
 
 import { type Incident } from 'common/Incident';
 import { type CreateTask } from 'common/Task';
-import { type LogEntry } from 'common/LogEntry';
 import { useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import { useAuth, useIncidents, useToast, useUsers } from '../hooks';
 import { useCreateTask } from '../hooks/useTasks';
+import { calcMentionables } from '../hooks/useMentionables';
 import PageWrapper from '../components/PageWrapper';
 import { TaskInputContainer } from '../components/Task/TaskInputContainer';
-import { getSortedEntriesWithDisplaySequence } from '../utils/sortEntries';
-import { Format } from '../utils';
+
 import { type Mentionable } from 'common/Mentionable';
 
 export default function CreateTaskPage() {
@@ -53,24 +52,9 @@ export default function CreateTaskPage() {
   };
 
   // only users changes at the moment so this is the only dependency
-  const otherAttachments: Array<Mentionable> = [];
-  const selectedFiles: Array<File> = [];
-  const logEntries: Array<LogEntry> = [];
   const mentionables: Array<Mentionable> = useMemo(
-    () => [
-      ...(getSortedEntriesWithDisplaySequence(false, logEntries ?? [])?.map((e) =>
-        Format.mentionable.entry(e)
-      ) ?? []),
-      ...(users
-        ?.filter((user) => user.displayName)
-        .sort((a, b) => a.displayName.localeCompare(b.displayName))
-        .map(Format.mentionable.user) ?? []),
-      ...selectedFiles.map((file) =>
-        Format.mentionable.attachment({ name: file.name, type: 'File' })
-      ),
-      ...otherAttachments
-    ],
-    [users, selectedFiles, logEntries, otherAttachments]
+    () => calcMentionables( { users }),
+    [users]
   );
 
   if (!incident || !incidentId) {
