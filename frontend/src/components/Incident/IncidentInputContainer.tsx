@@ -12,13 +12,11 @@ import { EntityOptionsContainer } from '../AddEntity/EntityOptionsContainer';
 import { EntityOptionData } from '../AddEntity/EntityOptions';
 import { Incident, Referrer } from 'common/Incident';
 import { IncidentType } from 'common/IncidentType';
-import { DatePicker, LocalizationProvider, TimePicker } from '@mui/x-date-pickers';
-import dayjs from 'dayjs';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { FieldOption } from 'common/Field';
 import { LogEntry } from 'common/LogEntry';
 import { buildSetInfoPayload } from '../SetInformation/utils';
 import { logError } from '../../utils/logger';
+import { DateAndTimePicker } from '../DateAndTimePicker';
 
 type SubmitPayload =
   | { mode: 'create'; incident: Incident }
@@ -65,16 +63,16 @@ export const IncidentInputContainer = ({
     initialIncident
       ? { ...initialIncident }
       : {
-        id: uuidV4(),
-        stage: 'Monitoring',
-        name: '',
-        referrer: {
+          id: uuidV4(),
+          stage: 'Monitoring',
           name: '',
-          organisation: '',
-          telephone: '',
-          email: ''
-        } as Referrer
-      }
+          referrer: {
+            name: '',
+            organisation: '',
+            telephone: '',
+            email: ''
+          } as Referrer
+        }
   );
 
   const validateIncident = useCallback((incident: Partial<Incident>): ValidationError[] => {
@@ -230,18 +228,18 @@ export const IncidentInputContainer = ({
     items.flatMap((item) =>
       item.options?.length
         ? [
-          <ListSubheader key={`group-${item.value || item.label}`}>{item.label}</ListSubheader>,
-          ...item.options.map((opt) => (
-            <MenuItem key={opt.value} value={opt.value}>
-              {opt.label ?? opt.value}
-            </MenuItem>
-          ))
-        ]
+            <ListSubheader key={`group-${item.value || item.label}`}>{item.label}</ListSubheader>,
+            ...item.options.map((opt) => (
+              <MenuItem key={opt.value} value={opt.value}>
+                {opt.label ?? opt.value}
+              </MenuItem>
+            ))
+          ]
         : [
-          <MenuItem key={item.value} value={item.value}>
-            {item.label ?? item.value}
-          </MenuItem>
-        ]
+            <MenuItem key={item.value} value={item.value}>
+              {item.label ?? item.value}
+            </MenuItem>
+          ]
     );
 
   const getFieldValue = (field: FieldType) => {
@@ -331,66 +329,22 @@ export const IncidentInputContainer = ({
       case 'time':
         return (
           <FormControl fullWidth sx={{ mt: 2 }}>
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <Box display="flex" flexDirection="column" gap={2}>
-                <DatePicker
-                  label="Date"
-                  disableFuture
-                  disabled={isEditing}
-                  format="DD/MM/YYYY"
-                  value={incident.startedAt ? dayjs(incident.startedAt) : null}
-                  onChange={(newDate) => {
-                    if (!newDate) {
-                      onIncidentChange({ startedAt: undefined });
-                      return;
-                    }
-                    const base = incident.startedAt ? dayjs(incident.startedAt) : dayjs();
-                    const updated = base
-                      .year(newDate.year())
-                      .month(newDate.month())
-                      .date(newDate.date())
-                      .second(0)
-                      .millisecond(0);
-                    onIncidentChange({ startedAt: updated.toISOString() });
-                  }}
-                  slotProps={{
-                    textField: {
-                      variant: 'filled',
-                      fullWidth: true,
-                      InputLabelProps: { shrink: true },
-                      error: !!getFieldError('incident_time')
-                    }
-                  }}
-                />
-                <TimePicker
-                  label="Time"
-                  disableFuture
-                  disabled={isEditing}
-                  value={incident.startedAt ? dayjs(incident.startedAt) : null}
-                  onChange={(newTime) => {
-                    if (!newTime) {
-                      onIncidentChange({ startedAt: undefined });
-                      return;
-                    }
-                    const base = incident.startedAt ? dayjs(incident.startedAt) : dayjs();
-                    const updated = base
-                      .hour(newTime.hour())
-                      .minute(newTime.minute())
-                      .second(0)
-                      .millisecond(0);
-                    onIncidentChange({ startedAt: updated.toISOString() });
-                  }}
-                  slotProps={{
-                    textField: {
-                      variant: 'filled',
-                      fullWidth: true,
-                      InputLabelProps: { shrink: true },
-                      error: !!getFieldError('incident_time')
-                    }
-                  }}
-                />
-              </Box>
-            </LocalizationProvider>
+            <DateAndTimePicker
+              dateLabel="Date"
+              timeLabel="Time"
+              disableFuture
+              value={incident.startedAt}
+              onChange={(d: string | undefined, t: string | undefined) => {
+                if (!d && !t) {
+                  onIncidentChange({ startedAt: undefined });
+                  return;
+                }
+                const parseDate = Date.parse(`${d}T${t}`);
+                if (!Number.isNaN(parseDate)) {
+                  onIncidentChange({ startedAt: new Date(`${d}T${t}`).toISOString() });
+                }
+              }}
+            />
           </FormControl>
         );
 
