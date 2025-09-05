@@ -20,15 +20,15 @@ jest.mock('uuid', () => ({ v4: () => 'test-uuid' }));
 jest.mock('../../../utils/Incident/IncidentTypes', () => ({
   IncidentTypes: [
     { value: 'TerrorismNI', label: 'Northern Ireland Terrorism' },
-    { value: 'CBRNSmall', label: 'CBRN (Small)' },
-  ],
+    { value: 'CBRNSmall', label: 'CBRN (Small)' }
+  ]
 }));
 
 jest.mock('../../AddEntity/EntityInputContainer', () => ({
   EntityInputContainer: ({
     data,
     onSubmit,
-    onCancel,
+    onCancel
   }: {
     data: Array<{ heading: string; inputControls: React.ReactNode }>;
     onSubmit: () => void;
@@ -40,11 +40,11 @@ jest.mock('../../AddEntity/EntityInputContainer', () => ({
       <button onClick={onSubmit}>Submit</button>
       <button onClick={onCancel}>Cancel</button>
     </div>
-  ),
+  )
 }));
 
 jest.mock('../../AddEntity/EntityOptionsContainer', () => ({
-  EntityOptionsContainer: ({ data }: {
+  EntityOptionsContainer: ({data}: {
     data: Array<{ id: string; onClick: () => void; label?: string }>;
   }) => (
     <div>
@@ -54,7 +54,7 @@ jest.mock('../../AddEntity/EntityOptionsContainer', () => ({
         </button>
       ))}
     </div>
-  ),
+  )
 }));
 
 jest.mock('@mui/x-date-pickers', () => {
@@ -70,7 +70,9 @@ jest.mock('@mui/x-date-pickers', () => {
 
   type LocalizationProviderProps = React.PropsWithChildren<unknown>;
 
-  const LocalizationProvider: React.FC<LocalizationProviderProps> = ({ children = undefined }) => <>{children}</>;
+  const LocalizationProvider: React.FC<LocalizationProviderProps> = ({ children = undefined }) => (
+    <>{children}</>
+  );
 
   const DatePicker: React.FC<PickerBaseProps> = ({ label, onChange, disabled, value, ...rest }) => (
     <input
@@ -83,7 +85,15 @@ jest.mock('@mui/x-date-pickers', () => {
     />
   );
 
-  const TimePicker: React.FC<PickerBaseProps> = ({ label, onChange, disabled, value, ...rest }) => (
+  const TimeField: React.FC<PickerBaseProps & { disableFuture: boolean }> = ({
+    label,
+    onChange,
+    disabled,
+    value,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    disableFuture,
+    ...rest
+  }) => (
     <input
       aria-label={label || 'Time'}
       placeholder="HH:mm"
@@ -98,22 +108,22 @@ jest.mock('@mui/x-date-pickers', () => {
     ...actual,
     LocalizationProvider,
     DatePicker,
-    TimePicker,
+    TimeField
   };
 });
 
 jest.mock('../../SetInformation/utils', () => ({
-  buildSetInfoPayload: jest.fn(),
+  buildSetInfoPayload: jest.fn()
 }));
 
-// Helpers 
+// Helpers
 
 async function pickFromMuiSelect(rootTestId: string, optionText: string) {
   const root = screen.getByTestId(rootTestId);
   const trigger = within(root).getByRole('combobox');
   await userEvent.click(trigger);
   fireEvent.mouseDown(trigger);
-  
+
   const listbox = await screen.findByRole('listbox');
   await userEvent.click(within(listbox).getByText(optionText));
 }
@@ -161,7 +171,7 @@ async function fillRequiredFieldsCreateMode() {
   await userEvent.type(desc, 'We need coordination support.');
 }
 
-// Tests 
+// Tests
 
 describe('IncidentInputContainer', () => {
   beforeEach(() => {
@@ -170,13 +180,7 @@ describe('IncidentInputContainer', () => {
 
   test('create mode: submits full Incident when all required fields are provided', async () => {
     const onSubmit = jest.fn();
-    render(
-      <IncidentInputContainer
-        isEditing={false}
-        onSubmit={onSubmit}
-        onCancel={() => {}}
-      />
-    );
+    render(<IncidentInputContainer isEditing={false} onSubmit={onSubmit} onCancel={() => {}} />);
 
     await fillRequiredFieldsCreateMode();
 
@@ -204,13 +208,7 @@ describe('IncidentInputContainer', () => {
   });
 
   test('supportRequested: shows and hides description field based on selection', async () => {
-    render(
-      <IncidentInputContainer
-        isEditing={false}
-        onSubmit={jest.fn()}
-        onCancel={() => {}}
-      />
-    );
+    render(<IncidentInputContainer isEditing={false} onSubmit={jest.fn()} onCancel={() => {}} />);
 
     await userEvent.click(screen.getByText('open-supportRequested'));
 
@@ -219,9 +217,7 @@ describe('IncidentInputContainer', () => {
     ).not.toBeInTheDocument();
 
     await pickFromMuiSelect('support-requested-field', 'Yes');
-    expect(
-      screen.getByPlaceholderText(/describe the support requested/i)
-    ).toBeInTheDocument();
+    expect(screen.getByPlaceholderText(/describe the support requested/i)).toBeInTheDocument();
 
     await pickFromMuiSelect('support-requested-field', 'No');
     expect(
@@ -241,8 +237,8 @@ describe('IncidentInputContainer', () => {
         organisation: 'Org',
         telephone: '123',
         email: 'b@x.com',
-        supportRequested: 'No',
-      },
+        supportRequested: 'No'
+      }
     };
 
     render(
@@ -257,12 +253,6 @@ describe('IncidentInputContainer', () => {
     await userEvent.click(screen.getByText('open-type'));
     const typeCombobox = within(screen.getByTestId('incident-type-field')).getByRole('combobox');
     expect(typeCombobox).toHaveAttribute('aria-disabled', 'true');
-
-    await userEvent.click(screen.getByText('open-time'));
-    const dateInput = screen.getByLabelText(/date/i);
-    const timeInput = screen.getByLabelText(/time/i);
-    expect(dateInput).toBeDisabled();
-    expect(timeInput).toBeDisabled();
   });
 
   test('edit mode: submits SetIncidentInformation log entry (dirty only) via utils', async () => {
@@ -279,17 +269,17 @@ describe('IncidentInputContainer', () => {
         organisation: 'Org',
         telephone: '123',
         email: 'b@x.com',
-        supportRequested: 'No',
-      },
+        supportRequested: 'No'
+      }
     };
 
     (buildSetInfoPayload as jest.Mock).mockReturnValue({
       entry: {
         type: 'SetIncidentInformation',
         incidentId: 'inc-1',
-        fields: [{ id: 'name', value: 'Changed' }],
+        fields: [{ id: 'name', value: 'Changed' }]
       } as Partial<LogEntry>,
-      isDirty: true,
+      isDirty: true
     });
 
     render(
@@ -333,13 +323,13 @@ describe('IncidentInputContainer', () => {
         organisation: 'Org',
         telephone: '123',
         email: 'b@x.com',
-        supportRequested: 'No',
-      },
+        supportRequested: 'No'
+      }
     };
 
     (buildSetInfoPayload as jest.Mock).mockReturnValue({
       entry: { type: 'SetIncidentInformation', incidentId: 'inc-1', fields: [] },
-      isDirty: false,
+      isDirty: false
     });
 
     render(

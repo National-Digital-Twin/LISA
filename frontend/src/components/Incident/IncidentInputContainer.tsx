@@ -12,13 +12,11 @@ import { EntityOptionsContainer } from '../AddEntity/EntityOptionsContainer';
 import { EntityOptionData } from '../AddEntity/EntityOptions';
 import { Incident, Referrer } from 'common/Incident';
 import { IncidentType } from 'common/IncidentType';
-import { DatePicker, LocalizationProvider, TimePicker } from '@mui/x-date-pickers';
-import dayjs from 'dayjs';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { FieldOption } from 'common/Field';
 import { LogEntry } from 'common/LogEntry';
 import { buildSetInfoPayload } from '../SetInformation/utils';
 import { logError } from '../../utils/logger';
+import { DateAndTimePicker } from '../DateAndTimePicker';
 
 type SubmitPayload =
   | { mode: 'create'; incident: Incident }
@@ -267,13 +265,16 @@ export const IncidentInputContainer = ({
 
   const displayValue = (v?: string) => (typeof v === 'string' && v.trim() === '' ? undefined : v);
 
+  const isDisabled = (key: FieldType) => key === 'time' && isEditing;
+
   const entityOptionData: EntityOptionData[] = (Object.keys(fieldConfigs) as FieldType[]).map(
     (field) => ({
       id: field,
       onClick: () => activateField(field),
       value: displayValue(getFieldValue(field) as string | undefined),
       required: fieldConfigs[field].required,
-      supportedOffline: fieldConfigs[field].supportedOffline
+      supportedOffline: fieldConfigs[field].supportedOffline,
+      disabled: isDisabled(field)
     })
   );
 
@@ -331,66 +332,22 @@ export const IncidentInputContainer = ({
       case 'time':
         return (
           <FormControl fullWidth sx={{ mt: 2 }}>
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <Box display="flex" flexDirection="column" gap={2}>
-                <DatePicker
-                  label="Date"
-                  disableFuture
-                  disabled={isEditing}
-                  format="DD/MM/YYYY"
-                  value={incident.startedAt ? dayjs(incident.startedAt) : null}
-                  onChange={(newDate) => {
-                    if (!newDate) {
-                      onIncidentChange({ startedAt: undefined });
-                      return;
-                    }
-                    const base = incident.startedAt ? dayjs(incident.startedAt) : dayjs();
-                    const updated = base
-                      .year(newDate.year())
-                      .month(newDate.month())
-                      .date(newDate.date())
-                      .second(0)
-                      .millisecond(0);
-                    onIncidentChange({ startedAt: updated.toISOString() });
-                  }}
-                  slotProps={{
-                    textField: {
-                      variant: 'filled',
-                      fullWidth: true,
-                      InputLabelProps: { shrink: true },
-                      error: !!getFieldError('incident_time')
-                    }
-                  }}
-                />
-                <TimePicker
-                  label="Time"
-                  disableFuture
-                  disabled={isEditing}
-                  value={incident.startedAt ? dayjs(incident.startedAt) : null}
-                  onChange={(newTime) => {
-                    if (!newTime) {
-                      onIncidentChange({ startedAt: undefined });
-                      return;
-                    }
-                    const base = incident.startedAt ? dayjs(incident.startedAt) : dayjs();
-                    const updated = base
-                      .hour(newTime.hour())
-                      .minute(newTime.minute())
-                      .second(0)
-                      .millisecond(0);
-                    onIncidentChange({ startedAt: updated.toISOString() });
-                  }}
-                  slotProps={{
-                    textField: {
-                      variant: 'filled',
-                      fullWidth: true,
-                      InputLabelProps: { shrink: true },
-                      error: !!getFieldError('incident_time')
-                    }
-                  }}
-                />
-              </Box>
-            </LocalizationProvider>
+            <DateAndTimePicker
+              dateLabel="Date"
+              timeLabel="Time"
+              disableFuture
+              value={incident.startedAt}
+              onChange={(d: string | undefined, t: string | undefined) => {
+                if (!d && !t) {
+                  onIncidentChange({ startedAt: undefined });
+                  return;
+                }
+                const parseDate = Date.parse(`${d}T${t}`);
+                if (!Number.isNaN(parseDate)) {
+                  onIncidentChange({ startedAt: new Date(`${d}T${t}`).toISOString() });
+                }
+              }}
+            />
           </FormControl>
         );
 

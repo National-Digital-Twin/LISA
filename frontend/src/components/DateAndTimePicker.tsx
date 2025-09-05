@@ -177,6 +177,7 @@ const CustomCalendarHeader = (props: CustomCalendarHeaderProps) => {
         )
       ).keys()
     );
+
     const currentYear = now.getFullYear();
 
     if (disableFuture) {

@@ -40,6 +40,7 @@ export type EntityOptionData = {
   valueLabel?: string;
   removable?: boolean;
   onRemove?: () => void;
+  disabled?: boolean;
 };
 
 function optionDataComponent(
@@ -61,6 +62,7 @@ function optionDataComponent(
       errored={errored}
       removable={!!optionData.removable}
       onRemove={optionData.removable ? optionData.onRemove! : () => {}}
+      disabled={!!optionData.disabled}
     />
   );
 }
@@ -485,7 +487,7 @@ const tasks = (data: EntityOptionData[], errors: ValidationError[]) => {
     taskNameOptionDataComponent('name', data, errors),
     taskAssigneeOptionDataComponent('assignee', data, errors),
     descriptionOptionDataComponent(
-      'description',
+      'content',
       data,
       <NotesOutlinedIcon />,
       'Add task description',

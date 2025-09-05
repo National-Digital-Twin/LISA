@@ -18,6 +18,7 @@ type Props = {
   label: string;
   removable: boolean;
   onRemove: () => void;
+  disabled: boolean;
 };
 
 export const EntityOption = ({
@@ -29,10 +30,11 @@ export const EntityOption = ({
   supportedOffline,
   label,
   removable,
-  onRemove
+  onRemove,
+  disabled
 }: Props) => {
   const isOnline = useIsOnline();
-  const isAvailable = supportedOffline || isOnline;
+  const isAvailable = !disabled && (supportedOffline || isOnline);
 
   const clickableEntityOption = (
     <Box

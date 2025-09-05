@@ -6,6 +6,7 @@ import { Static, Record, String, Optional, Literal, Union, Boolean, Array, Null 
 import { User } from './User';
 import { Location } from './Location';
 import { Attachment } from './Attachment';
+import { EntityContent } from './EntityContent';
 
 export const TaskStatus = Union(Literal('ToDo'), Literal('InProgress'), Literal('Done'));
 
@@ -14,7 +15,8 @@ export type TaskStatus = Static<typeof TaskStatus>;
 export const CreateTask = Record({
   id: Optional(String),
   name: String,
-  description: String,
+  description: Optional(String),
+  content: Optional(EntityContent),
   incidentId: String,
   assignee: User,
   status: Optional(TaskStatus),
@@ -26,7 +28,8 @@ export const CreateTask = Record({
 export const Task = Record({
   id: String,
   name: String,
-  description: String,
+  description: Optional(String),
+  content: Optional(EntityContent),
   incidentId: String,
   author: User,
   assignee: User,
@@ -35,7 +38,7 @@ export const Task = Record({
   createdAt: String,
   location: Union(Location, Null),
   attachments: Array(Attachment),
-  offline: Optional(Boolean),
+  offline: Optional(Boolean)
 });
 
 export type CreateTask = Static<typeof CreateTask>;
