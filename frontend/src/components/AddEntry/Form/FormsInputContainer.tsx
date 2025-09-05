@@ -33,7 +33,7 @@ import { getFieldIcon } from '../../../utils/Form/getFieldIcon';
 import { Field } from 'common/Field';
 import { CommunicationMethod } from 'common/Fields/CommunicationMethod';
 import { Form as CustomForm, FormDataProperty } from '../../CustomForms/FormTemplates/types';
-import { FormContainer as CustomFormContainer } from '../../CustomForms/FormInstances/FormContainer';
+import { FormContainer as PredefinedFormContainer } from '../../CustomForms/FormInstances/FormContainer';
 import { RelevantHazards } from 'common/LogEntryTypes/RiskAssessment/hazards/RelevantHazards';
 import { getRelevantHazard, getHazardLabel } from 'common/LogEntryTypes/RiskAssessment/hazards';
 import { EntityTypeDropdown } from '../../AddEntity/EntityTypeDropdown';
@@ -106,6 +106,7 @@ export const FormsInputContainer = ({
   const [addingCustomForm, setAddingCustomForm] = useState<boolean>(false);
   const [addingDescription, setAddingDescription] = useState<boolean>(false);
   const [addingSiteRepDetails, setAddingSiteRepDetails] = useState<boolean>(false);
+  const [addingAvianFluDetails, setAddingAvianFluDetails] = useState<boolean>(false);
   const [addingHazard, setAddingHazard] = useState<boolean>(false);
   const [selectedHazardIndex, setSelectedHazardIndex] = useState<number>(0);
   const [hazardValue, setHazardValue] = useState<string>();
@@ -121,7 +122,10 @@ export const FormsInputContainer = ({
   const [addingSketch, setAddingSketch] = useState<boolean>(false);
   const [formField, setFormField] = useState<Field>();
   const customForms: CustomForm[] = useMemo(
-    () => forms.filter((form) => form.id !== 'siteRepMethane' && !form.id.includes('haz_')),
+    () =>
+      forms.filter(
+        (form) => !['siteRepMethane', 'avianFlu'].includes(form.id) && !form.id.includes('haz_')
+      ),
     [forms]
   );
   const formTypes: OptionType[] = useMemo(
@@ -162,6 +166,7 @@ export const FormsInputContainer = ({
       setAddingCustomForm(false);
       setAddingDescription(false);
       setAddingSiteRepDetails(false);
+      setAddingAvianFluDetails(false);
       setAddingHazard(false);
       setAddingComments(false);
       setAddingRiskAssessmentToReview(false);
@@ -541,6 +546,7 @@ export const FormsInputContainer = ({
 
   const filteredFormFieldsForView = [
     'SituationReport',
+    'AvianFlu',
     'RiskAssessment',
     'RiskAssessmentReview'
   ].includes(entry.type ?? '')
@@ -566,24 +572,41 @@ export const FormsInputContainer = ({
     }
   ];
 
-  const siteRepDetailOptionData: EntityOptionData[] = [
-    {
-      id: 'sitRepDetails',
-      onClick: () => {
+  const detailsOptionData = (type: 'siteRepMethane' | 'avianFlu'): EntityOptionData[] => {
+    let id = '';
+    let onClick = () => {};
+
+    if (type === 'siteRepMethane') {
+      id = 'siteRepDetails';
+      onClick = () => {
         setCustomHeading('Details');
         setAddingSiteRepDetails(true);
         setLevel(2);
-      },
-      label: formFields
-        .filter((formField) => formField.id !== 'ExactLocation')
-        .every((formField) => getFieldValue(formField, entry))
-        ? 'View details'
-        : undefined,
-      value: 'Details',
-      required: true,
-      supportedOffline: true
+      };
+    } else if (type === 'avianFlu') {
+      id = 'avianFlu';
+      onClick = () => {
+        setCustomHeading('Details');
+        setAddingAvianFluDetails(true);
+        setLevel(2);
+      };
     }
-  ];
+
+    return [
+      {
+        id,
+        onClick,
+        label: formFields
+          .filter((formField) => formField.id !== 'ExactLocation')
+          .every((formField) => getFieldValue(formField, entry))
+          ? 'View details'
+          : undefined,
+        value: 'Details',
+        required: true,
+        supportedOffline: true
+      }
+    ];
+  };
 
   const riskReviewOptionData: EntityOptionData[] = [
     ...hazardsOptionData,
@@ -643,10 +666,13 @@ export const FormsInputContainer = ({
     entry.type === 'SituationReport' ? 'View exact location' : 'View location(s)';
 
   const entityOptionsData: EntityOptionData[] = [
-    ...(['SituationReport', 'RiskAssessment', 'RiskAssessmentReview'].includes(entry.type ?? '')
+    ...(['SituationReport', 'AvianFlu', 'RiskAssessment', 'RiskAssessmentReview'].includes(
+      entry.type ?? ''
+    )
       ? []
       : descriptionOptionData),
-    ...(entry.type === 'SituationReport' ? siteRepDetailOptionData : []),
+    ...(entry.type === 'SituationReport' ? detailsOptionData('siteRepMethane') : []),
+    ...(entry.type === 'AvianFlu' ? detailsOptionData('avianFlu') : []),
     ...(entry.type === 'RiskAssessmentReview' ? riskAssessmentReviewOptionData() : []),
     ...(entry.type === 'RiskAssessment' ? riskReviewOptionData : []),
     ...parentFormFields.map(
@@ -797,10 +823,16 @@ export const FormsInputContainer = ({
               mentionables={mentionables}
             />
           )}
-          {addingSiteRepDetails && forms && (
-            <CustomFormContainer
+          {(addingSiteRepDetails || addingAvianFluDetails) && forms && (
+            <PredefinedFormContainer
               entry={entry}
-              selectedForm={forms.find((form) => form.id === 'siteRepMethane')!}
+              selectedForm={
+                forms.find(
+                  (form) =>
+                    (addingSiteRepDetails && form.id === 'siteRepMethane') ||
+                    (addingAvianFluDetails && form.id === 'avianFlu')
+                )!
+              }
               fields={formFields}
               onFieldChange={onNestedFieldChange}
             />
@@ -827,7 +859,7 @@ export const FormsInputContainer = ({
                   errors={validationErrors}
                 />
                 {addingHazard && hazardValue && forms && (
-                  <CustomFormContainer
+                  <PredefinedFormContainer
                     entry={entry}
                     selectedForm={
                       forms.find((form) => form.id === `haz_${hazardValue.toLowerCase()}`)!

@@ -81,12 +81,14 @@ export const FormContainer = ({ entry, selectedForm, fields, onFieldChange }: Pr
 
   const prefilledFormData = fields
     ? JSON.parse(
-      `{ ${fields
-        .map((field) => getPrefilledJsonProperty(field))
-        .filter((properties) => properties)
-        .join(',')} }`
-    )
+        `{ ${fields
+          .map((field) => getPrefilledJsonProperty(field))
+          .filter((properties) => properties)
+          .join(',')} }`
+      )
     : {};
+
+  const uiSchema = { ...selectedForm.formData.uiSchema, 'ui:options': { label: false } };
 
   return (
     <Box
@@ -108,7 +110,7 @@ export const FormContainer = ({ entry, selectedForm, fields, onFieldChange }: Pr
           transformErrors={transformErrors}
           schema={selectedForm.formData.schema}
           validator={validator}
-          uiSchema={selectedForm.formData.uiSchema}
+          uiSchema={uiSchema}
           formData={prefilledFormData}
           onChange={handleChange}
           liveValidate
