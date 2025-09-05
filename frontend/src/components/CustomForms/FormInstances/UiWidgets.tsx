@@ -29,7 +29,9 @@ const selectWidget = (props: WidgetProps) => (
       required={false}
       error={false}
       sx={{
-        '.MuiSelect-select': { paddingTop: '17px', paddingBottom: '16px' }
+        '.MuiSelect-select': { paddingTop: '17px', paddingBottom: '16px', color: '#3670b3' },
+        '.MuiFormLabel-root': { transform: 'translate(12px, 15px)', transformOrigin: 'initial' },
+        '.MuiSvgIcon-root': { color: '#3670b3' }
       }}
     />
   </Box>

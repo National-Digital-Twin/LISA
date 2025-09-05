@@ -199,12 +199,10 @@ const AddEntry = ({
           </TabPanel>
           <TabPanel value={TABS.LOCATION} hash={hash}>
             <Location.Content
-              active={hash?.includes(TABS.LOCATION)}
               required={entry.type && LogEntryTypes[entry.type].requireLocation}
               location={entry.location}
               validationErrors={validationErrors}
               onLocationChange={onLocationChange}
-              showValidationErrors={showValidationErrors}
             />
           </TabPanel>
           <TabPanel value={TABS.FILES} hash={hash}>

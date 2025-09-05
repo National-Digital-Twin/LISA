@@ -8,34 +8,29 @@ import { useMemo } from 'react';
 // Local imports
 import { type Coordinates, type Location, type LocationType } from 'common/Location';
 import { Box } from '@mui/material';
-import { bem, Form, MapUtils } from '../../../utils';
+import { Form, MapUtils } from '../../../utils';
 import {
   type FieldValueType,
   type FullLocationType,
   type ValidationError
 } from '../../../utils/types';
 import { MapComponent } from '../../Map';
-import { FormField } from '../../Form';
 import { DESCRIPTION_FIELD, TYPE_FIELD } from './constants';
+import { GenericFormField } from '../../Form/GenericFormField';
 
 interface Props {
-  active: boolean;
   required?: boolean;
   location: Partial<Location> | undefined;
   validationErrors: Array<ValidationError>;
   onLocationChange: (location: Partial<Location>) => void;
-  showValidationErrors: boolean;
 }
 
 export default function LocationContent({
-  active,
   required = false,
   location,
   validationErrors,
-  onLocationChange,
-  showValidationErrors
+  onLocationChange
 }: Readonly<Props>) {
-  const classes = bem('add-entry-tab', [active ? 'active' : ''], 'location');
   const coordinatesError: ValidationError | undefined = useMemo(
     () => Form.getError({ id: 'location.coordinates' }, validationErrors),
     [validationErrors]
@@ -70,19 +65,16 @@ export default function LocationContent({
   );
 
   return (
-    <Box display="flex" flexDirection="column" gap={4} component="ul" className={classes()}>
-      <FormField
-        component="li"
+    <Box display="flex" flexDirection="column" gap={4}>
+      <GenericFormField
         field={{ ...typeField, value: location?.type }}
-        error={showValidationErrors ? Form.getError(typeField, validationErrors) : undefined}
+        errors={validationErrors}
         onChange={onLocationTypeChange}
       />
       {(location?.type === 'description' || location?.type === 'both') && (
-        <FormField
+        <GenericFormField
           field={{ ...DESCRIPTION_FIELD, value: location?.description }}
-          error={
-            showValidationErrors ? Form.getError(DESCRIPTION_FIELD, validationErrors) : undefined
-          }
+          errors={validationErrors}
           onChange={onLocationDescriptionChange}
         />
       )}
