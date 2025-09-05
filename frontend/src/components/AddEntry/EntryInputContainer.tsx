@@ -740,7 +740,7 @@ export const EntryInputContainer = ({
     }
 
     return [
-      ...(['SituationReport', 'Avian Flu', 'RiskAssessment', 'RiskAssessmentReview'].includes(
+      ...(['SituationReport', 'AvianFlu', 'RiskAssessment', 'RiskAssessmentReview'].includes(
         entry.type ?? ''
       )
         ? []
@@ -755,7 +755,7 @@ export const EntryInputContainer = ({
       ...(inputType === 'form' && entry.type === 'RiskAssessment' ? riskReviewOptionData : []),
       ...(inputType === 'form'
         ? parentFormFields.map(
-          (field) =>
+            (field) =>
               ({
                 id: `field-${field.id}`,
                 dependentId: field.dependentFieldId,
@@ -777,7 +777,7 @@ export const EntryInputContainer = ({
                 icon: getFieldIcon(field)?.icon,
                 supportedOffline: true
               }) as EntityOptionData
-        )
+          )
         : []),
       ...baseEntityOptionsData(onClickLevel)
     ];
@@ -796,7 +796,7 @@ export const EntryInputContainer = ({
     ),
     addingLocation && (
       <Location.Content
-        required={false}
+        required={LogEntryTypes[entry.type as LogEntryType].requireLocation}
         location={entry.location}
         onLocationChange={onLocationChange}
         validationErrors={validationErrors}
@@ -874,20 +874,20 @@ export const EntryInputContainer = ({
     },
     (addingCustomForm &&
       customForm && {
-      heading: `New custom form - ${customForm.title}`,
-      inputControls: (
-        <Box flexGrow={1} padding={2}>
-          <AddFormInstance
-            selectedForm={customForm}
-            selectedFormData={customFormData}
-            onChange={onCustomFormDataChange}
-            setErrors={setValidationErrors}
-          />
-        </Box>
-      ),
-      showButtons: true,
-      containerBackgroundColor: 'background.default'
-    }) || {
+        heading: `New custom form - ${customForm.title}`,
+        inputControls: (
+          <Box flexGrow={1} padding={2}>
+            <AddFormInstance
+              selectedForm={customForm}
+              selectedFormData={customFormData}
+              onChange={onCustomFormDataChange}
+              setErrors={setValidationErrors}
+            />
+          </Box>
+        ),
+        showButtons: true,
+        containerBackgroundColor: 'background.default'
+      }) || {
       heading: customHeading,
       inputControls: (
         <Box padding={2}>
@@ -920,32 +920,13 @@ export const EntryInputContainer = ({
           {(addingFormFields || addingComments || addingRiskAssessmentToReview || addingHazard) &&
             formFields &&
             formField && (
-            <Box display="flex" flexDirection="column" gap={2}>
-              <GenericFormField
-                field={formField}
-                fields={formFields}
-                entry={entry}
-                entries={entries}
-                onChange={(id, value) => {
-                  if (addingHazard) {
-                    handleRelevantHazardsChange(id, value);
-                  } else {
-                    onNestedFieldChange(id, value);
-                    if (addingRiskAssessmentToReview) {
-                      setRefreshHazardOptions(true);
-                    }
-                  }
-                }}
-                errors={validationErrors}
-              />
-              {addingHazard && hazardValue && forms && (
-                <PredefinedFormContainer
-                  entry={entry}
-                  selectedForm={
-                      forms.find((form) => form.id === `haz_${hazardValue.toLowerCase()}`)!
-                  }
+              <Box display="flex" flexDirection="column" gap={2}>
+                <GenericFormField
+                  field={formField}
                   fields={formFields}
-                  onFieldChange={(id, value) => {
+                  entry={entry}
+                  entries={entries}
+                  onChange={(id, value) => {
                     if (addingHazard) {
                       handleRelevantHazardsChange(id, value);
                     } else {
@@ -955,10 +936,29 @@ export const EntryInputContainer = ({
                       }
                     }
                   }}
+                  errors={validationErrors}
                 />
-              )}
-            </Box>
-          )}
+                {addingHazard && hazardValue && forms && (
+                  <PredefinedFormContainer
+                    entry={entry}
+                    selectedForm={
+                      forms.find((form) => form.id === `haz_${hazardValue.toLowerCase()}`)!
+                    }
+                    fields={formFields}
+                    onFieldChange={(id, value) => {
+                      if (addingHazard) {
+                        handleRelevantHazardsChange(id, value);
+                      } else {
+                        onNestedFieldChange(id, value);
+                        if (addingRiskAssessmentToReview) {
+                          setRefreshHazardOptions(true);
+                        }
+                      }
+                    }}
+                  />
+                )}
+              </Box>
+            )}
           {baseInputControls()}
         </Box>
       ),

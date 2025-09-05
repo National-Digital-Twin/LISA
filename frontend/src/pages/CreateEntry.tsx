@@ -213,12 +213,13 @@ export const CreateEntry = ({ inputType }: Props) => {
   const resetCustomFormData = () => setCustomFormData([]);
 
   const handleCancel = () => {
-    if (source) {
-      let path: string;
+    let path = `/logbook/${incidentId}`;
 
+    if (source) {
       if (source === 'home') path = '/';
       else if (inputType === 'form' && source === 'forms') path = `/forms/${incidentId}`;
-      else path = `/logbook/${incidentId}`;
+      navigate(path);
+    } else {
       navigate(path);
     }
   };
