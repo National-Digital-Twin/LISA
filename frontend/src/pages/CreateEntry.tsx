@@ -1,33 +1,33 @@
-// SPDX-License-Identifier: Apache-2.0
-// © Crown Copyright 2025. This work has been developed by the National Digital Twin Programme
-// and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
-
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
-import { MouseEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { v4 as uuidV4 } from 'uuid';
-import { Stage } from 'konva/lib/Stage';
-import { type LogEntry } from 'common/LogEntry';
-import { Attachment } from 'common/Attachment';
-import { Mentionable } from 'common/Mentionable';
-import { type Location } from 'common/Location';
 import { useCreateLogEntry, useIncidents, useLogEntries, useUsers } from '../hooks';
-import { createSequenceNumber } from '../utils/Form/sequence';
-import PageWrapper from '../components/PageWrapper';
-import { FormsInputContainer } from '../components/AddEntry/Form/FormsInputContainer';
-import { FieldValueType, SketchLine } from '../utils/types';
-import { Document, Format, Form as FormUtils } from '../utils';
-import { OnCreateEntry } from '../utils/handlers';
-import { getSortedEntriesWithDisplaySequence } from '../utils/sortEntries';
 import { useAttachments } from '../hooks/useAttachments';
+import { useFormTemplates } from '../hooks/Forms/useFormTemplates';
+import { useCreateFormInstance } from '../hooks/Forms/useFormInstances';
 import { useIsOnline } from '../hooks/useIsOnline';
+import { LogEntry } from 'common/LogEntry';
+import { MouseEvent, useEffect, useMemo, useRef, useState } from 'react';
+import { createSequenceNumber } from '../utils/Form/sequence';
+import { Form, FormDataProperty } from '../components/CustomForms/FormTemplates/types';
 import { Field } from 'common/Field';
+import { FieldValueType, SketchLine } from '../utils/types';
+import { Stage } from 'konva/lib/Stage';
+import { Mentionable } from 'common/Mentionable';
+import { Document, Format, Form as FormUtils } from '../utils';
 import { LogEntryTypes } from 'common/LogEntryTypes';
 import { LogEntryType } from 'common/LogEntryType';
-import { useFormTemplates } from '../hooks/Forms/useFormTemplates';
-import { Form, FormDataProperty } from '../components/CustomForms/FormTemplates/types';
-import { useCreateFormInstance } from '../hooks/Forms/useFormInstances';
+import { Attachment } from 'common/Attachment';
+import { OnCreateEntry } from '../utils/handlers';
+import { EntryInputContainer } from '../components/AddEntry/EntryInputContainer';
+import PageWrapper from '../components/PageWrapper';
+import { Location } from 'common/Location';
+import { getSortedEntriesWithDisplaySequence } from '../utils/sortEntries';
 
-export const CreateEntryForm = () => {
+type Props = {
+  inputType: 'form' | 'update';
+};
+
+export const CreateEntry = ({ inputType }: Props) => {
   const { incidentId } = useParams();
   const [searchParams] = useSearchParams();
   const source = searchParams.get('source');
@@ -46,11 +46,18 @@ export const CreateEntryForm = () => {
   );
   const isOnline = useIsOnline();
 
-  const [entry, setEntry] = useState<Partial<LogEntry>>({
-    incidentId,
-    sequence: createSequenceNumber(),
-    content: {}
-  });
+  const [entry, setEntry] = useState<Partial<LogEntry>>(
+    (inputType === 'update' && {
+      type: 'Update',
+      incidentId,
+      sequence: createSequenceNumber(),
+      content: {}
+    }) || {
+      incidentId,
+      sequence: createSequenceNumber(),
+      content: {}
+    }
+  );
 
   const [customForm, setCustomForm] = useState<Form | null>(null);
   const [customFormData, setCustomFormData] = useState<FormDataProperty[]>([]);
@@ -93,10 +100,10 @@ export const CreateEntryForm = () => {
   }, [isOnline, setEntry]);
 
   useEffect(() => {
-    if (entry.type) {
+    if (inputType === 'form' && entry.type) {
       setFormFields(LogEntryTypes[entry.type as LogEntryType].fields(entry));
     }
-  }, [setFormFields, entry]);
+  }, [inputType, setFormFields, entry]);
 
   const onFieldChange = (id: string, value: FieldValueType, nested = false) => {
     setEntry((prev) => {
@@ -208,13 +215,23 @@ export const CreateEntryForm = () => {
   const resetCustomForm = () => setCustomForm(null);
   const resetCustomFormData = () => setCustomFormData([]);
 
-  const handleCancel = () => navigate(source && source === 'home' ? '/' : `/logbook/${incidentId}`);
+  const handleCancel = () => {
+    if (source) {
+      let path: string;
+
+      if (source === 'home') path = '/';
+      else if (inputType === 'form' && source === 'forms') path = `/forms/${incidentId}`;
+      else path = `/logbook/${incidentId}`;
+      navigate(path);
+    }
+  };
 
   if (!incident) return null;
 
   return (
     <PageWrapper>
-      <FormsInputContainer
+      <EntryInputContainer
+        inputType={inputType}
         incident={incident}
         entries={logEntries ?? []}
         entry={entry}

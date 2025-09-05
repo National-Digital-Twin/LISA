@@ -1,89 +1,84 @@
-// SPDX-License-Identifier: Apache-2.0
-// © Crown Copyright 2025. This work has been developed by the National Digital Twin Programme
-// and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
-
-import { RefObject, useEffect, useMemo, useState } from 'react';
+import { ReactNode, RefObject, useEffect, useMemo, useState } from 'react';
 import { Stage } from 'konva/lib/Stage';
-import { Box, FormControl, Typography } from '@mui/material';
-import CircleIcon from '@mui/icons-material/Circle';
-import { type LogEntry } from 'common/LogEntry';
-import { type Incident } from 'common/Incident';
-import { LogEntryTypes } from 'common/LogEntryTypes';
-import { LogEntryType } from 'common/LogEntryType';
+import { Incident } from 'common/Incident';
+import { LogEntry } from 'common/LogEntry';
 import { Mentionable } from 'common/Mentionable';
 import { type Location as TypeOfLocation } from 'common/Location';
-import { FieldValueType, OptionType, SketchLine, ValidationError } from '../../../utils/types';
-import {
-  EntityInputContainer,
-  EntityInputContainerData
-} from '../../AddEntity/EntityInputContainer';
-import { getFormTypes } from '../../../utils/Form/getBaseLogEntryFields';
-import { EntityOptionsContainer } from '../../AddEntity/EntityOptionsContainer';
-import { EntityOptionData } from '../../AddEntity/EntityOptions';
-import { OnFieldChange } from '../../../utils/handlers';
-import EntryContent from '../../lexical/EntryContent';
-
-import { Format, Validate } from '../../../utils';
-import Sketch from '../../AddEntry/Sketch';
-import Files from '../../AddEntry/Files';
-import { EntityDivider } from '../../AddEntity/EntityDivider';
-import Location from '../../AddEntry/Location';
-import { getFieldValue } from '../../../utils/Form/getFieldValue';
-import { getFieldIcon } from '../../../utils/Form/getFieldIcon';
+import { FieldValueType, OptionType, SketchLine, ValidationError } from '../../utils/types';
+import { OnFieldChange } from '../../utils/handlers';
+import { Format, Validate } from '../../utils';
+import { EntityOptionData } from '../AddEntity/EntityOptions';
+import { EntityInputContainer, EntityInputContainerData } from '../AddEntity/EntityInputContainer';
+import { EntityOptionsContainer } from '../AddEntity/EntityOptionsContainer';
+import EntryContent from '../lexical/EntryContent';
+import { DateAndTimePicker } from '../DateAndTimePicker';
+import Location from './Location';
+import Files from './Files';
+import Sketch from './Sketch';
+import { Box, FormControl, Typography } from '@mui/material';
+import { Form as CustomForm, FormDataProperty } from '../CustomForms/FormTemplates/types';
 import { Field } from 'common/Field';
-import { CommunicationMethod } from 'common/Fields/CommunicationMethod';
-import { Form as CustomForm, FormDataProperty } from '../../CustomForms/FormTemplates/types';
-import { FormContainer as CustomFormContainer } from '../../CustomForms/FormInstances/FormContainer';
+import { getFormTypes } from '../../utils/Form/getBaseLogEntryFields';
+import { getHazardLabel, getRelevantHazard } from 'common/LogEntryTypes/RiskAssessment/hazards';
 import { RelevantHazards } from 'common/LogEntryTypes/RiskAssessment/hazards/RelevantHazards';
-import { getRelevantHazard, getHazardLabel } from 'common/LogEntryTypes/RiskAssessment/hazards';
-import { EntityTypeDropdown } from '../../AddEntity/EntityTypeDropdown';
-import { DateAndTimePicker } from '../../DateAndTimePicker';
-import { GenericFormField } from '../../Form/GenericFormField';
-import AddFormInstance from '../../CustomForms/FormInstances/AddFormInstance';
+import { getFieldValue } from '../../utils/Form/getFieldValue';
+import { RelevantHazard } from 'common/LogEntryTypes/RiskAssessment/hazards/RelevantHazard';
+import { CommunicationMethod } from 'common/Fields/CommunicationMethod';
+import { LogEntryTypes } from 'common/LogEntryTypes';
+import { LogEntryType } from 'common/LogEntryType';
+import { getFieldIcon } from '../../utils/Form/getFieldIcon';
+import { EntityTypeDropdown } from '../AddEntity/EntityTypeDropdown';
+import { EntityDivider } from '../AddEntity/EntityDivider';
+import AddFormInstance from '../CustomForms/FormInstances/AddFormInstance';
+import { GenericFormField } from '../Form/GenericFormField';
+import { FormContainer as CustomFormContainer } from '../CustomForms/FormInstances/FormContainer';
+import CircleIcon from '@mui/icons-material/Circle';
 
 type Props = {
+  inputType: 'form' | 'update';
   incident: Incident;
-  entries: Array<LogEntry>;
   entry: Partial<LogEntry>;
-  customForm: CustomForm | null;
-  customFormData: Array<FormDataProperty>;
-  setCustomForm: (customForm: CustomForm | null) => void;
-  formFields: Array<Field>;
-  forms: Array<CustomForm>;
+  entries: Array<LogEntry>;
   mentionables: Array<Mentionable>;
   selectedFiles: Array<File>;
   recordings: Array<File>;
   canvasRef: RefObject<Stage | null>;
   sketchLines: Array<SketchLine>;
+  customForm: CustomForm | null;
+  customFormData: Array<FormDataProperty>;
+  setCustomForm: (customForm: CustomForm | null) => void;
+  formFields: Array<Field>;
+  forms: Array<CustomForm>;
   onFieldChange: OnFieldChange;
-  onCustomFormDataChange: (id: string, label: string, value: string) => void;
-  resetEntry: () => void;
-  resetCustomForm: () => void;
-  resetCustomFormData: () => void;
   onFilesSelected: (files: Array<File>) => void;
   onRemoveSelectedFile: (filename: string) => void;
   onRemoveRecording: (recordingName: string) => void;
   onLocationChange: (locationInputType: Partial<TypeOfLocation>) => void;
   setSketchLines: (sketchLines: Array<SketchLine>) => void;
+  onCustomFormDataChange: (id: string, label: string, value: string) => void;
+  resetEntry: () => void;
+  resetCustomForm: () => void;
+  resetCustomFormData: () => void;
   onMainBackClick: () => void;
   onSubmit: (submissionType: 'customForm' | 'entry' | null) => void;
   onCancel: () => void;
 };
 
-export const FormsInputContainer = ({
+export const EntryInputContainer = ({
+  inputType,
   incident,
-  entries,
   entry,
-  customForm,
-  customFormData,
-  setCustomForm,
-  formFields,
-  forms,
+  entries,
   mentionables,
   selectedFiles,
   recordings,
   canvasRef,
   sketchLines,
+  customForm,
+  customFormData,
+  setCustomForm,
+  formFields,
+  forms,
   onFieldChange,
   onCustomFormDataChange,
   resetEntry,
@@ -99,12 +94,18 @@ export const FormsInputContainer = ({
   onCancel
 }: Props) => {
   const [level, setLevel] = useState<number>(0);
-  const [submissionType, setSubmissionType] = useState<'customForm' | 'entry' | null>(null);
+  const [submissionType, setSubmissionType] = useState<'customForm' | 'entry' | null>(
+    inputType === 'update' ? 'entry' : null
+  );
   const [validationErrors, setValidationErrors] = useState<Array<ValidationError>>([]);
-  const [selectingCustomForm, setSelectingCustomForm] = useState<boolean>(false);
   const [customHeading, setCustomHeading] = useState<string>('');
-  const [addingCustomForm, setAddingCustomForm] = useState<boolean>(false);
   const [addingDescription, setAddingDescription] = useState<boolean>(false);
+  const [addingDateAndTime, setAddingDateAndTime] = useState<boolean>(false);
+  const [addingLocation, setAddingLocation] = useState<boolean>(false);
+  const [addingAttachments, setAddingAttachments] = useState<boolean>(false);
+  const [addingSketch, setAddingSketch] = useState<boolean>(false);
+  const [selectingCustomForm, setSelectingCustomForm] = useState<boolean>(false);
+  const [addingCustomForm, setAddingCustomForm] = useState<boolean>(false);
   const [addingSiteRepDetails, setAddingSiteRepDetails] = useState<boolean>(false);
   const [addingHazard, setAddingHazard] = useState<boolean>(false);
   const [selectedHazardIndex, setSelectedHazardIndex] = useState<number>(0);
@@ -115,28 +116,31 @@ export const FormsInputContainer = ({
   const [addingComments, setAddingComments] = useState<boolean>(false);
   const [addingRiskAssessmentToReview, setAddingRiskAssessmentToReview] = useState<boolean>(false);
   const [addingFormFields, setAddingFormFields] = useState<boolean>(false);
-  const [addingDateAndTime, setAddingDateAndTime] = useState<boolean>(false);
-  const [addingLocation, setAddingLocation] = useState<boolean>(false);
-  const [addingAttachments, setAddingAttachments] = useState<boolean>(false);
-  const [addingSketch, setAddingSketch] = useState<boolean>(false);
   const [formField, setFormField] = useState<Field>();
   const customForms: CustomForm[] = useMemo(
-    () => forms.filter((form) => form.id !== 'siteRepMethane' && !form.id.includes('haz_')),
-    [forms]
+    () =>
+      (inputType === 'form' &&
+        forms.filter((form) => form.id !== 'siteRepMethane' && !form.id.includes('haz_'))) ||
+      [],
+    [inputType, forms]
   );
   const formTypes: OptionType[] = useMemo(
-    () => [
-      { label: 'Select form', value: 'SelectForm', disabled: true },
-      ...getFormTypes(incident, customForms.length > 0)
-    ],
-    [incident, customForms]
+    () =>
+      (inputType === 'form' && [
+        { label: 'Select form', value: 'SelectForm', disabled: true },
+        ...getFormTypes(incident, customForms.length > 0)
+      ]) ||
+      [],
+    [inputType, incident, customForms]
   );
   const customFormTypes: OptionType[] = useMemo(
-    () => [
-      { label: 'Select custom form', value: 'SelectCustomForm', disabled: true },
-      ...customForms.map((customForm) => ({ label: customForm.title, value: customForm.id }))
-    ],
-    [customForms]
+    () =>
+      (inputType === 'form' && [
+        { label: 'Select custom form', value: 'SelectCustomForm', disabled: true },
+        ...customForms.map((customForm) => ({ label: customForm.title, value: customForm.id }))
+      ]) ||
+      [],
+    [inputType, customForms]
   );
 
   useEffect(() => {
@@ -148,28 +152,38 @@ export const FormsInputContainer = ({
   const setLevelAndClearState = (level: number) => {
     setLevel(level);
 
-    if (level === 0) {
-      setSelectingCustomForm(false);
-      resetCustomFormData();
-      resetCustomForm();
-      resetEntry();
-    } else if (level === 1) {
-      if (selectingCustomForm) {
-        resetCustomForm();
+    if (inputType === 'form') {
+      if (level === 0) {
+        setSelectingCustomForm(false);
         resetCustomFormData();
-      }
+        resetCustomForm();
+        resetEntry();
+      } else if (level === 1) {
+        if (selectingCustomForm) {
+          resetCustomForm();
+          resetCustomFormData();
+        }
 
-      setAddingCustomForm(false);
-      setAddingDescription(false);
-      setAddingSiteRepDetails(false);
-      setAddingHazard(false);
-      setAddingComments(false);
-      setAddingRiskAssessmentToReview(false);
-      setAddingFormFields(false);
-      setAddingDateAndTime(false);
-      setAddingLocation(false);
-      setAddingAttachments(false);
-      setAddingSketch(false);
+        setAddingCustomForm(false);
+        setAddingDescription(false);
+        setAddingSiteRepDetails(false);
+        setAddingHazard(false);
+        setAddingComments(false);
+        setAddingRiskAssessmentToReview(false);
+        setAddingFormFields(false);
+        setAddingDateAndTime(false);
+        setAddingLocation(false);
+        setAddingAttachments(false);
+        setAddingSketch(false);
+      }
+    } else if (inputType === 'update') {
+      if (level === 0) {
+        setAddingDescription(false);
+        setAddingDateAndTime(false);
+        setAddingLocation(false);
+        setAddingAttachments(false);
+        setAddingSketch(false);
+      }
     }
   };
 
@@ -405,7 +419,7 @@ export const FormsInputContainer = ({
   };
 
   useEffect(() => {
-    if (formFields) {
+    if (inputType === 'form' && formFields) {
       const relevantHazardsField = formFields.find(
         (formField) => formField.id === RelevantHazards.id
       );
@@ -435,7 +449,7 @@ export const FormsInputContainer = ({
     }
 
     return setRefreshRemoveHazardsCall(false);
-  }, [refreshRemoveHazardsCall]);
+  }, [inputType, refreshRemoveHazardsCall]);
 
   const updateAdditionalOptionData = (value: string, selectedRelevantHazards: string[]) => {
     let updatedAdditionalHazardsOptionData = hazardsOptionData;
@@ -460,7 +474,7 @@ export const FormsInputContainer = ({
   };
 
   const handleRelevantHazardsChange = (id: string, value: FieldValueType) => {
-    if (id === 'RelevantHazard') {
+    if (id === RelevantHazard.id) {
       const relevantHazardsField = formFields.find(
         (formField) => formField.id === RelevantHazards.id
       );
@@ -495,7 +509,7 @@ export const FormsInputContainer = ({
   };
 
   useEffect(() => {
-    if (entry.type === 'RiskAssessmentReview') {
+    if (inputType === 'form' && entry.type === 'RiskAssessmentReview') {
       const relevantHazardsField = formFields.find(
         (formField) => formField.id === RelevantHazards.id
       );
@@ -529,7 +543,7 @@ export const FormsInputContainer = ({
     }
 
     return setRefreshHazardOptions(false);
-  }, [refreshHazardOptions]);
+  }, [inputType, refreshHazardOptions]);
 
   const getFormattedValueForField = (field: Field, value: FieldValueType) => {
     if (field.id === 'CommunicationMethod') {
@@ -553,13 +567,16 @@ export const FormsInputContainer = ({
     (formField) => !dependentFieldIds.includes(formField.id)
   );
 
-  const descriptionOptionData: EntityOptionData[] = [
+  const descriptionOptionData = (
+    onClickLevel: number,
+    descriptionHeading: string
+  ): EntityOptionData[] => [
     {
       id: 'description',
       onClick: () => {
-        setCustomHeading('Add a description');
+        setCustomHeading(descriptionHeading);
         setAddingDescription(true);
-        setLevel(2);
+        setLevel(onClickLevel);
       },
       value: entry.content?.text ? entry.content.text : undefined,
       supportedOffline: true
@@ -642,42 +659,13 @@ export const FormsInputContainer = ({
   const viewLocationHeading =
     entry.type === 'SituationReport' ? 'View exact location' : 'View location(s)';
 
-  const entityOptionsData: EntityOptionData[] = [
-    ...(['SituationReport', 'RiskAssessment', 'RiskAssessmentReview'].includes(entry.type ?? '')
-      ? []
-      : descriptionOptionData),
-    ...(entry.type === 'SituationReport' ? siteRepDetailOptionData : []),
-    ...(entry.type === 'RiskAssessmentReview' ? riskAssessmentReviewOptionData() : []),
-    ...(entry.type === 'RiskAssessment' ? riskReviewOptionData : []),
-    ...parentFormFields.map(
-      (field) =>
-        ({
-          id: `field-${field.id}`,
-          dependentId: field.dependentFieldId,
-          onClick: () => {
-            setCustomHeading(`Add ${field.title ?? 'field'}`);
-            setAddingFormFields(true);
-            setFormField(field);
-            setLevel(2);
-          },
-          value: getFormattedValueForField(
-            field,
-            getFieldValue(
-              formFields.find((formField) => field.dependentFieldId === formField.id) ?? field,
-              entry
-            )
-          ),
-          label: field.label,
-          icon: getFieldIcon(field)?.icon,
-          supportedOffline: true
-        }) as EntityOptionData
-    ),
+  const baseEntityOptionsData = (onClickLevel: number): EntityOptionData[] => [
     {
       id: 'dateAndTime',
       onClick: () => {
         setCustomHeading('Add date and time');
         setAddingDateAndTime(true);
-        setLevel(2);
+        setLevel(onClickLevel);
       },
       value: entry.dateTime
         ? `${Format.date(entry.dateTime)} @ ${Format.time(entry.dateTime)}`
@@ -689,18 +677,18 @@ export const FormsInputContainer = ({
       onClick: () => {
         setCustomHeading(addLocationHeading);
         setAddingLocation(true);
-        setLevel(2);
+        setLevel(onClickLevel);
       },
       label: addLocationHeading,
       value: entry.location ? viewLocationHeading : undefined,
-      required: LogEntryTypes[entry.type as LogEntryType]?.requireLocation
+      required: false
     },
     {
       id: 'attachments',
       onClick: () => {
         setCustomHeading('Add attachment(s)');
         setAddingAttachments(true);
-        setLevel(2);
+        setLevel(onClickLevel);
       },
       value: selectedFiles.length > 0 ? `${selectedFiles.length} attachments` : undefined,
       supportedOffline: true
@@ -710,13 +698,104 @@ export const FormsInputContainer = ({
       onClick: () => {
         setCustomHeading('Add sketch');
         setAddingSketch(true);
-        setLevel(2);
+        setLevel(onClickLevel);
       },
       value: sketchLines.length > 0 ? 'View sketch' : undefined,
       supportedOffline: true
     }
   ];
-  const inputContainerData: EntityInputContainerData[] = [
+
+  const entityOptionsData = (inputType: 'form' | 'update'): EntityOptionData[] => {
+    let onClickLevel = 0;
+    let descriptionHeading = '';
+
+    if (inputType === 'form') {
+      onClickLevel = 2;
+      descriptionHeading = 'Add a description';
+    } else if (inputType === 'update') {
+      onClickLevel = 1;
+      descriptionHeading = 'Update description';
+    }
+
+    return [
+      ...(['SituationReport', 'RiskAssessment', 'RiskAssessmentReview'].includes(entry.type ?? '')
+        ? []
+        : descriptionOptionData(onClickLevel, descriptionHeading)),
+      ...(inputType === 'form' && entry.type === 'SituationReport' ? siteRepDetailOptionData : []),
+      ...(inputType === 'form' && entry.type === 'RiskAssessmentReview'
+        ? riskAssessmentReviewOptionData()
+        : []),
+      ...(inputType === 'form' && entry.type === 'RiskAssessment' ? riskReviewOptionData : []),
+      ...(inputType === 'form'
+        ? parentFormFields.map(
+          (field) =>
+              ({
+                id: `field-${field.id}`,
+                dependentId: field.dependentFieldId,
+                onClick: () => {
+                  setCustomHeading(`Add ${field.title ?? 'field'}`);
+                  setAddingFormFields(true);
+                  setFormField(field);
+                  setLevel(2);
+                },
+                value: getFormattedValueForField(
+                  field,
+                  getFieldValue(
+                    formFields.find((formField) => field.dependentFieldId === formField.id) ??
+                      field,
+                    entry
+                  )
+                ),
+                label: field.label,
+                icon: getFieldIcon(field)?.icon,
+                supportedOffline: true
+              }) as EntityOptionData
+        )
+        : []),
+      ...baseEntityOptionsData(onClickLevel)
+    ];
+  };
+
+  const baseInputControls = (): ReactNode[] => [
+    addingDateAndTime && (
+      <DateAndTimePicker
+        dateLabel="Date"
+        timeLabel="Time"
+        dateLowerBound={incident.startedAt}
+        disableFuture
+        value={entry.dateTime}
+        onChange={dispatchOnChange}
+      />
+    ),
+    addingLocation && (
+      <Location.Content
+        required={false}
+        location={entry.location}
+        onLocationChange={onLocationChange}
+        validationErrors={validationErrors}
+      />
+    ),
+    addingAttachments && (
+      <Files.Content
+        active={addingAttachments}
+        selectedFiles={selectedFiles}
+        recordings={recordings}
+        onFilesSelected={onFilesSelected}
+        removeSelectedFile={onRemoveSelectedFile}
+        removeRecording={onRemoveRecording}
+      />
+    ),
+    addingSketch && (
+      <Sketch.Content
+        active={addingSketch}
+        canvasRef={canvasRef}
+        lines={sketchLines}
+        onChangeLines={setSketchLines}
+      />
+    )
+  ];
+
+  const formInputContainerData = (): EntityInputContainerData[] => [
     {
       heading: 'New form',
       inputControls: (
@@ -759,7 +838,7 @@ export const FormsInputContainer = ({
           <EntityDivider />
           <EntityOptionsContainer
             entityType="forms"
-            data={entityOptionsData}
+            data={entityOptionsData('form')}
             errors={validationErrors}
           />
         </>
@@ -768,20 +847,20 @@ export const FormsInputContainer = ({
     },
     (addingCustomForm &&
       customForm && {
-        heading: `New custom form - ${customForm.title}`,
-        inputControls: (
-          <Box flexGrow={1} padding={2}>
-            <AddFormInstance
-              selectedForm={customForm}
-              selectedFormData={customFormData}
-              onChange={onCustomFormDataChange}
-              setErrors={setValidationErrors}
-            />
-          </Box>
-        ),
-        showButtons: true,
-        containerBackgroundColor: 'background.default'
-      }) || {
+      heading: `New custom form - ${customForm.title}`,
+      inputControls: (
+        <Box flexGrow={1} padding={2}>
+          <AddFormInstance
+            selectedForm={customForm}
+            selectedFormData={customFormData}
+            onChange={onCustomFormDataChange}
+            setErrors={setValidationErrors}
+          />
+        </Box>
+      ),
+      showButtons: true,
+      containerBackgroundColor: 'background.default'
+    }) || {
       heading: customHeading,
       inputControls: (
         <Box padding={2}>
@@ -808,72 +887,74 @@ export const FormsInputContainer = ({
           {(addingFormFields || addingComments || addingRiskAssessmentToReview || addingHazard) &&
             formFields &&
             formField && (
-              <Box display="flex" flexDirection="column" gap={2}>
-                <GenericFormField
-                  field={formField}
-                  fields={formFields}
+            <Box display="flex" flexDirection="column" gap={2}>
+              <GenericFormField
+                field={formField}
+                fields={formFields}
+                entry={entry}
+                entries={entries}
+                onChange={(id, value) => {
+                  if (addingHazard) {
+                    handleRelevantHazardsChange(id, value);
+                  } else {
+                    onNestedFieldChange(id, value);
+                    if (addingRiskAssessmentToReview) {
+                      setRefreshHazardOptions(true);
+                    }
+                  }
+                }}
+                errors={validationErrors}
+              />
+              {addingHazard && hazardValue && forms && (
+                <CustomFormContainer
                   entry={entry}
-                  entries={entries}
-                  onChange={(id, value) => {
-                    if (addingHazard) {
-                      handleRelevantHazardsChange(id, value);
-                    } else {
-                      onNestedFieldChange(id, value);
-                      if (addingRiskAssessmentToReview) {
-                        setRefreshHazardOptions(true);
-                      }
-                    }
-                  }}
-                  errors={validationErrors}
-                />
-                {addingHazard && hazardValue && forms && (
-                  <CustomFormContainer
-                    entry={entry}
-                    selectedForm={
+                  selectedForm={
                       forms.find((form) => form.id === `haz_${hazardValue.toLowerCase()}`)!
-                    }
-                    fields={formFields}
-                    onFieldChange={onNestedFieldChange}
-                  />
-                )}
-              </Box>
-            )}
-          {addingDateAndTime && (
-            <DateAndTimePicker
-              dateLabel="Date"
-              timeLabel="Time"
-              dateLowerBound={incident.startedAt}
-              disableFuture
-              value={entry.dateTime}
-              onChange={dispatchOnChange}
+                  }
+                  fields={formFields}
+                  onFieldChange={onNestedFieldChange}
+                />
+              )}
+            </Box>
+          )}
+          {baseInputControls()}
+        </Box>
+      ),
+      containerBackgroundColor: 'background.default'
+    }
+  ];
+
+  const updateInputContainerData = (): EntityInputContainerData[] => [
+    {
+      heading: 'New update',
+      inputControls: (
+        <>
+          <EntityOptionsContainer
+            entityType="updates"
+            data={entityOptionsData('update')}
+            errors={validationErrors}
+          />
+        </>
+      ),
+      showButtons: true
+    },
+    {
+      heading: customHeading,
+      inputControls: (
+        <Box padding={2}>
+          {addingDescription && (
+            <EntryContent
+              id="content"
+              editable
+              json={typeof entry.content === 'object' ? entry.content.json : undefined}
+              recordingActive={false}
+              onRecording={undefined}
+              onChange={onContentChange}
+              error={false}
+              mentionables={mentionables}
             />
           )}
-          {addingLocation && (
-            <Location.Content
-              required={entry.type && LogEntryTypes[entry.type].requireLocation}
-              location={entry.location}
-              onLocationChange={onLocationChange}
-              validationErrors={validationErrors}
-            />
-          )}
-          {addingAttachments && (
-            <Files.Content
-              active={addingAttachments}
-              selectedFiles={selectedFiles}
-              recordings={recordings}
-              onFilesSelected={onFilesSelected}
-              removeSelectedFile={onRemoveSelectedFile}
-              removeRecording={onRemoveRecording}
-            />
-          )}
-          {addingSketch && (
-            <Sketch.Content
-              active={addingSketch}
-              canvasRef={canvasRef}
-              lines={sketchLines}
-              onChangeLines={setSketchLines}
-            />
-          )}
+          {baseInputControls()}
         </Box>
       ),
       containerBackgroundColor: 'background.default'
@@ -882,7 +963,11 @@ export const FormsInputContainer = ({
 
   return (
     <EntityInputContainer
-      data={inputContainerData}
+      data={
+        (inputType === 'form' && formInputContainerData()) ||
+        (inputType === 'update' && updateInputContainerData()) ||
+        []
+      }
       onMainBackClick={onMainBackClick}
       onSubmit={() => onSubmit(submissionType)}
       onCancel={onCancel}
