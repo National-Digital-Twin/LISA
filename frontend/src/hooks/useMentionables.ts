@@ -9,7 +9,7 @@ type Props = {
   users?: Array<User>;
   logEntries?: Array<LogEntry>;
   files?: Array<File>;
-  recordings: Array<File>;
+  recordings?: Array<File>;
   tasks?: Array<Task>;
   other?: Array<Mentionable>;
 };
