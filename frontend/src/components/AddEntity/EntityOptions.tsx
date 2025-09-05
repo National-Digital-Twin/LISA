@@ -39,6 +39,7 @@ export type EntityOptionData = {
   valueLabel?: string;
   removable?: boolean;
   onRemove?: () => void;
+  disabled?: boolean;
 };
 
 function optionDataComponent(
@@ -60,6 +61,7 @@ function optionDataComponent(
       errored={errored}
       removable={!!optionData.removable}
       onRemove={optionData.removable ? optionData.onRemove! : () => {}}
+      disabled={!!optionData.disabled}
     />
   );
 }

@@ -265,13 +265,16 @@ export const IncidentInputContainer = ({
 
   const displayValue = (v?: string) => (typeof v === 'string' && v.trim() === '' ? undefined : v);
 
+  const isDisabled = (key: FieldType) => key === 'time' && isEditing;
+
   const entityOptionData: EntityOptionData[] = (Object.keys(fieldConfigs) as FieldType[]).map(
     (field) => ({
       id: field,
       onClick: () => activateField(field),
       value: displayValue(getFieldValue(field) as string | undefined),
       required: fieldConfigs[field].required,
-      supportedOffline: fieldConfigs[field].supportedOffline
+      supportedOffline: fieldConfigs[field].supportedOffline,
+      disabled: isDisabled(field)
     })
   );
 
