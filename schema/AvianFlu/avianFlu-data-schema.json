@@ -1,0 +1,171 @@
+{
+  "forms": [
+    {
+      "type": "avianFlu",
+      "dataSchema": {
+        "title": "Avian Flu",
+        "type": "object",
+        "properties": {
+          "PrivacyNotice": {
+            "title": "Privacy notice covered with the occupier",
+            "type": "string",
+            "default": false,
+            "enum": [
+              "Yes",
+              "No"
+            ]
+          },
+          "OccupierConsent": {
+            "title": "Occupier has given consent for personal details",
+            "type": "string",
+            "default": false,
+            "enum": [
+              "Yes",
+              "No"
+            ]
+          },
+          "BirdType": {
+            "title": "Bird species/type",
+            "type": "string"
+          },
+          "BirdCount": {
+            "title": "Number of birds",
+            "type": "string"
+          },
+          "HousingAndHusbandrySystem": {
+            "title": "Housing / Husbandry system",
+            "type": "string"
+          },
+          "NextToLargePoultryPremises": {
+            "title": "Beside poultry premises of 50+ birds",
+            "type": "string",
+            "default": false,
+            "enum": [
+              "Yes",
+              "No"
+            ]
+          },
+          "RecentLiveMovements": {
+            "title": "Movement of live poultry in the last 6 weeks",
+            "type": "string",
+            "default": false,
+            "enum": [
+              "Yes",
+              "No"
+            ]
+          },
+          "RecentContactWithLargePoultryPremises": {
+            "title": "Worker contact with poultry premises of 50+ birds in the last 6 weeks",
+            "type": "string",
+            "default": false,
+            "enum": [
+              "Yes",
+              "No"
+            ]
+          },
+          "RecentExhibitionAttendance": {
+            "title": "Birds attended shows/exhibitions in the last 6 weeks",
+            "type": "string",
+            "default": false,
+            "enum": [
+              "Yes",
+              "No"
+            ]
+          },
+          "RecentLiveMarket": {
+            "title": "Market activity in the last 6 weeks",
+            "type": "string",
+            "default": false,
+            "enum": [
+              "Yes",
+              "No"
+            ]
+          },
+          "AnyOtherReasonForSuspicion": {
+            "title": "Other reason to suspect HPAI/LPAI",
+            "type": "string",
+            "default": false,
+            "enum": [
+              "Yes",
+              "No"
+            ]
+          },
+          "TileNumber": {
+            "title": "Tile No",
+            "type": "string"
+          },
+          "OccupierCompletedDeclaration": {
+            "title": "Occupier has completed the declaration form",
+            "type": "string",
+            "default": false,
+            "enum": [
+              "Yes",
+              "No"
+            ]
+          },
+          "Comments": {
+            "title": "Comments",
+            "type": "string"
+          }
+        },
+        "required": [
+          "PrivacyNotice",
+          "OccupierConsent",
+          "BirdType",
+          "BirdCount",
+          "HousingAndHusbandrySystem",
+          "NextToLargePoultryPremises",
+          "RecentLiveMovements",
+          "RecentContactWithLargePoultryPremises",
+          "RecentExhibitionAttendance",
+          "RecentLiveMarket",
+          "AnyOtherReasonForSuspicion",
+          "TileNumber",
+          "OccupierCompletedDeclaration",
+          "Comments"
+        ],
+        "dependencies": {
+          "OccupierConsent": {
+            "oneOf": [
+              {
+                "properties": {
+                  "OccupierConsent": {
+                    "enum": [
+                      "No"
+                    ]
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "OccupierConsent": {
+                    "enum": [
+                      "Yes"
+                    ]
+                  },
+                  "OccupierName": {
+                    "title": "Name of occupier",
+                    "type": "string"
+                  },
+                  "OccupierContactNumber": {
+                    "title": "Contact number",
+                    "type": "string"
+                  },
+                  "OccupierEmail": {
+                    "title": "Contact email",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "OccupierName",
+                  "OccupierContactNumber",
+                  "OccupierEmail"
+                ]
+              }
+            ]
+          }
+        }
+      }
+    }
+  ]
+}

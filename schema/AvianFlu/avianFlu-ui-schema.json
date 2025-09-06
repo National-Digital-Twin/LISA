@@ -1,0 +1,37 @@
+{
+  "forms": [
+    {
+      "type": "avianFlu",
+      "uiSchema": {
+        "ui:order": [
+          "PrivacyNotice",
+          "OccupierConsent",
+          "OccupierName",
+          "OccupierContactNumber",
+          "OccupierEmail",
+          "BirdType",
+          "BirdCount",
+          "HousingAndHusbandrySystem",
+          "NextToLargePoultryPremises",
+          "RecentLiveMovements",
+          "RecentContactWithLargePoultryPremises",
+          "RecentExhibitionAttendance",
+          "RecentLiveMarket",
+          "AnyOtherReasonForSuspicion",
+          "TileNumber",
+          "OccupierCompletedDeclaration",
+          "Comments"
+        ],
+        "HousingAndHusbandrySystem": {
+          "ui:widget": "textarea"
+        },
+        "Comments": {
+          "ui:widget": "textarea"
+        },
+        "ui:submitButtonOptions": {
+          "norender": true
+        }
+      }
+    }
+  ]
+}

@@ -31,7 +31,7 @@ import { EntityTypeDropdown } from '../AddEntity/EntityTypeDropdown';
 import { EntityDivider } from '../AddEntity/EntityDivider';
 import AddFormInstance from '../CustomForms/FormInstances/AddFormInstance';
 import { GenericFormField } from '../Form/GenericFormField';
-import { FormContainer as CustomFormContainer } from '../CustomForms/FormInstances/FormContainer';
+import { FormContainer as PredefinedFormContainer } from '../CustomForms/FormInstances/FormContainer';
 import CircleIcon from '@mui/icons-material/Circle';
 
 type Props = {
@@ -50,15 +50,15 @@ type Props = {
   formFields: Array<Field>;
   forms: Array<CustomForm>;
   onFieldChange: OnFieldChange;
+  onCustomFormDataChange: (id: string, label: string, value: string) => void;
+  resetEntry: () => void;
+  resetCustomForm: () => void;
+  resetCustomFormData: () => void;
   onFilesSelected: (files: Array<File>) => void;
   onRemoveSelectedFile: (filename: string) => void;
   onRemoveRecording: (recordingName: string) => void;
   onLocationChange: (locationInputType: Partial<TypeOfLocation>) => void;
   setSketchLines: (sketchLines: Array<SketchLine>) => void;
-  onCustomFormDataChange: (id: string, label: string, value: string) => void;
-  resetEntry: () => void;
-  resetCustomForm: () => void;
-  resetCustomFormData: () => void;
   onMainBackClick: () => void;
   onSubmit: (submissionType: 'customForm' | 'entry' | null) => void;
   onCancel: () => void;
@@ -99,14 +99,11 @@ export const EntryInputContainer = ({
   );
   const [validationErrors, setValidationErrors] = useState<Array<ValidationError>>([]);
   const [customHeading, setCustomHeading] = useState<string>('');
-  const [addingDescription, setAddingDescription] = useState<boolean>(false);
-  const [addingDateAndTime, setAddingDateAndTime] = useState<boolean>(false);
-  const [addingLocation, setAddingLocation] = useState<boolean>(false);
-  const [addingAttachments, setAddingAttachments] = useState<boolean>(false);
-  const [addingSketch, setAddingSketch] = useState<boolean>(false);
-  const [selectingCustomForm, setSelectingCustomForm] = useState<boolean>(false);
   const [addingCustomForm, setAddingCustomForm] = useState<boolean>(false);
+  const [addingDescription, setAddingDescription] = useState<boolean>(false);
+  const [selectingCustomForm, setSelectingCustomForm] = useState<boolean>(false);
   const [addingSiteRepDetails, setAddingSiteRepDetails] = useState<boolean>(false);
+  const [addingAvianFluDetails, setAddingAvianFluDetails] = useState<boolean>(false);
   const [addingHazard, setAddingHazard] = useState<boolean>(false);
   const [selectedHazardIndex, setSelectedHazardIndex] = useState<number>(0);
   const [hazardValue, setHazardValue] = useState<string>();
@@ -116,11 +113,17 @@ export const EntryInputContainer = ({
   const [addingComments, setAddingComments] = useState<boolean>(false);
   const [addingRiskAssessmentToReview, setAddingRiskAssessmentToReview] = useState<boolean>(false);
   const [addingFormFields, setAddingFormFields] = useState<boolean>(false);
+  const [addingDateAndTime, setAddingDateAndTime] = useState<boolean>(false);
+  const [addingLocation, setAddingLocation] = useState<boolean>(false);
+  const [addingAttachments, setAddingAttachments] = useState<boolean>(false);
+  const [addingSketch, setAddingSketch] = useState<boolean>(false);
   const [formField, setFormField] = useState<Field>();
   const customForms: CustomForm[] = useMemo(
     () =>
       (inputType === 'form' &&
-        forms.filter((form) => form.id !== 'siteRepMethane' && !form.id.includes('haz_'))) ||
+        forms.filter(
+          (form) => !['siteRepMethane', 'avianFlu'].includes(form.id) && !form.id.includes('haz_')
+        )) ||
       [],
     [inputType, forms]
   );
@@ -167,6 +170,7 @@ export const EntryInputContainer = ({
         setAddingCustomForm(false);
         setAddingDescription(false);
         setAddingSiteRepDetails(false);
+        setAddingAvianFluDetails(false);
         setAddingHazard(false);
         setAddingComments(false);
         setAddingRiskAssessmentToReview(false);
@@ -555,6 +559,7 @@ export const EntryInputContainer = ({
 
   const filteredFormFieldsForView = [
     'SituationReport',
+    'AvianFlu',
     'RiskAssessment',
     'RiskAssessmentReview'
   ].includes(entry.type ?? '')
@@ -583,24 +588,41 @@ export const EntryInputContainer = ({
     }
   ];
 
-  const siteRepDetailOptionData: EntityOptionData[] = [
-    {
-      id: 'sitRepDetails',
-      onClick: () => {
+  const detailsOptionData = (type: 'siteRepMethane' | 'avianFlu'): EntityOptionData[] => {
+    let id = '';
+    let onClick = () => {};
+
+    if (type === 'siteRepMethane') {
+      id = 'siteRepDetails';
+      onClick = () => {
         setCustomHeading('Details');
         setAddingSiteRepDetails(true);
         setLevel(2);
-      },
-      label: formFields
-        .filter((formField) => formField.id !== 'ExactLocation')
-        .every((formField) => getFieldValue(formField, entry))
-        ? 'View details'
-        : undefined,
-      value: 'Details',
-      required: true,
-      supportedOffline: true
+      };
+    } else if (type === 'avianFlu') {
+      id = 'avianFlu';
+      onClick = () => {
+        setCustomHeading('Details');
+        setAddingAvianFluDetails(true);
+        setLevel(2);
+      };
     }
-  ];
+
+    return [
+      {
+        id,
+        onClick,
+        label: formFields
+          .filter((formField) => formField.id !== 'ExactLocation')
+          .every((formField) => getFieldValue(formField, entry))
+          ? 'View details'
+          : undefined,
+        value: 'Details',
+        required: true,
+        supportedOffline: true
+      }
+    ];
+  };
 
   const riskReviewOptionData: EntityOptionData[] = [
     ...hazardsOptionData,
@@ -681,7 +703,7 @@ export const EntryInputContainer = ({
       },
       label: addLocationHeading,
       value: entry.location ? viewLocationHeading : undefined,
-      required: false
+      required: LogEntryTypes[entry.type as LogEntryType]?.requireLocation
     },
     {
       id: 'attachments',
@@ -718,17 +740,22 @@ export const EntryInputContainer = ({
     }
 
     return [
-      ...(['SituationReport', 'RiskAssessment', 'RiskAssessmentReview'].includes(entry.type ?? '')
+      ...(['SituationReport', 'AvianFlu', 'RiskAssessment', 'RiskAssessmentReview'].includes(
+        entry.type ?? ''
+      )
         ? []
         : descriptionOptionData(onClickLevel, descriptionHeading)),
-      ...(inputType === 'form' && entry.type === 'SituationReport' ? siteRepDetailOptionData : []),
+      ...(inputType === 'form' && entry.type === 'SituationReport'
+        ? detailsOptionData('siteRepMethane')
+        : []),
+      ...(inputType === 'form' && entry.type === 'AvianFlu' ? detailsOptionData('avianFlu') : []),
       ...(inputType === 'form' && entry.type === 'RiskAssessmentReview'
         ? riskAssessmentReviewOptionData()
         : []),
       ...(inputType === 'form' && entry.type === 'RiskAssessment' ? riskReviewOptionData : []),
       ...(inputType === 'form'
         ? parentFormFields.map(
-          (field) =>
+            (field) =>
               ({
                 id: `field-${field.id}`,
                 dependentId: field.dependentFieldId,
@@ -750,7 +777,7 @@ export const EntryInputContainer = ({
                 icon: getFieldIcon(field)?.icon,
                 supportedOffline: true
               }) as EntityOptionData
-        )
+          )
         : []),
       ...baseEntityOptionsData(onClickLevel)
     ];
@@ -769,7 +796,7 @@ export const EntryInputContainer = ({
     ),
     addingLocation && (
       <Location.Content
-        required={false}
+        required={LogEntryTypes[entry.type as LogEntryType].requireLocation}
         location={entry.location}
         onLocationChange={onLocationChange}
         validationErrors={validationErrors}
@@ -847,20 +874,20 @@ export const EntryInputContainer = ({
     },
     (addingCustomForm &&
       customForm && {
-      heading: `New custom form - ${customForm.title}`,
-      inputControls: (
-        <Box flexGrow={1} padding={2}>
-          <AddFormInstance
-            selectedForm={customForm}
-            selectedFormData={customFormData}
-            onChange={onCustomFormDataChange}
-            setErrors={setValidationErrors}
-          />
-        </Box>
-      ),
-      showButtons: true,
-      containerBackgroundColor: 'background.default'
-    }) || {
+        heading: `New custom form - ${customForm.title}`,
+        inputControls: (
+          <Box flexGrow={1} padding={2}>
+            <AddFormInstance
+              selectedForm={customForm}
+              selectedFormData={customFormData}
+              onChange={onCustomFormDataChange}
+              setErrors={setValidationErrors}
+            />
+          </Box>
+        ),
+        showButtons: true,
+        containerBackgroundColor: 'background.default'
+      }) || {
       heading: customHeading,
       inputControls: (
         <Box padding={2}>
@@ -876,10 +903,16 @@ export const EntryInputContainer = ({
               mentionables={mentionables}
             />
           )}
-          {addingSiteRepDetails && forms && (
-            <CustomFormContainer
+          {(addingSiteRepDetails || addingAvianFluDetails) && forms && (
+            <PredefinedFormContainer
               entry={entry}
-              selectedForm={forms.find((form) => form.id === 'siteRepMethane')!}
+              selectedForm={
+                forms.find(
+                  (form) =>
+                    (addingSiteRepDetails && form.id === 'siteRepMethane') ||
+                    (addingAvianFluDetails && form.id === 'avianFlu')
+                )!
+              }
               fields={formFields}
               onFieldChange={onNestedFieldChange}
             />
@@ -887,36 +920,45 @@ export const EntryInputContainer = ({
           {(addingFormFields || addingComments || addingRiskAssessmentToReview || addingHazard) &&
             formFields &&
             formField && (
-            <Box display="flex" flexDirection="column" gap={2}>
-              <GenericFormField
-                field={formField}
-                fields={formFields}
-                entry={entry}
-                entries={entries}
-                onChange={(id, value) => {
-                  if (addingHazard) {
-                    handleRelevantHazardsChange(id, value);
-                  } else {
-                    onNestedFieldChange(id, value);
-                    if (addingRiskAssessmentToReview) {
-                      setRefreshHazardOptions(true);
-                    }
-                  }
-                }}
-                errors={validationErrors}
-              />
-              {addingHazard && hazardValue && forms && (
-                <CustomFormContainer
-                  entry={entry}
-                  selectedForm={
-                      forms.find((form) => form.id === `haz_${hazardValue.toLowerCase()}`)!
-                  }
+              <Box display="flex" flexDirection="column" gap={2}>
+                <GenericFormField
+                  field={formField}
                   fields={formFields}
-                  onFieldChange={onNestedFieldChange}
+                  entry={entry}
+                  entries={entries}
+                  onChange={(id, value) => {
+                    if (addingHazard) {
+                      handleRelevantHazardsChange(id, value);
+                    } else {
+                      onNestedFieldChange(id, value);
+                      if (addingRiskAssessmentToReview) {
+                        setRefreshHazardOptions(true);
+                      }
+                    }
+                  }}
+                  errors={validationErrors}
                 />
-              )}
-            </Box>
-          )}
+                {addingHazard && hazardValue && forms && (
+                  <PredefinedFormContainer
+                    entry={entry}
+                    selectedForm={
+                      forms.find((form) => form.id === `haz_${hazardValue.toLowerCase()}`)!
+                    }
+                    fields={formFields}
+                    onFieldChange={(id, value) => {
+                      if (addingHazard) {
+                        handleRelevantHazardsChange(id, value);
+                      } else {
+                        onNestedFieldChange(id, value);
+                        if (addingRiskAssessmentToReview) {
+                          setRefreshHazardOptions(true);
+                        }
+                      }
+                    }}
+                  />
+                )}
+              </Box>
+            )}
           {baseInputControls()}
         </Box>
       ),

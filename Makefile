@@ -27,9 +27,13 @@ lisa-resources-down:
 upload-predefined-forms:
 	./schema/upload-predefined-forms.sh ./schema/Hazards/hazards.ttl ./schema/Hazards/hazards-data-schema.json ./schema/Hazards/hazards-ui-schema.json
 	./schema/upload-predefined-forms.sh ./schema/SitRep/siteRep.ttl ./schema/SitRep/siteRep-data-schema.json ./schema/SitRep/siteRep-ui-schema.json
+	./schema/upload-predefined-forms.sh ./schema/AvianFlu/avianFlu.ttl ./schema/AvianFlu/avianFlu-data-schema.json ./schema/AvianFlu/avianFlu-ui-schema.json
 
 upload-hazards:
 	./schema/upload-predefined-forms.sh ./schema/Hazards/hazards.ttl ./schema/Hazards/hazards-data-schema.json ./schema/Hazards/hazards-ui-schema.json
 
 upload-siterep:
 	./schema/upload-predefined-forms.sh ./schema/SitRep/siteRep.ttl ./schema/SitRep/siteRep-data-schema.json ./schema/SitRep/siteRep-ui-schema.json
+
+upload-avianflu:
+	./schema/upload-predefined-forms.sh ./schema/AvianFlu/avianFlu.ttl ./schema/AvianFlu/avianFlu-data-schema.json ./schema/AvianFlu/avianFlu-ui-schema.json

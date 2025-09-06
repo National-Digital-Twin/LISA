@@ -26,6 +26,7 @@ import { Format } from '../../utils';
 import { IncidentType } from 'common/IncidentType';
 import { Box } from '@mui/material';
 import { RelevantHazards } from 'common/LogEntryTypes/RiskAssessment/hazards/RelevantHazards';
+import { AvianFlu } from 'common/LogEntryTypes/AvianFlu';
 
 export type EntityOptionData = {
   id: string;
@@ -88,10 +89,10 @@ const descriptionOptionDataComponent = (
   return undefined;
 };
 
-const siteRepDetailsOptionDataComponent = (
+const detailsOptionDataComponent = (
   key: string,
   data: EntityOptionData[],
-  siteRepFieldIds: string[],
+  fieldIds: string[],
   errors: ValidationError[]
 ) => {
   const optionData = data.find((x) => x.id === key);
@@ -102,7 +103,7 @@ const siteRepDetailsOptionDataComponent = (
       optionData,
       <TextSnippetOutlinedIcon />,
       'Add details',
-      !!errors.some((error) => siteRepFieldIds.includes(error.fieldId))
+      !!errors.some((error) => fieldIds.includes(error.fieldId))
     );
   }
 
@@ -439,6 +440,12 @@ const forms = (data: EntityOptionData[], errors: ValidationError[]) => {
     .filter((field) => field.id !== 'ExactLocation')
     .map((field) => field.id);
 
+  const avianFluFieldIds = AvianFlu.fields({
+    fields: [{ id: 'OccupierConsent', type: 'YesNo', value: 'Yes' }]
+  })
+    .filter((field) => field.id !== 'Location')
+    .map((field) => field.id);
+
   return [
     descriptionOptionDataComponent(
       'description',
@@ -447,7 +454,8 @@ const forms = (data: EntityOptionData[], errors: ValidationError[]) => {
       'Add a description',
       errors
     ),
-    siteRepDetailsOptionDataComponent('sitRepDetails', data, siteRepFieldIds, errors),
+    detailsOptionDataComponent('sitRepDetails', data, siteRepFieldIds, errors),
+    detailsOptionDataComponent('avianFlu', data, avianFluFieldIds, errors),
     riskAssessmentReviewOptionDataComponent('riskAssessmentReview', data, errors),
     ...hazardsOptionDataComponents('selectHazard', data, errors),
     addCommentsOptionDataComponent('addComments', data, errors),
