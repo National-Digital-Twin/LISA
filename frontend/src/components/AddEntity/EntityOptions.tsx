@@ -8,6 +8,7 @@ import AccessTimeOutlinedIcon from '@mui/icons-material/AccessTimeOutlined';
 import AttachFileOutlinedIcon from '@mui/icons-material/AttachFileOutlined';
 import BadgeOutlinedIcon from '@mui/icons-material/BadgeOutlined';
 import AssignmentTurnedInOutlinedIcon from '@mui/icons-material/AssignmentTurnedInOutlined';
+import MicOutlinedIcon from  '@mui/icons-material/MicOutlined';
 import NotesOutlinedIcon from '@mui/icons-material/NotesOutlined';
 import WarningAmberOutlinedIcon from '@mui/icons-material/WarningAmberOutlined';
 import AddCommentOutlinedIcon from '@mui/icons-material/AddCommentOutlined';
@@ -231,6 +232,22 @@ const locationOptionDataComponent = (
           error.fieldId === 'location.description' ||
           error.fieldId === 'location.coordinates'
       )
+    );
+  }
+
+  return undefined;
+};
+
+const recordingOptionDataComponent = (key: string, data: EntityOptionData[]) => {
+  const optionData = data.find((x) => x.id === key);
+
+  if (optionData) {
+    return optionDataComponent(
+      `${key}-option`,
+      optionData,
+      <MicOutlinedIcon />,
+      'Add voice note',
+      false
     );
   }
 
@@ -463,6 +480,7 @@ const forms = (data: EntityOptionData[], errors: ValidationError[]) => {
     dateAndTimeOptionDataComponent('dateAndTime', data, errors),
     locationOptionDataComponent('location', data, errors),
     attachmentsOptionDataComponent('attachments', data),
+    recordingOptionDataComponent('recordings', data),
     sketchOptionDataComponent('sketch', data)
   ].filter((x) => !!x);
 };
@@ -479,6 +497,7 @@ const updates = (data: EntityOptionData[], errors: ValidationError[]) =>
     dateAndTimeOptionDataComponent('dateAndTime', data, errors),
     locationOptionDataComponent('location', data, errors),
     attachmentsOptionDataComponent('attachments', data),
+    recordingOptionDataComponent('recordings', data),
     sketchOptionDataComponent('sketch', data)
   ].filter((x) => !!x);
 
@@ -495,6 +514,7 @@ const tasks = (data: EntityOptionData[], errors: ValidationError[]) => {
     ),
     locationOptionDataComponent('location', data, errors),
     attachmentsOptionDataComponent('attachments', data),
+    recordingOptionDataComponent('recordings', data),
     sketchOptionDataComponent('sketch', data)
   ].filter((x) => !!x);
 };
