@@ -1,7 +1,11 @@
+// SPDX-License-Identifier: Apache-2.0
+// © Crown Copyright 2025. This work has been developed by the National Digital Twin Programme
+// and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
+
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { Stage } from 'konva/lib/Stage';
 import { v4 as uuidV4 } from 'uuid';
-import { Box, FormControl, MenuItem, TextField } from '@mui/material';
+import { Box, Button, FormControl, MenuItem, TextField } from '@mui/material';
 import { type CreateTask } from 'common/Task';
 import { type User } from 'common/User';
 import { type Location as TypeOfLocation } from 'common/Location';
@@ -13,6 +17,7 @@ import { EntityOptionsContainer } from '../AddEntity/EntityOptionsContainer';
 import { EntityOptionData } from '../AddEntity/EntityOptions';
 import { Document, Format } from '../../utils';
 import { createSequenceNumber } from '../../utils/Form/sequence';
+import { useTemporaryState } from '../../hooks/useTemporaryState';
 import Location from '../AddEntry/Location';
 import Files from '../AddEntry/Files';
 import Sketch from '../AddEntry/Sketch';
@@ -58,6 +63,15 @@ export const TaskInputContainer = ({
   const [sketchFile, setSketchFile] = useState<File | null>(null);
   const canvasRef = useRef<Stage>(null);
 
+  type EditableState = {
+    task: Partial<Omit<CreateTask, 'incidentId'>>;
+    selectedFiles: File[];
+    sketchLines: SketchLine[];
+    sketchFile: File | null;
+  };
+
+  const tempState = useTemporaryState<EditableState>();
+
   const validateTask = useCallback(
     (task: Partial<Omit<CreateTask, 'incidentId'>>): ValidationError[] => {
       const errors: ValidationError[] = [];
@@ -67,7 +81,7 @@ export const TaskInputContainer = ({
       if (!task.assignee?.username?.trim()) {
         errors.push({ fieldId: 'task_assignee', error: 'Please select an assignee' });
       }
-      if (!task.description?.trim()) {
+      if (!task.content?.text?.trim() && !task.description?.trim()) {
         errors.push({ fieldId: 'task_description', error: 'Add a description' });
       }
       return errors;
@@ -77,9 +91,23 @@ export const TaskInputContainer = ({
 
   const errors = useMemo(() => validateTask(task), [task, validateTask]);
 
-  const setLevelAndClearState = (level: number) => {
-    // When leaving sketch screen, capture the canvas if there are sketch lines
-    if (activeField === 'sketch' && level === 0 && sketchLines.length > 0 && canvasRef.current) {
+  const setLevelAndClearState = (level: number, confirmed: boolean = false) => {
+    if (level === 0) {
+      if (!confirmed) {
+        // Revert changes if going back without confirming
+        const saved = tempState.getSaved();
+        if (saved) {
+          setTask(saved.task);
+          setSelectedFiles(saved.selectedFiles);
+          setSketchLines(saved.sketchLines);
+          setSketchFile(saved.sketchFile);
+        }
+      }
+      tempState.clear();
+    }
+
+    // When confirming sketch screen, capture the canvas if there are sketch lines
+    if (confirmed && activeField === 'sketch' && level === 0 && sketchLines.length > 0 && canvasRef.current) {
       const dataURL = canvasRef.current.toDataURL();
       if (dataURL) {
         const file = Document.dataURLtoFile(dataURL, `Sketch ${Format.timestamp()}.png`);
@@ -94,6 +122,13 @@ export const TaskInputContainer = ({
   const getFieldError = (fieldId: string) => errors.find((e) => e.fieldId === fieldId);
 
   const activateField = (field: FieldType) => {
+    tempState.save({
+      task: { ...task },
+      selectedFiles: [...selectedFiles],
+      sketchLines: [...sketchLines],
+      sketchFile
+    });
+
     setActiveField(field);
     setLevel(1);
   };
@@ -142,10 +177,10 @@ export const TaskInputContainer = ({
     }
 
     const completeTask: CreateTask & Required<Pick<CreateTask, 'id' | 'status'>> = {
+      ...task as Omit<CreateTask, 'incidentId'>,
       id: uuidV4(),
       status: 'ToDo',
       incidentId,
-      ...(task as Omit<CreateTask, 'incidentId'>),
       attachments: attachments.length > 0 ? attachments : undefined
     };
 
@@ -185,100 +220,125 @@ export const TaskInputContainer = ({
   const renderFieldInput = () => {
     if (!activeField) return null;
 
-    switch (activeField) {
-      case 'name':
-        return (
-          <FormControl fullWidth sx={{ marginTop: 2 }}>
-            <TextField
-              hiddenLabel
-              variant="filled"
-              placeholder="Task name"
-              value={task.name || ''}
-              onChange={(event) => onTaskChange({ name: event.target.value })}
-              error={!!getFieldError('task_name')}
-              helperText={getFieldError('task_name')?.error}
+    // Check if field has changes from saved state
+    const isDirty = tempState.hasChanges({
+      task,
+      selectedFiles,
+      sketchLines,
+      sketchFile
+    });
+
+    const fieldInput = (() => {
+      switch (activeField) {
+        case 'name':
+          return (
+            <FormControl fullWidth sx={{ marginTop: 2 }}>
+              <TextField
+                hiddenLabel
+                variant="filled"
+                placeholder="Task name"
+                value={task.name || ''}
+                onChange={(event) => onTaskChange({ name: event.target.value })}
+                error={!!getFieldError('task_name')}
+                helperText={getFieldError('task_name')?.error}
+              />
+            </FormControl>
+          );
+
+        case 'assignee':
+          return (
+            <FormControl fullWidth sx={{ marginTop: 2 }}>
+              <TextField
+                select
+                value={task.assignee?.username || ''}
+                variant="filled"
+                label={task.assignee?.username ? '' : 'Select assignee'}
+                onChange={(event) => {
+                  const selectedUser = users?.find((u) => u.username === event.target.value);
+                  if (selectedUser) {
+                    onTaskChange({ assignee: selectedUser });
+                  }
+                }}
+                slotProps={{ inputLabel: { shrink: false } }}
+                error={!!getFieldError('task_assignee')}
+                helperText={getFieldError('task_assignee')?.error}
+              >
+                {assigneeOptions?.map((option) => (
+                  <MenuItem key={option.value} value={option.value}>
+                    {option.label}
+                  </MenuItem>
+                ))}
+              </TextField>
+            </FormControl>
+          );
+
+        case 'content':
+          return (
+            <FormControl fullWidth sx={{ marginTop: 2 }}>
+              <EntryContent
+                id="content"
+                json={task.content?.json || undefined}
+                editable
+                mentionables={mentionables}
+                recordingActive={false}
+                onChange={changeEvent}
+                onRecording={() => null}
+                error={!!getFieldError('task_description')}
+                placeholder={'Type @ to tag a person, log, task or file'}
+              />
+            </FormControl>
+          );
+
+        case 'location':
+          return (
+            <Location.Content
+              location={task.location}
+              validationErrors={errors}
+              onLocationChange={(location) => onTaskChange({ location: location as TypeOfLocation })}
             />
-          </FormControl>
-        );
+          );
 
-      case 'assignee':
-        return (
-          <FormControl fullWidth sx={{ marginTop: 2 }}>
-            <TextField
-              select
-              value={task.assignee?.username || ''}
-              variant="filled"
-              label={task.assignee?.username ? '' : 'Select assignee'}
-              onChange={(event) => {
-                const selectedUser = users?.find((u) => u.username === event.target.value);
-                if (selectedUser) {
-                  onTaskChange({ assignee: selectedUser });
-                }
-              }}
-              slotProps={{ inputLabel: { shrink: false } }}
-              error={!!getFieldError('task_assignee')}
-              helperText={getFieldError('task_assignee')?.error}
-            >
-              {assigneeOptions?.map((option) => (
-                <MenuItem key={option.value} value={option.value}>
-                  {option.label}
-                </MenuItem>
-              ))}
-            </TextField>
-          </FormControl>
-        );
-
-      case 'content':
-        return (
-          <FormControl fullWidth sx={{ marginTop: 2 }}>
-            <EntryContent
-              id="content"
-              json={task.content?.json || undefined}
-              editable
-              mentionables={mentionables}
-              recordingActive={false}
-              onChange={changeEvent}
-              onRecording={() => null}
-              error={!!getFieldError('task_description')}
-              placeholder={'Type @ to tag a person, log, task or file'}
+        case 'attachments':
+          return (
+            <Files.Content
+              active={true}
+              selectedFiles={selectedFiles}
+              recordings={[]}
+              onFilesSelected={handleFilesSelected}
+              removeSelectedFile={handleFileRemove}
+              removeRecording={() => {}}
             />
-          </FormControl>
-        );
+          );
 
-      case 'location':
-        return (
-          <Location.Content
-            location={task.location}
-            validationErrors={errors}
-            onLocationChange={(location) => onTaskChange({ location: location as TypeOfLocation })}
-          />
-        );
+        case 'sketch':
+          return (
+            <Sketch.Content
+              active={true}
+              canvasRef={canvasRef}
+              lines={sketchLines}
+              onChangeLines={setSketchLines}
+            />
+          );
 
-      case 'attachments':
-        return (
-          <Files.Content
-            active={true}
-            selectedFiles={selectedFiles}
-            recordings={[]}
-            onFilesSelected={handleFilesSelected}
-            removeSelectedFile={handleFileRemove}
-            removeRecording={() => {}}
-          />
-        );
+        default:
+          return null;
+      }
+    })();
 
-      case 'sketch':
-        return (
-          <Sketch.Content
-            active={true}
-            canvasRef={canvasRef}
-            lines={sketchLines}
-            onChangeLines={setSketchLines}
-          />
-        );
-
-      default:
-        return null;
-    }
+    return (
+      <Box>
+        {fieldInput}
+        <Box display="flex" justifyContent="flex-end" marginTop={2}>
+          <Button
+            onClick={() => setLevelAndClearState(0, true)}
+            variant="contained"
+            disabled={!isDirty}
+          >
+            Confirm
+          </Button>
+        </Box>
+      </Box>
+    );
   };
 
   const inputContainerData: EntityInputContainerData[] = [
@@ -302,7 +362,7 @@ export const TaskInputContainer = ({
       onSubmit={handleSubmit}
       onCancel={onCancel}
       level={level}
-      setLevel={setLevelAndClearState}
+      setLevel={(newLevel) => setLevelAndClearState(newLevel, false)}
       disableSubmit={errors.length > 0 || isSubmitting}
     />
   );
