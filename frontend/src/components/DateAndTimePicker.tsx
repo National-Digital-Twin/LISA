@@ -377,14 +377,6 @@ const CustomTimePickerControls = ({
       <Box display="flex" alignSelf="flex-end" gap={1}>
         <Button
           variant="text"
-          onClick={() => handleTimeConfirmation()}
-          sx={{ textTransform: 'none' }}
-          disabled={!timeClockValue}
-        >
-          Confirm
-        </Button>
-        <Button
-          variant="text"
           onClick={() => {
             if (setTimePopperAnchorEl) {
               setTimePopperAnchorEl(null);
@@ -394,7 +386,15 @@ const CustomTimePickerControls = ({
           }}
           sx={{ textTransform: 'none' }}
         >
-          Cancel
+          CANCEL
+        </Button>
+        <Button
+          variant="text"
+          onClick={() => handleTimeConfirmation()}
+          sx={{ textTransform: 'none' }}
+          disabled={!timeClockValue}
+        >
+          OK
         </Button>
       </Box>
     </Box>
@@ -549,7 +549,7 @@ export const DateAndTimePicker = ({
       return (
         date.get('year') === lowerLimit.getFullYear() &&
         date.get('month') === lowerLimit.getMonth() &&
-        date.get('day') <= lowerLimit.getDay()
+        date.get('date') <= lowerLimit.getDate()
       );
     }
 
