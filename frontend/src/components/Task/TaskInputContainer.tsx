@@ -28,7 +28,7 @@ type Props = {
   isSubmitting?: boolean;
 };
 
-type FieldType = 'name' | 'assignee' | 'content' | 'location' | 'attachments' | 'sketch' ;
+type FieldType = 'name' | 'assignee' | 'content' | 'location' | 'attachments' | 'sketch';
 
 const fieldConfigs = {
   name: { heading: 'Task name', required: true, supportedOffline: true },
@@ -67,7 +67,8 @@ export const TaskInputContainer = ({
       if (!task.assignee?.username?.trim()) {
         errors.push({ fieldId: 'task_assignee', error: 'Please select an assignee' });
       }
-      if (!task.description?.trim()) {
+      // must possess content (preferred) or description (legacy)
+      if (!(task.content?.text ?? task.description)?.trim()) {
         errors.push({ fieldId: 'task_description', error: 'Add a description' });
       }
       return errors;
