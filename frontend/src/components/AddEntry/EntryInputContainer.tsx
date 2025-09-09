@@ -694,6 +694,16 @@ export const EntryInputContainer = ({
       supportedOffline: true
     },
     {
+      id: 'recordings',
+      onClick: () => {
+        setCustomHeading('Add voice note');
+        setAddingAttachments(true);
+        setLevel(onClickLevel);
+      },
+      value: selectedFiles.length > 0 ? `${selectedFiles.length} attachments` : undefined,
+      supportedOffline: true
+    },
+    {
       id: 'sketch',
       onClick: () => {
         setCustomHeading('Add sketch');

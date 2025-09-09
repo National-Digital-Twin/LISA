@@ -28,7 +28,14 @@ type Props = {
   isSubmitting?: boolean;
 };
 
-type FieldType = 'name' | 'assignee' | 'content' | 'location' | 'attachments' | 'sketch' ;
+type FieldType =
+  | 'name'
+  | 'assignee'
+  | 'content'
+  | 'location'
+  | 'attachments'
+  | 'recordings'
+  | 'sketch';
 
 const fieldConfigs = {
   name: { heading: 'Task name', required: true, supportedOffline: true },
@@ -36,6 +43,7 @@ const fieldConfigs = {
   content: { heading: 'Add task description', required: true, supportedOffline: true },
   location: { heading: 'Add location(s)', required: false, supportedOffline: false },
   attachments: { heading: 'Add attachments', required: false, supportedOffline: true },
+  recordings: { heading: 'Add voice note', required: false, supportedOffline: true },
   sketch: { heading: 'Add sketch', required: false, supportedOffline: true }
 };
 
@@ -164,6 +172,8 @@ export const TaskInputContainer = ({
         return task.location ? 'View location' : undefined;
       case 'attachments':
         return selectedFiles.length > 0 ? `${selectedFiles.length} files` : undefined;
+      case 'recordings':
+        return selectedFiles.length > 0 ? `${selectedFiles.length} files` : undefined;
       case 'sketch':
         return sketchFile ? 'View sketch' : undefined;
     }
@@ -265,7 +275,17 @@ export const TaskInputContainer = ({
             removeRecording={() => {}}
           />
         );
-
+      case 'recordings':
+        return (
+          <Files.Content
+            active={true}
+            selectedFiles={selectedFiles}
+            recordings={[]}
+            onFilesSelected={handleFilesSelected}
+            removeSelectedFile={handleFileRemove}
+            removeRecording={() => {}}
+          />
+        );
       case 'sketch':
         return (
           <Sketch.Content
