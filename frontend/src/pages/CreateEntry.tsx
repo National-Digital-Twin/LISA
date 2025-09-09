@@ -51,10 +51,12 @@ export const CreateEntry = ({ inputType }: Props) => {
       type: 'Update',
       incidentId,
       sequence: createSequenceNumber(),
+      dateTime: new Date().toISOString(),
       content: {}
     }) || {
       incidentId,
       sequence: createSequenceNumber(),
+      dateTime: new Date().toISOString(),
       content: {}
     }
   );

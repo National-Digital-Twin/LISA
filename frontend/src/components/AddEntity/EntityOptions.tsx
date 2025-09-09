@@ -202,7 +202,7 @@ const dateAndTimeOptionDataComponent = (
       `${key}-option`,
       optionData,
       <AccessTimeOutlinedIcon />,
-      'Add data and time',
+      'Add date and time',
       !!errors.find((error) => error.fieldId === 'dateTime')
     );
   }
