@@ -229,34 +229,26 @@ export default function MentionsPlugin({
     minLength: 0
   });
 
+  const defaultMentions: Array<Mentionable> = [
+    { id: '0', label: 'User', type: 'User' },
+    { id: '1', label: 'File', type: 'File' },
+    { id: '2', label: 'Log Entry', type: 'LogEntry' },
+    { id: '3', label: 'Task', type: 'Task' }
+  ];
+
   const defaultOptions = useMemo(
     () =>
-      [
-        new MentionTypeaheadOption(
-          { id: '0', label: 'User', type: 'User' },
-          TRIGGERS.DEFAULT,
-          true,
-          !mentionables.some((m) => m.type === 'User')
-        ),
-        new MentionTypeaheadOption(
-          { id: '1', label: 'File', type: 'File' },
-          TRIGGERS.DEFAULT,
-          true,
-          !mentionables.some((m) => m.type === 'File')
-        ),
-        new MentionTypeaheadOption(
-          { id: '2', label: 'Log Entry', type: 'LogEntry' },
-          TRIGGERS.DEFAULT,
-          true,
-          !mentionables.some((m) => m.type === 'LogEntry')
-        ),
-        new MentionTypeaheadOption(
-          { id: '3', label: 'Task', type: 'Task' },
-          TRIGGERS.DEFAULT,
-          true,
-          !mentionables.some((m) => m.type === 'Task')
+      defaultMentions
+        .map(
+          ({ id, label, type }) =>
+            new MentionTypeaheadOption(
+              { id, label, type },
+              TRIGGERS.DEFAULT,
+              true,
+              !mentionables.some((m) => m.type === type)
+            )
         )
-      ].filter((m) => !m.disabled),
+        .filter((m) => !m.disabled),
     [mentionables]
   );
 
