@@ -114,7 +114,7 @@ export const IncidentInputContainer = ({
     }
 
     if (r?.telephone) {
-      const telephoneFormat = /^\+?[0-9][0-9 ]+[0-9]$/;
+      const telephoneFormat = /^\+?\d[\d\s]+\d$/;
 
       if (!telephoneFormat.test(r.telephone)) {
         errors.push({
