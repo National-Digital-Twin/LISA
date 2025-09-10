@@ -38,13 +38,6 @@ const TRIGGERS = {
   DEFAULT: '@'
 } as const;
 
-const STRING_TO_TYPE: Record<string, MentionableType> = {
-  ['User']: 'User',
-  ['LogEntry']: 'LogEntry',
-  ['File']: 'File',
-  ['Task']: 'Task'
-};
-
 const PUNCTUATION = '\\.,\\+\\*\\?\\$\\@\\|{}\\(\\)\\^\\-\\[\\]\\\\/!%\'"~=<>_:;';
 const VALID_CHARS = `[^${PUNCTUATION}\\s]`;
 const VALID_JOINS = ['(?:', '\\.[ |$]|', ' |', '[', PUNCTUATION, ']|', ')'].join('');
@@ -220,13 +213,13 @@ export default function MentionsPlugin({
   mentionables
 }: Readonly<MentionsPluginProps>): JSX.Element | null {
   const [editor] = useLexicalComposerContext();
-  const [type, setType] = useState<string | null>(null);
+  const [type, setType] = useState<MentionableType | null>(null);
   const [filter, setFilter] = useState<string | null>(null);
 
   // remove leading filter
   const results = useMentionLookupService(
     mentionables,
-    STRING_TO_TYPE[type || 'User'],
+    type || 'User',
     filter ? filter.slice(1) : ''
   );
 
