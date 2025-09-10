@@ -1,4 +1,4 @@
-import { RefObject, useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Stage } from 'konva/lib/Stage';
 import { Incident } from 'common/Incident';
 import { LogEntry } from 'common/LogEntry';
@@ -6,7 +6,7 @@ import { Mentionable } from 'common/Mentionable';
 import { type Location as TypeOfLocation } from 'common/Location';
 import { FieldValueType, OptionType, SketchLine, ValidationError } from '../../utils/types';
 import { OnFieldChange } from '../../utils/handlers';
-import { Format, Validate } from '../../utils';
+import { Document, Format, Validate } from '../../utils';
 import { EntityOptionData } from '../AddEntity/EntityOptions';
 import { EntityInputContainer, EntityInputContainerData } from '../AddEntity/EntityInputContainer';
 import { EntityOptionsContainer } from '../AddEntity/EntityOptionsContainer';
@@ -42,8 +42,6 @@ type Props = {
   mentionables: Array<Mentionable>;
   selectedFiles: Array<File>;
   recordings: Array<File>;
-  canvasRef: RefObject<Stage | null>;
-  sketchLines: Array<SketchLine>;
   customForm: CustomForm | null;
   customFormData: Array<FormDataProperty>;
   setCustomForm: (customForm: CustomForm | null) => void;
@@ -54,7 +52,7 @@ type Props = {
   onRemoveSelectedFile: (filename: string) => void;
   onRemoveRecording: (recordingName: string) => void;
   onLocationChange: (locationInputType: Partial<TypeOfLocation>) => void;
-  setSketchLines: (sketchLines: Array<SketchLine>) => void;
+  setSketchFile: (sketch: File | null) => void;
   onCustomFormDataChange: (id: string, label: string, value: string) => void;
   resetEntry: () => void;
   resetCustomForm: () => void;
@@ -85,8 +83,6 @@ export const EntryInputContainer = ({
   mentionables,
   selectedFiles,
   recordings,
-  canvasRef,
-  sketchLines,
   customForm,
   customFormData,
   setCustomForm,
@@ -101,7 +97,7 @@ export const EntryInputContainer = ({
   onRemoveSelectedFile,
   onRemoveRecording,
   onLocationChange,
-  setSketchLines,
+  setSketchFile,
   onMainBackClick,
   onSubmit,
   onCancel
@@ -118,6 +114,9 @@ export const EntryInputContainer = ({
   const [selectedHazardType, setSelectedHazardType] = useState<string>();
   const [activeFormField, setActiveFormField] = useState<Field>();
   const [hazardChanges, setHazardChanges] = useState<Record<string, FieldValueType>>({});
+
+  const canvasRef = useRef<Stage>(null);
+  const [sketchLines, setSketchLines] = useState<SketchLine[]>([]);
 
   type EditableState = {
     entry: Partial<LogEntry>;
@@ -196,6 +195,16 @@ export const EntryInputContainer = ({
     const shouldRestore =
       (inputType === 'form' && level === 1 && !confirm) ||
       (inputType === 'update' && level === 0 && !confirm);
+
+
+    if (confirm && activeField === 'sketch' && sketchLines.length > 0 && canvasRef.current) {
+      // Capture sketch before canvas is unmounted
+      const dataURL = canvasRef.current.toDataURL();
+      if (dataURL) {
+        const file = Document.dataURLtoFile(dataURL, `Sketch ${Format.timestamp()}.png`);
+        setSketchFile(file);
+      }
+    }
 
     if (shouldRestore) {
       const saved = tempState.getSaved();
