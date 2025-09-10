@@ -209,9 +209,7 @@ type MentionsPluginProps = {
   mentionables: Array<Mentionable>;
 };
 
-export default function MentionsPlugin({
-  mentionables
-}: Readonly<MentionsPluginProps>): JSX.Element | null {
+export default function MentionsPlugin({mentionables}: Readonly<MentionsPluginProps>): JSX.Element | null {
   const [editor] = useLexicalComposerContext();
   const [type, setType] = useState<MentionableType | null>(null);
   const [filter, setFilter] = useState<string | null>(null);
