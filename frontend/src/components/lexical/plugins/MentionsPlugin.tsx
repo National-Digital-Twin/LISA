@@ -216,7 +216,9 @@ type MentionsPluginProps = {
   mentionables: Array<Mentionable>;
 };
 
-export default function MentionsPlugin({ mentionables }: Readonly<MentionsPluginProps>): JSX.Element | null {
+export default function MentionsPlugin({
+  mentionables
+}: Readonly<MentionsPluginProps>): JSX.Element | null {
   const [editor] = useLexicalComposerContext();
   const [type, setType] = useState<string | null>(null);
   const [filter, setFilter] = useState<string | null>(null);
@@ -239,25 +241,25 @@ export default function MentionsPlugin({ mentionables }: Readonly<MentionsPlugin
       [
         new MentionTypeaheadOption(
           { id: '0', label: 'User', type: 'User' },
-          '@',
+          TRIGGERS.DEFAULT,
           true,
           !mentionables.some((m) => m.type === 'User')
         ),
         new MentionTypeaheadOption(
           { id: '1', label: 'File', type: 'File' },
-          '@',
+          TRIGGERS.DEFAULT,
           true,
           !mentionables.some((m) => m.type === 'File')
         ),
         new MentionTypeaheadOption(
           { id: '2', label: 'Log Entry', type: 'LogEntry' },
-          '@',
+          TRIGGERS.DEFAULT,
           true,
           !mentionables.some((m) => m.type === 'LogEntry')
         ),
         new MentionTypeaheadOption(
           { id: '3', label: 'Task', type: 'Task' },
-          '@',
+          TRIGGERS.DEFAULT,
           true,
           !mentionables.some((m) => m.type === 'Task')
         )
