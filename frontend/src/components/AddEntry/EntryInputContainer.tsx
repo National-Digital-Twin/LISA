@@ -692,6 +692,7 @@ export const EntryInputContainer = ({
               location={entry.location}
               validationErrors={validationErrors}
               onLocationChange={onLocationChange}
+              required={LogEntryTypes[entry.type as LogEntryType].requireLocation}
             />
           );
 
