@@ -286,16 +286,16 @@ export const IncidentInputContainer = ({
 
   const isDisabled = (key: FieldType) => key === 'time' && isEditing;
 
-  const entityOptionData: EntityOptionData[] = (Object.keys(fieldConfigs) as FieldType[]).map(
-    (field) => ({
+  const entityOptionData: EntityOptionData[] = (Object.keys(fieldConfigs) as FieldType[])
+    .filter((field) => !isEditing || (field !== 'type' && field !== 'time'))
+    .map((field) => ({
       id: field,
       onClick: () => activateField(field),
       value: displayValue(getFieldValue(field) as string | undefined),
       required: fieldConfigs[field].required,
       supportedOffline: fieldConfigs[field].supportedOffline,
       disabled: isDisabled(field)
-    })
-  );
+    }));
 
   function finalizeIncident(i: Partial<Incident>): Incident {
     return i as Incident;
