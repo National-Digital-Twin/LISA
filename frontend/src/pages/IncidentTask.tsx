@@ -19,6 +19,7 @@ import { Format } from '../utils';
 import { logInfo } from '../utils/logger';
 import StatusMini from '../components/Tasks/StatusMini';
 import { LocationValue } from '../utils/Format/entry/fields/LocationValue';
+import AttachmentLink from '../components/AttachmentLink';
 
 const TaskFallback = ({ header, message }: Readonly<{ header: React.ReactNode, message: string }>) => {
   return (
@@ -111,7 +112,7 @@ const TaskContent = ({ header, task, users }: Readonly<TaskContentProps>) => {
             <GridListItem title="Assigned to" text={task.assignee.displayName} />
           )}
           <GridListItem title="Date and time recorded" text={Format.dateAndTimeMobile(task.createdAt)} />
-          
+
           <GridListItem title="Location" text={task.location ? undefined : "None"}>
             { task.location ?
               <LocationValue entity={task} />
@@ -119,14 +120,15 @@ const TaskContent = ({ header, task, users }: Readonly<TaskContentProps>) => {
             }
           </GridListItem>
 
-          <Box
-            component={Grid}
-            size={{ xs: 12, md: 6 }}
-            aria-disabled
-            sx={{ '& .MuiTypography-root': { color: 'text.disabled' } }}
-          >
-            <GridListItem title="Attachments" text="(Coming soon)" />
-          </Box>
+          <GridListItem title="Attachments" text={!task.attachments?.length ? "None" : undefined}>
+            {task.attachments?.length ? (
+              <Box display="flex" flexDirection="column" gap={1}>
+                {task.attachments.map((attachment) => (
+                  <AttachmentLink key={attachment.key} attachment={attachment} />
+                ))}
+              </Box>
+            ) : undefined}
+          </GridListItem>
 
           <Typography component={Link} to={`/logbook/${task.incidentId}?taskId=${task.id}`} variant="body1">
               View log entry
