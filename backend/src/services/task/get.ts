@@ -36,10 +36,10 @@ async function mapResultsToTasks(
       taskMap.set(taskId, {
         id: taskId,
         name: result.taskName.value,
-        description: result.description.value,
+        description: result.description?.value,
         content: {
-          text: result.contentText.value || result.description.value || '',
-          json: result.contentJSON.value || undefined
+          text: result.contentText?.value || result.description?.value || '',
+          json: result.contentJSON?.value || undefined
         },
         incidentId,
         author: {

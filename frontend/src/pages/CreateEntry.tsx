@@ -10,14 +10,13 @@ import { useFormTemplates } from '../hooks/Forms/useFormTemplates';
 import { useCreateFormInstance } from '../hooks/Forms/useFormInstances';
 import { useIsOnline } from '../hooks/useIsOnline';
 import { LogEntry } from 'common/LogEntry';
-import { MouseEvent, useEffect, useMemo, useRef, useState } from 'react';
+import { MouseEvent, useEffect, useMemo, useState } from 'react';
 import { createSequenceNumber } from '../utils/Form/sequence';
 import { Form, FormDataProperty } from '../components/CustomForms/FormTemplates/types';
 import { Field } from 'common/Field';
-import { FieldValueType, SketchLine } from '../utils/types';
-import { Stage } from 'konva/lib/Stage';
+import { FieldValueType } from '../utils/types';
 import { Mentionable } from 'common/Mentionable';
-import { Document, Format, Form as FormUtils } from '../utils';
+import { Format, Form as FormUtils } from '../utils';
 import { LogEntryTypes } from 'common/LogEntryTypes';
 import { LogEntryType } from 'common/LogEntryType';
 import { Attachment } from 'common/Attachment';
@@ -55,10 +54,12 @@ export const CreateEntry = ({ inputType }: Props) => {
       type: 'Update',
       incidentId,
       sequence: createSequenceNumber(),
+      dateTime: new Date().toISOString(),
       content: {}
     }) || {
       incidentId,
       sequence: createSequenceNumber(),
+      dateTime: new Date().toISOString(),
       content: {}
     }
   );
@@ -68,8 +69,7 @@ export const CreateEntry = ({ inputType }: Props) => {
   const [formFields, setFormFields] = useState<Field[]>([]);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [recordings, setRecordings] = useState<File[]>([]);
-  const [sketchLines, setSketchLines] = useState<SketchLine[]>([]);
-  const canvasRef = useRef<Stage>(null);
+  const [sketchFile, setSketchFile] = useState<File | null>(null);
 
   const otherAttachments: Array<Mentionable> = useMemo(() => {
     if (!incidentAttachments) {
@@ -163,20 +163,18 @@ export const CreateEntry = ({ inputType }: Props) => {
       type: 'Recording',
       name: recording.name
     }));
+
     const sketchAttachments: Attachment[] = [];
-    const sketches: File[] = [];
-    if (sketchLines.length > 0) {
-      const dataURL = canvasRef.current?.toDataURL();
-      if (dataURL) {
-        const file = Document.dataURLtoFile(dataURL, `Sketch ${Format.timestamp()}.png`);
-        sketchAttachments.push({ type: 'Sketch', name: file.name });
-        sketches.push(file);
-      }
+    const allFiles: File[] = [...selectedFiles, ...recordings];
+    if (sketchFile) {
+      sketchAttachments.push({ type: 'Sketch', name: sketchFile.name });
+      allFiles.push(sketchFile);
     }
+
     const attachments = [...fileAttachments, ...recordingAttachments, ...sketchAttachments];
     entry.attachments = attachments.length > 0 ? attachments : undefined;
 
-    onCreateEntry({ ...entry } as LogEntry, [...selectedFiles, ...recordings, ...sketches]);
+    onCreateEntry({ ...entry } as LogEntry, allFiles);
   };
 
   const onCustomFormSubmit = () => {
@@ -246,16 +244,14 @@ export const CreateEntry = ({ inputType }: Props) => {
         onFilesSelected={onFilesSelected}
         onRemoveSelectedFile={onRemoveSelectedFile}
         onRemoveRecording={onRemoveRecording}
-        setSketchLines={setSketchLines}
         onLocationChange={onLocationChange}
+        setSketchFile={setSketchFile}
         onMainBackClick={handleCancel}
         onSubmit={onSubmit}
         onCancel={handleCancel}
         mentionables={mentionables}
         selectedFiles={selectedFiles}
         recordings={recordings}
-        canvasRef={canvasRef}
-        sketchLines={sketchLines}
       />
     </PageWrapper>
   );
