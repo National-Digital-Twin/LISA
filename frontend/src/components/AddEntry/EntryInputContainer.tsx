@@ -31,7 +31,7 @@ import { EntityTypeDropdown } from '../AddEntity/EntityTypeDropdown';
 import { EntityDivider } from '../AddEntity/EntityDivider';
 import AddFormInstance from '../CustomForms/FormInstances/AddFormInstance';
 import { GenericFormField } from '../Form/GenericFormField';
-import { FormContainer as CustomFormContainer } from '../CustomForms/FormInstances/FormContainer';
+import { FormContainer as PredefinedFormContainer } from '../CustomForms/FormInstances/FormContainer';
 import CircleIcon from '@mui/icons-material/Circle';
 
 type Props = {
@@ -63,17 +63,18 @@ type Props = {
 };
 
 type FieldType =
-| 'description'
-| 'dateAndTime'
-| 'location'
-| 'attachments'
-| 'sketch'
-| 'customForm'
-| 'siteRepDetails'
-| 'hazard'
-| 'comments'
-| 'riskAssessmentToReview'
-| 'formFields';
+  | 'description'
+  | 'dateAndTime'
+  | 'location'
+  | 'attachments'
+  | 'sketch'
+  | 'customForm'
+  | 'siteRepDetails'
+  | 'avianFluDetails'
+  | 'hazard'
+  | 'comments'
+  | 'riskAssessmentToReview'
+  | 'formFields';
 
 export const EntryInputContainer = ({
   inputType,
@@ -147,7 +148,6 @@ export const EntryInputContainer = ({
     return { ...entry, ...hazardChanges };
   };
 
-
   const applyHazardChangesToParent = () => {
     Object.entries(hazardChanges).forEach(([key, value]) => {
       onFieldChange(key, value, true);
@@ -156,13 +156,15 @@ export const EntryInputContainer = ({
   };
 
   const onHazardFieldChange = (id: string, value: FieldValueType) => {
-    setHazardChanges(prev => ({ ...prev, [id]: value }));
+    setHazardChanges((prev) => ({ ...prev, [id]: value }));
   };
 
   const customForms: CustomForm[] = useMemo(
     () =>
       (inputType === 'form' &&
-        forms.filter((form) => form.id !== 'siteRepMethane' && !form.id.includes('haz_'))) ||
+        forms.filter(
+          (form) => !['siteRepMethane', 'avianFlu'].includes(form.id) && !form.id.includes('haz_')
+        )) ||
       [],
     [inputType, forms]
   );
@@ -196,7 +198,6 @@ export const EntryInputContainer = ({
       (inputType === 'form' && level === 1 && !confirm) ||
       (inputType === 'update' && level === 0 && !confirm);
 
-
     if (confirm && activeField === 'sketch' && sketchLines.length > 0 && canvasRef.current) {
       // Capture sketch before canvas is unmounted
       const dataURL = canvasRef.current.toDataURL();
@@ -216,17 +217,17 @@ export const EntryInputContainer = ({
         setSelectedHazardType(saved.selectedHazardType);
         setSelectedHazardIndex(saved.selectedHazardIndex);
 
-        selectedFiles.forEach(file => {
+        selectedFiles.forEach((file) => {
           onRemoveSelectedFile(file.name);
         });
-        recordings.forEach(recording => {
+        recordings.forEach((recording) => {
           onRemoveRecording(recording.name);
         });
         onFilesSelected(saved.selectedFiles);
 
         setSketchLines(saved.sketchLines);
         resetCustomFormData();
-        saved.customFormData.forEach(prop => {
+        saved.customFormData.forEach((prop) => {
           onCustomFormDataChange(prop.id, prop.label, String(prop.value));
         });
       }
@@ -256,7 +257,6 @@ export const EntryInputContainer = ({
       }
     }
   };
-
 
   const onNestedFieldChange = (id: string, value: FieldValueType) => {
     onFieldChange(id, value, true);
@@ -288,8 +288,10 @@ export const EntryInputContainer = ({
 
   const onRemoveHazard = (index: number) => {
     const entry = getEntryWithHazardChanges();
-    const relevantHazardsField = formFields.find(f => f.id === RelevantHazards.id);
-    const selectedHazards = relevantHazardsField ? getFieldValue(relevantHazardsField, entry) as string[] | undefined || [] : [];
+    const relevantHazardsField = formFields.find((f) => f.id === RelevantHazards.id);
+    const selectedHazards = relevantHazardsField
+      ? (getFieldValue(relevantHazardsField, entry) as string[] | undefined) || []
+      : [];
 
     const updatedHazards = selectedHazards.filter((_, i) => i !== index);
     onNestedFieldChange(RelevantHazards.id, updatedHazards);
@@ -297,8 +299,10 @@ export const EntryInputContainer = ({
 
   const getHazardOptions = (): EntityOptionData[] => {
     const entry = getEntryWithHazardChanges();
-    const relevantHazardsField = formFields.find(f => f.id === RelevantHazards.id);
-    const selectedHazards = relevantHazardsField ? getFieldValue(relevantHazardsField, entry) as string[] | undefined || [] : [];
+    const relevantHazardsField = formFields.find((f) => f.id === RelevantHazards.id);
+    const selectedHazards = relevantHazardsField
+      ? (getFieldValue(relevantHazardsField, entry) as string[] | undefined) || []
+      : [];
 
     const options: EntityOptionData[] = [];
 
@@ -318,7 +322,13 @@ export const EntryInputContainer = ({
 
     options.push({
       id: `selectHazard-${selectedHazards.length}`,
-      onClick: () => onHazardOptionClick(selectedHazards.length, selectedHazards.length === 0 ? 'Select hazard' : 'Add hazard', undefined, selectedHazards),
+      onClick: () =>
+        onHazardOptionClick(
+          selectedHazards.length,
+          selectedHazards.length === 0 ? 'Select hazard' : 'Add hazard',
+          undefined,
+          selectedHazards
+        ),
       label: selectedHazards.length === 0 ? 'Select hazard' : 'Add hazard',
       value: undefined,
       required: selectedHazards.length === 0,
@@ -357,7 +367,6 @@ export const EntryInputContainer = ({
     } else {
       onFieldChange('type', formType);
       setSubmissionType('entry');
-
     }
 
     setLevel(1);
@@ -375,12 +384,13 @@ export const EntryInputContainer = ({
     }
   };
 
-
   const handleRelevantHazardsChange = (id: string, value: FieldValueType) => {
     if (id === getRelevantHazard().id && typeof value === 'string') {
       const entry = getEntryWithHazardChanges();
-      const relevantHazardsField = formFields.find(f => f.id === RelevantHazards.id);
-      const currentHazards = relevantHazardsField ? getFieldValue(relevantHazardsField, entry) as string[] | undefined || [] : [];
+      const relevantHazardsField = formFields.find((f) => f.id === RelevantHazards.id);
+      const currentHazards = relevantHazardsField
+        ? (getFieldValue(relevantHazardsField, entry) as string[] | undefined) || []
+        : [];
 
       const updatedHazards = [...currentHazards];
       if (selectedHazardIndex < updatedHazards.length) {
@@ -408,6 +418,7 @@ export const EntryInputContainer = ({
 
   const filteredFormFieldsForView = [
     'SituationReport',
+    'AvianFlu',
     'RiskAssessment',
     'RiskAssessmentReview'
   ].includes(entry.type ?? '')
@@ -437,26 +448,43 @@ export const EntryInputContainer = ({
     }
   ];
 
-  const siteRepDetailOptionData: EntityOptionData[] = [
-    {
-      id: 'sitRepDetails',
-      onClick: () => {
+  const detailsOptionData = (type: 'siteRepMethane' | 'avianFlu'): EntityOptionData[] => {
+    let id = '';
+    let onClick = () => {};
+
+    if (type === 'siteRepMethane') {
+      id = 'sitRepDetails';
+      onClick = () => {
         saveCurrentState();
         setCustomHeading('Details');
         setActiveField('siteRepDetails');
         setLevel(2);
-      },
-      label: formFields
-        .filter((activeFormField) => activeFormField.id !== 'ExactLocation')
-        .every((activeFormField) => getFieldValue(activeFormField, entry))
-        ? 'View details'
-        : undefined,
-      value: 'Details',
-      required: true,
-      supportedOffline: true
+      };
+    } else if (type === 'avianFlu') {
+      id = 'avianFlu';
+      onClick = () => {
+        saveCurrentState();
+        setCustomHeading('Details');
+        setActiveField('avianFluDetails');
+        setLevel(2);
+      };
     }
-  ];
 
+    return [
+      {
+        id,
+        onClick,
+        label: formFields
+          .filter((formField) => formField.id !== 'ExactLocation')
+          .every((formField) => getFieldValue(formField, entry))
+          ? 'View details'
+          : undefined,
+        value: 'Details',
+        required: true,
+        supportedOffline: true
+      }
+    ];
+  };
 
   const riskAssessmentReviewOptionData = (): EntityOptionData[] => {
     const value =
@@ -519,7 +547,7 @@ export const EntryInputContainer = ({
       },
       label: addLocationHeading,
       value: entry.location ? viewLocationHeading : undefined,
-      required: false
+      required: LogEntryTypes[entry.type as LogEntryType]?.requireLocation
     },
     {
       id: 'attachments',
@@ -558,10 +586,15 @@ export const EntryInputContainer = ({
     }
 
     return [
-      ...(['SituationReport', 'RiskAssessment', 'RiskAssessmentReview'].includes(entry.type ?? '')
+      ...(['SituationReport', 'AvianFlu', 'RiskAssessment', 'RiskAssessmentReview'].includes(
+        entry.type ?? ''
+      )
         ? []
         : descriptionOptionData(onClickLevel, descriptionHeading)),
-      ...(inputType === 'form' && entry.type === 'SituationReport' ? siteRepDetailOptionData : []),
+      ...(inputType === 'form' && entry.type === 'SituationReport'
+        ? detailsOptionData('siteRepMethane')
+        : []),
+      ...(inputType === 'form' && entry.type === 'AvianFlu' ? detailsOptionData('avianFlu') : []),
       ...(inputType === 'form' && entry.type === 'RiskAssessmentReview'
         ? riskAssessmentReviewOptionData()
         : []),
@@ -597,14 +630,17 @@ export const EntryInputContainer = ({
     ];
   };
 
-  const handleDateTimeChange = useCallback((d: string | undefined, t: string | undefined) => {
-    if (d && t) {
-      const parseDate = Date.parse(`${d}T${t}`);
-      if (!Number.isNaN(parseDate)) {
-        onFieldChange('dateTime', new Date(`${d}T${t}`).toISOString());
+  const handleDateTimeChange = useCallback(
+    (d: string | undefined, t: string | undefined) => {
+      if (d && t) {
+        const parseDate = Date.parse(`${d}T${t}`);
+        if (!Number.isNaN(parseDate)) {
+          onFieldChange('dateTime', new Date(`${d}T${t}`).toISOString());
+        }
       }
-    }
-  }, [onFieldChange]);
+    },
+    [onFieldChange]
+  );
 
   const renderFieldInput = () => {
     if (!activeField) return null;
@@ -656,6 +692,7 @@ export const EntryInputContainer = ({
               location={entry.location}
               validationErrors={validationErrors}
               onLocationChange={onLocationChange}
+              required={LogEntryTypes[entry.type as LogEntryType].requireLocation}
             />
           );
 
@@ -682,10 +719,11 @@ export const EntryInputContainer = ({
           );
 
         case 'siteRepDetails':
+        case 'avianFluDetails':
           return forms ? (
-            <CustomFormContainer
+            <PredefinedFormContainer
               entry={entry}
-              selectedForm={forms.find((form) => form.id === 'siteRepMethane')!}
+              selectedForm={forms.find((form) => ['siteRepMethane', 'avianFlu'].includes(form.id))!}
               fields={formFields}
               onFieldChange={onNestedFieldChange}
             />
@@ -712,9 +750,11 @@ export const EntryInputContainer = ({
                 errors={validationErrors}
               />
               {activeField === 'hazard' && selectedHazardType && forms && (
-                <CustomFormContainer
+                <PredefinedFormContainer
                   entry={getEntryWithHazardChanges()}
-                  selectedForm={forms.find((form) => form.id === `haz_${selectedHazardType.toLowerCase()}`)!}
+                  selectedForm={
+                    forms.find((form) => form.id === `haz_${selectedHazardType.toLowerCase()}`)!
+                  }
                   fields={formFields}
                   onFieldChange={onHazardFieldChange}
                 />
@@ -734,10 +774,7 @@ export const EntryInputContainer = ({
           <Button
             onClick={() => {
               applyHazardChangesToParent();
-              setLevelAndClearState(
-                inputType === 'form' ? 1 : 0,
-                true
-              );
+              setLevelAndClearState(inputType === 'form' ? 1 : 0, true);
             }}
             variant="contained"
             disabled={!isDirty}
@@ -748,7 +785,6 @@ export const EntryInputContainer = ({
       </Box>
     );
   };
-
 
   const formInputContainerData = (): EntityInputContainerData[] => [
     {
@@ -817,11 +853,7 @@ export const EntryInputContainer = ({
       containerBackgroundColor: 'background.default'
     }) || {
       heading: customHeading,
-      inputControls: (
-        <Box padding={2}>
-          {renderFieldInput()}
-        </Box>
-      ),
+      inputControls: <Box padding={2}>{renderFieldInput()}</Box>,
       containerBackgroundColor: 'background.default'
     }
   ];
@@ -840,11 +872,7 @@ export const EntryInputContainer = ({
     },
     {
       heading: customHeading,
-      inputControls: (
-        <Box padding={2}>
-          {renderFieldInput()}
-        </Box>
-      ),
+      inputControls: <Box padding={2}>{renderFieldInput()}</Box>,
       containerBackgroundColor: 'background.default'
     }
   ];

@@ -1,3 +1,7 @@
+// SPDX-License-Identifier: Apache-2.0
+// © Crown Copyright 2025. This work has been developed by the National Digital Twin Programme
+// and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
+
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { v4 as uuidV4 } from 'uuid';
 import { useCreateLogEntry, useIncidents, useLogEntries, useUsers } from '../hooks';
@@ -62,7 +66,6 @@ export const CreateEntry = ({ inputType }: Props) => {
 
   const [customForm, setCustomForm] = useState<Form | null>(null);
   const [customFormData, setCustomFormData] = useState<FormDataProperty[]>([]);
-
   const [formFields, setFormFields] = useState<Field[]>([]);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [recordings, setRecordings] = useState<File[]>([]);
@@ -208,12 +211,13 @@ export const CreateEntry = ({ inputType }: Props) => {
   const resetCustomFormData = () => setCustomFormData([]);
 
   const handleCancel = () => {
-    if (source) {
-      let path: string;
+    let path = `/logbook/${incidentId}`;
 
+    if (source) {
       if (source === 'home') path = '/';
       else if (inputType === 'form' && source === 'forms') path = `/forms/${incidentId}`;
-      else path = `/logbook/${incidentId}`;
+      navigate(path);
+    } else {
       navigate(path);
     }
   };
