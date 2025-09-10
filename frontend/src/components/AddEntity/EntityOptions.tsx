@@ -386,7 +386,7 @@ const incidentOrganisationOptionDataComponent = (
     optionData,
     <CorporateFareOutlinedIcon />,
     'Organisation',
-    !!errors.find((e) => e.fieldId === 'incident_organisation')
+    !!errors.find((e) => e.fieldId === 'incident_referrer_organisation')
   );
 };
 
@@ -399,7 +399,7 @@ const incidentPhoneOptionDataComponent = (data: EntityOptionData[], errors: Vali
     optionData,
     <LocalPhoneOutlinedIcon />,
     'Telephone number',
-    !!errors.find((e) => e.fieldId === 'incident_phone')
+    !!errors.find((e) => e.fieldId === 'incident_referrer_telephone')
   );
 };
 

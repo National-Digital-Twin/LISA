@@ -108,14 +108,23 @@ export const IncidentInputContainer = ({
 
     if (!r?.organisation) {
       errors.push({
-        fieldId: 'incident_organisation',
+        fieldId: 'incident_referrer_organisation',
         error: 'Organisation is required'
       });
     }
 
-    if (!r?.telephone) {
+    if (r?.telephone) {
+      const telephoneFormat = /^\+?[0-9][0-9 ]+[0-9]$/;
+
+      if (!telephoneFormat.test(r.telephone)) {
+        errors.push({
+          fieldId: 'incident_referrer_telephone',
+          error: 'Phone No is not in a valid format'
+        });
+      }
+    } else {
       errors.push({
-        fieldId: 'incident_phone',
+        fieldId: 'incident_referrer_telephone',
         error: 'Phone No is required'
       });
     }
@@ -284,8 +293,6 @@ export const IncidentInputContainer = ({
 
   const displayValue = (v?: string) => (typeof v === 'string' && v.trim() === '' ? undefined : v);
 
-  const isDisabled = (key: FieldType) => key === 'time' && isEditing;
-
   const entityOptionData: EntityOptionData[] = (Object.keys(fieldConfigs) as FieldType[])
     .filter((field) => !isEditing || (field !== 'type' && field !== 'time'))
     .map((field) => ({
@@ -293,8 +300,7 @@ export const IncidentInputContainer = ({
       onClick: () => activateField(field),
       value: displayValue(getFieldValue(field) as string | undefined),
       required: fieldConfigs[field].required,
-      supportedOffline: fieldConfigs[field].supportedOffline,
-      disabled: isDisabled(field)
+      supportedOffline: fieldConfigs[field].supportedOffline
     }));
 
   function finalizeIncident(i: Partial<Incident>): Incident {
