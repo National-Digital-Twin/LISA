@@ -216,11 +216,8 @@ type MentionsPluginProps = {
   mentionables: Array<Mentionable>;
 };
 
-export default function MentionsPlugin({
-  mentionables
-}: Readonly<MentionsPluginProps>): JSX.Element | null {
+export default function MentionsPlugin({ mentionables }: Readonly<MentionsPluginProps>): JSX.Element | null {
   const [editor] = useLexicalComposerContext();
-  const [queryString, setQueryString] = useState<string | null>(null);
   const [type, setType] = useState<string | null>(null);
   const [filter, setFilter] = useState<string | null>(null);
 
@@ -231,10 +228,7 @@ export default function MentionsPlugin({
     filter ? filter.slice(1) : ''
   );
 
-  const onQueryChange = (query: string | null) => {
-    setQueryString(query);
-    // Fetch or filter suggestions based on the queryString
-  };
+  const onQueryChange = () => {};
 
   const checkForSlashTriggerMatch = useBasicTypeaheadTriggerMatch('/', {
     minLength: 0
