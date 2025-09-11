@@ -98,7 +98,7 @@ const TaskContent = ({ header, task, users }: Readonly<TaskContentProps>) => {
               </Box>
             </GridListItem>
           )}
-          <GridListItem title="Task description" text={task.description} />
+          <GridListItem title="Task description" text={task.content?.text} />
           <GridListItem title="Assigned by" text={task.author.displayName} />
           {canUpdateTask ? (
             <AssigneeSelector
