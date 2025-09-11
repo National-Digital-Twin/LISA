@@ -195,19 +195,20 @@ export const EntryInputContainer = ({
     }
   }, [submissionType, setValidationErrors, entry, selectedFiles, recordings, incident]);
 
-  const setLevelAndClearState = (level: number, confirm = false) => {
-    const shouldRestore =
-      (inputType === 'form' && level === 1 && !confirm) ||
-      (inputType === 'update' && level === 0 && !confirm);
-
+  const captureSketch = (confirm: boolean) => {
     if (confirm && activeField === 'sketch' && sketchLines.length > 0 && canvasRef.current) {
-      // Capture sketch before canvas is unmounted
       const dataURL = canvasRef.current.toDataURL();
       if (dataURL) {
         const file = Document.dataURLtoFile(dataURL, `Sketch ${Format.timestamp()}.png`);
         setSketchFile(file);
       }
     }
+  };
+
+  const restoreState = (level: number, confirm: boolean) => {
+    const shouldRestore =
+      (inputType === 'form' && level === 1 && !confirm) ||
+      (inputType === 'update' && level === 0 && !confirm);
 
     if (shouldRestore) {
       const saved = tempState.getSaved();
@@ -236,7 +237,12 @@ export const EntryInputContainer = ({
       setHazardChanges({});
       tempState.clear();
     }
+  };
 
+  const setLevelAndClearState = (level: number, confirm = false) => {
+    // Capture sketch before canvas is unmounted
+    captureSketch(confirm);
+    restoreState(level, confirm);
     setLevel(level);
 
     if (inputType === 'form') {
