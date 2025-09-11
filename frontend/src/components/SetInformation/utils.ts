@@ -7,7 +7,7 @@ import { v4 as uuidV4 } from 'uuid';
 import { type Field } from 'common/Field';
 import { type Incident } from 'common/Incident';
 import { type LogEntry } from 'common/LogEntry';
- 
+
 import { LogEntryTypes } from 'common/LogEntryTypes';
 import { type ValidationError } from '../../utils/types';
 import { Validate } from '../../utils';
@@ -60,7 +60,7 @@ export function getInitialEntry(incident: Incident): Partial<LogEntry> {
 
 export function getDirtyEntry(entry: Partial<LogEntry>, incident: Incident): Partial<LogEntry> {
   const dirtyEntry: Partial<LogEntry> = {
-    ...entry,
+    ...entry
   };
   dirtyEntry.fields = [];
 
@@ -95,7 +95,7 @@ export function getDirtyEntry(entry: Partial<LogEntry>, incident: Incident): Par
 }
 
 export function validate(entry: Partial<LogEntry>, incident: Incident): ValidationError[] {
-  const validationErrors: ValidationError[] = Validate.entry(entry, []);
+  const validationErrors: ValidationError[] = Validate.entry(entry, [], incident.startedAt);
   const dirtyEntry = getDirtyEntry(entry, incident);
   if (!dirtyEntry.fields?.length) {
     const origFieldIds = getInitialEntry(incident).fields?.map((f) => f.id) ?? [];
@@ -114,10 +114,7 @@ export function buildSetInfoEntryFromIncident(current: Incident): Partial<LogEnt
   return getInitialEntry(current);
 }
 
-export function buildDirtySetInfoEntry(
-  current: Incident,
-  original: Incident
-): Partial<LogEntry> {
+export function buildDirtySetInfoEntry(current: Incident, original: Incident): Partial<LogEntry> {
   const currentEntry = getInitialEntry(current);
   return getDirtyEntry(currentEntry, original);
 }
