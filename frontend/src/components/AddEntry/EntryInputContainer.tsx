@@ -189,23 +189,26 @@ export const EntryInputContainer = ({
 
   useEffect(() => {
     if (submissionType === 'entry') {
-      setValidationErrors(Validate.entry(entry, [...selectedFiles, ...recordings]));
+      setValidationErrors(
+        Validate.entry(entry, [...selectedFiles, ...recordings], incident.startedAt)
+      );
     }
-  }, [submissionType, setValidationErrors, entry, selectedFiles, recordings]);
+  }, [submissionType, setValidationErrors, entry, selectedFiles, recordings, incident]);
 
-  const setLevelAndClearState = (level: number, confirm = false) => {
-    const shouldRestore =
-      (inputType === 'form' && level === 1 && !confirm) ||
-      (inputType === 'update' && level === 0 && !confirm);
-
+  const captureSketch = (confirm: boolean) => {
     if (confirm && activeField === 'sketch' && sketchLines.length > 0 && canvasRef.current) {
-      // Capture sketch before canvas is unmounted
       const dataURL = canvasRef.current.toDataURL();
       if (dataURL) {
         const file = Document.dataURLtoFile(dataURL, `Sketch ${Format.timestamp()}.png`);
         setSketchFile(file);
       }
     }
+  };
+
+  const restoreState = (level: number, confirm: boolean) => {
+    const shouldRestore =
+      (inputType === 'form' && level === 1 && !confirm) ||
+      (inputType === 'update' && level === 0 && !confirm);
 
     if (shouldRestore) {
       const saved = tempState.getSaved();
@@ -234,7 +237,12 @@ export const EntryInputContainer = ({
       setHazardChanges({});
       tempState.clear();
     }
+  };
 
+  const setLevelAndClearState = (level: number, confirm = false) => {
+    // Capture sketch before canvas is unmounted
+    captureSketch(confirm);
+    restoreState(level, confirm);
     setLevel(level);
 
     if (inputType === 'form') {
@@ -680,6 +688,7 @@ export const EntryInputContainer = ({
               dateLabel="Date"
               timeLabel="Time"
               dateLowerBound={incident.startedAt}
+              lowerBoundErrorMessage="##Time## cannot be earlier than the incident start date"
               disableFuture
               value={entry.dateTime}
               onChange={handleDateTimeChange}
