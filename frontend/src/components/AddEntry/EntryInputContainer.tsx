@@ -189,9 +189,11 @@ export const EntryInputContainer = ({
 
   useEffect(() => {
     if (submissionType === 'entry') {
-      setValidationErrors(Validate.entry(entry, [...selectedFiles, ...recordings]));
+      setValidationErrors(
+        Validate.entry(entry, [...selectedFiles, ...recordings], incident.startedAt)
+      );
     }
-  }, [submissionType, setValidationErrors, entry, selectedFiles, recordings]);
+  }, [submissionType, setValidationErrors, entry, selectedFiles, recordings, incident]);
 
   const setLevelAndClearState = (level: number, confirm = false) => {
     const shouldRestore =
@@ -680,6 +682,7 @@ export const EntryInputContainer = ({
               dateLabel="Date"
               timeLabel="Time"
               dateLowerBound={incident.startedAt}
+              lowerBoundErrorMessage="##Time## cannot be earlier than the incident start date"
               disableFuture
               value={entry.dateTime}
               onChange={handleDateTimeChange}

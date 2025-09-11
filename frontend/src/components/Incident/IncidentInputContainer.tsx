@@ -89,7 +89,14 @@ export const IncidentInputContainer = ({
       errors.push({ fieldId: 'incident_type', error: 'Incident type is required' });
     }
 
-    if (!incident.startedAt) {
+    if (incident.startedAt) {
+      const now = new Date();
+      const value = new Date(incident.startedAt);
+
+      if (value > now) {
+        errors.push({ fieldId: 'incident_time', error: 'Incident time cannot be in the future' });
+      }
+    } else {
       errors.push({ fieldId: 'incident_time', error: 'Incident time is required' });
     }
 

@@ -16,15 +16,17 @@ import {
 } from '@mui/material';
 import {
   DatePicker,
+  DateValidationError,
   LocalizationProvider,
   PickersCalendarHeaderProps,
   TimeClock,
   TimeField,
+  TimeValidationError,
   TimeView
 } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { Format } from '../utils';
-import { RefObject, useEffect, useRef, useState } from 'react';
+import { RefObject, useEffect, useMemo, useRef, useState } from 'react';
 import { PickerValue } from '@mui/x-date-pickers/internals';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
@@ -38,6 +40,7 @@ type Props = {
   dateLabel: string;
   timeLabel: string;
   dateLowerBound?: string;
+  lowerBoundErrorMessage?: string;
   disableFuture: boolean;
   value: string | undefined;
   onChange: (date: string | undefined, time: string | undefined) => void;
@@ -63,6 +66,9 @@ type CustomTimePickerControlsProps = {
 
 type CustomTimePickerProps = {
   timeLabel: string;
+  date: Dayjs | null;
+  dateLowerBound: Dayjs | null;
+  lowerBoundErrorMessage: string | null;
   time: Dayjs | null;
   formControlRef: RefObject<HTMLDivElement | null>;
   setTime: (value: Dayjs | null) => void;
@@ -368,9 +374,6 @@ const CustomTimePickerControls = ({
         onChange={(value) => {
           if (value) {
             setTimeClockValue(dayjs(value));
-            if (timeView === 'hours') {
-              setMinsActive();
-            }
           }
         }}
       />
@@ -401,7 +404,15 @@ const CustomTimePickerControls = ({
   );
 };
 
-const CustomTimePicker = ({ timeLabel, time, formControlRef, setTime }: CustomTimePickerProps) => {
+const CustomTimePicker = ({
+  timeLabel,
+  date,
+  dateLowerBound,
+  lowerBoundErrorMessage,
+  time,
+  formControlRef,
+  setTime
+}: CustomTimePickerProps) => {
   const { isMobile } = useResponsive();
   const [timeDialogOpen, setTimeDialogOpen] = useState<boolean>(false);
   const [timePopperAnchorEl, setTimePopperAnchorEl] = useState<null | HTMLElement>(null);
@@ -413,10 +424,50 @@ const CustomTimePicker = ({ timeLabel, time, formControlRef, setTime }: CustomTi
   const [hoursTextColor, setHoursTextColor] = useState<string>('initial');
   const [minsBackgroundColor, setMinsBackgroundColor] = useState<string>(initialBackgroundColor);
   const [minsTextColor, setMinsTextColor] = useState<string>('initial');
+  const [timeFieldError, setTimeFieldError] = useState<TimeValidationError>();
+
+  const validateDateAndTime = (dateAndTimeValue: Dayjs, onlyDate?: boolean) => {
+    const now = dayjs(new Date());
+    if ((onlyDate && dateAndTimeValue.date() > now.date()) || dateAndTimeValue > now)
+      setTimeFieldError('maxTime');
+    else if (
+      (onlyDate && dateLowerBound && dateAndTimeValue.date() < dateLowerBound.date()) ||
+      (dateLowerBound && dateAndTimeValue < dateLowerBound)
+    )
+      setTimeFieldError('minTime');
+    else setTimeFieldError(null);
+  };
+
+  useEffect(() => {
+    if (date) {
+      validateDateAndTime(date, true);
+    }
+  }, [date]);
+
+  useEffect(() => {
+    if (time) {
+      validateDateAndTime(time);
+    }
+  }, [time]);
+
+  const errorMessage = useMemo(() => {
+    switch (timeFieldError) {
+      case 'maxTime': {
+        return 'Time cannot be in the future';
+      }
+      case 'minTime': {
+        return dateLowerBound ? lowerBoundErrorMessage!.replace('##Time##', 'Time') : '';
+      }
+      default: {
+        return undefined;
+      }
+    }
+  }, [timeFieldError]);
 
   const onTimeFieldChange = (value: PickerValue) => {
     if (value) {
       setTime(dayjs(value.toString()));
+      validateDateAndTime(time!);
     }
   };
 
@@ -442,6 +493,7 @@ const CustomTimePicker = ({ timeLabel, time, formControlRef, setTime }: CustomTi
         label={timeLabel}
         value={time}
         onChange={onTimeFieldChange}
+        onError={setTimeFieldError}
         slotProps={{
           textField: {
             variant: 'filled',
@@ -468,7 +520,9 @@ const CustomTimePicker = ({ timeLabel, time, formControlRef, setTime }: CustomTi
                   <AccessTimeIcon htmlColor={theme.palette.primary.main} />
                 </IconButton>
               </Box>
-            )
+            ),
+            helperText: errorMessage,
+            error: !!timeFieldError
           }
         }}
       />
@@ -527,6 +581,7 @@ export const DateAndTimePicker = ({
   dateLabel,
   timeLabel,
   dateLowerBound = undefined,
+  lowerBoundErrorMessage = undefined,
   disableFuture,
   value,
   onChange
@@ -534,6 +589,21 @@ export const DateAndTimePicker = ({
   const [date, setDate] = useState<Dayjs | null>(value ? dayjs(value) : null);
   const [time, setTime] = useState<Dayjs | null>(value ? dayjs(value) : null);
   const timeFormControlRef = useRef<HTMLDivElement>(null);
+  const [dateFieldError, setDateFieldError] = useState<DateValidationError>();
+
+  const errorMessage = useMemo(() => {
+    switch (dateFieldError) {
+      case 'disableFuture': {
+        return 'Date cannot be in the future';
+      }
+      case 'shouldDisableDate': {
+        return dateLowerBound ? lowerBoundErrorMessage!.replace('##Time##', 'Date') : '';
+      }
+      default: {
+        return undefined;
+      }
+    }
+  }, [dateFieldError]);
 
   const onDateChange = (value: PickerValue) => {
     if (value) {
@@ -545,8 +615,10 @@ export const DateAndTimePicker = ({
   const shouldDisableDate = (date: Dayjs) => {
     if (dateLowerBound) {
       const lowerLimit = new Date(dateLowerBound);
+      const now = new Date();
 
       return (
+        date.get('date') !== now.getDate() &&
         date.get('year') === lowerLimit.getFullYear() &&
         date.get('month') === lowerLimit.getMonth() &&
         date.get('date') <= lowerLimit.getDate()
@@ -572,6 +644,7 @@ export const DateAndTimePicker = ({
             shouldDisableDate={shouldDisableDate}
             value={date}
             onChange={onDateChange}
+            onError={setDateFieldError}
             slots={{
               calendarHeader: (props) =>
                 CustomCalendarHeader({ lowerBound: dateLowerBound, ...props })
@@ -586,14 +659,19 @@ export const DateAndTimePicker = ({
                 sx: {
                   '.MuiPickersInputBase-root': { backgroundColor: '#fff' },
                   '.MuiPickersSectionList-root': { opacity: 1 }
-                }
+                },
+                helperText: errorMessage
               }
             }}
+            minDate={(dateLowerBound && dayjs(dateLowerBound)) || undefined}
           />
         </FormControl>
         <FormControl ref={timeFormControlRef}>
           <CustomTimePicker
             timeLabel={timeLabel}
+            date={date}
+            dateLowerBound={dateLowerBound ? dayjs(dateLowerBound) : null}
+            lowerBoundErrorMessage={dateLowerBound ? lowerBoundErrorMessage! : null}
             time={time}
             formControlRef={timeFormControlRef}
             setTime={setTime}
