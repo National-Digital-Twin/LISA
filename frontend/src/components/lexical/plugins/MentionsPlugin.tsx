@@ -302,8 +302,8 @@ export default function MentionsPlugin({mentionables}: Readonly<MentionsPluginPr
         const trigger = match.replaceableString;
         setFilter(trigger);
       } else {
-        setType( null);
-        setFilter( null);
+        setType(null);
+        setFilter(null);
       }
       return match;
     },
