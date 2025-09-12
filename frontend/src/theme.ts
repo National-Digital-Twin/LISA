@@ -74,6 +74,11 @@ const theme = createTheme({
         secondary: '#9DF5A8'
       }
     },
+    recording: {
+      inactive: '#3670b3',
+      active: '#eb2626',
+      activeDark: '#bf0a0a'
+    },
     stage: {
       monitoring: {
         primary: '#ffd324',
