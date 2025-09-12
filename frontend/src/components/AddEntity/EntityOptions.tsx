@@ -224,7 +224,7 @@ const locationOptionDataComponent = (
       `${key}-option`,
       optionData,
       <LocationOnOutlinedIcon />,
-      'Add location(s)',
+      'Add locations',
       !!errors.find(
         (error) =>
           error.fieldId === 'location' ||
@@ -246,7 +246,7 @@ const recordingOptionDataComponent = (key: string, data: EntityOptionData[]) => 
       `${key}-option`,
       optionData,
       <MicOutlinedIcon />,
-      'Add voice note',
+      'Add voice recordings',
       false
     );
   }
@@ -262,7 +262,7 @@ const attachmentsOptionDataComponent = (key: string, data: EntityOptionData[]) =
       `${key}-option`,
       optionData,
       <AttachFileOutlinedIcon />,
-      'Add attachment(s)',
+      'Add attachments',
       false
     );
   }

@@ -528,10 +528,10 @@ export const EntryInputContainer = ({
   const formTypeLabel = LogEntryTypes[entry.type as LogEntryType]?.label;
 
   const addLocationHeading =
-    entry.type === 'SituationReport' ? 'Add exact location' : 'Add location(s)';
+    entry.type === 'SituationReport' ? 'Add exact location' : 'Add locations';
 
   const viewLocationHeading =
-    entry.type === 'SituationReport' ? 'View exact location' : 'View location(s)';
+    entry.type === 'SituationReport' ? 'View exact location' : 'View locations';
 
   const baseEntityOptionsData = (onClickLevel: number): EntityOptionData[] => [
     {
@@ -563,7 +563,7 @@ export const EntryInputContainer = ({
       id: 'attachments',
       onClick: () => {
         saveCurrentState();
-        setCustomHeading('Add attachment(s)');
+        setCustomHeading('Add attachments');
         setActiveField('attachments');
         setLevel(onClickLevel);
       },
@@ -574,11 +574,11 @@ export const EntryInputContainer = ({
       id: 'recordings',
       onClick: () => {
         saveCurrentState();
-        setCustomHeading('Add voice note');
+        setCustomHeading('Add voice recordings');
         setActiveField('recordings');
         setLevel(onClickLevel);
       },
-      value: recordings.length > 0 ? Format.pretty.pluralize(recordings.length, 'recording') : undefined,
+      value: recordings.length > 0 ? Format.pretty.pluralize(recordings.length, 'voice recording') : undefined,
       supportedOffline: true
     },
     {

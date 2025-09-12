@@ -92,14 +92,14 @@ export default function Recordings({ recordings = [], onRecordingsChanged }: Rea
       );
     } else if (recordings.length === 0) {
       return (
-        <Typography variant="body1">No recordings</Typography>
+        <Typography variant="body1">No voice recordings</Typography>
       );
     }
 
     return (
       <>
         <Typography variant="body1">
-          {Format.pretty.pluralize(recordings.length, 'recording')}
+          {Format.pretty.pluralize(recordings.length, 'voice recording')}
         </Typography>
         {recordings.map(recording => (
           <Box key={recording.name} display="flex" alignItems="center" gap={1}>

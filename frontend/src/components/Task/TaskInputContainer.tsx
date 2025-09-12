@@ -47,9 +47,9 @@ const fieldConfigs = {
   name: { heading: 'Task name', required: true, supportedOffline: true },
   assignee: { heading: 'Assign to', required: true, supportedOffline: true },
   content: { heading: 'Add task description', required: true, supportedOffline: true },
-  location: { heading: 'Add location(s)', required: false, supportedOffline: false },
+  location: { heading: 'Add locations', required: false, supportedOffline: false },
   attachments: { heading: 'Add attachments', required: false, supportedOffline: true },
-  recordings: { heading: 'Add voice note', required: false, supportedOffline: true },
+  recordings: { heading: 'Add voice recordings', required: false, supportedOffline: true },
   sketch: { heading: 'Add sketch', required: false, supportedOffline: true }
 };
 
@@ -214,7 +214,7 @@ export const TaskInputContainer = ({
       case 'attachments':
         return selectedFiles.length > 0 ? Format.pretty.pluralize(selectedFiles.length, 'file') : undefined;
       case 'recordings':
-        return recordings.length > 0 ? Format.pretty.pluralize(recordings.length, 'recording') : undefined;
+        return recordings.length > 0 ? Format.pretty.pluralize(recordings.length, 'voice recording') : undefined;
       case 'sketch':
         return sketchFile ? 'View sketch' : undefined;
     }

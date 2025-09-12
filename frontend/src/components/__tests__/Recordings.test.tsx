@@ -12,10 +12,10 @@ describe('Recordings component', () => {
     jest.clearAllMocks();
   });
 
-  it('shows "No recordings" when empty', () => {
+  it('shows "No voice recordings" when empty', () => {
     render(<Recordings recordings={[]} onRecordingsChanged={mockOnRecordingsChanged} />);
 
-    expect(screen.getByText('No recordings')).toBeInTheDocument();
+    expect(screen.getByText('No voice recordings')).toBeInTheDocument();
   });
 
   it('displays recordings when they exist', () => {
@@ -25,11 +25,11 @@ describe('Recordings component', () => {
       <Recordings recordings={recordings} onRecordingsChanged={mockOnRecordingsChanged} />
     );
 
-    expect(screen.getByText('1 recording')).toBeInTheDocument();
+    expect(screen.getByText('1 voice recording')).toBeInTheDocument();
     expect(screen.getByText(/Recording\.webm/)).toBeInTheDocument();
   });
 
-  it('calls onRecordingsChanged when removing recording', () => {
+  it('calls onRecordingsChanged when removing voice recording', () => {
     const recordings = [new File(['audio'], 'Recording.webm', { type: 'audio/webm' })];
 
     render(
