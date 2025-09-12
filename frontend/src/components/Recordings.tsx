@@ -15,7 +15,6 @@ interface Props {
 }
 
 export default function Recordings({ recordings = [], onRecordingsChanged }: Readonly<Props>) {
-
   const { startRecording, stopRecording, status, error } = useReactMediaRecorder({
     audio: true,
     onStop: async (blobUrl) => {
@@ -81,7 +80,7 @@ export default function Recordings({ recordings = [], onRecordingsChanged }: Rea
   const renderContent = () => {
     if (hasError) {
       return (
-        <Box textAlign="center" maxWidth={300}>
+        <Box maxWidth={300}>
           <Typography variant="body2" color="error" gutterBottom>
             Recording Error
           </Typography>
@@ -91,9 +90,7 @@ export default function Recordings({ recordings = [], onRecordingsChanged }: Rea
         </Box>
       );
     } else if (recordings.length === 0) {
-      return (
-        <Typography variant="body1">No voice recordings</Typography>
-      );
+      return <Typography variant="body1">No voice recordings</Typography>;
     }
 
     return (
@@ -101,47 +98,53 @@ export default function Recordings({ recordings = [], onRecordingsChanged }: Rea
         <Typography variant="body1">
           {Format.pretty.pluralize(recordings.length, 'voice recording')}
         </Typography>
-        {recordings.map(recording => (
-          <Box key={recording.name} display="flex" alignItems="center" gap={1}>
-            <Typography variant="body2">
-              {recording.name} ({Format.fileSize(recording.size)})
-            </Typography>
-            <IconButton size="small" onClick={() => handleRemoveRecording(recording.name)}>
-              <CloseIcon />
-            </IconButton>
-          </Box>
-        ))}
+        <Box>
+          {recordings.map((recording) => (
+            <Box key={recording.name} display="flex" flexDirection="row" alignItems="center" gap={1}>
+              <Typography variant="body1" color="textSecondary">
+                {recording.name}
+                <Typography
+                  variant="body1"
+                  component="span"
+                >{` (${Format.fileSize(recording.size)})`}</Typography>
+              </Typography>
+              <IconButton
+                size="small"
+                onClick={() => handleRemoveRecording(recording.name)}
+                color="primary"
+                title="Remove recording"
+              >
+                <CloseIcon />
+              </IconButton>
+            </Box>
+          ))}
+        </Box>
       </>
     );
   };
 
   return (
-    <Box
-      display="flex"
-      flexDirection="column"
-      alignItems="center"
-      gap={2}
-      minHeight={300}
-      justifyContent="center"
-    >
+    <Box display="flex" flexDirection="column" gap={2} minHeight={300}>
       {renderContent()}
 
-      <IconButton
-        onClick={() => isRecording ? handleStopRecording() : handleStartRecording()}
-        disabled={hasError}
-        className={`recording-button ${isRecording ? 'recording-button--active' : ''}`}
-        title={iconTitle}
-        sx={{
-          width: 80,
-          height: 80,
-          backgroundColor: isRecording ? 'recording.active' : 'recording.inactive',
-          '&:hover:not(.Mui-disabled)': {
-            backgroundColor: isRecording ? 'recording.activeDark' : 'primary.dark',
-          }
-        }}
-      >
-        <MicOutlinedIcon sx={{ fontSize: 40, color: hasError ? 'text.disabled' : 'white' }} />
-      </IconButton>
+      <Box display="flex" justifyContent="center">
+        <IconButton
+          onClick={() => (isRecording ? handleStopRecording() : handleStartRecording())}
+          disabled={hasError}
+          className={`recording-button ${isRecording ? 'recording-button--active' : ''}`}
+          title={iconTitle}
+          sx={{
+            width: 80,
+            height: 80,
+            backgroundColor: isRecording ? 'recording.active' : 'recording.inactive',
+            '&:hover:not(.Mui-disabled)': {
+              backgroundColor: isRecording ? 'recording.activeDark' : 'primary.dark'
+            }
+          }}
+        >
+          <MicOutlinedIcon sx={{ fontSize: 40, color: hasError ? 'text.disabled' : 'white' }} />
+        </IconButton>
+      </Box>
     </Box>
   );
 }
