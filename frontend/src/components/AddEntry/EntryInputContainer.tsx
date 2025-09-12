@@ -567,7 +567,10 @@ export const EntryInputContainer = ({
         setActiveField('attachments');
         setLevel(onClickLevel);
       },
-      value: selectedFiles.length > 0 ? Format.pretty.pluralize(selectedFiles.length, 'attachment') : undefined,
+      value:
+        selectedFiles.length > 0
+          ? Format.pretty.pluralize(selectedFiles.length, 'attachment')
+          : undefined,
       supportedOffline: true
     },
     {
@@ -578,7 +581,10 @@ export const EntryInputContainer = ({
         setActiveField('recordings');
         setLevel(onClickLevel);
       },
-      value: recordings.length > 0 ? Format.pretty.pluralize(recordings.length, 'voice recording') : undefined,
+      value:
+        recordings.length > 0
+          ? Format.pretty.pluralize(recordings.length, 'voice recording')
+          : undefined,
       supportedOffline: true
     },
     {
@@ -728,12 +734,7 @@ export const EntryInputContainer = ({
           );
 
         case 'recordings':
-          return (
-            <Recordings
-              recordings={recordings}
-              onRecordingsChanged={onRecordingsChanged}
-            />
-          );
+          return <Recordings recordings={recordings} onRecordingsChanged={onRecordingsChanged} />;
 
         case 'sketch':
           return (
@@ -750,7 +751,13 @@ export const EntryInputContainer = ({
           return forms ? (
             <PredefinedFormContainer
               entry={entry}
-              selectedForm={forms.find((form) => ['siteRepMethane', 'avianFlu'].includes(form.id))!}
+              selectedForm={
+                forms.find(
+                  (form) =>
+                    (activeField === 'siteRepDetails' && form.id === 'siteRepMethane') ||
+                    (activeField === 'avianFluDetails' && form.id === 'avianFlu')
+                )!
+              }
               fields={formFields}
               onFieldChange={onNestedFieldChange}
             />
