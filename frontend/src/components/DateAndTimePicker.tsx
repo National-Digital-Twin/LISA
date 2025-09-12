@@ -445,10 +445,10 @@ const CustomTimePicker = ({
   }, [date]);
 
   useEffect(() => {
-    if (time) {
-      validateDateAndTime(time);
+    if (date && time) {
+      validateDateAndTime(dayjs(`${date?.format('YYYY-MM-DD')}T${time.format('HH:mm:ss')}`));
     }
-  }, [time]);
+  }, [date, time]);
 
   const errorMessage = useMemo(() => {
     switch (timeFieldError) {
