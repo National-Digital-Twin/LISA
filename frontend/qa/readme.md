@@ -44,6 +44,22 @@ node js needs to be latest or minimum version 22
 8. `cd frontend/qa` to get to the relevant folder
 9. `ENV=dev npx cucumber-js -c config/cucumber.js` to run the tests, replacing the ENV value with whichever environment you are targeting (this directly drives which env file it will use)
 
+### Running Tests Locally:
+
+For local development, you can run tests against your local instance without going through the full login process:
+
+1. Make sure your local frontend is running on `http://localhost:5173` (use `npm run dev` in the frontend folder)
+2. Make sure your local backend is running on `http://localhost:3000` (the backend auto-authenticates in development mode)
+3. `cd frontend/qa` to get to the relevant folder
+4. `npm run test:local` to run the tests against your local environment
+
+The local configuration (`.env.local`) is pre-configured to:
+- Point to `http://localhost:5173` for both BASEURL and LISAURL
+- Skip the login process since the backend auto-authenticates in development mode
+- Use a mock local user for any user-related operations
+
+You can run specific scenarios by using tasks, e.g `ENV=local npx cucumber-js --config=config/cucumber.js --tags "@create-incident`
+
 ### Folder structure
 
 0. `src\pages` -> All the page (UI screen)
@@ -84,7 +100,7 @@ aws cognito-idp admin-set-user-password \
 
 3. Once those have been run, login to AWS Cognito, navigate to the relevant user pool and find the new user.
 4. Add a new Attribute for the user with the name "name" - give the test user an appropriate value for this. eg. "Test_User"
-5. Add the new test user to the relevant roles for access to the applications 
+5. Add the new test user to the relevant roles for access to the applications
 6. Add the new test username and password to the secret vault in Kubernetes as TESTUSER and TESTPASS
 
 # Performance testing
@@ -100,5 +116,5 @@ sudo apt install -y ./google-chrome-stable_current_amd64.deb
 google-chrome --version
 
 
-© Crown Copyright 2025. This work has been developed by the National Digital Twin Programme and is legally attributed to the Department for Business and Trade (UK) as the governing entity.  
-Licensed under the Open Government Licence v3.0.  
+© Crown Copyright 2025. This work has been developed by the National Digital Twin Programme and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
+Licensed under the Open Government Licence v3.0.

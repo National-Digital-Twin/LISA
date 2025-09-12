@@ -13,6 +13,10 @@ let context: BrowserContext;
 BeforeAll(async () => {
   getEnv();
   browser = await invokeBrowser();
+  
+  if (process.env.SKIP_LOGIN === 'true') {
+    console.log('Running in local development mode with auto-login');
+  }
 });
 
 Before(async ({ pickle }) => {
