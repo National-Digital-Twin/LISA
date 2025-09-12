@@ -32,13 +32,15 @@ import TaskIcon from '@mui/icons-material/Task';
 import { type MentionableType, type Mentionable } from 'common/Mentionable';
 import { $createMentionNode } from './nodes/MentionNode';
 
+const BASE_TRIGGER = '@';
+
 // longest triggers first for future key shortcuts
 const TRIGGERS = {
   USER: '@u',
   LOG: '@l',
   FILE: '@f',
   TASK: '@t',
-  DEFAULT: '@'
+  DEFAULT: BASE_TRIGGER
 } as const;
 
 const TRIGGER_TO_TYPE: Record<string, MentionableType> = {
@@ -126,12 +128,12 @@ function checkForMentions(text: string, minMatchLength: number): MenuTextMatch |
     const maybeLeadingWhitespace = match.match[1];
 
     const matchingString = triggerList.reduce(
-      (current, next) => (next === '@' ? current : current.replace(next, '')),
+      (current, next) => (next === BASE_TRIGGER ? current : current.replace(next, '')),
       match.match[2]
     );
 
     const replaceableString = triggerList.reduce(
-      (current, next) => (next === '@' ? current : current.replace(next, `${next}:`)),
+      (current, next) => (next === BASE_TRIGGER ? current : current.replace(next, `${next}:`)),
       match.match[2]
     );
 
