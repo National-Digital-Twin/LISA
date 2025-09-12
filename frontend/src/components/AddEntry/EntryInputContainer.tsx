@@ -16,6 +16,7 @@ import { DateAndTimePicker } from '../DateAndTimePicker';
 import Location from './Location';
 import Files from './Files';
 import Sketch from './Sketch';
+import Recordings from '../Recordings';
 import { Box, Button, FormControl, Typography } from '@mui/material';
 import { Form as CustomForm, FormDataProperty } from '../CustomForms/FormTemplates/types';
 import { Field } from 'common/Field';
@@ -50,7 +51,7 @@ type Props = {
   onFieldChange: OnFieldChange;
   onFilesSelected: (files: Array<File>) => void;
   onRemoveSelectedFile: (filename: string) => void;
-  onRemoveRecording: (recordingName: string) => void;
+  onRecordingsChanged: (recordings: File[]) => void;
   onLocationChange: (locationInputType: Partial<TypeOfLocation>) => void;
   setSketchFile: (sketch: File | null) => void;
   onCustomFormDataChange: (id: string, label: string, value: string) => void;
@@ -67,6 +68,7 @@ type FieldType =
   | 'dateAndTime'
   | 'location'
   | 'attachments'
+  | 'recordings'
   | 'sketch'
   | 'customForm'
   | 'siteRepDetails'
@@ -96,7 +98,7 @@ export const EntryInputContainer = ({
   resetCustomFormData,
   onFilesSelected,
   onRemoveSelectedFile,
-  onRemoveRecording,
+  onRecordingsChanged,
   onLocationChange,
   setSketchFile,
   onMainBackClick,
@@ -122,6 +124,7 @@ export const EntryInputContainer = ({
   type EditableState = {
     entry: Partial<LogEntry>;
     selectedFiles: Array<File>;
+    recordings: Array<File>;
     sketchLines: Array<SketchLine>;
     customFormData: Array<FormDataProperty>;
     activeFormField?: Field;
@@ -135,6 +138,7 @@ export const EntryInputContainer = ({
     tempState.save({
       entry,
       selectedFiles,
+      recordings,
       sketchLines,
       customFormData,
       activeFormField,
@@ -223,10 +227,8 @@ export const EntryInputContainer = ({
         selectedFiles.forEach((file) => {
           onRemoveSelectedFile(file.name);
         });
-        recordings.forEach((recording) => {
-          onRemoveRecording(recording.name);
-        });
         onFilesSelected(saved.selectedFiles);
+        onRecordingsChanged(saved.recordings || []);
 
         setSketchLines(saved.sketchLines);
         resetCustomFormData();
@@ -565,17 +567,18 @@ export const EntryInputContainer = ({
         setActiveField('attachments');
         setLevel(onClickLevel);
       },
-      value: selectedFiles.length > 0 ? `${selectedFiles.length} attachments` : undefined,
+      value: selectedFiles.length > 0 ? Format.pretty.pluralize(selectedFiles.length, 'attachment') : undefined,
       supportedOffline: true
     },
     {
       id: 'recordings',
       onClick: () => {
+        saveCurrentState();
         setCustomHeading('Add voice note');
-        setAddingAttachments(true);
+        setActiveField('recordings');
         setLevel(onClickLevel);
       },
-      value: selectedFiles.length > 0 ? `${selectedFiles.length} attachments` : undefined,
+      value: recordings.length > 0 ? Format.pretty.pluralize(recordings.length, 'recording') : undefined,
       supportedOffline: true
     },
     {
@@ -668,6 +671,7 @@ export const EntryInputContainer = ({
     const hasDataChanges = tempState.hasChangesInProps({
       entry,
       selectedFiles,
+      recordings,
       sketchLines,
       customFormData
     });
@@ -682,8 +686,6 @@ export const EntryInputContainer = ({
               id="content"
               editable
               json={typeof entry.content === 'object' ? entry.content.json : undefined}
-              recordingActive={false}
-              onRecording={undefined}
               onChange={(id: string, json: string, text: string) => {
                 onFieldChange(id, { json, text });
               }}
@@ -720,10 +722,16 @@ export const EntryInputContainer = ({
             <Files.Content
               active={true}
               selectedFiles={selectedFiles}
-              recordings={recordings}
               onFilesSelected={onFilesSelected}
               removeSelectedFile={onRemoveSelectedFile}
-              removeRecording={onRemoveRecording}
+            />
+          );
+
+        case 'recordings':
+          return (
+            <Recordings
+              recordings={recordings}
+              onRecordingsChanged={onRecordingsChanged}
             />
           );
 

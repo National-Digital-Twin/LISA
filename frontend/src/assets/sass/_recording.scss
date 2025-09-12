@@ -1,0 +1,23 @@
+/* SPDX-License-Identifier: Apache-2.0 */
+/* © Crown Copyright 2025. This work has been developed by the National Digital Twin Programme */
+/* and is legally attributed to the Department for Business and Trade (UK) as the governing entity. */
+
+@keyframes recording-pulse {
+  0% {
+    background-color: #eb2626;
+  }
+  50% {
+    background-color: #bf0a0a;
+  }
+  100% {
+    background-color: #eb2626;
+  }
+}
+
+.recording-button {
+  transition: background-color 0.3s ease;
+}
+
+.recording-button--active {
+  animation: recording-pulse 2s infinite;
+}

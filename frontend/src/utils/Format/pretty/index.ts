@@ -15,7 +15,13 @@ function prettyInitials(name: string): string {
   return words.map((word) => word[0].toUpperCase()).join('');
 }
 
+function pluralize(count: number, singular: string, plural?: string): string {
+  if (count === 1) return `${count} ${singular}`;
+  return `${count} ${plural || singular + 's'}`;
+}
+
 export const pretty = {
   name: prettyName,
-  initials: prettyInitials
+  initials: prettyInitials,
+  pluralize
 };

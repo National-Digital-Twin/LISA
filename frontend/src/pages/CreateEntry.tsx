@@ -144,8 +144,8 @@ export const CreateEntry = ({ inputType }: Props) => {
     setSelectedFiles((prev) => prev.filter((file) => file.name !== name));
   };
 
-  const onRemoveRecording = (name: string) => {
-    setRecordings((prev) => prev.filter((r) => r.name !== name));
+  const onRecordingsChanged = (newRecordings: File[]) => {
+    setRecordings(newRecordings);
   };
 
   const onCreateEntry: OnCreateEntry = (entry, files) => {
@@ -243,7 +243,7 @@ export const CreateEntry = ({ inputType }: Props) => {
         resetCustomFormData={resetCustomFormData}
         onFilesSelected={onFilesSelected}
         onRemoveSelectedFile={onRemoveSelectedFile}
-        onRemoveRecording={onRemoveRecording}
+        onRecordingsChanged={onRecordingsChanged}
         onLocationChange={onLocationChange}
         setSketchFile={setSketchFile}
         onMainBackClick={handleCancel}

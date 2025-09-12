@@ -21,6 +21,7 @@ import { useTemporaryState } from '../../hooks/useTemporaryState';
 import Location from '../AddEntry/Location';
 import Files from '../AddEntry/Files';
 import Sketch from '../AddEntry/Sketch';
+import Recordings from '../Recordings';
 import { Attachment } from 'common/Attachment';
 import EntryContent from '../lexical/EntryContent';
 
@@ -71,11 +72,14 @@ export const TaskInputContainer = ({
   const [sketchFile, setSketchFile] = useState<File | null>(null);
   const canvasRef = useRef<Stage>(null);
 
+  const [recordings, setRecordings] = useState<File[]>([]);
+
   type EditableState = {
     task: Partial<Omit<CreateTask, 'incidentId'>>;
     selectedFiles: File[];
     sketchLines: SketchLine[];
     sketchFile: File | null;
+    recordings: File[];
   };
 
   const tempState = useTemporaryState<EditableState>();
@@ -109,6 +113,7 @@ export const TaskInputContainer = ({
           setSelectedFiles(saved.selectedFiles);
           setSketchLines(saved.sketchLines);
           setSketchFile(saved.sketchFile);
+          setRecordings(saved.recordings);
         }
       }
       tempState.clear();
@@ -134,7 +139,8 @@ export const TaskInputContainer = ({
       task: { ...task },
       selectedFiles: [...selectedFiles],
       sketchLines: [...sketchLines],
-      sketchFile
+      sketchFile,
+      recordings: [...recordings]
     });
 
     setActiveField(field);
@@ -173,11 +179,11 @@ export const TaskInputContainer = ({
       return;
     }
 
-    const files: File[] = [...selectedFiles];
-    const attachments: Attachment[] = selectedFiles.map((f) => ({
-      type: 'File' as const,
-      name: f.name
-    }));
+    const files: File[] = [...selectedFiles, ...recordings];
+    const attachments: Attachment[] = [
+      ...selectedFiles.map((f) => ({ type: 'File' as const, name: f.name })),
+      ...recordings.map((r) => ({ type: 'Recording' as const, name: r.name }))
+    ];
 
     if (sketchFile) {
       files.push(sketchFile);
@@ -206,9 +212,9 @@ export const TaskInputContainer = ({
       case 'location':
         return task.location ? 'View location' : undefined;
       case 'attachments':
-        return selectedFiles.length > 0 ? `${selectedFiles.length} files` : undefined;
+        return selectedFiles.length > 0 ? Format.pretty.pluralize(selectedFiles.length, 'file') : undefined;
       case 'recordings':
-        return selectedFiles.length > 0 ? `${selectedFiles.length} files` : undefined;
+        return recordings.length > 0 ? Format.pretty.pluralize(recordings.length, 'recording') : undefined;
       case 'sketch':
         return sketchFile ? 'View sketch' : undefined;
     }
@@ -235,7 +241,8 @@ export const TaskInputContainer = ({
       task,
       selectedFiles,
       sketchLines,
-      sketchFile
+      sketchFile,
+      recordings
     });
 
     const fieldInput = (() => {
@@ -290,9 +297,7 @@ export const TaskInputContainer = ({
                 json={task.content?.json || undefined}
                 editable
                 mentionables={mentionables}
-                recordingActive={false}
                 onChange={changeEvent}
-                onRecording={() => null}
                 error={!!getFieldError('task_description')}
                 placeholder={'Type @ to tag a person, log, task or file'}
               />
@@ -313,21 +318,15 @@ export const TaskInputContainer = ({
             <Files.Content
               active={true}
               selectedFiles={selectedFiles}
-              recordings={[]}
               onFilesSelected={handleFilesSelected}
               removeSelectedFile={handleFileRemove}
-              removeRecording={() => {}}
             />
           );
         case 'recordings':
           return (
-            <Files.Content
-              active={true}
-              selectedFiles={selectedFiles}
-              recordings={[]}
-              onFilesSelected={handleFilesSelected}
-              removeSelectedFile={handleFileRemove}
-              removeRecording={() => {}}
+            <Recordings
+              recordings={recordings}
+              onRecordingsChanged={setRecordings}
             />
           );
         case 'sketch':

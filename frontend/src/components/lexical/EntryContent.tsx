@@ -67,7 +67,7 @@ type EntryContentProps = {
   json?: string;
   editable: boolean;
   mentionables?: Array<Mentionable>;
-  recordingActive: boolean;
+  recordingActive?: boolean;
   onChange?: (id: string, json: string, text: string) => void;
   onRecording?: (active: boolean) => void;
   error: boolean;
@@ -78,7 +78,7 @@ const EntryContent = ({
   json: _json = undefined,
   editable,
   mentionables = [],
-  recordingActive,
+  recordingActive = undefined,
   onChange = undefined,
   onRecording = undefined,
   placeholder = undefined,
@@ -122,7 +122,9 @@ const EntryContent = ({
           <HistoryPlugin />
           <AutoFocusPlugin />
           <MentionsPlugin mentionables={mentionables ?? []} />
-          <ActionsPlugin onCommand={onCommand} recordingActive={recordingActive} />
+          {recordingActive !== undefined && (
+            <ActionsPlugin onCommand={onCommand} recordingActive={recordingActive} />
+          )}
           <OnChangePlugin onChange={onEditorChange} />
         </div>
       </LexicalField>
