@@ -205,6 +205,7 @@ export const CreateEntry = ({ inputType }: Props) => {
     setEntry({
       incidentId,
       sequence: createSequenceNumber(),
+      dateTime: new Date().toISOString(),
       content: {}
     });
   const resetCustomForm = () => setCustomForm(null);
