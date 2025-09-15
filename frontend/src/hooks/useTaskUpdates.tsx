@@ -39,15 +39,13 @@ const mergeTasks = (cachedTasks: Task[] | undefined, serverTasks: Task[]): Task[
   return [...matchedTasks, ...unmatchedTasks];
 };
 
-export function useTasksUpdates(incidentId?: string) {
+export function useTasksUpdates() {
   const queryClient = useQueryClient();
   const pollingIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const syncTasks = useCallback(async () => {
-    if (!incidentId) return;
-    
     try {
-      const tasks: Task[] = await get<Task[]>('tasks');
+      const tasks: Task[] = await get<Task[]>('/tasks');
       const cachedTasks: Task[] | undefined = queryClient.getQueryData<Task[]>(['tasks']);
 
       const mergedTasks = mergeTasks(cachedTasks, tasks);
@@ -56,13 +54,11 @@ export function useTasksUpdates(incidentId?: string) {
     } catch (error) {
       console.error(`Error occurred: ${error}. Unable to poll for task updates!`);
     }
-  }, [incidentId, queryClient]);
+  }, [queryClient]);
 
   const startPolling = useCallback(() => {
-    if (!incidentId) return;
-    
     pollingIntervalRef.current = setInterval(syncTasks, POLLING_INTERVAL_MS);
-  }, [syncTasks, incidentId]);
+  }, [syncTasks]);
 
   const clearPolling = useCallback(() => {
     if (pollingIntervalRef.current) {
