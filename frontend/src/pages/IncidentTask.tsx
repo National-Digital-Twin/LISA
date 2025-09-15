@@ -5,12 +5,14 @@
 import { Box, Grid2 as Grid, IconButton, Typography } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { Link, NavigateFunction, useNavigate, useParams } from 'react-router-dom';
+import { useEffect } from 'react';
 import { Task, TaskStatus } from 'common/Task';
 import { User } from 'common/User';
 import { PageTitle } from '../components';
 import PageWrapper from '../components/PageWrapper';
-import { useAuth, useUsers } from '../hooks';
+import { useAuth, useUsers, useTasksUpdates } from '../hooks';
 import { useTasks, useUpdateTaskStatus, useUpdateTaskAssignee  } from '../hooks/useTasks';
+import { useIsOnline } from '../hooks/useIsOnline';
 import { GridListItem } from '../components/GridListItem';
 import AssigneeSelector from '../components/InlineSelectors/AssigneeSelector';
 import TaskStatusSelector from '../components/InlineSelectors/TaskStatusSelector';
@@ -124,7 +126,7 @@ const TaskContent = ({ header, task, users }: Readonly<TaskContentProps>) => {
             {task.attachments?.length ? (
               <Box display="flex" flexDirection="column" gap={1}>
                 {task.attachments.map((attachment) => (
-                  <AttachmentLink key={attachment.key} attachment={attachment} />
+                  <AttachmentLink key={attachment.key} attachment={attachment} isOnServer={!task.offline} />
                 ))}
               </Box>
             ) : undefined}
@@ -144,6 +146,22 @@ const IncidentTask = () => {
   const { data: tasks, isLoading } = useTasks();
   const { users } = useUsers();
   const navigate = useNavigate();
+  const isOnline = useIsOnline();
+
+  const task = tasks?.find((task) => task.id === taskId);
+  const { startPolling, clearPolling } = useTasksUpdates();
+
+  useEffect(() => {
+    if (isOnline && task?.offline) {
+      startPolling();
+    } else {
+      clearPolling();
+    }
+
+    return () => {
+      clearPolling();
+    };
+  }, [isOnline, task?.offline, startPolling, clearPolling]);
 
   const renderHeader = (title: string, navigate: NavigateFunction) => (
     <Box
@@ -179,7 +197,6 @@ const IncidentTask = () => {
     return <TaskFallback header={renderHeader('Loading task...', navigate)} message="Loading task..." />;
   }
 
-  const task = tasks.find((task) => task.id === taskId);
   if (!task) {
     return <TaskFallback header={renderHeader('No task found', navigate)} message="Cannot find task." />;
   }
