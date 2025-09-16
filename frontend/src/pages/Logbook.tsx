@@ -117,7 +117,10 @@ const Logbook = () => {
           attachment.key
         );
       }
-    } else {
+    } else if (mention.type === 'Task') {
+      navigate(`/tasks/${mention.id}`)
+    }
+    else {
       navigate(`#${mention.id}`);
     }
   };

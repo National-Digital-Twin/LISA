@@ -7,5 +7,5 @@ import { type Mentionable } from 'common/Mentionable';
 import { type Task } from 'common/Task';
 
 export function task(task: Task): Mentionable {
-  return { id: task.name, label: task.name, type: 'Task' };
+  return { id: task.id, label: task.name, type: 'Task' };
 }
