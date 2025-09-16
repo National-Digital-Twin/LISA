@@ -17,9 +17,6 @@
           "FloodOtherControlDescription",
           "FloodFurtherAction"
         ],
-        "ui:options": {
-          "label": false
-        },
         "ui:submitButtonOptions": {
           "norender": true
         }
@@ -65,9 +62,6 @@
           "SubstancesOtherControlDescription",
           "SubstancesFurtherAction"
         ],
-        "ui:options": {
-          "label": false
-        },
         "ui:submitButtonOptions": {
           "norender": true
         }
@@ -92,9 +86,6 @@
           "SlipsTripsFallsOtherControlDescription",
           "SlipsTripsFallsFurtherAction"
         ],
-        "ui:options": {
-          "label": false
-        },
         "ui:submitButtonOptions": {
           "norender": true
         }
@@ -115,9 +106,6 @@
           "VehiclesOtherControlDescription",
           "VehiclesFurtherAction"
         ],
-        "ui:options": {
-          "label": false
-        },
         "ui:submitButtonOptions": {
           "norender": true
         }
@@ -138,9 +126,6 @@
           "FallingObjectsOtherControlDescription",
           "FallingObjectsFurtherAction"
         ],
-        "ui:options": {
-          "label": false
-        },
         "ui:submitButtonOptions": {
           "norender": true
         }
@@ -163,9 +148,6 @@
           "BiologicalOtherControlDescription",
           "BiologicalFurtherAction"
         ],
-        "ui:options": {
-          "label": false
-        },
         "ui:submitButtonOptions": {
           "norender": true
         }
@@ -186,9 +168,6 @@
           "EnvironmentOtherControlDescription",
           "EnvironmentFurtherAction"
         ],
-        "ui:options": {
-          "label": false
-        },
         "ui:submitButtonOptions": {
           "norender": true
         }
@@ -213,9 +192,6 @@
           "HandlingOtherControlDescription",
           "HandlingFurtherAction"
         ],
-        "ui:options": {
-          "label": false
-        },
         "ui:submitButtonOptions": {
           "norender": true
         }
@@ -236,9 +212,6 @@
           "WeatherOtherControlDescription",
           "WeatherFurtherAction"
         ],
-        "ui:options": {
-          "label": false
-        },
         "ui:submitButtonOptions": {
           "norender": true
         }
@@ -261,9 +234,6 @@
           "ContaminationOtherControlDescription",
           "ContaminationFurtherAction"
         ],
-        "ui:options": {
-          "label": false
-        },
         "ui:submitButtonOptions": {
           "norender": true
         }
@@ -282,9 +252,6 @@
           "FatigueOtherControlDescription",
           "FatigueFurtherAction"
         ],
-        "ui:options": {
-          "label": false
-        },
         "ui:submitButtonOptions": {
           "norender": true
         }
@@ -305,9 +272,6 @@
           "HeightOtherControlDescription",
           "HeightFurtherAction"
         ],
-        "ui:options": {
-          "label": false
-        },
         "ui:submitButtonOptions": {
           "norender": true
         }
@@ -328,9 +292,6 @@
           "EnclosedOtherControlDescription",
           "EnclosedFurtherAction"
         ],
-        "ui:options": {
-          "label": false
-        },
         "ui:submitButtonOptions": {
           "norender": true
         }
@@ -351,9 +312,6 @@
           "MothersOtherControlDescription",
           "MothersFurtherAction"
         ],
-        "ui:options": {
-          "label": false
-        },
         "ui:submitButtonOptions": {
           "norender": true
         }
@@ -374,9 +332,6 @@
           "StaffOtherControlDescription",
           "StaffFurtherAction"
         ],
-        "ui:options": {
-          "label": false
-        },
         "ui:submitButtonOptions": {
           "norender": true
         }

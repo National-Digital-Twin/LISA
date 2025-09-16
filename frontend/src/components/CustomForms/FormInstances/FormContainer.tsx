@@ -88,6 +88,8 @@ export const FormContainer = ({ entry, selectedForm, fields, onFieldChange }: Pr
     )
     : {};
 
+  const uiSchema = { ...selectedForm.formData.uiSchema, 'ui:options': { label: false } };
+
   return (
     <Box
       display="flex"
@@ -108,7 +110,7 @@ export const FormContainer = ({ entry, selectedForm, fields, onFieldChange }: Pr
           transformErrors={transformErrors}
           schema={selectedForm.formData.schema}
           validator={validator}
-          uiSchema={selectedForm.formData.uiSchema}
+          uiSchema={uiSchema}
           formData={prefilledFormData}
           onChange={handleChange}
           liveValidate

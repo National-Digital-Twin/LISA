@@ -42,6 +42,12 @@ const Mentions = ({ entry, entries, onMentionClick }: Props) => {
     [entry, entries]
   );
 
+  const isTask = (m: Mentionable) => (m.type || '').toLowerCase() === 'task';
+
+  const linkForMention = (m: Mentionable) => 
+    isTask(m) ? `/tasks/${m.id}` : `/logbook/${entry.incidentId}#${m.id}`; 
+   
+
   if (mentions.length === 0 && mentionedBy.length === 0) {
     return null;
   }
@@ -53,7 +59,7 @@ const Mentions = ({ entry, entries, onMentionClick }: Props) => {
           <li>Mentions:</li>
           {mentions.map((m) => (
             <li key={m.id}>
-              <Link to={`/logbook/${entry.incidentId}#${m.id}`} onClick={() => onMentionClick(m)}>{m.label}</Link>
+              <Link to={linkForMention(m)} onClick={() => onMentionClick(m)}>{m.label}</Link>
             </li>
           ))}
         </ul>

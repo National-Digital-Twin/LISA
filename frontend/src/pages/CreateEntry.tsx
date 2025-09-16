@@ -1,19 +1,22 @@
+// SPDX-License-Identifier: Apache-2.0
+// © Crown Copyright 2025. This work has been developed by the National Digital Twin Programme
+// and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
+
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { v4 as uuidV4 } from 'uuid';
-import { useCreateLogEntry, useIncidents, useLogEntries, useUsers } from '../hooks';
+import { useCreateLogEntry, useIncidents, useLogEntries, useTasks, useUsers } from '../hooks';
 import { useAttachments } from '../hooks/useAttachments';
 import { useFormTemplates } from '../hooks/Forms/useFormTemplates';
 import { useCreateFormInstance } from '../hooks/Forms/useFormInstances';
 import { useIsOnline } from '../hooks/useIsOnline';
 import { LogEntry } from 'common/LogEntry';
-import { MouseEvent, useEffect, useMemo, useRef, useState } from 'react';
+import { MouseEvent, useEffect, useMemo, useState } from 'react';
 import { createSequenceNumber } from '../utils/Form/sequence';
 import { Form, FormDataProperty } from '../components/CustomForms/FormTemplates/types';
 import { Field } from 'common/Field';
-import { FieldValueType, SketchLine } from '../utils/types';
-import { Stage } from 'konva/lib/Stage';
+import { FieldValueType } from '../utils/types';
 import { Mentionable } from 'common/Mentionable';
-import { Document, Format, Form as FormUtils } from '../utils';
+import { Format, Form as FormUtils } from '../utils';
 import { LogEntryTypes } from 'common/LogEntryTypes';
 import { LogEntryType } from 'common/LogEntryType';
 import { Attachment } from 'common/Attachment';
@@ -37,6 +40,7 @@ export const CreateEntry = ({ inputType }: Props) => {
   const { attachments: incidentAttachments } = useAttachments(incident?.id);
   const { users } = useUsers();
   const { forms } = useFormTemplates();
+  const { data: tasks } = useTasks(incidentId);
   const navigate = useNavigate();
   const { mutate: createFormInstance } = useCreateFormInstance(incidentId!, () =>
     navigate(`/logbook/${incidentId}`)
@@ -51,22 +55,22 @@ export const CreateEntry = ({ inputType }: Props) => {
       type: 'Update',
       incidentId,
       sequence: createSequenceNumber(),
+      dateTime: new Date().toISOString(),
       content: {}
     }) || {
       incidentId,
       sequence: createSequenceNumber(),
+      dateTime: new Date().toISOString(),
       content: {}
     }
   );
 
   const [customForm, setCustomForm] = useState<Form | null>(null);
   const [customFormData, setCustomFormData] = useState<FormDataProperty[]>([]);
-
   const [formFields, setFormFields] = useState<Field[]>([]);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [recordings, setRecordings] = useState<File[]>([]);
-  const [sketchLines, setSketchLines] = useState<SketchLine[]>([]);
-  const canvasRef = useRef<Stage>(null);
+  const [sketchFile, setSketchFile] = useState<File | null>(null);
 
   const otherAttachments: Array<Mentionable> = useMemo(() => {
     if (!incidentAttachments) {
@@ -82,6 +86,7 @@ export const CreateEntry = ({ inputType }: Props) => {
         logEntries,
         files: selectedFiles,
         recordings,
+        tasks,
         other: otherAttachments
       }),
     [logEntries, users, selectedFiles, recordings, otherAttachments]
@@ -141,8 +146,8 @@ export const CreateEntry = ({ inputType }: Props) => {
     setSelectedFiles((prev) => prev.filter((file) => file.name !== name));
   };
 
-  const onRemoveRecording = (name: string) => {
-    setRecordings((prev) => prev.filter((r) => r.name !== name));
+  const onRecordingsChanged = (newRecordings: File[]) => {
+    setRecordings(newRecordings);
   };
 
   const onCreateEntry: OnCreateEntry = (entry, files) => {
@@ -160,20 +165,18 @@ export const CreateEntry = ({ inputType }: Props) => {
       type: 'Recording',
       name: recording.name
     }));
+
     const sketchAttachments: Attachment[] = [];
-    const sketches: File[] = [];
-    if (sketchLines.length > 0) {
-      const dataURL = canvasRef.current?.toDataURL();
-      if (dataURL) {
-        const file = Document.dataURLtoFile(dataURL, `Sketch ${Format.timestamp()}.png`);
-        sketchAttachments.push({ type: 'Sketch', name: file.name });
-        sketches.push(file);
-      }
+    const allFiles: File[] = [...selectedFiles, ...recordings];
+    if (sketchFile) {
+      sketchAttachments.push({ type: 'Sketch', name: sketchFile.name });
+      allFiles.push(sketchFile);
     }
+
     const attachments = [...fileAttachments, ...recordingAttachments, ...sketchAttachments];
     entry.attachments = attachments.length > 0 ? attachments : undefined;
 
-    onCreateEntry({ ...entry } as LogEntry, [...selectedFiles, ...recordings, ...sketches]);
+    onCreateEntry({ ...entry } as LogEntry, allFiles);
   };
 
   const onCustomFormSubmit = () => {
@@ -204,18 +207,20 @@ export const CreateEntry = ({ inputType }: Props) => {
     setEntry({
       incidentId,
       sequence: createSequenceNumber(),
+      dateTime: new Date().toISOString(),
       content: {}
     });
   const resetCustomForm = () => setCustomForm(null);
   const resetCustomFormData = () => setCustomFormData([]);
 
   const handleCancel = () => {
-    if (source) {
-      let path: string;
+    let path = `/logbook/${incidentId}`;
 
+    if (source) {
       if (source === 'home') path = '/';
       else if (inputType === 'form' && source === 'forms') path = `/forms/${incidentId}`;
-      else path = `/logbook/${incidentId}`;
+      navigate(path);
+    } else {
       navigate(path);
     }
   };
@@ -241,17 +246,15 @@ export const CreateEntry = ({ inputType }: Props) => {
         resetCustomFormData={resetCustomFormData}
         onFilesSelected={onFilesSelected}
         onRemoveSelectedFile={onRemoveSelectedFile}
-        onRemoveRecording={onRemoveRecording}
-        setSketchLines={setSketchLines}
+        onRecordingsChanged={onRecordingsChanged}
         onLocationChange={onLocationChange}
+        setSketchFile={setSketchFile}
         onMainBackClick={handleCancel}
         onSubmit={onSubmit}
         onCancel={handleCancel}
         mentionables={mentionables}
         selectedFiles={selectedFiles}
         recordings={recordings}
-        canvasRef={canvasRef}
-        sketchLines={sketchLines}
       />
     </PageWrapper>
   );

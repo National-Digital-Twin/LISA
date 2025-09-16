@@ -8,6 +8,7 @@ import AccessTimeOutlinedIcon from '@mui/icons-material/AccessTimeOutlined';
 import AttachFileOutlinedIcon from '@mui/icons-material/AttachFileOutlined';
 import BadgeOutlinedIcon from '@mui/icons-material/BadgeOutlined';
 import AssignmentTurnedInOutlinedIcon from '@mui/icons-material/AssignmentTurnedInOutlined';
+import MicOutlinedIcon from  '@mui/icons-material/MicOutlined';
 import NotesOutlinedIcon from '@mui/icons-material/NotesOutlined';
 import WarningAmberOutlinedIcon from '@mui/icons-material/WarningAmberOutlined';
 import AddCommentOutlinedIcon from '@mui/icons-material/AddCommentOutlined';
@@ -26,6 +27,7 @@ import { Format } from '../../utils';
 import { IncidentType } from 'common/IncidentType';
 import { Box } from '@mui/material';
 import { RelevantHazards } from 'common/LogEntryTypes/RiskAssessment/hazards/RelevantHazards';
+import { AvianFlu } from 'common/LogEntryTypes/AvianFlu';
 
 export type EntityOptionData = {
   id: string;
@@ -88,10 +90,10 @@ const descriptionOptionDataComponent = (
   return undefined;
 };
 
-const siteRepDetailsOptionDataComponent = (
+const detailsOptionDataComponent = (
   key: string,
   data: EntityOptionData[],
-  siteRepFieldIds: string[],
+  fieldIds: string[],
   errors: ValidationError[]
 ) => {
   const optionData = data.find((x) => x.id === key);
@@ -102,7 +104,7 @@ const siteRepDetailsOptionDataComponent = (
       optionData,
       <TextSnippetOutlinedIcon />,
       'Add details',
-      !!errors.some((error) => siteRepFieldIds.includes(error.fieldId))
+      !!errors.some((error) => fieldIds.includes(error.fieldId))
     );
   }
 
@@ -202,7 +204,7 @@ const dateAndTimeOptionDataComponent = (
       `${key}-option`,
       optionData,
       <AccessTimeOutlinedIcon />,
-      'Add data and time',
+      'Add date and time',
       !!errors.find((error) => error.fieldId === 'dateTime')
     );
   }
@@ -222,7 +224,7 @@ const locationOptionDataComponent = (
       `${key}-option`,
       optionData,
       <LocationOnOutlinedIcon />,
-      'Add location(s)',
+      'Add locations',
       !!errors.find(
         (error) =>
           error.fieldId === 'location' ||
@@ -230,6 +232,22 @@ const locationOptionDataComponent = (
           error.fieldId === 'location.description' ||
           error.fieldId === 'location.coordinates'
       )
+    );
+  }
+
+  return undefined;
+};
+
+const recordingOptionDataComponent = (key: string, data: EntityOptionData[]) => {
+  const optionData = data.find((x) => x.id === key);
+
+  if (optionData) {
+    return optionDataComponent(
+      `${key}-option`,
+      optionData,
+      <MicOutlinedIcon />,
+      'Add voice recordings',
+      false
     );
   }
 
@@ -244,7 +262,7 @@ const attachmentsOptionDataComponent = (key: string, data: EntityOptionData[]) =
       `${key}-option`,
       optionData,
       <AttachFileOutlinedIcon />,
-      'Add attachment(s)',
+      'Add attachments',
       false
     );
   }
@@ -385,7 +403,7 @@ const incidentOrganisationOptionDataComponent = (
     optionData,
     <CorporateFareOutlinedIcon />,
     'Organisation',
-    !!errors.find((e) => e.fieldId === 'incident_organisation')
+    !!errors.find((e) => e.fieldId === 'incident_referrer_organisation')
   );
 };
 
@@ -398,7 +416,7 @@ const incidentPhoneOptionDataComponent = (data: EntityOptionData[], errors: Vali
     optionData,
     <LocalPhoneOutlinedIcon />,
     'Telephone number',
-    !!errors.find((e) => e.fieldId === 'incident_phone')
+    !!errors.find((e) => e.fieldId === 'incident_referrer_telephone')
   );
 };
 
@@ -439,6 +457,12 @@ const forms = (data: EntityOptionData[], errors: ValidationError[]) => {
     .filter((field) => field.id !== 'ExactLocation')
     .map((field) => field.id);
 
+  const avianFluFieldIds = AvianFlu.fields({
+    fields: [{ id: 'OccupierConsent', type: 'YesNo', value: 'Yes' }]
+  })
+    .filter((field) => field.id !== 'Location')
+    .map((field) => field.id);
+
   return [
     descriptionOptionDataComponent(
       'description',
@@ -447,7 +471,8 @@ const forms = (data: EntityOptionData[], errors: ValidationError[]) => {
       'Add a description',
       errors
     ),
-    siteRepDetailsOptionDataComponent('sitRepDetails', data, siteRepFieldIds, errors),
+    detailsOptionDataComponent('sitRepDetails', data, siteRepFieldIds, errors),
+    detailsOptionDataComponent('avianFlu', data, avianFluFieldIds, errors),
     riskAssessmentReviewOptionDataComponent('riskAssessmentReview', data, errors),
     ...hazardsOptionDataComponents('selectHazard', data, errors),
     addCommentsOptionDataComponent('addComments', data, errors),
@@ -455,6 +480,7 @@ const forms = (data: EntityOptionData[], errors: ValidationError[]) => {
     dateAndTimeOptionDataComponent('dateAndTime', data, errors),
     locationOptionDataComponent('location', data, errors),
     attachmentsOptionDataComponent('attachments', data),
+    recordingOptionDataComponent('recordings', data),
     sketchOptionDataComponent('sketch', data)
   ].filter((x) => !!x);
 };
@@ -471,6 +497,7 @@ const updates = (data: EntityOptionData[], errors: ValidationError[]) =>
     dateAndTimeOptionDataComponent('dateAndTime', data, errors),
     locationOptionDataComponent('location', data, errors),
     attachmentsOptionDataComponent('attachments', data),
+    recordingOptionDataComponent('recordings', data),
     sketchOptionDataComponent('sketch', data)
   ].filter((x) => !!x);
 
@@ -487,6 +514,7 @@ const tasks = (data: EntityOptionData[], errors: ValidationError[]) => {
     ),
     locationOptionDataComponent('location', data, errors),
     attachmentsOptionDataComponent('attachments', data),
+    recordingOptionDataComponent('recordings', data),
     sketchOptionDataComponent('sketch', data)
   ].filter((x) => !!x);
 };

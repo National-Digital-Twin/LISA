@@ -21,7 +21,13 @@ export default class LoginPage {
   async navigateToLoginPage(url: string) {
     await this.base.goto(url);
     await basePage.customSleep(2000);
-    await expect(this.page).toHaveTitle('Sign-in');
+    
+    // In local development, we may go directly to the app without login page
+    if (process.env.SKIP_LOGIN === 'true') {
+      basePage.logger.info('Navigating to local application - skipping title check');
+    } else {
+      await expect(this.page).toHaveTitle('Sign-in');
+    }
   }
 
   async enterUserName(user: string) {

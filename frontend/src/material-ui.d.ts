@@ -22,6 +22,11 @@ declare module '@mui/material/styles/createPalette' {
       done: StageType;
       inprogress: StageType;
     };
+    recording: {
+      inactive: string;
+      active: string;
+      activeDark: string;
+    };
     stage: {
       monitoring: StageType;
       response: StageType;

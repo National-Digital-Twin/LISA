@@ -27,10 +27,10 @@ export function tasks(incidentId?: string) {
       ...incidentClauses,
       ['?incidentId', ns.ies.hasName, '?incidentName'],
       ['?taskId', ns.ies.hasName, '?taskName'],
+      optional([['?taskId', ns.lisa.hasDescription, '?description']]),
       optional([
-        ['?taskId', ns.lisa.hasDescription, '?description'],
         ['?taskId', ns.lisa.contentText, '?contentText'],
-        ['?taskID', ns.lisa.contentJSON, '?contentJSON'],
+        ['?taskId', ns.lisa.contentJSON, '?contentJSON']
       ]),
       ['?taskId', ns.lisa.hasSequence, '?sequence'],
       ['?taskId', ns.lisa.createdAt, '?createdAt'],

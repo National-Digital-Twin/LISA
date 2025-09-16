@@ -11,6 +11,7 @@ import { LogEntryTypes } from 'common/LogEntryTypes';
 
 import { type ValidationError } from '../types';
 import Format from '../Format';
+import dayjs from 'dayjs';
 
 type Details = {
   [key in string | number | symbol]: string | Details;
@@ -69,7 +70,11 @@ const Validate = {
 
     return errors;
   },
-  entry: (entry: Partial<LogEntry>, files: File[]): Array<ValidationError> => {
+  entry: (
+    entry: Partial<LogEntry>,
+    files: File[],
+    incidentStartedAt: string
+  ): Array<ValidationError> => {
     const errors: Array<ValidationError> = [];
 
     // Validate the top-level fields.
@@ -77,6 +82,15 @@ const Validate = {
     if (!entryValidation.success && entryValidation.details) {
       const { details } = entryValidation;
       errors.push(...extractErrors(details as Details));
+    }
+
+    if (entry.dateTime) {
+      if (dayjs(entry.dateTime) < dayjs(incidentStartedAt)) {
+        errors.push({
+          fieldId: 'dateTime',
+          error: 'Date time cannot be earlier than the incident started at date'
+        });
+      }
     }
 
     if (entry.type) {

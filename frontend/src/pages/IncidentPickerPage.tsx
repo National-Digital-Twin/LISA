@@ -31,7 +31,7 @@ export default function IncidentPickerPage() {
       {next?.startsWith('/') && next.includes(':incidentId') ? (
         <IncidentPicker
           incidents={incidents ?? []}
-          onSelect={(incident) => navigate(next.replace(':incidentId', incident.id))}
+          onSelect={(incident) => navigate(next.replace(':incidentId', incident.id), { replace: true })}
         />
       ) : (
         <div style={{ padding: '16px' }}>Invalid or missing next route.</div>

@@ -225,7 +225,7 @@ describe('IncidentInputContainer', () => {
     ).not.toBeInTheDocument();
   });
 
-  test('edit mode: disables type, date and time pickers', async () => {
+  test('edit mode: hides type and time fields', async () => {
     const initialIncident: Incident = {
       id: 'inc-1',
       type: 'TerrorismNI',
@@ -250,9 +250,19 @@ describe('IncidentInputContainer', () => {
       />
     );
 
-    await userEvent.click(screen.getByText('open-type'));
-    const typeCombobox = within(screen.getByTestId('incident-type-field')).getByRole('combobox');
-    expect(typeCombobox).toHaveAttribute('aria-disabled', 'true');
+    expect(screen.queryByText('open-type')).not.toBeInTheDocument();
+    expect(screen.queryByText('open-time')).not.toBeInTheDocument();
+
+    // Other fields should still be visible
+    expect(screen.getByText('open-name')).toBeInTheDocument();
+    expect(screen.getByText('open-referrer')).toBeInTheDocument();
+  });
+
+  test('create mode: shows type and time fields', async () => {
+    render(<IncidentInputContainer isEditing={false} onSubmit={jest.fn()} onCancel={() => {}} />);
+
+    expect(screen.getByText('open-type')).toBeInTheDocument();
+    expect(screen.getByText('open-time')).toBeInTheDocument();
   });
 
   test('edit mode: submits SetIncidentInformation log entry (dirty only) via utils', async () => {
