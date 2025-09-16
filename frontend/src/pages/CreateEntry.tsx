@@ -4,7 +4,7 @@
 
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { v4 as uuidV4 } from 'uuid';
-import { useCreateLogEntry, useIncidents, useLogEntries, useUsers } from '../hooks';
+import { useCreateLogEntry, useIncidents, useLogEntries, useTasks, useUsers } from '../hooks';
 import { useAttachments } from '../hooks/useAttachments';
 import { useFormTemplates } from '../hooks/Forms/useFormTemplates';
 import { useCreateFormInstance } from '../hooks/Forms/useFormInstances';
@@ -40,6 +40,7 @@ export const CreateEntry = ({ inputType }: Props) => {
   const { attachments: incidentAttachments } = useAttachments(incident?.id);
   const { users } = useUsers();
   const { forms } = useFormTemplates();
+  const { data: tasks } = useTasks(incidentId);
   const navigate = useNavigate();
   const { mutate: createFormInstance } = useCreateFormInstance(incidentId!, () =>
     navigate(`/logbook/${incidentId}`)
@@ -85,6 +86,7 @@ export const CreateEntry = ({ inputType }: Props) => {
         logEntries,
         files: selectedFiles,
         recordings,
+        tasks,
         other: otherAttachments
       }),
     [logEntries, users, selectedFiles, recordings, otherAttachments]
