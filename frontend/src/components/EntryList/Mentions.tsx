@@ -44,10 +44,8 @@ const Mentions = ({ entry, entries, onMentionClick }: Props) => {
 
   const isTask = (m: Mentionable) => (m.type || '').toLowerCase() === 'task';
 
-  const linkForMention = (m: Mentionable) => {
-    console.log(m)
-    return  isTask(m) ? `/tasks/${m.id}` : `/logbook/${entry.incidentId}#${m.id}`;
-  }
+  const linkForMention = (m: Mentionable) => 
+    isTask(m) ? `/tasks/${m.id}` : `/logbook/${entry.incidentId}#${m.id}`;
    
 
   if (mentions.length === 0 && mentionedBy.length === 0) {
