@@ -87,9 +87,9 @@ export const addOptimisticLogEntry = async (
 
   queryClient.setQueryData<LogEntry[]>(
     [`incident/${incidentId}/logEntries`],
-    (oldData) => oldData?.concat(optimisticEntry) || [optimisticEntry]
+    (oldData) => [optimisticEntry, ...(oldData || [])]
   );
-  const updatedEntries = previousEntries?.concat(optimisticEntry) || [optimisticEntry];
+  const updatedEntries = [optimisticEntry, ...(previousEntries || [])];
 
   return { previousEntries, updatedEntries };
 };
