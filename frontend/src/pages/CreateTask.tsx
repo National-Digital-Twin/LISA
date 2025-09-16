@@ -37,7 +37,7 @@ export default function CreateTaskPage() {
       { task, files },
       {
         onSuccess: (data) => {
-          navigate(`/tasks/${data.id}`);
+          navigate(`/tasks/${data.id}`, { replace: true });
         },
         onError: (error) => {
           console.error('Task creation failed:', error);
