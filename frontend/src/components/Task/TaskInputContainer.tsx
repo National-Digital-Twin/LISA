@@ -120,7 +120,13 @@ export const TaskInputContainer = ({
     }
 
     // When confirming sketch screen, capture the canvas if there are sketch lines
-    if (confirmed && activeField === 'sketch' && level === 0 && sketchLines.length > 0 && canvasRef.current) {
+    if (
+      confirmed &&
+      activeField === 'sketch' &&
+      level === 0 &&
+      sketchLines.length > 0 &&
+      canvasRef.current
+    ) {
       const dataURL = canvasRef.current.toDataURL();
       if (dataURL) {
         const file = Document.dataURLtoFile(dataURL, `Sketch ${Format.timestamp()}.png`);
@@ -191,7 +197,7 @@ export const TaskInputContainer = ({
     }
 
     const completeTask: CreateTask & Required<Pick<CreateTask, 'id' | 'status'>> = {
-      ...task as Omit<CreateTask, 'incidentId'>,
+      ...(task as Omit<CreateTask, 'incidentId'>),
       id: uuidV4(),
       status: 'ToDo',
       incidentId,
@@ -212,9 +218,13 @@ export const TaskInputContainer = ({
       case 'location':
         return task.location ? 'View location' : undefined;
       case 'attachments':
-        return selectedFiles.length > 0 ? Format.pretty.pluralize(selectedFiles.length, 'file') : undefined;
+        return selectedFiles.length > 0
+          ? Format.pretty.pluralize(selectedFiles.length, 'file')
+          : undefined;
       case 'recordings':
-        return recordings.length > 0 ? Format.pretty.pluralize(recordings.length, 'voice recording') : undefined;
+        return recordings.length > 0
+          ? Format.pretty.pluralize(recordings.length, 'voice recording')
+          : undefined;
       case 'sketch':
         return sketchFile ? 'View sketch' : undefined;
     }
@@ -299,7 +309,7 @@ export const TaskInputContainer = ({
                 mentionables={mentionables}
                 onChange={changeEvent}
                 error={!!getFieldError('task_description')}
-                placeholder={'Type @ to tag a person, log, task or file'}
+                placeholder="Type @ to tag a person"
               />
             </FormControl>
           );
@@ -309,7 +319,9 @@ export const TaskInputContainer = ({
             <Location.Content
               location={task.location}
               validationErrors={errors}
-              onLocationChange={(location) => onTaskChange({ location: location as TypeOfLocation })}
+              onLocationChange={(location) =>
+                onTaskChange({ location: location as TypeOfLocation })
+              }
             />
           );
 
@@ -323,12 +335,7 @@ export const TaskInputContainer = ({
             />
           );
         case 'recordings':
-          return (
-            <Recordings
-              recordings={recordings}
-              onRecordingsChanged={setRecordings}
-            />
-          );
+          return <Recordings recordings={recordings} onRecordingsChanged={setRecordings} />;
         case 'sketch':
           return (
             <Sketch.Content

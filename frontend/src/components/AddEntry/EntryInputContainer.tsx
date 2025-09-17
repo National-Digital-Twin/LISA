@@ -697,6 +697,7 @@ export const EntryInputContainer = ({
               }}
               error={false}
               mentionables={mentionables}
+              placeholder="Type @ to tag a person, log, task or file"
             />
           );
 
