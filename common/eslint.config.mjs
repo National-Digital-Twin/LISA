@@ -28,7 +28,7 @@ export default tsEslint.config(js.configs.recommended, ...tsEslint.configs.recom
     ecmaVersion: 'latest',
     sourceType: 'module',
     parserOptions: {
-      tsconfigRootDir: 'frontend'
+      tsconfigRootDir: '/frontend'
     }
   },
 
