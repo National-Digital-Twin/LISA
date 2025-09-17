@@ -8,7 +8,7 @@ import AccessTimeOutlinedIcon from '@mui/icons-material/AccessTimeOutlined';
 import AttachFileOutlinedIcon from '@mui/icons-material/AttachFileOutlined';
 import BadgeOutlinedIcon from '@mui/icons-material/BadgeOutlined';
 import AssignmentTurnedInOutlinedIcon from '@mui/icons-material/AssignmentTurnedInOutlined';
-import MicOutlinedIcon from  '@mui/icons-material/MicOutlined';
+import MicOutlinedIcon from '@mui/icons-material/MicOutlined';
 import NotesOutlinedIcon from '@mui/icons-material/NotesOutlined';
 import WarningAmberOutlinedIcon from '@mui/icons-material/WarningAmberOutlined';
 import AddCommentOutlinedIcon from '@mui/icons-material/AddCommentOutlined';
@@ -491,7 +491,7 @@ const updates = (data: EntityOptionData[], errors: ValidationError[]) =>
       'description',
       data,
       <NotesOutlinedIcon />,
-      'Update description',
+      'Add a description',
       errors
     ),
     dateAndTimeOptionDataComponent('dateAndTime', data, errors),
