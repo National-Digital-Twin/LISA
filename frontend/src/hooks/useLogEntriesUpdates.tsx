@@ -81,6 +81,7 @@ export const addOptimisticLogEntry = async (
   const offlineCount = previousEntries?.filter((entry: LogEntry) => entry.offline).length ?? 0;
   const optimisticEntry: LogEntry = {
     ...logEntry,
+    dateTime: new Date().toISOString(),
     sequence: `${offlineCount + 1}`,
     offline: true
   };
