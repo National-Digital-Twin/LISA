@@ -25,7 +25,6 @@ const Meta = ({
   isBelowMd: boolean;
   metaItems?: ReactElement[];
 }) => {
-  const prefix = entry.offline ? 'OFF-' : '#';
   const hasMetaItems = Array.isArray(metaItems) && metaItems.length > 0;
 
   if (isMobile) {
@@ -127,8 +126,7 @@ const Meta = ({
           variant="body1"
           sx={{ color: 'white !important', ml: 'auto' }}
         >
-          {prefix}
-          {entry.sequence}
+          {entry.offline ? 'Submitting' : `#${entry.sequence}`}
         </Typography>
       </Grid>
 
