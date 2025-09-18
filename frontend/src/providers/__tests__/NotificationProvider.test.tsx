@@ -28,7 +28,11 @@ const mockNotifications: Notification[] = [
     seen: false,
     dateTime: '2025-01-01T00:00:00Z',
     incidentTitle: 'Test Incident',
-    entry: { id: 'entry1', incidentId: 'incident1', author: { username: 'author1', displayName: 'Author 1' } }
+    entry: {
+      id: 'entry1',
+      incidentId: 'incident1',
+      author: { username: 'author1', displayName: 'Author 1' }
+    }
   }
 ];
 
@@ -80,6 +84,7 @@ describe('NotificationProvider', () => {
     expect(screen.getByTestId('polling-status')).toHaveTextContent('idle');
 
     act(() => {
+      // eslint-disable-next-line testing-library/no-node-access
       screen.getByTestId('add-change').click();
     });
 
@@ -93,6 +98,7 @@ describe('NotificationProvider', () => {
     render(<TestComponent />, { wrapper: createWrapper() });
 
     act(() => {
+      // eslint-disable-next-line testing-library/no-node-access
       screen.getByTestId('add-change').click();
     });
 
@@ -111,6 +117,7 @@ describe('NotificationProvider', () => {
     render(<TestComponent />, { wrapper: createWrapper() });
 
     act(() => {
+      // eslint-disable-next-line testing-library/no-node-access
       screen.getByTestId('add-failing-change').click();
     });
 
@@ -135,6 +142,7 @@ describe('NotificationProvider', () => {
     render(<TestComponent />, { wrapper: createWrapper() });
 
     act(() => {
+      // eslint-disable-next-line testing-library/no-node-access
       screen.getByTestId('add-failing-change').click();
     });
 
@@ -164,6 +172,7 @@ describe('NotificationProvider', () => {
 
     // Start polling
     act(() => {
+      // eslint-disable-next-line testing-library/no-node-access
       screen.getByTestId('add-failing-change').click();
     });
 
@@ -183,6 +192,7 @@ describe('NotificationProvider', () => {
 
     // Add new change - should reset attempts
     act(() => {
+      // eslint-disable-next-line testing-library/no-node-access
       screen.getByTestId('add-failing-change').click();
     });
 
@@ -203,6 +213,7 @@ describe('NotificationProvider', () => {
     render(<TestComponent />, { wrapper: createWrapper() });
 
     act(() => {
+      // eslint-disable-next-line testing-library/no-node-access
       screen.getByTestId('add-change').click();
     });
 
@@ -232,6 +243,7 @@ describe('NotificationProvider', () => {
     const { unmount } = render(<TestComponent />, { wrapper: createWrapper() });
 
     act(() => {
+      // eslint-disable-next-line testing-library/no-node-access
       screen.getByTestId('add-failing-change').click();
     });
 
