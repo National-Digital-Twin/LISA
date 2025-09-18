@@ -441,15 +441,12 @@ export const EntryInputContainer = ({
     (activeFormField) => !dependentFieldIds.includes(activeFormField.id)
   );
 
-  const descriptionOptionData = (
-    onClickLevel: number,
-    descriptionHeading: string
-  ): EntityOptionData[] => [
+  const descriptionOptionData = (onClickLevel: number): EntityOptionData[] => [
     {
       id: 'description',
       onClick: () => {
         saveCurrentState();
-        setCustomHeading(descriptionHeading);
+        setCustomHeading('Add a description');
         setActiveField('description');
         setLevel(onClickLevel);
       },
@@ -602,14 +599,11 @@ export const EntryInputContainer = ({
 
   const entityOptionsData = (inputType: 'form' | 'update'): EntityOptionData[] => {
     let onClickLevel = 0;
-    let descriptionHeading = '';
 
     if (inputType === 'form') {
       onClickLevel = 2;
-      descriptionHeading = 'Add a description';
     } else if (inputType === 'update') {
       onClickLevel = 1;
-      descriptionHeading = 'Update description';
     }
 
     return [
@@ -617,7 +611,7 @@ export const EntryInputContainer = ({
         entry.type ?? ''
       )
         ? []
-        : descriptionOptionData(onClickLevel, descriptionHeading)),
+        : descriptionOptionData(onClickLevel)),
       ...(inputType === 'form' && entry.type === 'SituationReport'
         ? detailsOptionData('siteRepMethane')
         : []),
