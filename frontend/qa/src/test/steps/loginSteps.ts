@@ -13,7 +13,12 @@ Given('I login to the ndtp app with the user credentials', async () => {
   loginPage = new LoginPage(basePage.page);
   await loginPage.navigateToLoginPage(process.env.BASEURL);
   basePage.logger.info('Navigated to the application');
-  await loginPage.loginUser(process.env.TESTUSER, process.env.TESTPASS);
+  
+  if (process.env.SKIP_LOGIN !== 'true') {
+    await loginPage.loginUser(process.env.TESTUSER, process.env.TESTPASS);
+  } else {
+    basePage.logger.info('Skipping login for local development');
+  }
 });
 
 When('I click the LISA menu', async () => {
@@ -28,7 +33,12 @@ Given('I am a valid user logged into the {string} NDTP application', async (appN
 
   await loginPage.navigateToLoginPage(landingSite);
   basePage.logger.info('Navigated to the application');
-  await loginPage.loginUser(process.env.TESTUSER, process.env.TESTPASS);
+  
+  if (process.env.SKIP_LOGIN !== 'true') {
+    await loginPage.loginUser(process.env.TESTUSER, process.env.TESTPASS);
+  } else {
+    basePage.logger.info('Skipping login for local development');
+  }
 
   landingPage = new LandingPage(basePage.page);
   await landingPage.verifyLisaAppPage();
@@ -45,4 +55,14 @@ When('I launch the LISA NDTP direct link with {string} login', async (loginState
   if (loginState === 'successful') {
     await landingPage.launchNDTPapp();
   }
+});
+
+Given('I navigate to the incident dashboard', async () => {
+  landingPage = new LandingPage(basePage.page);
+  await landingPage.navigateToIncidentDashboard();
+});
+
+Given('I navigate to manage incidents page', async () => {
+  landingPage = new LandingPage(basePage.page);
+  await landingPage.navigateToManageIncidents();
 });

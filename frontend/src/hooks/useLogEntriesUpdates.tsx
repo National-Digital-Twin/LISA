@@ -81,15 +81,16 @@ export const addOptimisticLogEntry = async (
   const offlineCount = previousEntries?.filter((entry: LogEntry) => entry.offline).length ?? 0;
   const optimisticEntry: LogEntry = {
     ...logEntry,
+    dateTime: new Date().toISOString(),
     sequence: `${offlineCount + 1}`,
     offline: true
   };
 
   queryClient.setQueryData<LogEntry[]>(
     [`incident/${incidentId}/logEntries`],
-    (oldData) => oldData?.concat(optimisticEntry) || [optimisticEntry]
+    (oldData) => [optimisticEntry, ...(oldData || [])]
   );
-  const updatedEntries = previousEntries?.concat(optimisticEntry) || [optimisticEntry];
+  const updatedEntries = [optimisticEntry, ...(previousEntries || [])];
 
   return { previousEntries, updatedEntries };
 };

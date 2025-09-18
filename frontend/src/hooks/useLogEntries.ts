@@ -4,9 +4,11 @@
 
 // Local imports
 import { type LogEntry } from 'common/LogEntry';
+import { type Incident } from 'common/Incident';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { FetchError, get, post } from '../api';
 import { addOptimisticLogEntry } from './useLogEntriesUpdates';
+import { applyFieldUpdatesToIncident } from '../utils/Incident/optimisticUpdates';
 
 export const useLogEntries = (incidentId?: string) => {
   const {
@@ -16,7 +18,8 @@ export const useLogEntries = (incidentId?: string) => {
     error
   } = useQuery<LogEntry[], FetchError>({
     queryKey: [`incident/${incidentId}/logEntries`],
-    queryFn: () => get(`/incident/${incidentId}/logEntries`)
+    queryFn: () => get(`/incident/${incidentId}/logEntries`),
+    staleTime: Infinity
   });
 
   return { logEntries, isLoading, isError, error };
@@ -38,7 +41,11 @@ export const useCreateLogEntry = (incidentId?: string, onSuccess?: () => void) =
     LogEntry,
     Error,
     CreateLogEntryParams,
-    { previousEntries?: LogEntry[]; updatedEntries?: LogEntry[] }
+    {
+      previousEntries?: LogEntry[];
+      updatedEntries?: LogEntry[];
+      previousIncidents?: Incident[];
+    }
   >({
     mutationFn: async ({ logEntry, attachments }) => {
       if (attachments?.length) {
@@ -58,7 +65,25 @@ export const useCreateLogEntry = (incidentId?: string, onSuccess?: () => void) =
         logEntry
       );
 
-      return { previousEntries, updatedEntries };
+      // If this is a SetIncidentInformation log entry, also update the incident cache
+      let previousIncidents: Incident[] | undefined;
+      if (logEntry.type === 'SetIncidentInformation') {
+        await queryClient.cancelQueries({ queryKey: ['incidents'] });
+        previousIncidents = queryClient.getQueryData<Incident[]>(['incidents']);
+
+        if (previousIncidents) {
+          const updatedIncidents = previousIncidents.map(incident => {
+            if (incident.id === incidentId) {
+              return applyFieldUpdatesToIncident(incident, logEntry.fields);
+            }
+            return incident;
+          });
+
+          queryClient.setQueryData<Incident[]>(['incidents'], updatedIncidents);
+        }
+      }
+
+      return { previousEntries, updatedEntries, previousIncidents };
     },
     onSuccess: () => {
       if (onSuccess) {
@@ -78,6 +103,10 @@ export const useCreateLogEntry = (incidentId?: string, onSuccess?: () => void) =
           [`incident/${incidentId}/logEntries`],
           context.updatedEntries
         );
+      }
+
+      if (context?.previousIncidents) {
+        queryClient.setQueryData<Incident[]>(['incidents'], context.previousIncidents);
       }
     }
   });

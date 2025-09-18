@@ -38,12 +38,14 @@ export async function create(req: Request, res: Response) {
   const { triples: attachmentTriples } = await extractAttachments(req, task.attachments, taskNode);
 
   const locationTriples = addLocationTriples(task.location, taskNode);
+  const content = task.content ?? {}; // should probably be invalid request?
 
   const triples = [
     [incidentNode, ns.lisa.hasTask, taskNode],
     [taskNode, ns.rdf.type, ns.lisa.Task],
     [taskNode, ns.ies.hasName, literalString(task.name)],
-    [taskNode, ns.lisa.hasDescription, literalString(task.description || '')],
+    [taskNode, ns.lisa.contentText, literalString(content.text ?? '')],
+    [taskNode, ns.lisa.contentJSON, literalString(content.json ?? '{}')],
     [taskNode, ns.lisa.createdAt, literalDate(now)],
     [taskNode, ns.lisa.hasSequence, task.sequence],
 

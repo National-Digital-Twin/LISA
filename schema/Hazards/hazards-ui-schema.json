@@ -1,21 +1,21 @@
 {
   "forms": [
     {
-      "type": "haz_floodwater",
+      "type": "haz_flood",
       "uiSchema": {
-        "ui:description": "Coastal / inland flooding, tidal, uncovered drains / manholes concealed by flood water.#newline##newline#**Risks**#newline#Being swept away by floodwater, drowning, becoming cut off, falling down unseen holes.#newline##newline#**Indicate which of the following applicable controls are in place:**#newline#If a control is not in place, you must explain why.",
+        "ui:description": "Coastal / inland flooding, tidal, uncovered drains / manholes concealed by flood water.#newline##newline#<strong>Risks</strong>#newline#Being swept away by floodwater, drowning, becoming cut off, falling down unseen holes.#newline##newline#<strong>Indicate which of the following applicable controls are in place:</strong>#newline#If a control is not in place, you must explain why.",
         "ui:order": [
-          "briefingEcc",
-          "reasonEcc",
-          "briefingFcpc",
-          "reasonFcpc",
-          "cordonUnsafe",
-          "reasonCordonUnsafe",
-          "ppe",
-          "reasonPpe",
-          "otherControls",
-          "reasonOtherControls",
-          "furtherAction"
+          "FloodEmergencyBriefing",
+          "FloodReasonEmergencyBriefingNotInPlace",
+          "FloodForwardBriefing",
+          "FloodReasonForwardBriefingNotInPlace",
+          "FloodCordon",
+          "FloodReasonCordonNotInPlace",
+          "FloodPPE",
+          "FloodReasonPPENotInPlace",
+          "FloodOtherControl",
+          "FloodOtherControlDescription",
+          "FloodFurtherAction"
         ],
         "ui:submitButtonOptions": {
           "norender": true
@@ -25,18 +25,21 @@
     {
       "type": "haz_fire",
       "uiSchema": {
-        "ui:description": "Internal / external, effect of wind direction.#newline##newline#**Risks**#newline#Burns / smoke inhalation.#newline##newline#**Indicate which of the following applicable controls are in place:**#newline#If a control is not in place, you must explain why.",
+        "ui:description": "Internal / external, effect of wind direction.#newline##newline#<strong>Risks</strong>#newline#Burns / smoke inhalation.#newline##newline#<strong>Indicate which of the following applicable controls are in place:</strong>#newline#If a control is not in place, you must explain why.",
         "ui:order": [
-          "briefingEcc",
-          "reasonEcc",
-          "briefingFcpc",
-          "reasonFcpc",
-          "windCordon",
-          "reasonWindCordon",
-          "otherControls",
-          "reasonOtherControls",
-          "furtherAction"
+          "FireEmergencyBriefing",
+          "FireReasonEmergencyBriefingNotInPlace",
+          "FireForwardBriefing",
+          "FireReasonForwardBriefingNotInPlace",
+          "FireCordon",
+          "FireReasonCordonNotInPlace",
+          "FireOtherControl",
+          "FireOtherControlDescription",
+          "FireFurtherAction"
         ],
+        "ui:options": {
+          "label": false
+        },
         "ui:submitButtonOptions": {
           "norender": true
         }
@@ -45,19 +48,19 @@
     {
       "type": "haz_substances",
       "uiSchema": {
-        "ui:description": "Chemicals / pollutants, smoke, fumes and vapours.#newline##newline#**Risks**#newline#Breathing difficulties, burns and affecting eyes.#newline##newline#**Indicate which of the following applicable controls are in place:**#newline#If a control is not in place, you must explain why.",
+        "ui:description": "Chemicals / pollutants, smoke, fumes and vapours.#newline##newline#<strong>Risks</strong>#newline#Breathing difficulties, burns and affecting eyes.#newline##newline#<strong>Indicate which of the following applicable controls are in place:</strong>#newline#If a control is not in place, you must explain why.",
         "ui:order": [
-          "briefingEcc",
-          "reasonEcc",
-          "briefingFcpc",
-          "reasonFcpc",
-          "windCordon",
-          "reasonWindCordon",
-          "ppe",
-          "reasonPpe",
-          "otherControls",
-          "reasonOtherControls",
-          "furtherAction"
+          "SubstancesEmergencyBriefing",
+          "SubstancesReasonEmergencyBriefingNotInPlace",
+          "SubstancesForwardBriefing",
+          "SubstancesReasonForwardBriefingNotInPlace",
+          "SubstancesCordon",
+          "SubstancesReasonCordonNotInPlace",
+          "SubstancesPPE",
+          "SubstancesReasonPPENotInPlace",
+          "SubstancesOtherControl",
+          "SubstancesOtherControlDescription",
+          "SubstancesFurtherAction"
         ],
         "ui:submitButtonOptions": {
           "norender": true
@@ -67,21 +70,21 @@
     {
       "type": "haz_slipstripsfalls",
       "uiSchema": {
-        "ui:description": "Equipment, uneven ground, debris, slippery surfaces.#newline##newline#**Risks**#newline#Lower limb sprains and strains.#newline##newline#**Indicate which of the following applicable controls are in place:**#newline#If a control is not in place, you must explain why.",
+        "ui:description": "Equipment, uneven ground, debris, slippery surfaces.#newline##newline#<strong>Risks</strong>#newline#Lower limb sprains and strains.#newline##newline#<strong>Indicate which of the following applicable controls are in place:</strong>#newline#If a control is not in place, you must explain why.",
         "ui:order": [
-          "briefingEcc",
-          "reasonEcc",
-          "briefingFcpc",
-          "reasonFcpc",
-          "ppe",
-          "reasonPpe",
-          "torch",
-          "reasonTorch",
-          "planRoute",
-          "reasonPlanRoute",
-          "otherControls",
-          "reasonOtherControls",
-          "furtherAction"
+          "SlipsTripsFallsEmergencyBriefing",
+          "SlipsTripsFallsReasonEmergencyBriefingNotInPlace",
+          "SlipsTripsFallsForwardBriefing",
+          "SlipsTripsFallsReasonForwardBriefingNotInPlace",
+          "SlipsTripsFallsPPE",
+          "SlipsTripsFallsReasonPPENotInPlace",
+          "SlipsTripsFallsTorch",
+          "SlipsTripsFallsReasonTorchNotInPlace",
+          "SlipsTripsFallsPlanRoute",
+          "SlipsTripsFallsReasonPlanRouteNotInPlace",
+          "SlipsTripsFallsOtherControl",
+          "SlipsTripsFallsOtherControlDescription",
+          "SlipsTripsFallsFurtherAction"
         ],
         "ui:submitButtonOptions": {
           "norender": true
@@ -91,17 +94,17 @@
     {
       "type": "haz_vehicles",
       "uiSchema": {
-        "ui:description": "Coming into contact with fast / slow moving vehicles, vehicles reversing, large vehicles operating in confined spaces.#newline##newline#**Risks**#newline#Injury to torso, feet, limbs.#newline##newline#**Indicate which of the following applicable controls are in place:**#newline#If a control is not in place, you must explain why.",
+        "ui:description": "Coming into contact with fast / slow moving vehicles, vehicles reversing, large vehicles operating in confined spaces.#newline##newline#<strong>Risks</strong>#newline#Injury to torso, feet, limbs.#newline##newline#<strong>Indicate which of the following applicable controls are in place:</strong>#newline#If a control is not in place, you must explain why.",
         "ui:order": [
-          "briefingEcc",
-          "reasonEcc",
-          "briefingFcpc",
-          "reasonFcpc",
-          "ppe",
-          "reasonPpe",
-          "otherControls",
-          "reasonOtherControls",
-          "furtherAction"
+          "VehiclesEmergencyBriefing",
+          "VehiclesReasonEmergencyBriefingNotInPlace",
+          "VehiclesForwardBriefing",
+          "VehiclesReasonForwardBriefingNotInPlace",
+          "VehiclesPPE",
+          "VehiclesReasonPPENotInPlace",
+          "VehiclesOtherControl",
+          "VehiclesOtherControlDescription",
+          "VehiclesFurtherAction"
         ],
         "ui:submitButtonOptions": {
           "norender": true
@@ -111,17 +114,17 @@
     {
       "type": "haz_fallingobjects",
       "uiSchema": {
-        "ui:description": "Equipment and materials falling from vehicles / buildings, branches # foliage falling from trees.#newline##newline#**Risks**#newline#Head injury, injury to upper body, limbs.#newline##newline#**Indicate which of the following applicable controls are in place:**#newline#If a control is not in place, you must explain why.",
+        "ui:description": "Equipment and materials falling from vehicles / buildings, branches # foliage falling from trees.#newline##newline#<strong>Risks</strong>#newline#Head injury, injury to upper body, limbs.#newline##newline#<strong>Indicate which of the following applicable controls are in place:</strong>#newline#If a control is not in place, you must explain why.",
         "ui:order": [
-          "briefingEcc",
-          "reasonEcc",
-          "briefingFcpc",
-          "reasonFcpc",
-          "ppe",
-          "reasonPpe",
-          "otherControls",
-          "reasonOtherControls",
-          "furtherAction"
+          "FallingObjectsEmergencyBriefing",
+          "FallingObjectsReasonEmergencyBriefingNotInPlace",
+          "FallingObjectsForwardBriefing",
+          "FallingObjectsReasonForwardBriefingNotInPlace",
+          "FallingObjectsPPE",
+          "FallingObjectsReasonPPENotInPlace",
+          "FallingObjectsOtherControl",
+          "FallingObjectsOtherControlDescription",
+          "FallingObjectsFurtherAction"
         ],
         "ui:submitButtonOptions": {
           "norender": true
@@ -131,19 +134,19 @@
     {
       "type": "haz_biological",
       "uiSchema": {
-        "ui:description": "Persons coming in to contact with and being infected by Hep B #amp# C, TB, HIV.#newline##newline#**Risks**#newline#Effects of Hep B #amp# C, TB, HIV.#newline##newline#**Indicate which of the following applicable controls are in place:**#newline#If a control is not in place, you must explain why.",
+        "ui:description": "Persons coming in to contact with and being infected by Hep B #amp# C, TB, HIV.#newline##newline#<strong>Risks</strong>#newline#Effects of Hep B #amp# C, TB, HIV.#newline##newline#<strong>Indicate which of the following applicable controls are in place:</strong>#newline#If a control is not in place, you must explain why.",
         "ui:order": [
-          "briefingEcc",
-          "reasonEcc",
-          "briefingFcpc",
-          "reasonFcpc",
-          "needles",
-          "reasonNeedles",
-          "ppe",
-          "reasonPpe",
-          "otherControls",
-          "reasonOtherControls",
-          "furtherAction"
+          "BiologicalEmergencyBriefing",
+          "BiologicalReasonEmergencyBriefingNotInPlace",
+          "BiologicalForwardBriefing",
+          "BiologicalReasonForwardBriefingNotInPlace",
+          "BiologicalNeedles",
+          "BiologicalReasonNeedlesNotInPlace",
+          "BiologicalPPE",
+          "BiologicalReasonPPENotInPlace",
+          "BiologicalOtherControl",
+          "BiologicalOtherControlDescription",
+          "BiologicalFurtherAction"
         ],
         "ui:submitButtonOptions": {
           "norender": true
@@ -153,17 +156,17 @@
     {
       "type": "haz_environment",
       "uiSchema": {
-        "ui:description": "Broken glass, sharp debris, thorns, brambles.#newline##newline#**Risks**#newline#Cuts to body, injury to feet / hands.#newline##newline#**Indicate which of the following applicable controls are in place:**#newline#If a control is not in place, you must explain why.",
+        "ui:description": "Broken glass, sharp debris, thorns, brambles.#newline##newline#<strong>Risks</strong>#newline#Cuts to body, injury to feet / hands.#newline##newline#<strong>Indicate which of the following applicable controls are in place:</strong>#newline#If a control is not in place, you must explain why.",
         "ui:order": [
-          "briefingEcc",
-          "reasonEcc",
-          "briefingFcpc",
-          "reasonFcpc",
-          "ppe",
-          "reasonPpe",
-          "otherControls",
-          "reasonOtherControls",
-          "furtherAction"
+          "EnvironmentEmergencyBriefing",
+          "EnvironmentReasonEmergencyBriefingNotInPlace",
+          "EnvironmentForwardBriefing",
+          "EnvironmentReasonForwardBriefingNotInPlace",
+          "EnvironmentPPE",
+          "EnvironmentReasonPPENotInPlace",
+          "EnvironmentOtherControl",
+          "EnvironmentOtherControlDescription",
+          "EnvironmentFurtherAction"
         ],
         "ui:submitButtonOptions": {
           "norender": true
@@ -171,23 +174,23 @@
       }
     },
     {
-      "type": "haz_manualhandling",
+      "type": "haz_handling",
       "uiSchema": {
-        "ui:description": "Assisting in the positioning of signage, moving equipment.#newline##newline#**Risks**#newline#Upper body muscle disorders, limb disorders, objects being dropped onto feet.#newline##newline#**Indicate which of the following applicable controls are in place:**#newline#If a control is not in place, you must explain why.",
+        "ui:description": "Assisting in the positioning of signage, moving equipment.#newline##newline#<strong>Risks</strong>#newline#Upper body muscle disorders, limb disorders, objects being dropped onto feet.#newline##newline#<strong>Indicate which of the following applicable controls are in place:</strong>#newline#If a control is not in place, you must explain why.",
         "ui:order": [
-          "briefingEcc",
-          "reasonEcc",
-          "briefingFcpc",
-          "reasonFcpc",
-          "training",
-          "reasonTraining",
-          "ppe",
-          "reasonPpe",
-          "equipment",
-          "reasonEquipment",
-          "otherControls",
-          "reasonOtherControls",
-          "furtherAction"
+          "HandlingEmergencyBriefing",
+          "HandlingReasonEmergencyBriefingNotInPlace",
+          "HandlingForwardBriefing",
+          "HandlingReasonForwardBriefingNotInPlace",
+          "HandlingTraining",
+          "HandlingReasonTrainingNotInPlace",
+          "HandlingPPE",
+          "HandlingReasonPPENotInPlace",
+          "HandlingEquipment",
+          "HandlingReasonEquipmentNotInPlace",
+          "HandlingOtherControl",
+          "HandlingOtherControlDescription",
+          "HandlingFurtherAction"
         ],
         "ui:submitButtonOptions": {
           "norender": true
@@ -197,17 +200,17 @@
     {
       "type": "haz_weather",
       "uiSchema": {
-        "ui:description": "Temperature / Light / Ventilation / Rain / Body temperature #lbrack#cold / hot#rbrack#, poor light / visibility.#newline##newline#**Risks**#newline#Heat exhaustion, effects of prolonged exposure to heat, windchill, lowering of body temperature, contact with vehicles / equipment, slips, trips and falls.#newline##newline#**Indicate which of the following applicable controls are in place:**#newline#If a control is not in place, you must explain why.",
+        "ui:description": "Temperature / Light / Ventilation / Rain / Body temperature #lbrack#cold / hot#rbrack#, poor light / visibility.#newline##newline#<strong>Risks</strong>#newline#Heat exhaustion, effects of prolonged exposure to heat, windchill, lowering of body temperature, contact with vehicles / equipment, slips, trips and falls.#newline##newline#<strong>Indicate which of the following applicable controls are in place:</strong>#newline#If a control is not in place, you must explain why.",
         "ui:order": [
-          "briefingEcc",
-          "reasonEcc",
-          "briefingFcpc",
-          "reasonFcpc",
-          "ppe",
-          "reasonPpe",
-          "otherControls",
-          "reasonOtherControls",
-          "furtherAction"
+          "WeatherEmergencyBriefing",
+          "WeatherReasonEmergencyBriefingNotInPlace",
+          "WeatherForwardBriefing",
+          "WeatherReasonForwardBriefingNotInPlace",
+          "WeatherPPE",
+          "WeatherReasonPPENotInPlace",
+          "WeatherOtherControl",
+          "WeatherOtherControlDescription",
+          "WeatherFurtherAction"
         ],
         "ui:submitButtonOptions": {
           "norender": true
@@ -217,19 +220,19 @@
     {
       "type": "haz_contamination",
       "uiSchema": {
-        "ui:description": "Contamination on hands spreading to other parts of the body through touch or ingestion.#newline##newline#**Risks**#newline#Effect of pollutants.#newline##newline#**Indicate which of the following applicable controls are in place:**#newline#If a control is not in place, you must explain why.",
+        "ui:description": "Contamination on hands spreading to other parts of the body through touch or ingestion.#newline##newline#<strong>Risks</strong>#newline#Effect of pollutants.#newline##newline#<strong>Indicate which of the following applicable controls are in place:</strong>#newline#If a control is not in place, you must explain why.",
         "ui:order": [
-          "briefingEcc",
-          "reasonEcc",
-          "briefingFcpc",
-          "reasonFcpc",
-          "ppe",
-          "reasonPpe",
-          "washhands",
-          "reasonWashHands",
-          "otherControls",
-          "reasonOtherControls",
-          "furtherAction"
+          "ContaminationEmergencyBriefing",
+          "ContaminationReasonEmergencyBriefingNotInPlace",
+          "ContaminationForwardBriefing",
+          "ContaminationReasonForwardBriefingNotInPlace",
+          "ContaminationPPE",
+          "ContaminationReasonPPENotInPlace",
+          "ContaminationWashHands",
+          "ContaminationReasonWashHandsNotInPlace",
+          "ContaminationOtherControl",
+          "ContaminationOtherControlDescription",
+          "ContaminationFurtherAction"
         ],
         "ui:submitButtonOptions": {
           "norender": true
@@ -239,15 +242,15 @@
     {
       "type": "haz_fatigue",
       "uiSchema": {
-        "ui:description": "**Risks**#newline#Loss of situational awareness due to fatigue.#newline##newline#**Indicate which of the following applicable controls are in place:**#newline#If a control is not in place, you must explain why.",
+        "ui:description": "<strong>Risks</strong>#newline#Loss of situational awareness due to fatigue.#newline##newline#<strong>Indicate which of the following applicable controls are in place:</strong>#newline#If a control is not in place, you must explain why.",
         "ui:order": [
-          "briefingEcc",
-          "reasonEcc",
-          "guidance",
-          "reasonGuidance",
-          "otherControls",
-          "reasonOtherControls",
-          "furtherAction"
+          "FatigueEmergencyBriefing",
+          "FatigueReasonEmergencyBriefingNotInPlace",
+          "FatigueCommanderGuidance",
+          "FatigueReasonCommanderGuidanceNotInPlace",
+          "FatigueOtherControl",
+          "FatigueOtherControlDescription",
+          "FatigueFurtherAction"
         ],
         "ui:submitButtonOptions": {
           "norender": true
@@ -255,19 +258,19 @@
       }
     },
     {
-      "type": "haz_workingatheight",
+      "type": "haz_height",
       "uiSchema": {
-        "ui:description": "This includes working above any drop including stairs or e.g. the top of a cliff.#newline##newline#**Risks**#newline#Falls leading to injury.#newline##newline#**Indicate which of the following applicable controls are in place:**#newline#If a control is not in place, you must explain why.",
+        "ui:description": "This includes working above any drop including stairs or e.g. the top of a cliff.#newline##newline#<strong>Risks</strong>#newline#Falls leading to injury.#newline##newline#<strong>Indicate which of the following applicable controls are in place:</strong>#newline#If a control is not in place, you must explain why.",
         "ui:order": [
-          "briefingEcc",
-          "reasonEcc",
-          "briefingFcpc",
-          "reasonFcpc",
-          "unsafeCordon",
-          "reasonUnsafeCordon",
-          "otherControls",
-          "reasonOtherControls",
-          "furtherAction"
+          "HeightEmergencyBriefing",
+          "HeightReasonEmergencyBriefingNotInPlace",
+          "HeightForwardBriefing",
+          "HeightReasonForwardBriefingNotInPlace",
+          "HeightCordon",
+          "HeightReasonCordonNotInPlace",
+          "HeightOtherControl",
+          "HeightOtherControlDescription",
+          "HeightFurtherAction"
         ],
         "ui:submitButtonOptions": {
           "norender": true
@@ -275,19 +278,19 @@
       }
     },
     {
-      "type": "haz_enclosedspaces",
+      "type": "haz_enclosed",
       "uiSchema": {
-        "ui:description": "**Risks**#newline#Entrapment.#newline##newline#**Indicate which of the following applicable controls are in place:**#newline#If a control is not in place, you must explain why.",
+        "ui:description": "<strong>Risks</strong>#newline#Entrapment.#newline##newline#<strong>Indicate which of the following applicable controls are in place:</strong>#newline#If a control is not in place, you must explain why.",
         "ui:order": [
-          "briefingEcc",
-          "reasonEcc",
-          "briefingFcpc",
-          "reasonFcpc",
-          "unsafeCordon",
-          "reasonUnsafeCordon",
-          "otherControls",
-          "reasonOtherControls",
-          "furtherAction"
+          "EnclosedEmergencyBriefing",
+          "EnclosedReasonEmergencyBriefingNotInPlace",
+          "EnclosedForwardBriefing",
+          "EnclosedReasonForwardBriefingNotInPlace",
+          "EnclosedCordon",
+          "EnclosedReasonCordonNotInPlace",
+          "EnclosedOtherControl",
+          "EnclosedOtherControlDescription",
+          "EnclosedFurtherAction"
         ],
         "ui:submitButtonOptions": {
           "norender": true
@@ -295,19 +298,19 @@
       }
     },
     {
-      "type": "haz_newmothers",
+      "type": "haz_mothers",
       "uiSchema": {
-        "ui:description": "**Risks**#newline#Possible harm from environmental effects to mother or unborn children.#newline##newline#**Indicate which of the following applicable controls are in place:**#newline#If a control is not in place, you must explain why.",
+        "ui:description": "<strong>Risks</strong>#newline#Possible harm from environmental effects to mother or unborn children.#newline##newline#<strong>Indicate which of the following applicable controls are in place:</strong>#newline#If a control is not in place, you must explain why.",
         "ui:order": [
-          "briefingEcc",
-          "reasonEcc",
-          "briefingFcpc",
-          "reasonFcpc",
-          "unsafeAreas",
-          "reasonUnsafeAreas",
-          "otherControls",
-          "reasonOtherControls",
-          "furtherAction"
+          "MothersEmergencyBriefing",
+          "MothersReasonEmergencyBriefingNotInPlace",
+          "MothersForwardBriefing",
+          "MothersReasonForwardBriefingNotInPlace",
+          "MothersCordon",
+          "MothersReasonCordonNotInPlace",
+          "MothersOtherControl",
+          "MothersOtherControlDescription",
+          "MothersFurtherAction"
         ],
         "ui:submitButtonOptions": {
           "norender": true
@@ -315,19 +318,19 @@
       }
     },
     {
-      "type": "haz_lasupportstaff",
+      "type": "haz_staff",
       "uiSchema": {
-        "ui:description": "Assisting vulnerable people, situational #lbrack#i.e. Highways, Building Control#rbrack#.#newline##newline#**Risks**#newline#Exposure to risks by staff entering areas not deemed “safe”, staff being unaccounted for if area is evacuated.#newline##newline#**Indicate which of the following applicable controls are in place:**#newline#If a control is not in place, you must explain why.",
+        "ui:description": "Assisting vulnerable people, situational #lbrack#i.e. Highways, Building Control#rbrack#.#newline##newline#<strong>Risks</strong>#newline#Exposure to risks by staff entering areas not deemed “safe”, staff being unaccounted for if area is evacuated.#newline##newline#<strong>Indicate which of the following applicable controls are in place:</strong>#newline#If a control is not in place, you must explain why.",
         "ui:order": [
-          "briefingLiaison",
-          "reasonLiaison",
-          "ppe",
-          "reasonPpe",
-          "staffregister",
-          "reasonStaffRegister",
-          "otherControls",
-          "reasonOtherControls",
-          "furtherAction"
+          "StaffBriefing",
+          "StaffReasonBriefingNotInPlace",
+          "StaffPPE",
+          "StaffReasonPPENotInPlace",
+          "StaffRegister",
+          "StaffReasonRegisterNotInPlace",
+          "StaffOtherControl",
+          "StaffOtherControlDescription",
+          "StaffFurtherAction"
         ],
         "ui:submitButtonOptions": {
           "norender": true

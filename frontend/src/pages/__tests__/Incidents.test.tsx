@@ -176,7 +176,7 @@ describe('Incidents Page', () => {
       const addButton = screen.getByText('Add incident');
       fireEvent.click(addButton);
 
-      expect(mockNavigate).toHaveBeenCalledWith('/createlog');
+      expect(mockNavigate).toHaveBeenCalledWith('/create');
     });
 
     it('renders incidents data same as regular view', () => {
@@ -199,7 +199,7 @@ describe('Incidents Page', () => {
 
       providersRender(<Incidents isManaging={true} />);
 
-      expect(mockNavigate).toHaveBeenCalledWith('/');
+      expect(mockNavigate).toHaveBeenCalledWith('/incidents');
     });
 
     it('allows admin users to access management view', () => {

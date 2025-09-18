@@ -8,6 +8,8 @@ import { TextEncoder } from 'util';
 
 global.TextEncoder = TextEncoder;
 
+global.structuredClone = global.structuredClone || ((obj) => JSON.parse(JSON.stringify(obj)));
+
 Object.defineProperty(global, 'crypto', {
   value: {
     subtle: crypto.webcrypto.subtle

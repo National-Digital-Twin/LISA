@@ -40,7 +40,6 @@ const EntryItem = ({
   const { hash } = useLocation();
   const divRef = useRef<HTMLDivElement>(null);
   const { id, offline } = entry;
-  const prefix = entry.offline ? 'OFF-' : '#';
   const modifiers = useMemo(() => {
     const arr = [offline ? 'offline' : ''];
     if (hash === `#${id}`) {
@@ -81,10 +80,11 @@ const EntryItem = ({
                 variant="body2"
                 sx={{
                   color: 'text.primary',
-                  textDecoration: 'none'
+                  textDecoration: 'none',
+                  fontStyle: entry.offline ? 'italic' : 'normal',
                 }}
               >
-                {prefix}{entry.sequence}
+                {entry.offline ? 'Submitting' : `#${entry.sequence}`}
               </Typography>
             </Grid>
           </Box>

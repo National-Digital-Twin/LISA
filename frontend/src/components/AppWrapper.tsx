@@ -6,7 +6,7 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
 // Local imports
-import CreateLog from '../pages/CreateLog';
+import CreateIncident from '../pages/CreateIncident';
 import Error404 from '../pages/Error404';
 import Files from '../pages/Files';
 import CreateForms from '../pages/Forms/CreateFormTemplates';
@@ -27,8 +27,8 @@ import MyProfile from '../pages/MyProfile';
 import AdminUserList from '../pages/AdminUserList';
 import AdminViewUser from '../pages/AdminViewUser';
 import AdminNewUser from '../pages/AdminNewUser';
-import { CreateLogEntry } from '../pages/CreateLogEntry';
 import CreateTask from '../pages/CreateTask';
+import { CreateEntry } from '../pages/CreateEntry';
 
 const AppWrapper = () => {
   const router = createBrowserRouter([
@@ -40,16 +40,18 @@ const AppWrapper = () => {
         { path: 'forms', element: <Forms /> },
         { path: 'forms/create', element: <CreateForms /> },
         { path: 'forms/preview', element: <CreateForms /> },
-        { path: 'createlog', element: <CreateLog /> },
+        { path: 'create', element: <CreateIncident /> },
         { path: 'incident/:incidentId', element: <Overview /> },
+        { path: 'incident/:incidentId/edit', element: <CreateIncident /> },
         { path: 'logbook/:incidentId', element: <Logbook /> },
-        { path: 'logbook/:incidentId/create', element: <CreateLogEntry /> },
+        { path: 'logbook/:incidentId/createForm', element: <CreateEntry inputType="form" /> },
+        { path: 'logbook/:incidentId/createUpdate', element: <CreateEntry inputType="update" /> },
         { path: 'tasks', element: <Tasks /> },
         { path: 'tasks/:taskId', element: <IncidentTask /> },
         { path: 'tasks/create/:incidentId', element: <CreateTask /> },
         { path: 'incidents/pick', element: <IncidentPickerPage /> },
         { path: 'forms/:incidentId', element: <LogForms /> },
-        { path: 'location/:incidentId', element: <Location /> },
+        { path: 'location', element: <Location /> },
         { path: 'files/:incidentId', element: <Files /> },
         { path: 'notifications', element: <Notifications /> },
         { path: 'settings', element: <Settings /> },

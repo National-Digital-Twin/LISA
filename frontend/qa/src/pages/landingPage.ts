@@ -45,6 +45,21 @@ export default class LandingPage {
     await this.page.waitForTimeout(2000);
   }
 
+  async navigateToIncidentDashboard() {
+    await this.page.goto(`${process.env.LISAURL}incidents`);
+    await this.page.waitForTimeout(Number(process.env.WAIT_TIMEOUT) || 1000);
+  }
+
+  async navigateToManageIncidents() {
+    // Via settings page
+    await this.page.goto(`${process.env.LISAURL}settings`);
+    await this.page.waitForTimeout(Number(process.env.WAIT_TIMEOUT) || 500);
+
+    // Click Manage incidents
+    await this.page.getByRole('link', { name: 'Manage incidents' }).click();
+    await this.page.waitForTimeout(Number(process.env.WAIT_TIMEOUT) || 1000);
+  }
+
   async selectEditMenuByName(menuName: string) {
     await this.page.click(this.Elements.navMenu.replace('$MENUNAME$', menuName));
   }

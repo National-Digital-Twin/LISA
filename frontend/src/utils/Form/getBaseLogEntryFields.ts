@@ -26,6 +26,27 @@ export function getLogEntryTypes(incident?: Partial<Incident>) {
     .filter((t) => !!t) as Array<OptionType>;
 }
 
+export function getFormTypes(incident: Partial<Incident>, addCustomForms: boolean) {
+  const types = Object.keys(LogEntryTypes)
+    .map((value: string) => {
+      const type = LogEntryTypes[value as LogEntryType];
+      if (type.unselectable?.(incident)) {
+        return undefined;
+      }
+      return {
+        value,
+        label: LogEntryTypes[value as LogEntryType]?.label ?? LogEntryTypes.General.label
+      };
+    })
+    .filter((t) => !!t) as Array<OptionType>;
+
+  if (addCustomForms) {
+    types.push({ label: 'Custom form', value: 'CustomForm' });
+  }
+
+  return types;
+}
+
 const DATE_TIME_FIELD: Field = {
   id: 'dateTime',
   label: 'Date and time occurred',

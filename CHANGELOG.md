@@ -15,6 +15,33 @@ This project follows **Semantic Versioning (SemVer)** ([semver.org](https://semv
 
  ---
 
+ ## [0.94.0] - 2025-09-18
+
+ ### Features
+
+ - Manage Incidents - only available to Admins
+ - Incident logbook redesigned, Sort + Filter component added
+ - Tasks promoted to full entity, extracted from Log Entries
+ - Settings menu added with pipeline-stamped LISA version and Manage Profile/User Details
+ - New Tasks screens featuring Add Task workflow, Task overview andd full list of all Tasks
+ - Task updates happen inline as dropdown selectors (Status, Assignee)
+ - Incident Overview redesigned with inline dropdown selector for Stage
+ - Incident view redesigned with Sort + Filter component added
+ - Burger menu and Header redesigned
+ - Task Statuses can now no longer be updated backwards, must follow To Do -> In Progress -> Done flow
+ - Location views redesigned, pins are per entity (Task, Log Entry) not at Incident level, also implemented for Tasks
+ - Tasks can now have locations, attachments and sketches, along with tagging users as part of Task Description
+ - Multiple location pincs can be added to a single Log Entry or Task
+ - Only the assigned user can update a Task
+ - Tagging functionality overhauled - now users select an entity type to tag and then select the entity to be tagged.
+ - Recording moved away from  the Description field and into it's own Add Voice Recording section
+ - Adding Incident redesigned to improve flow
+ - Adding Log Entry redesigned to improve flow - includes "Forms" which comprise complicated log types + custom forms, and "Updates" for a more general quick log entry
+ - Editing Incident redesigned to match Add Incident flow
+ - Notifications view updated and redesigned
+ - Notification badge disappears when notification has been "seen" (Notifications panel opened)
+
+
  ## [0.93.2] - 2025-07-18
 
  ### Features

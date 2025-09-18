@@ -6,10 +6,10 @@ import NotificationsIcon from '@mui/icons-material/Notifications';
 import NotificationsNoneOutlinedIcon from '@mui/icons-material/NotificationsNoneOutlined';
 import { Box, Tab, Tabs, Typography } from '@mui/material';
 import { type Notification } from 'common/Notification';
-import React, { useState, useMemo, useCallback, useEffect } from 'react';
+import React, { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import getHandler from '../components/Notifications/handlers';
-import { useNotifications, useReadNotification } from '../hooks';
+import { useNotifications, useReadNotification, useMarkAllAsSeen } from '../hooks';
 import { Format } from '../utils';
 import DataList, { ListRow } from '../components/DataList';
 import { PageTitle } from '../components';
@@ -61,7 +61,7 @@ function NotificationDot() {
       sx={{
         width: 12,
         height: 12,
-        borderRadius: '50%', 
+        borderRadius: '50%',
         backgroundColor: 'primary.main',
       }}
     />
@@ -72,19 +72,38 @@ export default function Notifications() {
   const location = useLocation();
   const { notifications } = useNotifications();
   const readNotification = useReadNotification();
+  const markAllAsSeen = useMarkAllAsSeen();
   const navigate = useNavigate();
 
   const [tabValue, setTabValue] = useState(0);
 
   const handleTabChange = (_: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
+    if (newValue === 1) {
+      navigate('#unread', { replace: true });
+    } else {
+      navigate('/notifications', { replace: true });
+    }
   };
 
   useEffect(() => {
     if (location.hash === '#unread') {
       setTabValue(1); // Unread tab index
+    } else {
+      setTabValue(0); // All tab index
     }
   }, [location.hash]);
+
+  const hasCalledMarkSeenRef = useRef(false);
+  useEffect(() => {
+    if (notifications && !hasCalledMarkSeenRef.current) {
+      const hasUnseenNotifications = notifications.some(n => !n.seen);
+      if (hasUnseenNotifications) {
+        hasCalledMarkSeenRef.current = true;
+        markAllAsSeen.mutate();
+      }
+    }
+  }, [notifications, markAllAsSeen]);
 
   const notificationsArray = useMemo(() => notifications ?? [], [notifications]);
   const unreadNotifications = useMemo(() => notificationsArray.filter((n) => !n.read), [notificationsArray]);
@@ -158,7 +177,10 @@ export default function Notifications() {
           <Tab label="All" sx={{ textTransform: 'none' }} />
           <Tab
             label={unreadCount > 0 ? `Unread (${unreadCount})` : 'Unread'}
-            sx={{ textTransform: 'none' }}
+            sx={{ 
+              textTransform: 'none', 
+              color: unreadCount > 0 ? 'red' : 'inherit'
+            }}
           />
         </Tabs>
       </Box>

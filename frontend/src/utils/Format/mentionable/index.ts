@@ -5,9 +5,11 @@
 import { attachment } from './attachment';
 import { entry } from './entry';
 import { user } from './user';
+import { task } from './task';
 
 export const mentionable = {
   attachment,
   entry,
-  user
+  user,
+  task
 };

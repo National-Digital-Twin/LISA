@@ -9,10 +9,10 @@
 
 #Hazard - Flood water
 
-lisa:haz_floodwater rdf:type lisa:Form .
-lisa:haz_floodwater ies:hasName "Hazard - Floodwater"^^xsd:string .
-lisa:haz_floodwater lisa:createdAt "1970-01-01T00:00:00.000Z"^^xsd:dateTime .
-lisa:haz_floodwater lisa:hasData $FORM_DATA^^xsd:string .
+lisa:haz_flood rdf:type lisa:Form .
+lisa:haz_flood ies:hasName "Hazard - Floodwater"^^xsd:string .
+lisa:haz_flood lisa:createdAt "1970-01-01T00:00:00.000Z"^^xsd:dateTime .
+lisa:haz_flood lisa:hasData $FORM_DATA^^xsd:string .
 
 #Hazard - Fire
 
@@ -65,10 +65,10 @@ lisa:haz_environment lisa:hasData $FORM_DATA^^xsd:string .
 
 #Hazard - Manual handling
 
-lisa:haz_manualhandling rdf:type lisa:Form .
-lisa:haz_manualhandling ies:hasName "Hazard - Manual handling"^^xsd:string .
-lisa:haz_manualhandling lisa:createdAt "1970-01-01T00:00:00.000Z"^^xsd:dateTime .
-lisa:haz_manualhandling lisa:hasData $FORM_DATA^^xsd:string .
+lisa:haz_handling rdf:type lisa:Form .
+lisa:haz_handling ies:hasName "Hazard - Manual handling"^^xsd:string .
+lisa:haz_handling lisa:createdAt "1970-01-01T00:00:00.000Z"^^xsd:dateTime .
+lisa:haz_handling lisa:hasData $FORM_DATA^^xsd:string .
 
 #Hazard - Weather
 
@@ -93,28 +93,28 @@ lisa:haz_fatigue lisa:hasData $FORM_DATA^^xsd:string .
 
 #Hazard - Working at height
 
-lisa:haz_workingatheight rdf:type lisa:Form .
-lisa:haz_workingatheight ies:hasName "Hazard - Working at height"^^xsd:string .
-lisa:haz_workingatheight lisa:createdAt "1970-01-01T00:00:00.000Z"^^xsd:dateTime .
-lisa:haz_workingatheight lisa:hasData $FORM_DATA^^xsd:string .
+lisa:haz_height rdf:type lisa:Form .
+lisa:haz_height ies:hasName "Hazard - Working at height"^^xsd:string .
+lisa:haz_height lisa:createdAt "1970-01-01T00:00:00.000Z"^^xsd:dateTime .
+lisa:haz_height lisa:hasData $FORM_DATA^^xsd:string .
 
 #Hazard - Enclosed spaces
 
-lisa:haz_enclosedspaces rdf:type lisa:Form .
-lisa:haz_enclosedspaces ies:hasName "Hazard - Enclosed spaces"^^xsd:string .
-lisa:haz_enclosedspaces lisa:createdAt "1970-01-01T00:00:00.000Z"^^xsd:dateTime .
-lisa:haz_enclosedspaces lisa:hasData $FORM_DATA^^xsd:string .
+lisa:haz_enclosed rdf:type lisa:Form .
+lisa:haz_enclosed ies:hasName "Hazard - Enclosed spaces"^^xsd:string .
+lisa:haz_enclosed lisa:createdAt "1970-01-01T00:00:00.000Z"^^xsd:dateTime .
+lisa:haz_enclosed lisa:hasData $FORM_DATA^^xsd:string .
 
 #Hazard - New mothers
 
-lisa:haz_newmothers rdf:type lisa:Form .
-lisa:haz_newmothers ies:hasName "Hazard - New mothers"^^xsd:string .
-lisa:haz_newmothers lisa:createdAt "1970-01-01T00:00:00.000Z"^^xsd:dateTime .
-lisa:haz_newmothers lisa:hasData $FORM_DATA^^xsd:string .
+lisa:haz_mothers rdf:type lisa:Form .
+lisa:haz_mothers ies:hasName "Hazard - New mothers"^^xsd:string .
+lisa:haz_mothers lisa:createdAt "1970-01-01T00:00:00.000Z"^^xsd:dateTime .
+lisa:haz_mothers lisa:hasData $FORM_DATA^^xsd:string .
 
 #Hazard - LA support staff
 
-lisa:haz_lasupportstaff rdf:type lisa:Form .
-lisa:haz_lasupportstaff ies:hasName "Hazard - Local authority support staff"^^xsd:string .
-lisa:haz_lasupportstaff lisa:createdAt "1970-01-01T00:00:00.000Z"^^xsd:dateTime .
-lisa:haz_lasupportstaff lisa:hasData $FORM_DATA^^xsd:string .
+lisa:haz_staff rdf:type lisa:Form .
+lisa:haz_staff ies:hasName "Hazard - Local authority support staff"^^xsd:string .
+lisa:haz_staff lisa:createdAt "1970-01-01T00:00:00.000Z"^^xsd:dateTime .
+lisa:haz_staff lisa:hasData $FORM_DATA^^xsd:string .

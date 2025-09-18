@@ -4,7 +4,7 @@
 
 import { Box, Typography } from '@mui/material';
 import { PropsWithChildren, ReactNode } from 'react';
- 
+
 import { Incident } from 'common/Incident';
 import Stage from './Stage';
 import { Format } from '../utils';
@@ -47,7 +47,7 @@ const PageTitle = ({
           display: 'flex',
           alignItems: 'center',
           gap: 1,
-          minWidth: 0,
+          minWidth: 0
         }}
       >
         {titleStart && <Box sx={{ flex: '0 0 auto' }}>{titleStart}</Box>}
@@ -61,10 +61,16 @@ const PageTitle = ({
             m: 0,
             lineHeight: 1.15,
             minWidth: 0,
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
+            overflowX: 'auto',
             whiteSpace: 'nowrap',
-            flex: '1 1 auto',
+            maskImage: 'linear-gradient(to right, black 80%, transparent 100%)',
+            WebkitMaskImage: 'linear-gradient(to right, black 80%, transparent 100%)',
+            scrollbarWidth: 'none',
+            msOverflowStyle: 'none',
+            '&::-webkit-scrollbar': {
+              display: 'none'
+            },
+            flex: '1 1 auto'
           }}
           title={typeof title === 'string' ? title : undefined}
         >
@@ -95,12 +101,12 @@ const PageTitle = ({
     </Box>
 
     {children && (
-      <Box 
-        sx={{ 
+      <Box
+        sx={{
           width: childrenBelowOnDesktop ? { xs: '100%', sm: '100%' } : { xs: '100%', sm: 'auto' },
           flexBasis: childrenBelowOnDesktop ? { xs: '100%', sm: '100%' } : undefined,
-          order: childrenBelowOnDesktop ? 2 : undefined,
-        }} 
+          order: childrenBelowOnDesktop ? 2 : undefined
+        }}
         displayPrint="none"
       >
         {children}

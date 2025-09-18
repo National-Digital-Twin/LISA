@@ -19,37 +19,18 @@ import OnlineProvider from './providers/OnlineProvider';
 // Styles
 import './App.scss';
 import theme from './theme';
-
-interface LogoutLinks {
-  oAuthLogoutUrl: string;
-  redirect: string;
-  landingPageUrl: string;
-}
+import { primeLandingUrl, redirectToLanding } from './utils/authRedirect';
 
 const persister = createSyncStoragePersister({
   storage: window.localStorage
 });
 
-let cachedLandingPageUrl: string | null = null;
-const fetchLandingPageUrl = async (): Promise<void> => {
-  try {
-    const response = await fetch('/api/auth/logout-links');
-    if (response.ok) {
-      const logoutLinks: LogoutLinks = await response.json();
-      cachedLandingPageUrl = logoutLinks.landingPageUrl;
-    }
-  } catch (error) {
-    console.warn('Failed to fetch logout links config:', error);
-  }
-};
 
 const onError = async (error: FetchError) => {
   if (error.status === 302) {
     document.location = error.redirectUrl!;
   } else if (error.status === 401 || error.status === 403) {
-    if (cachedLandingPageUrl) {
-      document.location = cachedLandingPageUrl;
-    }
+    redirectToLanding();
   }
 };
 
@@ -78,4 +59,4 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   </PersistQueryClientProvider>
 );
 
-fetchLandingPageUrl();
+primeLandingUrl();

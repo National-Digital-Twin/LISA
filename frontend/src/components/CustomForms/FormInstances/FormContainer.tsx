@@ -1,14 +1,12 @@
 // SPDX-License-Identifier: Apache-2.0
 // © Crown Copyright 2025. This work has been developed by the National Digital Twin Programme
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
-
-import { useEffect, useRef } from 'react';
 import { Theme as Mui5Theme } from '@rjsf/mui';
 import validator from '@rjsf/validator-ajv8';
 import { RJSFSchema, RJSFValidationError } from '@rjsf/utils';
 import { JSONSchema7 } from 'json-schema';
 import { IChangeEvent, ThemeProps, withTheme } from '@rjsf/core';
-import { Box } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import { Form } from '../FormTemplates/types';
 import CustomLabelField from '../FormTemplates/CustomLabelField';
 import { OnFieldChange } from '../../../utils/handlers';
@@ -34,15 +32,6 @@ const FormTheme: ThemeProps = {
 const RJSFForm = withTheme(FormTheme);
 
 export const FormContainer = ({ entry, selectedForm, fields, onFieldChange }: Props) => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const formRef = useRef<any>(null);
-
-  useEffect(() => {
-    formRef.current?.validateForm();
-  }, [formRef]);
-
-  const validateForm = () => formRef.current?.validateForm();
-
   const getLabelMap = (schema: JSONSchema7): Record<string, string> => {
     const labelMap: Record<string, string> = {};
     Object.entries(schema.properties ?? {}).forEach(([key, value]) => {
@@ -99,6 +88,8 @@ export const FormContainer = ({ entry, selectedForm, fields, onFieldChange }: Pr
     )
     : {};
 
+  const uiSchema = { ...selectedForm.formData.uiSchema, 'ui:options': { label: false } };
+
   return (
     <Box
       display="flex"
@@ -107,17 +98,22 @@ export const FormContainer = ({ entry, selectedForm, fields, onFieldChange }: Pr
       sx={{ '.MuiFormHelperText-root': { display: 'none' } }}
     >
       <Box padding={2} bgcolor="background.default">
+        {selectedForm.formData.uiSchema['ui:description'] && (
+          <Typography
+            whiteSpace="pre-line"
+            dangerouslySetInnerHTML={{ __html: selectedForm.formData.uiSchema['ui:description'] }}
+          ></Typography>
+        )}
         <RJSFForm
-          ref={formRef}
           showErrorList={false}
           noHtml5Validate
           transformErrors={transformErrors}
           schema={selectedForm.formData.schema}
           validator={validator}
-          uiSchema={selectedForm.formData.uiSchema}
+          uiSchema={uiSchema}
           formData={prefilledFormData}
           onChange={handleChange}
-          onBlur={validateForm}
+          liveValidate
           fields={{ label: CustomLabelField }}
         />
       </Box>
