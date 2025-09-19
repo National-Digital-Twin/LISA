@@ -9,6 +9,8 @@ import NotificationProvider from '../NotificationProvider';
 import { useNotificationContext } from '../../hooks/useNotificationContext';
 import { get } from '../../api';
 
+/* eslint-disable testing-library/no-node-access */
+
 jest.mock('../../api');
 jest.mock('../../hooks/useAuth', () => ({
   useAuth: () => ({ user: { current: { username: 'testuser' } } })
