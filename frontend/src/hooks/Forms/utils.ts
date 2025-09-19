@@ -11,9 +11,8 @@ export function createLogEntryFromSubmittedForm(
   formId: string,
   incidentId: string,
   dateTime?: string,
-  entry?: Partial<LogEntry>
-): Partial<LogEntry> {
-  const logEntry: Partial<LogEntry> = entry ?? {
+): LogEntry {
+  return {
     id,
     type: 'FormSubmitted',
     incidentId,
@@ -26,6 +25,4 @@ export function createLogEntryFromSubmittedForm(
       submittedFormTitle: formTitle
     }
   };
-
-  return logEntry;
 }

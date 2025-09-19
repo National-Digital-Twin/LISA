@@ -9,8 +9,11 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { FetchError, get, post } from '../api';
 import { addOptimisticLogEntry } from './useLogEntriesUpdates';
 import { applyFieldUpdatesToIncident } from '../utils/Incident/optimisticUpdates';
+import { mergeOfflineEntities } from '../utils';
 
 export const useLogEntries = (incidentId?: string) => {
+  const queryClient = useQueryClient();
+
   const {
     data: logEntries,
     isLoading,
@@ -18,8 +21,13 @@ export const useLogEntries = (incidentId?: string) => {
     error
   } = useQuery<LogEntry[], FetchError>({
     queryKey: [`incident/${incidentId}/logEntries`],
-    queryFn: () => get(`/incident/${incidentId}/logEntries`),
-    staleTime: Infinity
+    queryFn: async () => {
+      const serverEntries = await get<LogEntry[]>(`/incident/${incidentId}/logEntries`);
+      const cachedEntries = queryClient.getQueryData<LogEntry[]>([`incident/${incidentId}/logEntries`]);
+
+      return mergeOfflineEntities(cachedEntries, serverEntries);
+    },
+    staleTime: Infinity,
   });
 
   return { logEntries, isLoading, isError, error };
