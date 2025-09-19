@@ -24,7 +24,7 @@ import { SortAndFilter } from '../components/SortFilter/SortAndFilter';
 import { buildLogFilters, logSort, TASK_TYPES } from '../components/SortFilter/schemas/log-schema';
 import { type QueryState } from '../components/SortFilter/filter-types';
 import { useFormTemplates } from '../hooks/Forms/useFormTemplates';
-import { getFromAndToFromTimeSelection } from '../components/SortFilter/filter-utils';
+import { countActive, getFromAndToFromTimeSelection } from '../components/SortFilter/filter-utils';
 import StageMini from '../components/Stage/StageMini';
 import { useResponsive } from '../hooks/useResponsiveHook';
 
@@ -149,6 +149,8 @@ const Logbook = () => {
     if (typeof a === 'string') return a;
     return a.displayName ?? '';
   };
+
+  const activeFilterCount = useMemo(() => countActive(queryState.values), [queryState.values]);
 
   const toId = (s: string) => s.toLowerCase().replace(/[\s_()/\-.:]+/g, '');
 
@@ -354,7 +356,7 @@ const Logbook = () => {
             Add new
           </Button>
           <Button type="button" variant="contained" onClick={handleOpenFilters} sx={{ flex: 1 }}>
-            Sort & Filter
+          Sort & Filter{activeFilterCount > 0 ? ` (${activeFilterCount})` : ''}
           </Button>
         </Box>
 
