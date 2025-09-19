@@ -61,6 +61,7 @@ type Props = {
   onMainBackClick: () => void;
   onSubmit: (submissionType: 'customForm' | 'entry' | null) => void;
   onCancel: () => void;
+  disableSubmit: boolean;
 };
 
 type FieldType =
@@ -103,7 +104,8 @@ export const EntryInputContainer = ({
   setSketchFile,
   onMainBackClick,
   onSubmit,
-  onCancel
+  onCancel,
+  disableSubmit,
 }: Props) => {
   const [level, setLevel] = useState<number>(0);
   const [submissionType, setSubmissionType] = useState<'customForm' | 'entry' | null>(
@@ -918,7 +920,7 @@ export const EntryInputContainer = ({
       onCancel={onCancel}
       level={level}
       setLevel={setLevelAndClearState}
-      disableSubmit={validationErrors.length > 0}
+      disableSubmit={validationErrors.length > 0 || disableSubmit}
     />
   );
 };

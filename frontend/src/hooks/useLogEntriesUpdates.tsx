@@ -7,6 +7,7 @@ import { useCallback, useRef } from 'react';
 import { type LogEntry } from 'common/LogEntry';
 
 import { get } from '../api';
+import { mergeOfflineEntities } from '../utils';
 
 const POLLING_INTERVAL_SECONDS = 10;
 const POLLING_INTERVAL_MS = POLLING_INTERVAL_SECONDS * 1000;
@@ -21,34 +22,12 @@ export function useLogEntriesUpdates(incidentId: string) {
       const cachedEntries: LogEntry[] | undefined = queryClient.getQueryData<LogEntry[]>([
         `incident/${incidentId}/logEntries`
       ]);
-      const matchedEntries: LogEntry[] = [];
-      let unmatchedEntries: LogEntry[] = [];
 
-      if (cachedEntries) {
-        cachedEntries?.forEach((cachedEntry) => {
-          const matchedEntry = entries.find((entry) => entry.id === cachedEntry.id);
-
-          if (matchedEntry) {
-            matchedEntries.push(matchedEntry);
-          } else {
-            unmatchedEntries.push(cachedEntry);
-          }
-        });
-
-        entries.forEach((entry) => {
-          const matchedEntry = cachedEntries.find((cachedEntry) => cachedEntry.id === entry.id);
-
-          if (!matchedEntry) {
-            unmatchedEntries.push(entry);
-          }
-        });
-      } else {
-        unmatchedEntries = entries;
-      }
+      const mergedEntries = mergeOfflineEntities(cachedEntries, entries);
 
       queryClient.setQueryData<LogEntry[]>(
         [`incident/${incidentId}/logEntries`],
-        [...matchedEntries, ...unmatchedEntries]
+        mergedEntries
       );
     } catch (error) {
       console.error(`Error occured: ${error}. Unable to poll for updates!`);

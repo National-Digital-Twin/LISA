@@ -7,37 +7,10 @@ import { useCallback, useRef } from 'react';
 import { type Task } from 'common/Task';
 
 import { get } from '../api';
+import { mergeOfflineEntities } from '../utils';
 
 const POLLING_INTERVAL_SECONDS = 10;
 const POLLING_INTERVAL_MS = POLLING_INTERVAL_SECONDS * 1000;
-
-const mergeTasks = (cachedTasks: Task[] | undefined, serverTasks: Task[]): Task[] => {
-  const matchedTasks: Task[] = [];
-  let unmatchedTasks: Task[] = [];
-
-  if (cachedTasks) {
-    cachedTasks.forEach((cachedTask) => {
-      const matchedTask = serverTasks.find((task) => task.id === cachedTask.id);
-
-      if (matchedTask) {
-        matchedTasks.push(matchedTask);
-      } else if (cachedTask.offline) {
-        unmatchedTasks.push(cachedTask);
-      }
-    });
-
-    serverTasks.forEach((task) => {
-      const matchedTask = cachedTasks.find((cachedTask) => cachedTask.id === task.id);
-      if (!matchedTask) {
-        unmatchedTasks.push(task);
-      }
-    });
-  } else {
-    unmatchedTasks = serverTasks;
-  }
-
-  return [...matchedTasks, ...unmatchedTasks];
-};
 
 export function useTasksUpdates() {
   const queryClient = useQueryClient();
@@ -48,7 +21,7 @@ export function useTasksUpdates() {
       const tasks: Task[] = await get<Task[]>('/tasks');
       const cachedTasks: Task[] | undefined = queryClient.getQueryData<Task[]>(['tasks']);
 
-      const mergedTasks = mergeTasks(cachedTasks, tasks);
+      const mergedTasks = mergeOfflineEntities(cachedTasks, tasks);
 
       queryClient.setQueryData<Task[]>(['tasks'], mergedTasks);
     } catch (error) {
