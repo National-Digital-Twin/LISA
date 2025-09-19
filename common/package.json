@@ -1,6 +1,6 @@
 {
   "name": "common",
-  "version": "0.93.1",
+  "version": "0.94.0",
   "type": "module",
   "description": "Code shared between the backend and the frontend",
   "scripts": {

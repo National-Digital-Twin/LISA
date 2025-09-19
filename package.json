@@ -1,6 +1,6 @@
 {
   "name": "lisa",
-  "version": "0.93.1",
+  "version": "0.94.0",
   "type": "module",
   "description": "L!SA is a system in the incident response and resilience domain. It allows the communication, actions and decisions taken in response to an incident to be recorded and also allows files to be uploaded in connection with an incident.",
   "scripts": {
