@@ -67,7 +67,7 @@ const TaskContent = ({ header, task, users }: Readonly<TaskContentProps>) => {
     );
   };
 
-  const canUpdateTask = user.current?.username === task.assignee?.username;
+  const canUpdateTask = user.current?.username === task.assignee?.username && task.status != "Done";
 
   return (
     <>
