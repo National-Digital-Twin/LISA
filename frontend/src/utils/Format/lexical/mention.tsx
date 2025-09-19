@@ -15,7 +15,7 @@ export function mention(node: Node, key: Key): ReactNode {
       variant="body1"
       component="span"
       fontWeight="bold"
-      color="primary"
+      color={node.mentionType == "User" ? "none" : "primary"}
       key={key}
       sx={{ cursor: 'pointer' }}
       data-lexical-mention={node.mentionName}
