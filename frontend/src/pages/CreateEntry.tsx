@@ -42,10 +42,10 @@ export const CreateEntry = ({ inputType }: Props) => {
   const { forms } = useFormTemplates();
   const { data: tasks } = useTasks(incidentId);
   const navigate = useNavigate();
-  const { mutate: createFormInstance } = useCreateFormInstance(incidentId!, () =>
+  const createFormInstance = useCreateFormInstance(incidentId!, () =>
     navigate(`/logbook/${incidentId}`)
   );
-  const { createLogEntry } = useCreateLogEntry(incidentId, () =>
+  const { createLogEntry, isLoading: isCreatingLogEntry } = useCreateLogEntry(incidentId, () =>
     navigate(`/logbook/${incidentId}`)
   );
   const isOnline = useIsOnline();
@@ -181,7 +181,7 @@ export const CreateEntry = ({ inputType }: Props) => {
 
   const onCustomFormSubmit = () => {
     if (customForm && customFormData) {
-      createFormInstance({
+      createFormInstance.mutate({
         formTemplateId: customForm.id,
         title: customForm.title,
         formData: [...customFormData]
@@ -255,6 +255,7 @@ export const CreateEntry = ({ inputType }: Props) => {
         mentionables={mentionables}
         selectedFiles={selectedFiles}
         recordings={recordings}
+        disableSubmit={isCreatingLogEntry || createFormInstance.isPending}
       />
     </PageWrapper>
   );
