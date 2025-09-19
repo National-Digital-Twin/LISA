@@ -5,7 +5,7 @@
 import { Box, Grid2 as Grid, IconButton, Typography } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { Link, NavigateFunction, useNavigate, useParams } from 'react-router-dom';
-import { useEffect } from 'react';
+import { ReactNode, useEffect } from 'react';
 import { Task, TaskStatus } from 'common/Task';
 import { User } from 'common/User';
 import { PageTitle } from '../components';
@@ -67,6 +67,18 @@ const TaskContent = ({ header, task, users }: Readonly<TaskContentProps>) => {
     );
   };
 
+  let content: ReactNode = null;
+
+  if (task.content?.json) {
+    content = Format.lexical.html(task.content.json);
+  }
+  if (!content && task.content?.text) {
+    content = task.content.text;
+  }
+
+  const contentEl: React.ReactElement | undefined =
+  content != null ? <>{content}</> : undefined;
+
   const canUpdateTask = user.current?.username === task.assignee?.username && task.status != "Done";
 
   return (
@@ -100,7 +112,9 @@ const TaskContent = ({ header, task, users }: Readonly<TaskContentProps>) => {
               </Box>
             </GridListItem>
           )}
-          <GridListItem title="Task description" text={task.content?.text} />
+          <GridListItem title="Task description">
+            {contentEl}
+          </GridListItem>
           <GridListItem title="Assigned by" text={task.author.displayName} />
           {canUpdateTask ? (
             <AssigneeSelector
