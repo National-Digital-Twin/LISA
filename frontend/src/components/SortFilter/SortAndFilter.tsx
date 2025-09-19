@@ -333,6 +333,7 @@ export function SortAndFilter({
             viewRenderers={{ hours: renderTimeViewClock, minutes: renderTimeViewClock }}
             maxDateTime={toNorm ?? undefined}
             referenceDate={(fromNorm ?? toNorm ?? dayjs().startOf('day'))}
+            ampm={false}
             slotProps={{
               textField: { fullWidth: true, id: 'from' },
               openPickerButton: { 'aria-label': 'Open From date-time picker' },
@@ -348,6 +349,7 @@ export function SortAndFilter({
             viewRenderers={{ hours: renderTimeViewClock, minutes: renderTimeViewClock }}
             minDateTime={fromNorm ?? undefined}
             referenceDate={(toNorm ?? fromNorm ?? dayjs().startOf('day'))}
+            ampm={false}
             slotProps={{
               textField: { fullWidth: true, id: 'to' },
               openPickerButton: { 'aria-label': 'Open To date-time picker' },

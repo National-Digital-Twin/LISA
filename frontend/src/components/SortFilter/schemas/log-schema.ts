@@ -62,7 +62,7 @@ export const buildLogFilters = (
       ]),
       ...makeOptions([
         { id: 'task', label: 'Task'},
-        { id: 'general', label: 'Update' },
+        { id: 'update', label: 'Update' },
       ]),
     ]),
     makeGroup('time', 'Time', 'single', makeOptions([
