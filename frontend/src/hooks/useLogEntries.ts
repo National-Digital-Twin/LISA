@@ -10,6 +10,9 @@ import { FetchError, get, post } from '../api';
 import { addOptimisticLogEntry } from './useLogEntriesUpdates';
 import { applyFieldUpdatesToIncident } from '../utils/Incident/optimisticUpdates';
 import { mergeOfflineEntities } from '../utils';
+import { useIsOnline } from './useIsOnline';
+import { addLog } from '../offline/db/dbOperations';
+import { v4 as uuidV4 } from 'uuid';
 
 export const useLogEntries = (incidentId?: string) => {
   const queryClient = useQueryClient();
@@ -23,11 +26,13 @@ export const useLogEntries = (incidentId?: string) => {
     queryKey: [`incident/${incidentId}/logEntries`],
     queryFn: async () => {
       const serverEntries = await get<LogEntry[]>(`/incident/${incidentId}/logEntries`);
-      const cachedEntries = queryClient.getQueryData<LogEntry[]>([`incident/${incidentId}/logEntries`]);
+      const cachedEntries = queryClient.getQueryData<LogEntry[]>([
+        `incident/${incidentId}/logEntries`
+      ]);
 
       return mergeOfflineEntities(cachedEntries, serverEntries);
     },
-    staleTime: Infinity,
+    staleTime: Infinity
   });
 
   return { logEntries, isLoading, isError, error };
@@ -44,6 +49,7 @@ export const useCreateLogEntry = (incidentId?: string, onSuccess?: () => void) =
   }
 
   const queryClient = useQueryClient();
+  const isOnline = useIsOnline();
 
   const { mutate: createLogEntry, isPending: isCreating } = useMutation<
     LogEntry,
@@ -56,6 +62,13 @@ export const useCreateLogEntry = (incidentId?: string, onSuccess?: () => void) =
     }
   >({
     mutationFn: async ({ logEntry, attachments }) => {
+      if (!isOnline) {
+        logEntry.id ??= uuidV4();
+        const offlineEntry = { ...logEntry, incidentId };
+        await addLog(offlineEntry);
+        return offlineEntry;
+      }
+
       if (attachments?.length) {
         const formData = new FormData();
         attachments.forEach((file: File) => formData.append(file.name, file));
@@ -80,7 +93,7 @@ export const useCreateLogEntry = (incidentId?: string, onSuccess?: () => void) =
         previousIncidents = queryClient.getQueryData<Incident[]>(['incidents']);
 
         if (previousIncidents) {
-          const updatedIncidents = previousIncidents.map(incident => {
+          const updatedIncidents = previousIncidents.map((incident) => {
             if (incident.id === incidentId) {
               return applyFieldUpdatesToIncident(incident, logEntry.fields);
             }
@@ -116,7 +129,8 @@ export const useCreateLogEntry = (incidentId?: string, onSuccess?: () => void) =
       if (context?.previousIncidents) {
         queryClient.setQueryData<Incident[]>(['incidents'], context.previousIncidents);
       }
-    }
+    },
+    networkMode: 'always'
   });
 
   return { createLogEntry, isLoading: isCreating };
