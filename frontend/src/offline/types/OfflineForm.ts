@@ -3,11 +3,9 @@
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
  
-import { LogEntry } from "common/LogEntry";
 import { FormInstance } from "../../components/CustomForms/FormTemplates/types";
 
 export type OfflineFormInstance = FormInstance & {
     incidentId: string;
-    pendingLogEntry: Partial<LogEntry>
     expiresAt?: string;
   };

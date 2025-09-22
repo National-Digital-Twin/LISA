@@ -13,7 +13,6 @@ import { useCreateLogEntry } from '../useLogEntries';
 import { OfflineFormInstance } from '../../offline/types/OfflineForm';
 import { useIsOnline } from '../useIsOnline';
 import { addForm } from '../../offline/db/dbOperations';
-import { addOptimisticLogEntry } from '../useLogEntriesUpdates';
 
 export async function poll(
   incidentId: string | undefined,
@@ -43,7 +42,7 @@ export const useCreateFormInstance = (incidentId: string, onSuccess: () => void)
 
       const id = uuidV4();
       const createdAt = new Date().toISOString();
-      const logEntry = createLogEntryFromSubmittedForm(uuidV4(), title, id, incidentId, createdAt)
+      const logEntry = createLogEntryFromSubmittedForm(uuidV4(), title, id, incidentId, createdAt);
 
       if (!isOnline) {
         const offlineForm: OfflineFormInstance = {
@@ -53,26 +52,17 @@ export const useCreateFormInstance = (incidentId: string, onSuccess: () => void)
           formData,
           incidentId,
           createdAt,
-          authorName: 'Offline',
-          pendingLogEntry: logEntry
+          authorName: 'Offline'
         };
 
         await addForm(offlineForm);
-
-        // since we're not using the mutation for log entries
-        // we need to add the optimistic log entry manually
-        // this can go away once log entries support offline operations
-        // rather than two ways of doing it
-        addOptimisticLogEntry(queryClient, incidentId, logEntry);
-
-        return { id };
+      } else {
+        await post<{ id: string }>(`/incident/${incidentId}/form`, { formTemplateId, formData, createdAt, id });
       }
-
-      const response = await post<{ id: string }>(`/incident/${incidentId}/form`, { formTemplateId, formData, createdAt, id });
 
       createLogEntry({ logEntry });
 
-      return response;
+      return { id };
     },
 
     onMutate: async ({ formTemplateId, formData, title }) => {

@@ -50,3 +50,6 @@ jest.mock('react-konva', () => {
 });
 
 jest.mock('konva/lib/index-node.js', () => ({}), { virtual: true });
+
+import 'fake-indexeddb/auto';
+

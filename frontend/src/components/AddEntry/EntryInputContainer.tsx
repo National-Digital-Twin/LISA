@@ -556,7 +556,8 @@ export const EntryInputContainer = ({
       },
       label: addLocationHeading,
       value: entry.location ? viewLocationHeading : undefined,
-      required: LogEntryTypes[entry.type as LogEntryType]?.requireLocation
+      required: LogEntryTypes[entry.type as LogEntryType]?.requireLocation,
+      supportedOffline: false
     },
     {
       id: 'attachments',
@@ -570,7 +571,7 @@ export const EntryInputContainer = ({
         selectedFiles.length > 0
           ? Format.pretty.pluralize(selectedFiles.length, 'attachment')
           : undefined,
-      supportedOffline: true
+      supportedOffline: false
     },
     {
       id: 'recordings',
@@ -584,7 +585,7 @@ export const EntryInputContainer = ({
         recordings.length > 0
           ? Format.pretty.pluralize(recordings.length, 'voice recording')
           : undefined,
-      supportedOffline: true
+      supportedOffline: false
     },
     {
       id: 'sketch',
@@ -595,7 +596,7 @@ export const EntryInputContainer = ({
         setLevel(onClickLevel);
       },
       value: sketchLines.length > 0 ? 'View sketch' : undefined,
-      supportedOffline: true
+      supportedOffline: false
     }
   ];
 
