@@ -19,7 +19,6 @@ import { logError } from '../../utils/logger';
 async function handleFormSync(form : OfflineFormInstance) {
   try {
     await post(`/incident/${form.incidentId}/form`, form);
-    await post(`/incident/${form.incidentId}/logEntry`, form.pendingLogEntry);
     await deleteForm(form.id);
   } catch (err) {
     logError(`handle form sync: ${form.id}`, err);
