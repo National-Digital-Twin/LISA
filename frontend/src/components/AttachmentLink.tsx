@@ -24,13 +24,15 @@ export default function AttachmentLink({ attachment, isOnServer = true }: Readon
         <Typography variant="body1" fontWeight="bold" color="textDisabled">
           {attachment.name}
         </Typography>
-        <Typography component="span">{scanPendingOrQueuedMessage}</Typography>
+        {!['Recording', 'Sketch'].includes(attachment.type) && (
+          <Typography component="span">{scanPendingOrQueuedMessage}</Typography>
+        )}
       </Box>
     );
   }
 
   const getUrl = (result: string): string => {
-    if (result === 'NO_THREATS_FOUND') {
+    if (['N/A', 'NO_THREATS_FOUND'].includes(result)) {
       return `/api/files/${attachment.key}/${attachment.name}?mimeType=${encodeURIComponent(attachment.mimeType ?? '')}`;
     }
 
@@ -50,7 +52,7 @@ export default function AttachmentLink({ attachment, isOnServer = true }: Readon
 
   return (
     <Box>
-      {scanResult === 'NO_THREATS_FOUND' ? (
+      {['N/A', 'NO_THREATS_FOUND'].includes(scanResult) ? (
         <Typography
           variant="body1"
           fontWeight="bold"

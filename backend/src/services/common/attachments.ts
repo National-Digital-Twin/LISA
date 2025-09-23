@@ -38,7 +38,8 @@ export async function extractAttachments(
       const uploadedFile = files.find((file) => file.originalname === attachment.name);
       if (uploadedFile) {
         const attachmentId = randomUUID();
-        const key = await storeS3Object(`${entityId}:${attachmentId}`, uploadedFile.path);
+        const prefix = ['Recording', 'Sketch'].includes(attachment.type) ? 'internal': 'external';
+        const key = await storeS3Object(`${prefix}-${entityId}:${attachmentId}`, uploadedFile.path);
 
         const { originalname } = uploadedFile;
         const extension = originalname.split('.').pop();
