@@ -15,8 +15,9 @@ interface Props {
 
 export default function AttachmentLink({ attachment, isOnServer = true }: Readonly<Props>) {
   const { scanResult } = useAttachmentScanResult(attachment.scanResult!, attachment.key!);
-  const scanPendingOrQueuedMessage =
-    'Scanning files for security threats. This process may take a few minutes.';
+  const attachmentPendingMessage = !['Recording', 'Sketch'].includes(attachment.type)
+    ? 'Scanning files for security threats. This process may take a few minutes.'
+    : 'Uploading file.';
 
   if (!isOnServer) {
     return (
@@ -24,7 +25,7 @@ export default function AttachmentLink({ attachment, isOnServer = true }: Readon
         <Typography variant="body1" fontWeight="bold" color="textDisabled">
           {attachment.name}
         </Typography>
-        <Typography component="span">{scanPendingOrQueuedMessage}</Typography>
+        <Typography component="span">{attachmentPendingMessage}</Typography>
       </Box>
     );
   }
@@ -40,7 +41,7 @@ export default function AttachmentLink({ attachment, isOnServer = true }: Readon
   const getScanStatusDescription = (result: string): string => {
     switch (result) {
       case 'PENDING':
-        return scanPendingOrQueuedMessage;
+        return attachmentPendingMessage;
       case 'THREATS_FOUND':
         return 'This file could not be uploaded due to a security issue. Please try another file.';
       default:
