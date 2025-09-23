@@ -37,7 +37,12 @@ export const EntityTypeDropdown = ({ options, value, onChange }: Props) => {
         <MenuItem
           key={`${option.value}-option`}
           value={option.value}
-          sx={{ paddingTop: '17px', paddingBottom: '16px', borderBottom: '1px solid #CAC4D0' }}
+          sx={{
+            paddingTop: '17px',
+            paddingBottom: '16px',
+            borderBottom: '1px solid #CAC4D0',
+            '&:nth-last-of-type(1)': { borderBottom: 0 }
+          }}
           disabled={option.disabled}
         >
           {option.label}
