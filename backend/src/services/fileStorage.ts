@@ -37,18 +37,15 @@ function getContentInfo(
 }
 
 function createS3Client(): S3Client {
-  if (settings.S3_ENDPOINT) {
-    // MinIO
+  if (settings.S3_ENDPOINT) { // MinIO
     return new S3Client({
       endpoint: settings.S3_ENDPOINT,
       forcePathStyle: true,
       region: 'eu-west-2',
-      credentials: settings.S3_ACCESS_KEY_ID
-        ? {
-          accessKeyId: settings.S3_ACCESS_KEY_ID,
-          secretAccessKey: settings.S3_SECRET_ACCESS_KEY
-        }
-        : undefined
+      credentials: settings.S3_ACCESS_KEY_ID ? {
+        accessKeyId: settings.S3_ACCESS_KEY_ID,
+        secretAccessKey: settings.S3_SECRET_ACCESS_KEY
+      } : undefined
     });
   }
 
@@ -58,10 +55,6 @@ function createS3Client(): S3Client {
 export async function getScanResultInternal(key: string) {
   if (!key) {
     throw new ApplicationError('Key cannot be undefined.');
-  }
-
-  if (key.startsWith('internal-')) {
-    return 'N/A';
   }
 
   const client = createS3Client();
@@ -118,7 +111,7 @@ export async function streamS3Object(req: Request, res: Response) {
 
   const scanResult = await getScanResultInternal(key);
 
-  if (scanResult && !['NO_THREATS_FOUND', 'N/A'].includes(scanResult)) {
+  if (scanResult && scanResult !== 'NO_THREATS_FOUND') {
     res.status(400).send('The requested file has been found to be malicious.');
     return;
   }

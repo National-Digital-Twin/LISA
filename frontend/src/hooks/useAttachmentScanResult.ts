@@ -12,7 +12,7 @@ export const useAttachmentScanResult = (initialScanResult: string, key: string) 
   useEffect(() => {
     let timeout: ReturnType<typeof setTimeout>;
     const pollScanResult = async (): Promise<void> => {
-      if (['N/A', 'THREATS_FOUND', 'NO_THREATS_FOUND'].includes(initialScanResult)) {
+      if (['THREATS_FOUND', 'NO_THREATS_FOUND'].includes(initialScanResult)) {
         setScanResult(initialScanResult);
         return;
       }
