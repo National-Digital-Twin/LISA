@@ -7,6 +7,8 @@ import { type Incident } from 'common/Incident';
 import { providersRender } from '../../test-utils';
 import Incidents from '../Incidents';
 import * as hooks from '../../hooks';
+import * as useIncidentsModule from '../../hooks/useIncidents';
+import * as useIsOnlineModule from '../../hooks/useIsOnline';
 
 const mockNavigate = jest.fn();
 
@@ -43,6 +45,14 @@ const mockIncidents: Incident[] = [
   }
 ];
 
+const mockOfflineIncidents: Incident[] = [
+  {
+    ...mockIncidents[0],
+    offline: true
+  },
+  mockIncidents[1]
+];
+
 const mockAdminUser = {
   current: {
     username: 'admin',
@@ -67,6 +77,16 @@ jest.mock('react-router-dom', () => ({
 }));
 
 jest.mock('../../hooks');
+jest.mock('../../hooks/useIncidents', () => ({
+  useIncidents: jest.fn(),
+  useIncidentsUpdates: jest.fn(() => ({
+    startPolling: jest.fn(),
+    clearPolling: jest.fn()
+  }))
+}));
+jest.mock('../../hooks/useIsOnline', () => ({
+  useIsOnline: jest.fn(() => true)
+}));
 
 describe('Incidents Page', () => {
   beforeEach(() => {
@@ -226,6 +246,99 @@ describe('Incidents Page', () => {
 
       expect(mockNavigate).not.toHaveBeenCalledWith('/');
       expect(screen.getByText('Incidents')).toBeInTheDocument();
+    });
+  });
+
+  describe('Offline functionality', () => {
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it('starts polling when online and has offline incidents', () => {
+      const mockStartPolling = jest.fn();
+      const mockClearPolling = jest.fn();
+
+      (useIsOnlineModule.useIsOnline as jest.Mock).mockReturnValue(true);
+      (useIncidentsModule.useIncidentsUpdates as jest.Mock).mockReturnValue({
+        startPolling: mockStartPolling,
+        clearPolling: mockClearPolling
+      });
+      (hooks.useIncidents as jest.Mock).mockReturnValue({
+        data: mockOfflineIncidents,
+        isLoading: false,
+        error: null
+      });
+
+      providersRender(<Incidents />);
+
+      expect(mockStartPolling).toHaveBeenCalled();
+    });
+
+    it('does not start polling when online but no offline incidents', () => {
+      const mockStartPolling = jest.fn();
+      const mockClearPolling = jest.fn();
+
+      (useIsOnlineModule.useIsOnline as jest.Mock).mockReturnValue(true);
+      (useIncidentsModule.useIncidentsUpdates as jest.Mock).mockReturnValue({
+        startPolling: mockStartPolling,
+        clearPolling: mockClearPolling
+      });
+      (hooks.useIncidents as jest.Mock).mockReturnValue({
+        data: mockIncidents,
+        isLoading: false,
+        error: null
+      });
+
+      providersRender(<Incidents />);
+
+      expect(mockStartPolling).not.toHaveBeenCalled();
+      expect(mockClearPolling).toHaveBeenCalled();
+    });
+
+    it('does not start polling when offline even with offline incidents', () => {
+      const mockStartPolling = jest.fn();
+      const mockClearPolling = jest.fn();
+
+      (useIsOnlineModule.useIsOnline as jest.Mock).mockReturnValue(false);
+      (useIncidentsModule.useIncidentsUpdates as jest.Mock).mockReturnValue({
+        startPolling: mockStartPolling,
+        clearPolling: mockClearPolling
+      });
+      (hooks.useIncidents as jest.Mock).mockReturnValue({
+        data: mockOfflineIncidents,
+        isLoading: false,
+        error: null
+      });
+
+      providersRender(<Incidents />);
+
+      expect(mockStartPolling).not.toHaveBeenCalled();
+      expect(mockClearPolling).toHaveBeenCalled();
+    });
+
+    it('clears polling when component unmounts', () => {
+      const mockStartPolling = jest.fn();
+      const mockClearPolling = jest.fn();
+
+      (useIsOnlineModule.useIsOnline as jest.Mock).mockReturnValue(true);
+      (useIncidentsModule.useIncidentsUpdates as jest.Mock).mockReturnValue({
+        startPolling: mockStartPolling,
+        clearPolling: mockClearPolling
+      });
+      (hooks.useIncidents as jest.Mock).mockReturnValue({
+        data: mockOfflineIncidents,
+        isLoading: false,
+        error: null
+      });
+
+      const { unmount } = providersRender(<Incidents />);
+
+      // Clear the calls from mount
+      mockClearPolling.mockClear();
+
+      unmount();
+
+      expect(mockClearPolling).toHaveBeenCalled();
     });
   });
 });
