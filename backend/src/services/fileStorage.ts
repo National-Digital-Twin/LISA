@@ -17,7 +17,7 @@ import {
 import { settings } from '../settings';
 import { ApplicationError } from '../errors';
 
-const browserEnabledTypes = ['image/', 'application/pdf', 'audio/webm'];
+const browserEnabledTypes = ['image/', 'application/pdf', 'audio/mpeg'];
 
 function getContentInfo(
   fileName: string,

@@ -24,8 +24,8 @@ export default function Recordings({ recordings = [], onRecordingsChanged }: Rea
           const blob = await response.blob();
 
           const recordingCount = recordings.length;
-          const name = recordingCount === 0 ? 'Recording.webm' : `Recording ${recordingCount + 1}.webm`;
-          const file = new File([blob], name, { type: 'audio/webm' });
+          const name = recordingCount === 0 ? 'Recording.mp3' : `Recording ${recordingCount + 1}.mp3`;
+          const file = new File([blob], name, { type: 'audio/mpeg' });
           const newRecordings = [...recordings, file];
           onRecordingsChanged(newRecordings);
         } catch (error) {
