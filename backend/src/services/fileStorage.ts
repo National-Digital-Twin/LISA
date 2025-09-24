@@ -4,7 +4,7 @@
 
 import Stream from 'node:stream';
 
-import fs from 'fs';
+import fs from 'node:fs';
 import { Request, Response } from 'express';
 import {
   GetObjectCommand,
