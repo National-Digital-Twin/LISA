@@ -34,6 +34,8 @@ import { SortAndFilter } from '../components/SortFilter/SortAndFilter';
 import { useIncidents, useAuth } from '../hooks';
 import { Format } from '../utils';
 import { isAdmin } from '../utils/userRoles';
+import { useIncidentsUpdates } from '../hooks/useIncidents';
+import { useIsOnline } from '../hooks/useIsOnline';
 
 interface IncidentsProps {
   isManaging?: boolean;
@@ -41,6 +43,8 @@ interface IncidentsProps {
 
 const Incidents = ({ isManaging = false }: Readonly<IncidentsProps>) => {
   const query = useIncidents();
+  const { startPolling, clearPolling } = useIncidentsUpdates();
+  const isOnline = useIsOnline();
   const navigate = useNavigate();
   const { user } = useAuth();
 
@@ -51,6 +55,18 @@ const Incidents = ({ isManaging = false }: Readonly<IncidentsProps>) => {
   }, [isManaging, user.current, navigate]);
 
   const incidents = query.data;
+
+  useEffect(() => {
+    if (isOnline && incidents?.some((i) => i.offline)) {
+      startPolling();
+    } else {
+      clearPolling();
+    }
+
+    return () => {
+      clearPolling();
+    };
+  }, [isOnline, startPolling, clearPolling, incidents]);
 
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [queryState, setQueryState] = useState<QueryState>({
@@ -287,7 +303,8 @@ const Incidents = ({ isManaging = false }: Readonly<IncidentsProps>) => {
                 ),
                 footer: Format.date(incident.startedAt),
                 titleDot: <StageMini stage={incident.stage} />,
-                onClick: () => navigate(`/logbook/${incident.id}`)
+                onClick: () => navigate(`/logbook/${incident.id}`),
+                offline: incident.offline
               }))}
             />
           )}

@@ -9,7 +9,7 @@ import { type Task } from 'common/Task';
 import { get } from '../api';
 import { mergeOfflineEntities } from '../utils';
 
-const POLLING_INTERVAL_SECONDS = 10;
+const POLLING_INTERVAL_SECONDS = 5;
 const POLLING_INTERVAL_MS = POLLING_INTERVAL_SECONDS * 1000;
 
 export function useTasksUpdates() {

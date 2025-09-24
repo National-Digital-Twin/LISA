@@ -22,6 +22,7 @@ import { logInfo } from '../utils/logger';
 import StatusMini from '../components/Tasks/StatusMini';
 import { LocationValue } from '../utils/Format/entry/fields/LocationValue';
 import AttachmentLink from '../components/AttachmentLink';
+import ChangePendingWarning from '../components/ChangePendingWarning';
 
 const TaskFallback = ({ header, message }: Readonly<{ header: React.ReactNode, message: string }>) => {
   return (
@@ -204,6 +205,7 @@ const IncidentTask = () => {
           }
         />
       </Box>
+      <ChangePendingWarning sx={{ marginTop: '1.3rem' }} hidden={!task?.offline}/>
     </Box>
   );
 

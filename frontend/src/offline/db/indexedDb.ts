@@ -29,11 +29,11 @@ export const dbPromise = openDB<OfflineDB>('lisa-offline-db', 1, {
     if (!db.objectStoreNames.contains('incidents')) {
       db.createObjectStore('incidents', { keyPath: 'id' });
     }
-  
+
     if (!db.objectStoreNames.contains('forms')) {
       db.createObjectStore('forms', { keyPath: 'id' });
     }
-  
+
     if (!db.objectStoreNames.contains('logs')) {
       const logStore = db.createObjectStore('logs', { keyPath: 'id' });
       logStore.createIndex('by-incidentId', 'incidentId');

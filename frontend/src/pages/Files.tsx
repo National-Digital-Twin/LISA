@@ -15,7 +15,7 @@ export default function Files() {
   const { incidentId } = useParams();
   const query = useIncidents();
   const { attachments } = useAttachments(incidentId);
-  useLogEntriesUpdates(incidentId ?? '');
+  useLogEntriesUpdates(incidentId);
 
   const incident = query.data?.find((inc) => inc.id === incidentId);
   if (!incident || !incidentId) {

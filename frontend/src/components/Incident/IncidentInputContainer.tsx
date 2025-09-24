@@ -46,7 +46,7 @@ const fieldConfigs = {
   name: { heading: 'Incident name', required: true, supportedOffline: true },
   referrer: { heading: 'Referred by', required: true, supportedOffline: true },
   organisation: { heading: 'Organisation', required: true, supportedOffline: true },
-  phone: { heading: 'Telephone number', required: true, supportedOffline: false },
+  phone: { heading: 'Telephone number', required: true, supportedOffline: true },
   email: { heading: 'Email', required: true, supportedOffline: true },
   supportRequested: { heading: 'Support requested?', required: true, supportedOffline: true }
 };
