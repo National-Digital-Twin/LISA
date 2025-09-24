@@ -19,18 +19,18 @@ describe('Recordings component', () => {
   });
 
   it('displays recordings when they exist', () => {
-    const recordings = [new File(['audio'], 'Recording.webm', { type: 'audio/webm' })];
+    const recordings = [new File(['audio'], 'Recording.mp3', { type: 'audio/mpeg' })];
 
     render(
       <Recordings recordings={recordings} onRecordingsChanged={mockOnRecordingsChanged} />
     );
 
     expect(screen.getByText('1 voice recording')).toBeInTheDocument();
-    expect(screen.getByText(/Recording\.webm/)).toBeInTheDocument();
+    expect(screen.getByText(/Recording\.mp3/)).toBeInTheDocument();
   });
 
   it('calls onRecordingsChanged when removing voice recording', () => {
-    const recordings = [new File(['audio'], 'Recording.webm', { type: 'audio/webm' })];
+    const recordings = [new File(['audio'], 'Recording.mp3', { type: 'audio/mpeg' })];
 
     render(
       <Recordings recordings={recordings} onRecordingsChanged={mockOnRecordingsChanged} />

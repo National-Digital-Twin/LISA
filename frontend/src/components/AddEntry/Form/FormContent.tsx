@@ -89,8 +89,8 @@ export default function FormContent({
     async (blob: Blob) => {
       const blobHash = await Document.getBlobHash(blob);
       if (!processedRecordings.includes(blobHash)) {
-        const name = `Recording ${Format.timestamp()}.webm`;
-        onAddRecording(new File([blob], name, { type: 'audio/webm' }));
+        const name = `Recording ${Format.timestamp()}.mp3`;
+        onAddRecording(new File([blob], name, { type: 'audio/mpeg' }));
         setProcessedRecordings((prev) => [...prev, blobHash]);
       }
     },

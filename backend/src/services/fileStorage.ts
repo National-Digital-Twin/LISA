@@ -4,7 +4,7 @@
 
 import Stream from 'node:stream';
 
-import fs from 'fs';
+import fs from 'node:fs';
 import { Request, Response } from 'express';
 import {
   GetObjectCommand,
@@ -17,7 +17,7 @@ import {
 import { settings } from '../settings';
 import { ApplicationError } from '../errors';
 
-const browserEnabledTypes = ['image/', 'application/pdf', 'audio/webm'];
+const browserEnabledTypes = ['image/', 'application/pdf', 'audio/mpeg'];
 
 function getContentInfo(
   fileName: string,
