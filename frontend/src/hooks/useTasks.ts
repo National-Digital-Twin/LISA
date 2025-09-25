@@ -14,14 +14,24 @@ import {
   createLogEntryFromTaskCreation
 } from '../utils/Task/updateLogEntries';
 import { addOptimisticTask } from './useTaskUpdates';
+import { useIsOnline } from './useIsOnline';
+import { addTask } from '../offline/db/dbOperations';
+import { mergeOfflineEntities } from '../utils';
 
-export const useTasks = (incidentId?: string) =>
-  useQuery<Task[], Error>({
+export const useTasks = (incidentId?: string) => {
+  const queryClient = useQueryClient();
+
+  return useQuery<Task[], Error>({
     queryKey: ['tasks'],
-    queryFn: () => get('/tasks'),
+    queryFn: async () => {
+      const tasks = await get<Task[]>('/tasks');
+      const cachedTasks = queryClient.getQueryData<Task[]>(['tasks']);
+      return mergeOfflineEntities(cachedTasks, tasks);
+    },
     staleTime: 10_000, // 10 seconds
     select: (tasks) => (incidentId ? tasks.filter((t) => t.incidentId === incidentId) : tasks)
   });
+};
 
 type CreateTaskInput = {
   task: CreateTask & Required<Pick<Task, 'id' | 'status'>>;
@@ -31,6 +41,7 @@ type CreateTaskInput = {
 export const useCreateTask = ({ author, incidentId }: { author: User; incidentId?: string }) => {
   const queryClient = useQueryClient();
   const { createLogEntry } = useCreateLogEntry(incidentId);
+  const isOnline = useIsOnline();
 
   return useMutation<
     { id: string },
@@ -38,7 +49,19 @@ export const useCreateTask = ({ author, incidentId }: { author: User; incidentId
     CreateTaskInput,
     { previousTasks?: Task[]; previousAllTasks?: Task[] }
   >({
-    mutationFn: ({ task, files }) => {
+    mutationFn: async ({ task, files }) => {
+      if (!isOnline) {
+        const offlineTask: Task = {
+          ...task,
+          author,
+          createdAt: new Date().toISOString(),
+          attachments: task.attachments ?? [],
+          offline: true
+        };
+        await addTask(offlineTask);
+        return { id: task.id };
+      }
+
       if (files && files.length > 0) {
         const formData = new FormData();
         files.forEach((file) => formData.append(file.name, file));
@@ -54,7 +77,6 @@ export const useCreateTask = ({ author, incidentId }: { author: User; incidentId
         ...task,
         author,
         createdAt: new Date().toISOString(),
-        location: task.location ?? null,
         attachments: task.attachments ?? []
       };
 
@@ -79,7 +101,8 @@ export const useCreateTask = ({ author, incidentId }: { author: User; incidentId
         ...createLogEntryFromTaskCreation(taskId, taskName, taskAssignee, taskIncidentId)
       } as Omit<LogEntry, 'author'>;
       createLogEntry({ logEntry });
-    }
+    },
+    networkMode: 'always'
   });
 };
 

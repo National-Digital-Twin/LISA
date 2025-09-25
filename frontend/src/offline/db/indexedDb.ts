@@ -6,6 +6,7 @@ import { openDB, DBSchema } from 'idb';
 import { OfflineIncident } from '../types/OfflineIncident';
 import { OfflineLogEntry } from '../types/OfflineLogEntry';
 import { OfflineFormInstance } from '../types/OfflineForm';
+import { OfflineTask } from '../types/OfflineTask';
 
 
 export interface OfflineDB extends DBSchema {
@@ -21,11 +22,16 @@ export interface OfflineDB extends DBSchema {
   forms: {
     key: string;
     value: OfflineFormInstance
-  }
+  };
+  tasks: {
+    key: string;
+    value: OfflineTask;
+    indexes: { 'by-incidentId': string };
+  };
 }
 
-export const dbPromise = openDB<OfflineDB>('lisa-offline-db', 1, {
-  upgrade(db) {
+export const dbPromise = openDB<OfflineDB>('lisa-offline-db', 2, {
+  upgrade(db, oldVersion) {
     if (!db.objectStoreNames.contains('incidents')) {
       db.createObjectStore('incidents', { keyPath: 'id' });
     }
@@ -38,6 +44,11 @@ export const dbPromise = openDB<OfflineDB>('lisa-offline-db', 1, {
       const logStore = db.createObjectStore('logs', { keyPath: 'id' });
       logStore.createIndex('by-incidentId', 'incidentId');
     }
+
+    if (oldVersion < 2 && !db.objectStoreNames.contains('tasks')) {
+      const taskStore = db.createObjectStore('tasks', { keyPath: 'id' });
+      taskStore.createIndex('by-incidentId', 'incidentId');
+    }
   },
 });
 
@@ -47,7 +58,7 @@ export async function clearExpiredEntities() {
 
   if(!db) return;
 
-  const tx = db.transaction(['incidents', 'forms', 'logs'], 'readwrite');
+  const tx = db.transaction(['incidents', 'forms', 'logs', 'tasks'], 'readwrite');
   const now = new Date();
 
   // Clear expired incidents
@@ -78,6 +89,16 @@ export async function clearExpiredEntities() {
     allLogs
       .filter(record => record.expiresAt && record.id && new Date(record.expiresAt) <= now)
       .map(record => logStore.delete(record.id!))
+  );
+
+  // Clear expired tasks
+  const taskStore = tx.objectStore('tasks');
+  const allTasks = await taskStore.getAll();
+
+  await Promise.all(
+    allTasks
+      .filter(record => record.expiresAt && record.id && new Date(record.expiresAt) <= now)
+      .map(record => taskStore.delete(record.id))
   );
 
   await tx.done;

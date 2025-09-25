@@ -12,6 +12,7 @@ import * as formUtils from '../../hooks/Forms/utils';
 import { OfflineIncident } from '../types/OfflineIncident';
 import { OfflineFormInstance } from '../types/OfflineForm';
 import { OfflineLogEntry } from '../types/OfflineLogEntry';
+import { OfflineTask } from '../types/OfflineTask';
 
 jest.mock('../../api');
 jest.mock('../db/dbOperations');
@@ -56,17 +57,42 @@ describe('syncAllOfflineEntities', () => {
     expiresAt: ''
   };
 
+  const mockTask: OfflineTask = {
+    id: 't1',
+    name: 'Test Task',
+    incidentId: 'i1',
+    author: {
+      username: 'author',
+      displayName: 'Author User',
+      email: 'author@example.com'
+    },
+    assignee: {
+      username: 'assignee',
+      displayName: 'Assignee User',
+      email: 'assignee@example.com'
+    },
+    status: 'ToDo' as const,
+    sequence: '1',
+    createdAt: new Date().toISOString(),
+    location: undefined,
+    attachments: [],
+    offline: true,
+    expiresAt: ''
+  };
+
   beforeEach(() => {
     jest.resetAllMocks();
 
     jest.spyOn(dbOps, 'getAllIncidents').mockResolvedValue([mockIncident]);
     jest.spyOn(dbOps, 'getAllForms').mockResolvedValue([mockForm]);
     jest.spyOn(dbOps, 'getAllLogs').mockResolvedValue([mockLog]);
+    jest.spyOn(dbOps, 'getAllTasks').mockResolvedValue([mockTask]);
 
     jest.spyOn(api, 'post').mockResolvedValue({});
     jest.spyOn(dbOps, 'deleteIncident').mockResolvedValue();
     jest.spyOn(dbOps, 'deleteForm').mockResolvedValue();
     jest.spyOn(dbOps, 'deleteLog').mockResolvedValue();
+    jest.spyOn(dbOps, 'deleteTask').mockResolvedValue();
 
     (formUtils.createLogEntryFromSubmittedForm as jest.Mock).mockReturnValue({
       type: 'FormSubmitted',
@@ -76,15 +102,17 @@ describe('syncAllOfflineEntities', () => {
     });
   });
 
-  it('syncs incidents, forms, and logs in order', async () => {
+  it('syncs incidents, forms, logs, and tasks in order', async () => {
     await syncAllOfflineEntities();
 
     expect(api.post).toHaveBeenCalledWith('/incident', mockIncident);
     expect(dbOps.deleteIncident).toHaveBeenCalledWith('i1');
 
     expect(api.post).toHaveBeenCalledWith('/incident/i1/form', mockForm);
-    expect(api.post).toHaveBeenCalledWith('/incident/i1/logEntry', mockLog);
     expect(dbOps.deleteForm).toHaveBeenCalledWith('f1');
+
+    expect(api.post).toHaveBeenCalledWith('/incident/i1/tasks', mockTask);
+    expect(dbOps.deleteTask).toHaveBeenCalledWith('t1');
 
     expect(api.post).toHaveBeenCalledWith('/incident/i1/logEntry', mockLog);
     expect(dbOps.deleteLog).toHaveBeenCalledWith('l1');

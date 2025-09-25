@@ -2,7 +2,7 @@
 // © Crown Copyright 2025. This work has been developed by the National Digital Twin Programme
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
- 
+
 import 'fake-indexeddb/auto';
 import { IncidentType } from 'common/IncidentType';
 import { IncidentStage } from 'common/IncidentStage';
@@ -20,6 +20,10 @@ import {
   getForm,
   getAllForms,
   deleteForm,
+  addTask,
+  getTasksByIncidentId,
+  getAllTasks,
+  deleteTask,
 } from '../db/dbOperations';
 
 global.structuredClone = global.structuredClone || ((obj) => JSON.parse(JSON.stringify(obj)));
@@ -60,6 +64,32 @@ const mockForm = {
   incidentId: 'incident-1',
   createdAt: new Date().toISOString(),
   pendingLogEntry: mockLog,
+};
+
+const mockTask = {
+  id: 'task-1',
+  name: 'Test Task',
+  incidentId: 'incident-1',
+  author: {
+    username: 'testuser',
+    displayName: 'Test User',
+    firstName: 'Test',
+    lastName: 'User',
+    email: 'test@example.com'
+  },
+  assignee: {
+    username: 'assignee',
+    displayName: 'Assignee User',
+    firstName: 'Assignee',
+    lastName: 'User',
+    email: 'assignee@example.com'
+  },
+  status: 'ToDo' as const,
+  sequence: '1',
+  createdAt: new Date().toISOString(),
+  location: undefined,
+  attachments: [],
+  offline: true as const
 };
 
 describe('IndexedDB Operations', () => {
@@ -108,6 +138,35 @@ describe('IndexedDB Operations', () => {
       await deleteForm(mockForm.id);
       const afterDelete = await getForm(mockForm.id);
       expect(afterDelete).toBeUndefined();
+    });
+  });
+
+  describe('Tasks', () => {
+    it('adds, retrieves by incident, and deletes a task', async () => {
+      await addTask(mockTask);
+
+      const byIncident = await getTasksByIncidentId(mockTask.incidentId);
+      expect(byIncident.length).toBe(1);
+      expect(byIncident[0]).toMatchObject({
+        id: mockTask.id,
+        name: mockTask.name,
+        incidentId: mockTask.incidentId,
+        author: mockTask.author,
+        assignee: mockTask.assignee,
+        status: mockTask.status,
+        sequence: mockTask.sequence,
+        createdAt: mockTask.createdAt,
+        attachments: mockTask.attachments,
+        offline: mockTask.offline,
+        expiresAt: expect.any(String)
+      });
+
+      const all = await getAllTasks();
+      expect(all.length).toBe(1);
+
+      await deleteTask(mockTask.id);
+      const afterDelete = await getAllTasks();
+      expect(afterDelete.length).toBe(0);
     });
   });
 });
