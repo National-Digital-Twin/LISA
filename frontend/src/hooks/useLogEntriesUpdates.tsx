@@ -71,6 +71,7 @@ export const addOptimisticLogEntry = async (
     [`incident/${incidentId}/logEntries`],
     (oldData) => [optimisticEntry, ...(oldData || [])]
   );
+
   const updatedEntries = [optimisticEntry, ...(previousEntries || [])];
 
   return { previousEntries, updatedEntries };

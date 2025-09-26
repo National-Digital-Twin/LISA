@@ -16,65 +16,76 @@ import { useAuth } from './useAuth';
 import { useCallback, useRef } from 'react';
 import { applyFieldUpdatesToIncident } from '../utils/Incident/optimisticUpdates';
 import { mergeOfflineEntities } from '../utils';
-import { getLogEntries } from './useLogEntries';
+import { getCachedLogEntries } from './useLogEntries';
+import { LogEntry } from 'common/LogEntry';
 
 const POLLING_INTERVAL_SECONDS = 5;
 const POLLING_INTERVAL_MS = POLLING_INTERVAL_SECONDS * 1000;
 
-const getIncidents = async (queryClient: QueryClient) => {
-  const serverIncidents = await get<Incident[]>('/incidents');
+const getIncidents = async (queryClient: QueryClient, isOnline: boolean) => {
   const cachedIncidents = queryClient.getQueryData<Incident[]>(['incidents']);
+  const serverIncidents = isOnline ? await get<Incident[]>('/incidents') : cachedIncidents ?? [];
 
   const mergedIncidents = mergeOfflineEntities(cachedIncidents, serverIncidents);
 
   // due to the way that special log entries are merged with an incident to
   // update its properties, if we have any offline log entries we may need to
   // reapply optimistic updates to the incident
-  const updatedIncidents = await Promise.all(
-    mergedIncidents.map(async (incident) => {
-      const logEntries = await getLogEntries(queryClient, incident.id);
-      const pendingUpdates = logEntries?.filter(
-        (logEntry) => logEntry.offline && logEntry.type === 'SetIncidentInformation'
-      );
-      if (!pendingUpdates?.length) {
-        return incident;
-      }
+  const updatedIncidents = mergedIncidents.map((incident) => {
+    const logEntries = getCachedLogEntries(queryClient, incident.id);
+    if (!logEntries) {
+      return incident;
+    }
 
-      let updatedIncident = incident;
-      pendingUpdates.sort((a, b) => a.dateTime.localeCompare(b.dateTime));
-      for (const pendingUpdate of pendingUpdates) {
-        updatedIncident = applyFieldUpdatesToIncident(updatedIncident, pendingUpdate.fields);
+    const pendingUpdates: LogEntry[] = [];
+    let hasOfflineEntries = false;
+    for (const logEntry of logEntries) {
+      if (!logEntry.offline) continue;
+
+      hasOfflineEntries = true;
+      if (logEntry.type === 'SetIncidentInformation') {
+        pendingUpdates.push(logEntry);
       }
-      updatedIncident.offline = true;
-      return updatedIncident;
-    })
-  );
+    }
+    if (!hasOfflineEntries) {
+      return incident;
+    }
+
+    const updatedIncident = pendingUpdates
+      .toSorted((a, b) => a.dateTime.localeCompare(b.dateTime))
+      .reduce((acc, u) => applyFieldUpdatesToIncident(acc, u.fields), incident);
+
+    return { ...updatedIncident, offline: true };
+  });
 
   return updatedIncidents;
 };
 
 export const useIncidents = () => {
   const queryClient = useQueryClient();
+  const isOnline = useIsOnline();
 
   return useQuery<Incident[], FetchError>({
     queryKey: ['incidents'],
     queryFn: async () => {
-      return getIncidents(queryClient);
+      return getIncidents(queryClient, isOnline);
     },
     staleTime: 10_000,
     refetchOnMount: true,
     refetchOnWindowFocus: true,
-    refetchOnReconnect: true
+    refetchOnReconnect: true,
+    networkMode: 'always'
   });
 };
 
 export const useIncidentsUpdates = () => {
   const queryClient = useQueryClient();
+  const isOnline = useIsOnline();
   const pollingIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const syncIncidents = useCallback(async () => {
     try {
-      const mergedIncidents = await getIncidents(queryClient);
+      const mergedIncidents = await getIncidents(queryClient, isOnline);
       queryClient.setQueryData<Incident[]>(['incidents'], mergedIncidents);
     } catch (error) {
       console.error(`Error occurred: ${error}. Unable to poll for incident updates!`);
