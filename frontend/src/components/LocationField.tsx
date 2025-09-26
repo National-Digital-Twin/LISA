@@ -4,7 +4,7 @@
 
 import { Button, InputAdornment, TextField } from '@mui/material';
 // Local imports
-// eslint-disable-next-line import/no-extraneous-dependencies
+ 
 import { LocationTypes } from 'common/Location';
 import { ValidationError } from '../utils/types';
 

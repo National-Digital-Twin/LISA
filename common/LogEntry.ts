@@ -10,13 +10,13 @@ import { nonFuture } from './constraints';
 import { Field } from './Field';
 import { IncidentStage } from './IncidentStage';
 import { Location } from './Location';
-import { LogEntryAttachment } from './LogEntryAttachment';
-import { LogEntryContent } from './LogEntryContent';
+import { Attachment } from './Attachment';
+import { EntityContent } from './EntityContent';
 import { LogEntryType } from './LogEntryType';
 import { User } from './User';
 import { Mentionable } from './Mentionable';
 import { FieldGroup } from './FieldGroup';
-import { Task } from './Task';
+
 import { LogEntryChangeDetails } from './LogEntryChangeDetails';
 
 export const LogEntry = Record({
@@ -25,7 +25,7 @@ export const LogEntry = Record({
   dateTime: String.withConstraint(nonFuture), // User-entered, ISO-format
   createdAt: Optional(String), // system generated
   type: LogEntryType,
-  content: LogEntryContent,
+  content: EntityContent,
   fields: Optional(Array(Field)),
   groups: Optional(Array(FieldGroup)),
   location: Optional(Location), // User-entered
@@ -36,15 +36,11 @@ export const LogEntry = Record({
   // recordings?: Array<string>; // Needs to be linked as multimedia,
   sequence: Optional(String), // System-generated
   stage: Optional(IncidentStage), // Only applicable to type ChangeStage
-  attachments: Optional(Array(LogEntryAttachment)),
-  task: Optional(Task),
+  attachments: Optional(Array(Attachment)),
   // This allows for determining if the Incident has been synced to the server during
   // offline operation.
   offline: Optional(Boolean),
-  // This stores the server-assigned ID for optimistic entries that have been confirmed
-  serverId: Optional(String),
   details: Optional(LogEntryChangeDetails)
 });
 
-// eslint-disable-next-line no-redeclare
 export type LogEntry = Static<typeof LogEntry>;

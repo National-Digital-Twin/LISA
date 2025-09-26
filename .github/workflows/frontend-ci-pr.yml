@@ -28,12 +28,12 @@ jobs:
       GITHUB_ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '23.x'
+          node-version: '24.x'
 
       - name: Install Dependencies
         run: npm ci
@@ -51,12 +51,12 @@ jobs:
       GITHUB_ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '23.x'
+          node-version: '24.x'
 
       - name: Install Dependencies
         run: npm ci
@@ -66,6 +66,35 @@ jobs:
         run: npm run lint
         continue-on-error: true
 
+  unit-tests:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: dependencies
+    env:
+      GITHUB_ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24.x'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Run Frontend Tests
+        working-directory: frontend
+        run: |
+          npm run test
+
+      - name: Run Common Unit Tests
+        working-directory: common
+        run: |
+          npm run test
+
   security-scanning:
     name: Security Scanning
     runs-on: ubuntu-latest
@@ -73,10 +102,10 @@ jobs:
     timeout-minutes: 10
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@0.28.0
+        uses: aquasecurity/trivy-action@0.32.0
         with:
           scan-type: 'fs'
           scan-ref: frontend
@@ -95,20 +124,20 @@ jobs:
     environment: development
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '23.x'
+          node-version: '24.x'
 
       - name: Install Dependencies
         run: npm ci
 
       - name: Build Frontend
         run: |
-          npm run build
-          npm run bundle
+          (cd ./frontend && npm run build)
+          (cd ./frontend && npm run bundle)
 
       - name: List files in dist dir
         if: success()
@@ -121,7 +150,7 @@ jobs:
           docker build -t lisa/webapp:latest -f Dockerfile.frontend .
 
       - name: Run Trivy Scan on Docker Image
-        uses: aquasecurity/trivy-action@0.28.0
+        uses: aquasecurity/trivy-action@0.32.0
         with:
           image-ref: 'lisa/webapp:latest'
           format: 'table'

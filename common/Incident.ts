@@ -35,7 +35,7 @@ export const Referrer = Union(
 );
 
 export const Incident = Record({
-  id: Optional(String), // System-generated
+  id: String, // System-generated
 
   // Can only be set at the point of creation:
   type: IncidentType, // User-selected
@@ -54,8 +54,6 @@ export const Incident = Record({
   offline: Optional(Boolean)
 });
 
-// eslint-disable-next-line no-redeclare
 export type Incident = Static<typeof Incident>;
 
-// eslint-disable-next-line no-redeclare
 export type Referrer = Static<typeof Referrer>;

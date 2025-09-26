@@ -11,7 +11,7 @@ import { isoDate } from './isoDate';
 import { lexical } from './lexical';
 import { mentionable } from './mentionable';
 import { pretty } from './pretty';
-import { time } from './time';
+import { time, relativeTime } from './time';
 import { timestamp } from './timestamp';
 import { user, userInitials } from './user';
 import { dateAndTimeMobile } from './dateAndTimeMobile';
@@ -29,6 +29,7 @@ const Format = {
   mentionable,
   pretty,
   time,
+  relativeTime,
   timestamp,
   user,
   userInitials

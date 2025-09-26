@@ -3,7 +3,7 @@
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
 // Global imports
-import Router from 'express-promise-router';
+import { Router } from 'express';
 import multer from 'multer';
 
 // Local imports
@@ -28,10 +28,7 @@ const upload = multer({
   }
 });
 
-const router = Router();
-
 const apiRouter = Router();
-router.use('/api', apiRouter);
 
 apiRouter.get('/auth/logout-links', auth.logoutLinks);
 
@@ -47,8 +44,11 @@ if (settings.NODE_ENV === 'development') {
 apiRouter.get('/incidents', incident.get);
 apiRouter.post('/incident', incident.create);
 
+apiRouter.get('/incident/:incidentId', incident.getById);
+
 apiRouter.get('/incident/:incidentId/logEntries', logEntry.get);
-apiRouter.post('/incident/:incidentId/logEntry', upload.any(), logEntry.create);
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+apiRouter.post('/incident/:incidentId/logEntry', upload.any() as any, logEntry.create);
 
 apiRouter.get('/incident/:incidentId/attachments', incident.getAttachments);
 
@@ -61,9 +61,15 @@ apiRouter.get('/searchLocation', osMaps.searchLocation);
 
 apiRouter.get('/notifications', notifications.get);
 apiRouter.put('/notifications/:id', notifications.markRead);
+apiRouter.post('/notifications/actions/markSeen', notifications.markAllAsSeen);
 
-apiRouter.patch('/task/:taskId/status', task.changeStatus)
-apiRouter.patch('/task/:taskId/assignee', task.changeAssignee)
+apiRouter.get('/tasks', task.get);
+apiRouter.get('/incident/:incidentId/tasks', task.getForIncidentId);
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+apiRouter.post('/incident/:incidentId/tasks', upload.any() as any, task.create);
+apiRouter.patch('/task/:taskId/status', task.changeStatus);
+apiRouter.patch('/task/:taskId/assignee', task.changeAssignee);
 
 apiRouter.post('/form', formTemplate.create);
 apiRouter.get('/form', formTemplate.get);
@@ -71,6 +77,8 @@ apiRouter.get('/form', formTemplate.get);
 apiRouter.post('/incident/:incidentId/form', formInstance.create);
 apiRouter.get('/incident/:incidentId/form', formInstance.get);
 
+apiRouter.head('/ping', (_, res) => res.sendStatus(200));
+
 apiRouter.use(errorsMiddleware);
 
-export default router;
+export default apiRouter;

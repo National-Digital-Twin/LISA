@@ -7,9 +7,9 @@ import { type Field } from '../Field';
 
 const ContactName: Field = {
   id: 'ContactName',
-  // eslint-disable-next-line quotes
   label: `Correspondent's name`,
-  type: 'Input'
+  type: 'Input',
+  title: 'corespondents name'
 };
 
 export function getContactName(): Field {

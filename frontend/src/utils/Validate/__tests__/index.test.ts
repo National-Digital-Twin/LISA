@@ -1,4 +1,3 @@
-/* eslint-disable import/no-extraneous-dependencies */
 import { Incident, ReferralWithSupport, ReferralWithoutSupport } from 'common/Incident';
 import { LogEntry } from 'common/LogEntry';
 import { LogEntryTypes } from 'common/LogEntryTypes';
@@ -209,7 +208,7 @@ describe('Validate functions', () => {
       } as unknown as Partial<LogEntry>;
 
       // Act:
-      const errors = Validate.entry(entryData, []);
+      const errors = Validate.entry(entryData, [], new Date().toString());
 
       // Assert:
       // Expect the error from LogEntry.validate and missing description.
@@ -241,7 +240,7 @@ describe('Validate functions', () => {
       } as unknown as Partial<LogEntry>;
 
       // Act:
-      const errors = Validate.entry(entryData, []);
+      const errors = Validate.entry(entryData, [], new Date().toString());
 
       // Assert:
       expect(errors).toContainEqual({ fieldId: 'customField', error: 'Field required' });

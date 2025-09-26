@@ -3,15 +3,14 @@
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
 import { Static, String } from 'runtypes';
-import { LogEntryAttachment } from './LogEntryAttachment';
+import { Attachment } from './Attachment';
 import { User } from './User';
 
-export const IncidentAttachment = LogEntryAttachment.extend({
+export const IncidentAttachment = Attachment.extend({
   logEntryId: String,
   author: User,
   uploadedAt: String,
   scanResult: String
 });
 
-// eslint-disable-next-line no-redeclare
 export type IncidentAttachment = Static<typeof IncidentAttachment>;

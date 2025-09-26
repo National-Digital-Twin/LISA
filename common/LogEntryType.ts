@@ -20,10 +20,11 @@ export const LogEntryType = Union(
   Literal('ShiftHandover'),
   Literal('ChangeStage'),
   Literal('SetIncidentInformation'),
+  Literal('TaskCreated'),
   Literal('ChangeTaskAssignee'),
   Literal('ChangeTaskStatus'),
-  Literal('FormSubmitted')
+  Literal('FormSubmitted'),
+  Literal('Update')
 );
 
-// eslint-disable-next-line no-redeclare
 export type LogEntryType = Static<typeof LogEntryType>;

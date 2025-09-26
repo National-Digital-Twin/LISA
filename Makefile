@@ -17,3 +17,23 @@ run-sonar-scan:
 		-e SONAR_SCANNER_OPTS="-Dsonar.projectKey=${SONAR_PROJECT_KEY}" \
 		-e SONAR_TOKEN="${SONAR_TOKEN}" \
 		sonarsource/sonar-scanner-cli
+
+lisa-resources-up:
+	docker compose -f deployment/sag/docker-compose.yaml up -d
+
+lisa-resources-down:
+	docker compose -f deployment/sag/docker-compose.yaml down
+
+upload-predefined-forms:
+	./schema/upload-predefined-forms.sh ./schema/Hazards/hazards.ttl ./schema/Hazards/hazards-data-schema.json ./schema/Hazards/hazards-ui-schema.json
+	./schema/upload-predefined-forms.sh ./schema/SitRep/siteRep.ttl ./schema/SitRep/siteRep-data-schema.json ./schema/SitRep/siteRep-ui-schema.json
+	./schema/upload-predefined-forms.sh ./schema/AvianFlu/avianFlu.ttl ./schema/AvianFlu/avianFlu-data-schema.json ./schema/AvianFlu/avianFlu-ui-schema.json
+
+upload-hazards:
+	./schema/upload-predefined-forms.sh ./schema/Hazards/hazards.ttl ./schema/Hazards/hazards-data-schema.json ./schema/Hazards/hazards-ui-schema.json
+
+upload-siterep:
+	./schema/upload-predefined-forms.sh ./schema/SitRep/siteRep.ttl ./schema/SitRep/siteRep-data-schema.json ./schema/SitRep/siteRep-ui-schema.json
+
+upload-avianflu:
+	./schema/upload-predefined-forms.sh ./schema/AvianFlu/avianFlu.ttl ./schema/AvianFlu/avianFlu-data-schema.json ./schema/AvianFlu/avianFlu-ui-schema.json

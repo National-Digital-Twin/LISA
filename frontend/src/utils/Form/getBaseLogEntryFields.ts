@@ -7,21 +7,44 @@ import { type Field } from 'common/Field';
 import { type Incident } from 'common/Incident';
 import { type LogEntry } from 'common/LogEntry';
 import { type LogEntryType } from 'common/LogEntryType';
-// eslint-disable-next-line import/no-extraneous-dependencies
+
 import { LogEntryTypes } from 'common/LogEntryTypes';
 import { type OptionType } from '../types';
 
-function getLogEntryTypes(incident?: Partial<Incident>) {
-  return Object.keys(LogEntryTypes).map((value: string) => {
-    const type = LogEntryTypes[value as LogEntryType];
-    if (type.unselectable?.(incident)) {
-      return undefined;
-    }
-    return {
-      value,
-      label: LogEntryTypes[value as LogEntryType]?.label ?? LogEntryTypes.General.label
-    };
-  }).filter((t) => !!t) as Array<OptionType>;
+export function getLogEntryTypes(incident?: Partial<Incident>) {
+  return Object.keys(LogEntryTypes)
+    .map((value: string) => {
+      const type = LogEntryTypes[value as LogEntryType];
+      if (type.unselectable?.(incident)) {
+        return undefined;
+      }
+      return {
+        value,
+        label: LogEntryTypes[value as LogEntryType]?.label ?? LogEntryTypes.General.label
+      };
+    })
+    .filter((t) => !!t) as Array<OptionType>;
+}
+
+export function getFormTypes(incident: Partial<Incident>, addCustomForms: boolean) {
+  const types = Object.keys(LogEntryTypes)
+    .map((value: string) => {
+      const type = LogEntryTypes[value as LogEntryType];
+      if (type.unselectable?.(incident)) {
+        return undefined;
+      }
+      return {
+        value,
+        label: LogEntryTypes[value as LogEntryType]?.label ?? LogEntryTypes.General.label
+      };
+    })
+    .filter((t) => !!t) as Array<OptionType>;
+
+  if (addCustomForms) {
+    types.push({ label: 'Custom form', value: 'CustomForm' });
+  }
+
+  return types;
 }
 
 const DATE_TIME_FIELD: Field = {

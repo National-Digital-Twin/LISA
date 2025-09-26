@@ -2,8 +2,6 @@
 // © Crown Copyright 2025. This work has been developed by the National Digital Twin Programme
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
-/* eslint-disable no-redeclare */
-
 import { Boolean, Literal, Record, Static, String, Union } from 'runtypes';
 import { LogEntry } from './LogEntry';
 import { Task } from './Task';
@@ -17,17 +15,17 @@ export const BaseNotification = Record({
   id: String,
   recipient: String,
   read: Boolean,
-  dateTime: String
+  seen: Boolean,
+  dateTime: String,
+  incidentTitle: String
 });
 
 export const UserMentionNotification = BaseNotification.extend({
-  entry: LogEntry.pick('id', 'incidentId', 'author', 'dateTime', 'sequence', 'content')
+  entry: LogEntry.pick('id', 'incidentId', 'author')
 });
 
 export const TaskAssignedNotification = BaseNotification.extend({
-  entry: LogEntry.pick('id', 'incidentId', 'author', 'dateTime', 'sequence').extend({
-    task: Task.pick('id', 'name')
-  })
+  task: Task.pick('id', 'name', 'author', 'incidentId')
 });
 
 export const Notification = Union(UserMentionNotification, TaskAssignedNotification);

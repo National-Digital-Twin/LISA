@@ -21,9 +21,8 @@ export default function TabNavigation({
   showValidationErrors
 }: Readonly<Props>) {
   const tabErrors = useMemo(() => ({
-    form: validationErrors.filter(e => !e.fieldId.startsWith('location') && !e.fieldId.startsWith('task')),
+    form: validationErrors.filter(e => !e.fieldId.startsWith('location')),
     location: validationErrors.filter(e => e.fieldId.startsWith('location')),
-    task: validationErrors.filter(e => e.fieldId.startsWith('task')),
   }), [validationErrors]);
 
   const { hash } = useLocation();
@@ -44,7 +43,6 @@ export default function TabNavigation({
     { label: 'Location', value: TABS.LOCATION, errors: tabErrors.location },
     { label: `Files (${fileCount})`, value: TABS.FILES, errors: [] },
     { label: 'Sketch', value: TABS.SKETCH, errors: [] },
-    { label: 'Task', value: TABS.TASK, errors: tabErrors.task }
   ];
 
   useEffect(() => {

@@ -54,13 +54,11 @@ const HelpGuidance = ({ helpId, onClose }: PropsHelp) => {
       <ul>
         {helpItems.map((item) => <li key={item}>{item}</li>)}
         <li>
-          {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
           <Link to="#" onClick={onToggleModal}>
             {modal ? 'Display forms inline' : 'Make forms modal'}
           </Link>
         </li>
         <li>
-          {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
           <Link to="#" onClick={onTogglePrintable}>
             {printable ? 'Prevent printing' : 'Enable printing'}
           </Link>

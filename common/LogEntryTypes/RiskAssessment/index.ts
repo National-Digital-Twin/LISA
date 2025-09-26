@@ -14,8 +14,15 @@ const InitialFields: Field[] = [
   { id: 'Location', label: 'Location', type: 'Location' },
   getRelevantHazards()
 ];
+
 const OtherFields: Field[] = [
-  { id: 'Comments', label: 'Any other comments', type: 'TextArea', optional: true, className: 'full-width' }
+  {
+    id: 'Comments',
+    label: 'Any other comments',
+    type: 'TextArea',
+    optional: true,
+    className: 'full-width'
+  }
 ];
 
 const GROUPS: Array<FieldGroup> = [
@@ -25,11 +32,9 @@ const GROUPS: Array<FieldGroup> = [
 ];
 
 function fields(entry: Partial<LogEntry>): Array<Field> {
-  return [
-    ...InitialFields,
-    ...getHazardFields(entry),
-    ...OtherFields
-  ].filter((f) => !!f) as Array<Field>;
+  return [...InitialFields, ...getHazardFields(entry), ...OtherFields].filter(
+    (f) => !!f
+  ) as Array<Field>;
 }
 
 export const RiskAssessment: LogEntryTypesDictItem = {

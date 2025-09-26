@@ -6,9 +6,13 @@ import { useAuth, useUsers } from './useAuth';
 import { useCreateIncident, useIncidents } from './useIncidents';
 import { useCreateLogEntry, useLogEntries } from './useLogEntries';
 import { useLogEntriesUpdates } from './useLogEntriesUpdates';
-import { useNotifications, useReadNotification } from './useNotifications';
+import { useTasksUpdates } from './useTaskUpdates';
+import { useNotifications, useReadNotification, useMarkAllAsSeen } from './useNotifications';
+import { useNotificationContext } from './useNotificationContext';
 import { useOutsideClick } from './useOutsideClick';
+import { useTasks, useUpdateTaskAssignee, useUpdateTaskStatus } from './useTasks';
 import { useToast, useToastEntries } from './useToasts';
+import { useMenu } from './useMenu';
 
 export {
   useAuth,
@@ -17,10 +21,17 @@ export {
   useIncidents,
   useLogEntries,
   useLogEntriesUpdates,
+  useTasksUpdates,
   useNotifications,
   useReadNotification,
+  useMarkAllAsSeen,
+  useNotificationContext,
+  useTasks,
+  useUpdateTaskAssignee,
+  useUpdateTaskStatus,
   useUsers,
   useOutsideClick,
   useToast,
-  useToastEntries
+  useToastEntries,
+  useMenu
 };

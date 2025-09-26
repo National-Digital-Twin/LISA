@@ -13,7 +13,7 @@ export const Handling: Hazard = {
   applicableControls: [
     { id: 'EmergencyBriefing', label: 'Briefing from Emergency Control Centre' },
     { id: 'ForwardBriefing', label: 'Briefing from Forward Control Point' },
-    { id: 'Handling', label: 'Manual handling training' },
+    { id: 'Training', label: 'Manual handling training' },
     { id: 'PPE', label: 'PPE - Safety boots' },
     { id: 'Equipment', label: 'Use of manual handling equipment if available and if trained to do so' }
   ]

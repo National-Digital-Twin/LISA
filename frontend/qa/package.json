@@ -7,6 +7,7 @@
     "debug": "cross-env ENV=staging PWDEBUG=1 DEBUG=pw:api cucumber-js --config=config/cucumber.js",
     "pretest": "npx ts-node src/helper/report/init.ts",
     "test": "cross-env FORCE_COLOR=0 cucumber-js --config=config/cucumber.js || true",
+    "test:local": "cross-env ENV=local FORCE_COLOR=0 cucumber-js --config=config/cucumber.js --",
     "posttest": "npx ts-node src/helper/report/report.ts",
     "test:failed": "cucumber-js -p rerun @rerun.txt",
     "format": "npx prettier --write .",
@@ -20,21 +21,21 @@
   "author": "NDTP",
   "license": "ISC",
   "devDependencies": {
-    "@cucumber/cucumber": "^9.6.0",
-    "@playwright/test": "1.35.0",
-    "@types/node": "^22.13.9",
-    "cross-env": "^7.0.3",
-    "dotenv": "^16.0.3",
-    "fs-extra": "^11.1.1",
-    "lighthouse": "^12.3.0",
-    "multiple-cucumber-html-reporter": "^3.3.0",
+    "@cucumber/cucumber": "12.1.0",
+    "@playwright/test": "1.54.2",
+    "@types/node": "24.3.0",
+    "cross-env": "^10.0.0",
+    "dotenv": "17.2.1",
+    "fs-extra": "^11.3.1",
+    "lighthouse": "12.8.1",
+    "multiple-cucumber-html-reporter": "3.9.3",
     "playwright-lighthouse": "^4.0.0",
-    "ts-node": "^10.9.1",
-    "winston": "^3.8.2"
+    "ts-node": "^10.9.2",
+    "winston": "^3.17.0"
   },
   "dependencies": {
-    "@faker-js/faker": "^9.5.0",
-    "chrome-launcher": "^1.1.2",
+    "@faker-js/faker": "9.9.0",
+    "chrome-launcher": "1.2.0",
     "unique-names-generator": "^4.7.1"
   }
 }

@@ -3,11 +3,12 @@
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
 import { type LogEntry } from 'common/LogEntry';
-// eslint-disable-next-line import/no-extraneous-dependencies
+ 
 import { TaskStatus } from 'common/Task';
-import { Link } from 'react-router-dom';
 import { Box, Typography } from '@mui/material';
-import Status from '../../Status';
+import { toStatusHumanReadable } from '../../Tasks/utils/statusLabelMapper';
+import StatusMini from '../../Tasks/StatusMini';
+import { InfoItem, TaskLink } from './TaskLogParts';
 
 interface Props {
   entry: LogEntry;
@@ -25,20 +26,20 @@ export default function ChangeTaskStatus({ entry }: Readonly<Props>) {
 
   return (
     <>
-      <Box display="flex" flexDirection="row" justifyContent="left" alignItems="center" component="ul" gap={2} sx={{ width: '100%', mb: 2}}>
-        <Typography variant="body1" fontWeight="bold">
-          Task name
-        </Typography>
-        <Typography component={Link} to={`/tasks/${entry.incidentId}#${taskId}`} color="primary" fontWeight="bold">
-          {taskName}
-        </Typography>
-      </Box>
-      <Box>
-        <Typography variant="body1" fontWeight="bold" mb={1}>
-        Status changed to
-        </Typography>
-        <Status width="fit-content" status={changedStatus} />
-      </Box>
+      <InfoItem label="Task name:">
+        <TaskLink taskId={taskId}>{taskName}</TaskLink>
+      </InfoItem>
+
+      <InfoItem label="Status changed to:">
+        <Box display="flex" alignItems="center" gap={1} flexWrap="nowrap">
+          <Box sx={{ display: 'inline-flex', alignItems: 'center', transform: 'translateY(-1px)' }}>
+            <StatusMini status={changedStatus} />
+          </Box>
+          <Typography component="span" variant="body1" noWrap sx={{ lineHeight: 1, m: 0 }}>
+            {toStatusHumanReadable(changedStatus)}
+          </Typography>
+        </Box>
+      </InfoItem>
     </>
   );
 }

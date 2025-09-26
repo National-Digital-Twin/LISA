@@ -12,7 +12,7 @@ import { HistoryPlugin } from '@lexical/react/LexicalHistoryPlugin';
 import { OnChangePlugin } from '@lexical/react/LexicalOnChangePlugin';
 import { PlainTextPlugin } from '@lexical/react/LexicalPlainTextPlugin';
 import { $getRoot, type EditorState, type LexicalEditor } from 'lexical';
-import { Box, styled } from '@mui/material';
+import { Box, styled, useTheme } from '@mui/material';
 
 // Local imports
 import { type Mentionable } from 'common/Mentionable';
@@ -67,22 +67,25 @@ type EntryContentProps = {
   json?: string;
   editable: boolean;
   mentionables?: Array<Mentionable>;
-  recordingActive: boolean;
+  recordingActive?: boolean;
   onChange?: (id: string, json: string, text: string) => void;
   onRecording?: (active: boolean) => void;
   error: boolean;
+  placeholder?: string;
 };
 const EntryContent = ({
   id,
   json: _json = undefined,
   editable,
   mentionables = [],
-  recordingActive,
+  recordingActive = undefined,
   onChange = undefined,
   onRecording = undefined,
+  placeholder = undefined,
   error
 }: EntryContentProps) => {
   const [json, setJSON] = useState<string | undefined>(_json);
+  const theme = useTheme();
 
   const onCommand = (type: string | undefined, active: boolean) => {
     if (type === RECORD_COMMAND.type) {
@@ -114,13 +117,26 @@ const EntryContent = ({
         <div className="editor-inner">
           <PlainTextPlugin
             contentEditable={<ContentEditable className="editor-input" />}
-            placeholder={null}
+            placeholder={
+              <Box
+                sx={{
+                  pointerEvents: 'none',
+                  position: 'absolute',
+                  top: 0,
+                  color: theme.palette.grey[500]
+                }}
+              >
+                {placeholder}
+              </Box>
+            }
             ErrorBoundary={LexicalErrorBoundary}
           />
           <HistoryPlugin />
           <AutoFocusPlugin />
           <MentionsPlugin mentionables={mentionables ?? []} />
-          <ActionsPlugin onCommand={onCommand} recordingActive={recordingActive} />
+          {recordingActive !== undefined && (
+            <ActionsPlugin onCommand={onCommand} recordingActive={recordingActive} />
+          )}
           <OnChangePlugin onChange={onEditorChange} />
         </div>
       </LexicalField>

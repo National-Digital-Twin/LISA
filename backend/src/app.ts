@@ -12,10 +12,13 @@ import router from './routes';
 
 const app = express();
 
-app.use(cookieParser());
+// The following is a temporary workaround until the cookie parser package is updated to work without this
+// in express v5.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+app.use(cookieParser() as any);
 app.use(bodyParser.json());
 
-app.use(router);
+app.use('/api', router);
 
 app.disable('x-powered-by');
 

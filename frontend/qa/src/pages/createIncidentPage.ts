@@ -2,6 +2,9 @@ import { expect, Page } from '@playwright/test';
 import PlaywrightWrapper from '../helper/wrapper/PlaywrightWrappers';
 import { RandomDataGenerator } from '../helper/util/RandomDataGenerator';
 
+const WAIT_TIMEOUT = Number(process.env.WAIT_TIMEOUT) || 500;
+const CLICK_TIMEOUT = Number(process.env.CLICK_TIMEOUT) || 10000;
+
 export default class CreateIncidentPage {
   private readonly base: PlaywrightWrapper;
 
@@ -10,53 +13,125 @@ export default class CreateIncidentPage {
   }
 
   private readonly Elements = {
-    incidentName: '//input[@id="name"]',
-    incidentReferredBy: '//input[@id="referrer.name"]',
-    incidentOrganisation: '//input[@id="referrer.organisation"]',
-    incidentTelephoneNo: '//input[@id="referrer.telephone"]',
-    incidentEmail: '//input[@id="referrer.email"]',
-    incidentAddNowName: '< Now',
-    incidentTypeNearbyLabel: 'Incident type',
-    incidentSupportRequestedNearbyLabel: 'Has the referrer requested support from the local resilience team?',
-    selectComponentPlaceholderText: 'Select',
-    addNewIncidentButtonText: 'Create Incident Log'
+    selectIncidentType: 'Select incident type',
+    addDateTime: 'Add date and time',
+    addIncidentName: 'Add incident name',
+    referredBy: 'Referred by',
+    organisation: 'Organisation',
+    telephoneNumber: 'Telephone number',
+    email: 'Email',
+    supportRequested: 'Has the referrer requested support from the local resilience team?',
+    saveButton: 'Save',
+    cancelButton: 'Cancel'
   };
 
   incidentName: string;
 
   async populateIncidentData() {
-    // Incident Type
-    await this.page.getByText(this.Elements.incidentTypeNearbyLabel).locator('..').getByPlaceholder(this.Elements.selectComponentPlaceholderText).click();
+    // Use the timestamped version for consistency
+    await this.populateIncidentDataWithTimestamp();
+  }
+
+  async populateIncidentDataWithTimestamp() {
+    // Generate timestamped incident name
+    this.incidentName = `Automated Test Incident ${Date.now()}`;
+
+    // Select incident type
+    await this.page.getByText(this.Elements.selectIncidentType).click();
+    await this.page.waitForTimeout(WAIT_TIMEOUT);
+    await this.page.getByRole('combobox', { name: 'Select incident type' }).click();
     await this.page.getByRole('option', { name: 'Storms' }).click();
+    await this.clickConfirm();
 
-    // Main input fields
-    this.incidentName = `Regression Test Incident: ${RandomDataGenerator.generateRandomText(2)}`;
-    await this.page.locator(this.Elements.incidentName).fill(this.incidentName);
-    await this.page.getByRole('button', {name: this.Elements.incidentAddNowName }).click();
-    await this.page.locator(this.Elements.incidentReferredBy).fill(RandomDataGenerator.generateRandomFullName());
-    await this.page.locator(this.Elements.incidentOrganisation).fill(`${RandomDataGenerator.generateRandomText(2)} Ltd`);
-    await this.page.locator(this.Elements.incidentTelephoneNo).fill(RandomDataGenerator.generateRandomTelephoneNumber());
-    await this.page.locator(this.Elements.incidentEmail).fill(RandomDataGenerator.generateRandomEmail());
+    // Add incident name
+    await this.page.getByText(this.Elements.addIncidentName).click();
+    await this.page.waitForTimeout(WAIT_TIMEOUT);
+    await this.page.getByRole('textbox', { name: 'Incident name' }).fill(this.incidentName);
+    await this.clickConfirm();
 
-    // Support Required?
-    await this.page.getByText(this.Elements.incidentSupportRequestedNearbyLabel).locator('..').getByPlaceholder(this.Elements.selectComponentPlaceholderText).click();
-    await this.page.getByRole('option', { name: 'No' }).click();
+    // Fill referred by
+    await this.page.getByText(this.Elements.referredBy).click();
+    await this.page.waitForTimeout(WAIT_TIMEOUT);
+    await this.page.getByRole('textbox').fill(RandomDataGenerator.generateRandomFullName());
+    await this.clickConfirm();
+
+    // Fill organisation
+    await this.page.getByText(this.Elements.organisation).click();
+    await this.page.waitForTimeout(WAIT_TIMEOUT);
+    await this.page.getByRole('textbox').fill(`${RandomDataGenerator.generateRandomText(2)} Ltd`);
+    await this.clickConfirm();
+
+    // Fill telephone
+    await this.page.getByText(this.Elements.telephoneNumber).click();
+    await this.page.waitForTimeout(WAIT_TIMEOUT);
+    // strip () not supported by the input field
+    const telephoneNumber = RandomDataGenerator.generateRandomTelephoneNumber().replace(/[\(\)]/g, '');
+    await this.page.getByRole('textbox').fill(telephoneNumber);
+    await this.clickConfirm();
+
+    // Fill email
+    await this.page.getByText(this.Elements.email).click();
+    await this.page.waitForTimeout(WAIT_TIMEOUT);
+    await this.page.getByRole('textbox').fill(RandomDataGenerator.generateRandomEmail());
+    await this.clickConfirm();
+
+    // Answer support requested question
+    await this.page.getByText(this.Elements.supportRequested).click();
+    await this.page.waitForTimeout(WAIT_TIMEOUT);
+    await this.page.getByRole('combobox', { name: 'Has the referrer requested' }).click();
+    await this.page.getByRole('option', { name: 'No', exact: true }).click();
+    await this.clickConfirm();
+
+    // Add date and time
+    await this.page.getByText(this.Elements.addDateTime).click();
+    await this.page.waitForTimeout(WAIT_TIMEOUT);
+    const now = new Date();
+    const day = String(now.getDate()).padStart(2, '0');
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const year = String(now.getFullYear());
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    
+    await this.page.getByRole('spinbutton', { name: 'Day' }).fill(day);
+    await this.page.getByRole('spinbutton', { name: 'Month' }).fill(month);
+    await this.page.getByRole('spinbutton', { name: 'Year' }).fill(year);
+    await this.page.getByRole('spinbutton', { name: 'Hours' }).fill(hours);
+    await this.page.getByRole('spinbutton', { name: 'Minutes' }).fill(minutes);
+    await this.page.waitForTimeout(WAIT_TIMEOUT);
+    await this.clickConfirm();
+  }
+
+  private async clickConfirm() {
+    const confirmBtn = this.page.getByRole('button', { name: 'Confirm' });
+    await expect(confirmBtn).toBeVisible({ timeout: WAIT_TIMEOUT });
+
+    const isEnabled = await confirmBtn.isEnabled();
+    if (!isEnabled) {
+      throw new Error('Confirm button is disabled!');
+    }
+
+    await confirmBtn.click();
+    await this.page.waitForTimeout(WAIT_TIMEOUT);
   }
 
   async clickAddIncident() {
-    const createBtn = this.page.getByRole('button', { name: this.Elements.addNewIncidentButtonText });
-    await expect(createBtn).toBeVisible({ timeout: 5000 });
-    await expect(createBtn).toBeEnabled();
-    await createBtn.click();
+    const saveBtn = this.page.getByRole('button', { name: this.Elements.saveButton });
+    await expect(saveBtn).toBeVisible({ timeout: WAIT_TIMEOUT });
+    await expect(saveBtn).toBeEnabled({ timeout: CLICK_TIMEOUT });
+    await saveBtn.click();
   }
 
   async verifyIncidentLoaded() {
-    await expect(this.page.getByText(this.incidentName)).toBeVisible({ timeout: 60000 });
+    await expect(this.page.getByText(this.incidentName)).toBeVisible({ timeout: WAIT_TIMEOUT });
     return this.incidentName;
   }
 
   async returnToDashboard() {
+    // After saving, the app redirects to the incident logbook view
+    // Click the INCIDENTS link to navigate back to the dashboard
     await this.page.getByRole('link', { name: 'INCIDENTS' }).click();
-    await this.page.getByRole('button', { name: 'Add new incident' }).waitFor();
+    await this.page.waitForTimeout(WAIT_TIMEOUT);
+    // Wait for the incidents page heading to confirm we're on the dashboard
+    await this.page.getByRole('heading', { name: 'Incidents' }).waitFor({ timeout: CLICK_TIMEOUT });
   }
 }

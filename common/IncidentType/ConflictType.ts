@@ -11,5 +11,4 @@ export const ConflictType = Union(
   Literal('NuclearMiscalculationNotUK')
 );
 
-// eslint-disable-next-line no-redeclare
 export type ConflictType = Static<typeof ConflictType>;

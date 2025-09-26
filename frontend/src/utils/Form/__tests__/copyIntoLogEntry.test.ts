@@ -70,10 +70,10 @@ describe('copyIntoLogEntry', () => {
         location: {
           type: 'both',
           description: 'This location has both a description and coordinates',
-          coordinates: {
+          coordinates: [{
             latitude: 40.7128,
             longitude: -74.006
-          }
+          }]
         }
       };
 
@@ -90,10 +90,10 @@ describe('copyIntoLogEntry', () => {
       const copyFrom: Partial<LogEntry> = {
         location: {
           type: 'coordinates',
-          coordinates: {
+          coordinates: [{
             latitude: 40.7128,
             longitude: -74.006
-          }
+          }]
         }
       };
 

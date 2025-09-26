@@ -2,17 +2,20 @@
 // © Crown Copyright 2025. This work has been developed by the National Digital Twin Programme
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
-import { type LogEntry } from 'common/LogEntry';
 import { Box, Typography } from '@mui/material';
+import { Attachment } from 'common/Attachment';
 import AttachmentLink from '../AttachmentLink';
 
 interface Props {
-  entry: LogEntry;
+  entry: {
+    attachments?: Attachment[]
+    offline?: boolean
+  }
 }
 export default function Attachments({ entry }: Readonly<Props>) {
   const { attachments } = entry;
 
-  if (!attachments) {
+  if (!attachments?.length) {
     return null;
   }
 

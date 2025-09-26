@@ -1,0 +1,29 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`Stage component applies correct styling based on the stage prop 1`] = `
+<DocumentFragment>
+  <div
+    class="MuiChip-root MuiChip-filled MuiChip-sizeMedium MuiChip-colorDefault MuiChip-filledDefault css-1k7a005-MuiChip-root"
+  >
+    <span
+      class="MuiChip-label MuiChip-labelMedium css-1dybbl5-MuiChip-label"
+    >
+      Recovery Stage
+    </span>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Stage component matches snapshot for Closed stage 1`] = `
+<DocumentFragment>
+  <div
+    class="MuiChip-root MuiChip-filled MuiChip-sizeMedium MuiChip-colorDefault MuiChip-filledDefault css-1cm0999-MuiChip-root"
+  >
+    <span
+      class="MuiChip-label MuiChip-labelMedium css-1dybbl5-MuiChip-label"
+    >
+      Closed Stage
+    </span>
+  </div>
+</DocumentFragment>
+`;

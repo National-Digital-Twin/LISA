@@ -15,7 +15,7 @@ import { type Incident } from 'common/Incident';
 import { type LogEntry } from 'common/LogEntry';
 import { type LogEntryType } from 'common/LogEntryType';
 import { type Mentionable } from 'common/Mentionable';
-// eslint-disable-next-line import/no-extraneous-dependencies
+ 
 import { LogEntryTypes } from 'common/LogEntryTypes';
 import { bem, Document, Form, Format } from '../../../utils';
 import { type OnFieldChange } from '../../../utils/handlers';
@@ -89,8 +89,8 @@ export default function FormContent({
     async (blob: Blob) => {
       const blobHash = await Document.getBlobHash(blob);
       if (!processedRecordings.includes(blobHash)) {
-        const name = `Recording ${Format.timestamp()}.webm`;
-        onAddRecording(new File([blob], name, { type: 'audio/webm' }));
+        const name = `Recording ${Format.timestamp()}.mp3`;
+        onAddRecording(new File([blob], name, { type: 'audio/mpeg' }));
         setProcessedRecordings((prev) => [...prev, blobHash]);
       }
     },
@@ -157,9 +157,11 @@ export default function FormContent({
           gap={1}
           className={`full-width field-type--Lexical ${contentError ? 'in-error' : ''}`}
         >
-          <InputLabel htmlFor="content" sx={{ color: 'text.primary', fontWeight: 'bold' }}>
-            {descriptionLabel}
-          </InputLabel>
+          <Box display="flex" alignItems="center" gap={1}>
+            <InputLabel htmlFor="content" sx={{ color: 'text.primary', fontWeight: 'bold' }}>
+              {descriptionLabel}
+            </InputLabel>
+          </Box>
           <EntryContent
             id="content"
             json={typeof entry.content === 'object' ? entry.content.json : undefined}
@@ -169,6 +171,7 @@ export default function FormContent({
             onChange={onContentChange}
             onRecording={onSpeechToTextChange}
             error={Boolean(showValidationErrors && contentError)}
+            placeholder={ "Type @ to tag a person, log, task or file"}
           />
           {showValidationErrors && contentError && (
             <Typography variant="body1" color="error">

@@ -2,75 +2,134 @@
 // © Crown Copyright 2025. This work has been developed by the National Digital Twin Programme
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { type Task } from 'common/Task';
-// eslint-disable-next-line import/no-extraneous-dependencies
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { type Task, type CreateTask } from 'common/Task';
 import { LogEntry } from 'common/LogEntry';
-import { patch } from '../api';
+import { User } from 'common/User';
+import { get, patch, post } from '../api';
 import { useCreateLogEntry } from './useLogEntries';
-import { createLogEntryFromTaskStatusUpdate, createLogEntryFromTaskAssigneeUpdate } from "../utils/Task/updateLogEntries"
+import {
+  createLogEntryFromTaskStatusUpdate,
+  createLogEntryFromTaskAssigneeUpdate,
+  createLogEntryFromTaskCreation
+} from '../utils/Task/updateLogEntries';
+import { addOptimisticTask } from './useTaskUpdates';
+
+export const useTasks = (incidentId?: string) =>
+  useQuery<Task[], Error>({
+    queryKey: ['tasks'],
+    queryFn: () => get('/tasks'),
+    staleTime: 10_000, // 10 seconds
+    select: (tasks) => (incidentId ? tasks.filter((t) => t.incidentId === incidentId) : tasks)
+  });
+
+type CreateTaskInput = {
+  task: CreateTask & Required<Pick<Task, 'id' | 'status'>>;
+  files?: File[]; // attachments + generated sketches/recordings
+};
+
+export const useCreateTask = ({ author, incidentId }: { author: User; incidentId?: string }) => {
+  const queryClient = useQueryClient();
+  const { createLogEntry } = useCreateLogEntry(incidentId);
+
+  return useMutation<
+    { id: string },
+    Error,
+    CreateTaskInput,
+    { previousTasks?: Task[]; previousAllTasks?: Task[] }
+  >({
+    mutationFn: ({ task, files }) => {
+      if (files && files.length > 0) {
+        const formData = new FormData();
+        files.forEach((file) => formData.append(file.name, file));
+        formData.append('task', JSON.stringify(task));
+        return post(`/incident/${task.incidentId}/tasks`, formData);
+      }
+      return post(`/incident/${task.incidentId}/tasks`, task);
+    },
+    onMutate: async ({ task }) => {
+      await queryClient.cancelQueries({ queryKey: ['tasks'] });
+
+      const optimisticTask: Task = {
+        ...task,
+        author,
+        createdAt: new Date().toISOString(),
+        location: task.location ?? null,
+        attachments: task.attachments ?? []
+      };
+
+      const { previousTasks } = await addOptimisticTask(queryClient, optimisticTask);
+
+      return { previousTasks };
+    },
+    onError: (_error, _variables, context) => {
+      if (context?.previousTasks) {
+        queryClient.setQueryData(['tasks'], context.previousTasks);
+      }
+    },
+    onSuccess: (_data, variables) => {
+      const taskId = variables.task.id;
+      const taskName = variables.task.name;
+      const taskIncidentId = variables.task.incidentId;
+      const taskAssignee = variables.task.assignee.displayName;
+
+      if (!taskIncidentId || !taskId || !taskName || !taskAssignee) return;
+
+      const logEntry = {
+        ...createLogEntryFromTaskCreation(taskId, taskName, taskAssignee, taskIncidentId)
+      } as Omit<LogEntry, 'author'>;
+      createLogEntry({ logEntry });
+    }
+  });
+};
 
 export const useUpdateTaskStatus = (incidentId?: string) => {
   const queryClient = useQueryClient();
   const { createLogEntry } = useCreateLogEntry(incidentId);
 
-  return useMutation<
-    Task,
-    Error,
-    { task: Task },
-    { previousEntries?: LogEntry[] }
-  >({
-    mutationFn: ({ task }) =>
-      patch(`/task/${task.id}/status`, { status: task.status }),
+  return useMutation<Task, Error, { task: Task }, { previousTasks?: Task[] }>({
+    mutationFn: ({ task }) => patch(`/task/${task.id}/status`, { status: task.status }),
 
     onMutate: async ({ task }) => {
       await queryClient.cancelQueries({
-        queryKey: [`incident/${incidentId}/logEntries`],
+        queryKey: ['tasks']
       });
 
-      const previousEntries = queryClient.getQueryData<LogEntry[]>(
-        [`incident/${incidentId}/logEntries`]
-      );
+      const previousTasks = queryClient.getQueryData<Task[]>(['tasks']);
 
-      queryClient.setQueryData<LogEntry[]>(
-        [`incident/${incidentId}/logEntries`],
-        previousEntries?.map((entry) => {
-          if (entry.task?.id === task.id) {
+      queryClient.setQueryData<Task[]>(
+        ['tasks'],
+        previousTasks?.map((t) => {
+          if (t.id === task.id) {
             return {
-              ...entry,
-              task: {
-                ...entry.task,
-                status: task.status,
-              },
+              ...t,
+              status: task.status
             };
           }
-          return entry;
+          return t;
         }) ?? []
       );
 
-      return { previousEntries };
+      return { previousTasks };
     },
 
     onError: (_err, _vars, context) => {
-      if (context?.previousEntries) {
-        queryClient.setQueryData(
-          [`incident/${incidentId}/logEntries`],
-          context.previousEntries
-        );
+      if (context?.previousTasks) {
+        queryClient.setQueryData(['tasks'], context.previousTasks);
       }
     },
 
     onSuccess: (_data, variables) => {
       const taskId = variables.task.id;
       const taskStatus = variables.task.status;
-      
+
       if (!incidentId || !taskId || !taskStatus) return;
 
       const logEntry = {
         ...createLogEntryFromTaskStatusUpdate(taskId, taskStatus, incidentId)
-      } as Omit<LogEntry, 'id' | 'author'>;
+      } as Omit<LogEntry, 'author'>;
       createLogEntry({ logEntry });
-    },
+    }
   });
 };
 
@@ -78,49 +137,35 @@ export const useUpdateTaskAssignee = (incidentId?: string) => {
   const queryClient = useQueryClient();
   const { createLogEntry } = useCreateLogEntry(incidentId);
 
-  return useMutation<
-    Task,
-    Error,
-    { task: Task },
-    { previousEntries?: LogEntry[] }
-  >({
-    mutationFn: ({ task }) =>
-      patch(`/task/${task.id}/assignee`, { assignee: task.assignee }),
+  return useMutation<Task, Error, { task: Task }, { previousTasks?: Task[] }>({
+    mutationFn: ({ task }) => patch(`/task/${task.id}/assignee`, { assignee: task.assignee }),
 
     onMutate: async ({ task }) => {
       await queryClient.cancelQueries({
-        queryKey: [`incident/${incidentId}/logEntries`],
+        queryKey: ['tasks']
       });
 
-      const previousEntries = queryClient.getQueryData<LogEntry[]>(
-        [`incident/${incidentId}/logEntries`]
-      );
+      const previousTasks = queryClient.getQueryData<Task[]>(['tasks']);
 
-      queryClient.setQueryData<LogEntry[]>(
-        [`incident/${incidentId}/logEntries`],
-        previousEntries?.map((entry) => {
-          if (entry.task?.id === task.id) {
+      queryClient.setQueryData<Task[]>(
+        ['tasks'],
+        previousTasks?.map((t) => {
+          if (t.id === task.id) {
             return {
-              ...entry,
-              task: {
-                ...entry.task,
-                assignee: task.assignee,
-              },
+              ...t,
+              assignee: task.assignee
             };
           }
-          return entry;
+          return t;
         }) ?? []
       );
 
-      return { previousEntries };
+      return { previousTasks };
     },
 
     onError: (_err, _vars, context) => {
-      if (context?.previousEntries) {
-        queryClient.setQueryData(
-          [`incident/${incidentId}/logEntries`],
-          context.previousEntries
-        );
+      if (context?.previousTasks) {
+        queryClient.setQueryData(['tasks'], context.previousTasks);
       }
     },
 
@@ -132,8 +177,8 @@ export const useUpdateTaskAssignee = (incidentId?: string) => {
 
       const logEntry = {
         ...createLogEntryFromTaskAssigneeUpdate(taskId, taskAssignee, incidentId)
-      } as Omit<LogEntry, 'id' | 'author'>;
+      } as Omit<LogEntry, 'author'>;
       createLogEntry({ logEntry });
-    },
+    }
   });
 };

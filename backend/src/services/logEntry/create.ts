@@ -7,14 +7,16 @@ import { randomUUID } from 'crypto';
 import { Request, Response } from 'express';
 
 // Local imports
-import { type Coordinates } from 'common/Location';
 import { LogEntry } from 'common/LogEntry';
 import { LogEntryTypes } from 'common/LogEntryTypes';
 import PubSubManager from '../../pubSub/manager';
 import * as ia from '../../ia';
-import { literalDate, literalDecimal, literalString, ns } from '../../rdfutil';
+import { literalDate, literalString, ns } from '../../rdfutil';
 import { create as createNotification } from '../notifications';
-import { attachments, details, fields, mentions, tasks } from './utils';
+import { details, fields, mentions } from './utils';
+import { extractAttachments } from '../common/attachments';
+import { addLocationTriples } from '../common/location';
+
 
 export async function create(req: Request, res: Response) {
   const { incidentId } = req.params;
@@ -31,25 +33,17 @@ export async function create(req: Request, res: Response) {
     entry.dateTime = now.toISOString();
   }
 
-  const entryId = randomUUID();
-  entry.id = entryId;
-
+  const entryId = entry.id ?? randomUUID();
   const entryIdNode = ns.data(entryId);
   const incidentIdNode = ns.data(incidentId);
   const authorNode = ns.data(res.locals.user.username);
-  const taskId = `${entryId}-Task`;
-  const taskNode = ns.data(taskId);
 
-  const { triples: attachmentTriples, names: fileNameMappings } = await attachments.extract(
-    req,
-    entry,
-    entryIdNode
-  );
+  const { triples: attachmentTriples, names: fileNameMappings } = await extractAttachments(req, entry.attachments, entryIdNode);
   mentions.reconcileLogFiles.file(entry, entryId, fileNameMappings);
   const userLogMentions = mentions.extractLogContent.user(entry, entryIdNode);
 
   const type = LogEntryTypes[entry.type];
-  const content = type.noContent ? {} : entry.content ?? {}; // should probably be invalid request?
+  const content = type.noContent ? {} : (entry.content ?? {}); // should probably be invalid request?
 
   let triples: unknown[] = [];
   try {
@@ -70,32 +64,15 @@ export async function create(req: Request, res: Response) {
       ...mentions.extractLogContent.logEntry(entry, entryIdNode),
       ...userLogMentions.map((mention) => mention.triple),
       ...attachmentTriples,
-      ...tasks.extract(entry, entryIdNode, taskNode),
+
       ...details.extract(entry, entryIdNode)
     ];
   } catch (err) {
-    throw new Error('Error creating log entry', err);
+    throw new Error('Error creating log entry', { cause: err });
   }
 
   if (entry.location) {
-    let coordinates: Coordinates;
-    let description: string;
-    if (entry.location.type === 'description' || entry.location.type === 'both') {
-      description = entry.location.description;
-    }
-    if (entry.location.type === 'coordinates' || entry.location.type === 'both') {
-      coordinates = entry.location.coordinates;
-    }
-    const locationIdNode = ns.data(randomUUID());
-    triples.push([locationIdNode, ns.rdf.type, ns.ies.Location]);
-    if (coordinates) {
-      triples.push([locationIdNode, ns.ies.Latitude, literalDecimal(coordinates.latitude)]);
-      triples.push([locationIdNode, ns.ies.Longitude, literalDecimal(coordinates.longitude)]);
-    }
-    if (description) {
-      triples.push([locationIdNode, ns.lisa.hasDescription, literalString(description)]);
-    }
-    triples.push([entryIdNode, ns.ies.inLocation, locationIdNode]);
+    triples.push(...addLocationTriples(entry.location, entryIdNode));
   }
 
   await ia.insertData(triples);
@@ -107,17 +84,7 @@ export async function create(req: Request, res: Response) {
       entryId: entry.id,
       incidentId: entry.incidentId
     });
-  }); 
-  
-  if(entry.task?.assignee) {
-    createNotification({
-      recipient: entry.task.assignee.username,
-      type: 'TaskAssignedNotification',
-      entryId: entry.id,
-      incidentId: entry.incidentId,
-      taskId
-    })
-  }
+  });
 
   PubSubManager.getInstance().publish('NewLogEntries', entry.incidentId, res.locals.user.username);
   res.json({ id: entryId });

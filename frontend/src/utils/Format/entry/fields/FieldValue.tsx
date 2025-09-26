@@ -30,7 +30,7 @@ interface Props {
 }
 export function FieldValue({ field, entry, value }: Readonly<Props>) {
   if (field.type === 'Location') {
-    return <LocationValue entry={entry} />;
+    return <LocationValue entity={entry} />;
   }
   if (field.type === 'SelectLogEntry') {
     return <SelectionValue entry={entry} value={value} />;

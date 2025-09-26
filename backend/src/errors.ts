@@ -17,14 +17,12 @@ export class AccessTokenMissingOrExpiredError extends Error {
 }
 
 export class ApplicationError extends Error implements ExpressError {
-  // eslint-disable-next-line class-methods-use-this
   get statusCode() {
     return 500;
   }
 }
 
 export class InvalidValueError extends ApplicationError {
-  // eslint-disable-next-line class-methods-use-this
   get statusCode() {
     return 400;
   }

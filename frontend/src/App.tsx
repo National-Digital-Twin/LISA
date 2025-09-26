@@ -11,14 +11,21 @@ import { onlineManager, useQueryClient } from '@tanstack/react-query';
 // Local imports
 import AppWrapper from './components/AppWrapper';
 import Toasts from './components/Toasts';
+import { useOfflineSync } from './hooks/useOfflineSync';
 
 // Styles
 import './App.scss';
 import MessagingProvider from './providers/MessagingProvider';
+import NotificationProvider from './providers/NotificationProvider';
 import ToastProvider from './providers/ToastProvider';
-import AuthContextProvider from './providers/AuthContextProvider';
+import AuthContextProvider from './providers/AuthContextProvider'
+import { useOfflineBootstrap } from './hooks/useOfflineBootstrap';
 
 const App = () => {
+
+  useOfflineSync();
+  useOfflineBootstrap();
+
   useRegisterSW({
     immediate: true
   });
@@ -40,10 +47,12 @@ const App = () => {
   return (
     <AuthContextProvider>
       <MessagingProvider>
-        <ToastProvider>
-          <Toasts />
-          <AppWrapper />
-        </ToastProvider>
+        <NotificationProvider>
+          <ToastProvider>
+            <Toasts />
+            <AppWrapper />
+          </ToastProvider>
+        </NotificationProvider>
       </MessagingProvider>
     </AuthContextProvider>
   );

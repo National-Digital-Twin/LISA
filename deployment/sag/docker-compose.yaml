@@ -9,19 +9,30 @@ services:
       - ALLOW_ANONYMOUS_LOGIN=yes
   kafka:
     container_name: lisa-kafka
-    image: 'bitnami/kafka:3.5'
     depends_on:
       - zookeeper
+    image: 'bitnami/kafka:3.5'
     ports:
       - '9092:9092'
     volumes:
       - ./kafka/server.properties:/bitnami/kafka/config/server.properties
+      - ./kafka/consumer.properties:/bitnami/kafka/config/consumer.properties
     environment:
       - BITNAMI_DEBUG=true
+    healthcheck:
+      test: ["CMD-SHELL", "kafka-topics.sh --bootstrap-server localhost:9092 --list --command-config /bitnami/kafka/config/consumer.properties || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 4
   secure-agent-graph:
     container_name: lisa-sag
     depends_on:
-      - kafka
+      zookeeper:
+        condition: service_started
+      kafka:
+        condition: service_healthy
+    volumes:
+      - sag_databases:/fuseki/databases
     environment:
       JAVA_OPTIONS: '-XX:MaxRAMPercentage=40.0'
       JWKS_URL: 'disabled'
@@ -31,3 +42,44 @@ services:
     image: lisa/secure-agent-graph
     ports:
       - 3030:3030
+  transparent-proxy:
+    container_name: lisa-transparent-proxy
+    image: lisa/transparent-proxy
+    ports:
+      - 8000:80
+    env_file:
+      - "../../backend/.env"
+  minio:
+    container_name: lisa-minio
+    image: minio/minio:latest
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    command: server /data --console-address ":9001"
+    volumes:
+      - minio_data:/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+  minio-init:
+    container_name: lisa-minio-init
+    image: minio/mc:latest
+    depends_on:
+      minio:
+        condition: service_healthy
+    entrypoint: >
+      /bin/sh -c "
+      mc alias set minio http://minio:9000 minioadmin minioadmin;
+      mc mb minio/lisa-attachments --ignore-existing;
+      mc anonymous set public minio/lisa-attachments;
+      exit 0;
+      "
+
+volumes:
+  sag_databases:
+  minio_data:

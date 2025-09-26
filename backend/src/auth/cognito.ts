@@ -36,6 +36,7 @@ function getUserAttribute(u: UserType, attr: string): string | undefined {
 
 function cognitoUserToUserListItem(cognitoUser: UserType) {
   return {
+    email: getUserAttribute(cognitoUser, 'email'),
     username: cognitoUser.Username,
     displayName: getUserAttribute(cognitoUser, 'name')
   } satisfies UserListItem;
@@ -49,6 +50,25 @@ export async function getUsers(): Promise<UserList> {
     GroupName: settings.COGNITO_USER_GROUP_NAME
   });
 
-  const resp = await client.send(command);
-  return resp.Users?.map(cognitoUserToUserListItem);
+  let cognitoUsers: UserListItem[] = [];
+
+  try {
+    const resp = await client.send(command);
+    cognitoUsers = resp.Users?.map(cognitoUserToUserListItem) ?? [];
+  } catch (error) {
+    if (settings.NODE_ENV === 'development') {
+      console.warn('Failed to fetch users from Cognito:', error);
+    } else {
+      throw error;
+    }
+  }
+
+  if (settings.NODE_ENV === 'development') {
+    return [...cognitoUsers, 
+      { username: 'local.user', displayName: 'Local User', email: 'local.user@example.com' }, 
+      { username: 'local.user2', displayName: 'A Second Local User', email: 'local.user2@example.com' }
+    ];
+  }
+
+  return cognitoUsers;
 }

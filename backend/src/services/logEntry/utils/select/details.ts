@@ -14,20 +14,20 @@ export function details(incidentId: string) {
     clause: [
       [ns.data(incidentId), ns.lisa.hasLogEntry, '?entryId'],
       optional([
+        ['?entryId', ns.lisa.hasCreatedTask, '?createdTaskId'],
+        ['?createdTaskId', ns.ies.hasName, '?createdTaskName']
+      ]),      
+      optional([
         ['?entryId', ns.lisa.hasModifiedTask, '?changedTaskId'],
         ['?changedTaskId', ns.ies.hasName, '?changedTaskName']
       ]),
-      optional([
-        ['?entryId', ns.lisa.hasStatus, '?changedStatus'],
-      ]),
-      optional([
-        ['?entryId', ns.lisa.assignee, '?changedAssignee'],
-      ]),
+      optional([['?entryId', ns.lisa.hasStatus, '?changedStatus']]),
+      optional([['?entryId', ns.lisa.assignee, '?changedAssignee']]),
       optional([
         ['?entryId', ns.lisa.hasCompletedForm, '?submittedFormId'],
-        ['?submittedFormId', ns.rdf.type, '?parentForm'],
-        ['?parentForm', ns.ies.hasName, '?submittedFormTitle'],
-      ]),
+        ['?submittedFormId', ns.rdf.type, '?submittedFormTemplateId'],
+        ['?submittedFormTemplateId', ns.ies.hasName, '?submittedFormTitle']
+      ])
     ]
   });
 }

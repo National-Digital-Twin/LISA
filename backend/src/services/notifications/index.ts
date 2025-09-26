@@ -5,11 +5,12 @@
 import { randomUUID } from 'crypto';
 import { Request, Response } from 'express';
 import * as sparql from 'rdf-sparql-builder';
+import TriplePattern from 'rdf-sparql-builder/lib/TriplePattern';
 
 import { Notification } from 'common/Notification';
 import * as ia from '../../ia';
 import PubSubManager from '../../pubSub/manager';
-import { literalDate, ns } from '../../rdfutil';
+import { literalDate, nodeValue, ns } from '../../rdfutil';
 import { NotificationInput } from './types';
 import { getCreateData, getFetchOptionals, getTypesList, parseNotification } from './utils';
 
@@ -52,7 +53,31 @@ export async function markRead(req: Request, res: Response) {
   res.json({ id });
 }
 
-export async function get(req: Request, res: Response) {
+export async function markAllAsSeen(_: Request, res: Response) {
+  const { username } = res.locals.user;
+  const results = await ia.select({
+    clause: [
+      ['?id', ns.rdf.type, '?type'],
+      ['?id', ns.lisa.hasRecipient, '?recipient'],
+      `FILTER NOT EXISTS {${new TriplePattern('?id', ns.lisa.seenAt, '?seenAt')}}`
+    ],
+    filters: [
+      sparql.in('?recipient', [ns.data(username)]),
+      sparql.in('?type', getTypesList())
+    ]
+  });
+
+  if (results.length > 0) {
+    const now = new Date();
+    await ia.insertData(results.map(result =>
+      [ns.data(nodeValue(result.id.value)), ns.lisa.seenAt, literalDate(now)]
+    ));
+  }
+
+  res.json({ markedAsSeen: results.length });
+}
+
+export async function get(_: Request, res: Response) {
   const { username } = res.locals.user;
   const optionals = getFetchOptionals();
 
@@ -61,11 +86,9 @@ export async function get(req: Request, res: Response) {
       ['?id', ns.rdf.type, '?type'],
       ['?id', ns.lisa.hasRecipient, '?recipient'],
       ['?id', ns.lisa.createdAt, '?createdAt'],
-      ['?id', ns.lisa.hasLogEntry, '?entryId'],
       ['?id', ns.lisa.hasIncident, '?incidentId'],
-      ['?entryId', ns.ies.inPeriod, '?dateTime'],
-      ['?entryId', ns.lisa.hasSequence, '?sequence'],
       sparql.optional([['?id', ns.lisa.readAt, '?read']]),
+      sparql.optional([['?id', ns.lisa.seenAt, '?seen']]),
       ...optionals
     ],
     filters: [sparql.in('?recipient', [ns.data(username)]), sparql.in('?type', getTypesList())],

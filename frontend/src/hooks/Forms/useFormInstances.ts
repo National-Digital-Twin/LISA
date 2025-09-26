@@ -2,14 +2,18 @@
 // © Crown Copyright 2025. This work has been developed by the National Digital Twin Programme
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
-import { QueryClient, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-// eslint-disable-next-line import/no-extraneous-dependencies
-import { LogEntry } from "common/LogEntry";
-import { FetchError, get, post } from "../../api";
-import { FormInstance } from "../../components/CustomForms/FormTemplates/types";
-import { CreateFormInstanceContext, CreateFormInstancePayload } from "./types";
-import { createLogEntryFromSubmittedForm } from "./utils";
-import { useCreateLogEntry } from "../useLogEntries";
+import { QueryClient, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { v4 as uuidV4 } from 'uuid';
+
+import { LogEntry } from 'common/LogEntry';
+import { FetchError, get, post } from '../../api';
+import { FormInstance } from '../../components/CustomForms/FormTemplates/types';
+import { CreateFormInstanceContext, CreateFormInstancePayload } from './types';
+import { createLogEntryFromSubmittedForm } from './utils';
+import { useCreateLogEntry } from '../useLogEntries';
+import { OfflineFormInstance } from '../../offline/types/OfflineForm';
+import { useIsOnline } from '../useIsOnline';
+import { addForm } from '../../offline/db/dbOperations';
 
 export async function poll(
   incidentId: string | undefined,
@@ -21,25 +25,52 @@ export async function poll(
 
   if (attemptNumber <= 10) {
     if (forms.find((form) => form.id === formId)) {
-      queryClient.invalidateQueries({ queryKey: [`incident/${incidentId}/form`] })
+      queryClient.invalidateQueries({ queryKey: [`incident/${incidentId}/form`] });
     } else {
       setTimeout(() => poll(incidentId, formId, queryClient, attemptNumber + 1), 10000);
     }
   }
 }
 
-export const useCreateFormInstance = (incidentId? : string) => {
+export const useCreateFormInstance = (incidentId: string, onSuccess: () => void) => {
   const queryClient = useQueryClient();
-  const { createLogEntry } = useCreateLogEntry(incidentId);
+  const { createLogEntry } = useCreateLogEntry(incidentId, onSuccess);
+  const isOnline = useIsOnline();
 
   return useMutation<{ id: string }, Error, CreateFormInstancePayload, CreateFormInstanceContext>({
-    mutationFn: ({ formTemplateId, formData }) =>
-      post(`/incident/${incidentId}/form`, { formTemplateId, formData }),
+    mutationFn: async ({ formTemplateId, formData, title }) => {
+      if (!incidentId) throw new Error('No incident ID provided.');
+
+      const id = uuidV4();
+      const createdAt = new Date().toISOString();
+
+      if (!isOnline) {
+        const logEntry = createLogEntryFromSubmittedForm(title, id, incidentId, createdAt);
+
+        const offlineForm: OfflineFormInstance = {
+          id,
+          title,
+          formTemplateId,
+          formData,
+          incidentId,
+          createdAt,
+          authorName: 'Offline',
+          pendingLogEntry: { ...logEntry, id: uuidV4() }
+        };
+
+        await addForm(offlineForm);
+        return { id };
+      }
+
+      return post(`/incident/${incidentId}/form`, { formTemplateId, formData, createdAt, id });
+    },
 
     onMutate: async ({ formTemplateId, formData, title }) => {
       await queryClient.cancelQueries({ queryKey: [`incident/${incidentId}/form`] });
 
-      const previousFormInstances = queryClient.getQueryData<FormInstance[]>([`incident/${incidentId}/form`]);
+      const previousFormInstances = queryClient.getQueryData<FormInstance[]>([
+        `incident/${incidentId}/form`
+      ]);
 
       const optimisticForm: FormInstance = {
         id: `temp-${Date.now()}`,
@@ -52,7 +83,7 @@ export const useCreateFormInstance = (incidentId? : string) => {
 
       queryClient.setQueryData<FormInstance[]>([`incident/${incidentId}/form`], (old = []) => [
         optimisticForm,
-        ...(old ?? []),
+        ...(old ?? [])
       ]);
 
       return { previousFormInstances };
@@ -65,25 +96,28 @@ export const useCreateFormInstance = (incidentId? : string) => {
     },
 
     onSuccess: async (response, variables) => {
-      setTimeout(() => poll(incidentId, response.id, queryClient, 1), 1000);
-      const formTitle = variables.title;
+      const { title: formTitle } = variables;
       const formId = response.id;
-            
+
       if (!incidentId || !formTitle || !formId) return;
-      
+
       const logEntry = {
-        ...createLogEntryFromSubmittedForm(formTitle, formId, incidentId)
+        ...createLogEntryFromSubmittedForm(uuidV4(), formTitle, formId, incidentId)
       } as Omit<LogEntry, 'id' | 'author'>;
+
       createLogEntry({ logEntry });
-    }
+    },
+
+    networkMode: 'always'
   });
 };
 
-export const useFormInstances = (incidentId? : string) => {
+export const useFormInstances = (incidentId?: string) => {
   const { data, isLoading, isError, error } = useQuery<FormInstance[], FetchError>({
     queryKey: [`incident/${incidentId}/form`],
     queryFn: () => get(`/incident/${incidentId}/form`)
   });
-    
+
   return { forms: data, isLoading, isError, error };
 };
+

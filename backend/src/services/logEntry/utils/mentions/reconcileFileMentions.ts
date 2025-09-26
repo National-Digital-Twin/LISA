@@ -3,11 +3,11 @@
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
 import { type LogEntry } from 'common/LogEntry';
-import { LogEntryContent } from 'common/LogEntryContent';
+import { EntityContent } from 'common/EntityContent';
 import { getMentionsOfType } from './utils';
 import { FileNameMapping } from '../types';
 
-function getMentions(content: LogEntryContent, entryId: string, namesMap: FileNameMapping[]) {
+function getMentions(content: EntityContent, entryId: string, namesMap: FileNameMapping[]) {
   const fileMentions = getMentionsOfType(content, 'File');
   if (!fileMentions.length) {
     return;
@@ -17,13 +17,19 @@ function getMentions(content: LogEntryContent, entryId: string, namesMap: FileNa
     if (mention.id.startsWith('this::')) {
       const fileName = mention.id.split('::')[1];
       const mapping = namesMap.find((map) => map.originalname === fileName);
-      // eslint-disable-next-line no-param-reassign
-      content.json = content.json.replace(mention.id, `${entryId}::${mapping?.storedName || fileName}`);
+      content.json = content.json.replace(
+        mention.id,
+        `${entryId}::${mapping?.storedName || fileName}`
+      );
     }
   });
 }
 
-export function reconcileFileMentionsFromLogContent(entry: LogEntry, entryId: string, namesMap: FileNameMapping[]) {
+export function reconcileFileMentionsFromLogContent(
+  entry: LogEntry,
+  entryId: string,
+  namesMap: FileNameMapping[]
+) {
   const { content } = entry;
   if (!content.json) {
     return;
@@ -31,5 +37,3 @@ export function reconcileFileMentionsFromLogContent(entry: LogEntry, entryId: st
 
   getMentions(content, entryId, namesMap);
 }
-
-

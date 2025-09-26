@@ -40,7 +40,6 @@ export async function query(req: Request, res: Response) {
   } catch (e) {
     console.log(e);
     if (e instanceof TypeError) {
-      // eslint-disable-next-line dot-notation
       throw new Error(`SCG request has failed: ${e.cause['code']}`);
     }
     throw e;

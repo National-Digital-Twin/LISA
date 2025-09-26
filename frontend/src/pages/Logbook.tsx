@@ -2,102 +2,109 @@
 // © Crown Copyright 2025. This work has been developed by the National Digital Twin Programme
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
-// Global imports
-import { MouseEvent, useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { Box, Button, InputAdornment, Popover, TextField, Typography } from '@mui/material';
-import SearchIcon from '@mui/icons-material/Search';
-import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
-import FilterAltIcon from '@mui/icons-material/FilterAlt';
+import { MouseEvent, useEffect, useMemo, useRef, useState } from 'react';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { Box, Button, Divider, IconButton, Menu, MenuItem, Typography } from '@mui/material';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
-import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 
-// Local imports
-import { type LogEntry } from 'common/LogEntry';
 import { type Mentionable, type MentionableType } from 'common/Mentionable';
-import { AddEntry, EntryList, Filter, PageTitle } from '../components';
+import { type LogEntry } from 'common/LogEntry';
+
+import { EntryList, PageTitle } from '../components';
 import PageWrapper from '../components/PageWrapper';
-import {
-  useAuth,
-  useCreateLogEntry,
-  useIncidents,
-  useLogEntries,
-  useLogEntriesUpdates
-} from '../hooks';
-import { Format, Search as SearchUtil } from '../utils';
-import { type OnCreateEntry } from '../utils/handlers';
-import { type FieldValueType, type FilterType, type SpanType } from '../utils/types';
+import { useIncidents, useLogEntries, useLogEntriesUpdates, useMenu } from '../hooks';
+import { Format } from '../utils';
+import { type SpanType } from '../utils/types';
+import { useIsOnline } from '../hooks/useIsOnline';
+import { logInfo } from '../utils/logger';
+
+// Sort & Filter schema + types
+import { SortAndFilter } from '../components/SortFilter/SortAndFilter';
+import { buildLogFilters, logSort, TASK_TYPES } from '../components/SortFilter/schemas/log-schema';
+import { type QueryState } from '../components/SortFilter/filter-types';
+import { useFormTemplates } from '../hooks/Forms/useFormTemplates';
+import { countActive, getFromAndToFromTimeSelection } from '../components/SortFilter/filter-utils';
+import StageMini from '../components/Stage/StageMini';
 import { useResponsive } from '../hooks/useResponsiveHook';
 
 const Logbook = () => {
   const { incidentId } = useParams();
   const query = useIncidents();
   const { logEntries } = useLogEntries(incidentId);
-  const { createLogEntry } = useCreateLogEntry(incidentId);
-  const { user } = useAuth();
-  const [adding, setAdding] = useState<boolean>(false);
-  const [sortAsc, setSortAsc] = useState<boolean>(false);
-  const [appliedFilters, setAppliedFilters] = useState<FilterType>({ author: [], category: [] });
-  const [searchText, setSearchText] = useState<string>('');
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const openFilters = Boolean(anchorEl);
+  const { startPolling, clearPolling } = useLogEntriesUpdates(incidentId!);
+  const isOnline = useIsOnline();
+  const { forms } = useFormTemplates();
   const { isMobile } = useResponsive();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
-  const handleOpenFilters = (event: MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(anchorEl ? null : event.currentTarget);
-  };
+  const usedTaskIdRef = useRef<string | null>(null);
+
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const [queryState, setQueryState] = useState<QueryState>({
+    values: {},
+    sort: { by: 'date_desc', direction: 'desc' }
+  });
+
+  const allAuthors = useMemo(() => {
+    const seen = new Set<string>();
+    return (logEntries ?? [])
+      .map((e) => {
+        const a = e.author;
+        if (!a) return null;
+        const name = typeof a === 'string' ? a : (a.displayName ?? '');
+        return name.trim();
+      })
+      .filter((name): name is string => {
+        if (!name || seen.has(name)) return false;
+        seen.add(name);
+        return true;
+      })
+      .sort((a, b) => a.localeCompare(b));
+  }, [logEntries]);
+
+  const logFilters = useMemo(() => {
+    const templates = forms ?? [];
+    return buildLogFilters(templates, allAuthors);
+  }, [allAuthors, forms]);
 
   useEffect(() => {
-    const preventRefresh = (ev: BeforeUnloadEvent) => {
-      const lastEntry = logEntries?.at(-1);
-      const hasOffline = lastEntry?.offline === true;
-
-      if (hasOffline || adding) {
-        ev.preventDefault();
-      }
-    };
-
-    window.addEventListener('beforeunload', preventRefresh);
+    if (isOnline) startPolling();
+    else clearPolling();
 
     return () => {
-      window.removeEventListener('beforeunload', preventRefresh);
+      clearPolling();
     };
-  }, [adding, logEntries]);
+  }, [isOnline, startPolling, clearPolling]);
 
-  useLogEntriesUpdates(incidentId ?? '');
+  useEffect(() => {
+    const taskId = searchParams.get('taskId');
+    if (!taskId || usedTaskIdRef.current === taskId) return;
+
+    const match = (logEntries ?? []).find(
+      (e) => e.details?.createdTaskId && e.details.createdTaskId === taskId
+    );
+
+    if (match?.id) {
+      usedTaskIdRef.current = taskId;
+      navigate(`#${match.id}`, { replace: true });
+    }
+  }, [searchParams, logEntries, navigate]);
 
   const incident = query?.data?.find((inc) => inc.id === incidentId);
-  const filterAuthors = Format.incident.authors(user.current, logEntries);
-  const filterCategories = Format.incident.categories(logEntries);
 
-  const onSort = (evt: MouseEvent<HTMLButtonElement>) => {
-    evt.preventDefault();
-    setSortAsc((prev) => !prev);
-  };
+  const optionsMenu = useMenu();
+  const addMenu = useMenu();
 
-  const onCancel = () => {
-    document.documentElement.scrollTo(0, 0);
-    setAdding(false);
-  };
-
-  const onAddEntryClick = () => {
-    navigate('#');
-    setAdding(true);
-  };
-
-  const onAddEntry: OnCreateEntry = (_entry, files) => {
-    createLogEntry({ logEntry: _entry, attachments: files });
-    setTimeout(() => {
-      setAdding(false);
-      document.documentElement.scrollTo(0, 0);
-    }, 500);
-    return undefined;
+  const handleOverview = () => {
+    optionsMenu.handleClose();
+    navigate(`/incident/${incident?.id}`);
   };
 
   const onMentionClick = (mention: Mentionable) => {
     if (mention.type === 'User') {
-      console.log(`Clicked on user ${mention.id}:`, mention.label);
+      logInfo(`Clicked on user ${mention.id}: ${mention.label}`);
       navigate('#');
     } else if (mention.type === 'File') {
       navigate('#');
@@ -110,7 +117,10 @@ const Logbook = () => {
           attachment.key
         );
       }
-    } else {
+    } else if (mention.type === 'Task') {
+      navigate(`/tasks/${mention.id}`)
+    }
+    else {
       navigate(`#${mention.id}`);
     }
   };
@@ -128,210 +138,311 @@ const Logbook = () => {
     }
   };
 
-  const onFilterChange = (id: string, value: FieldValueType) => {
-    setAppliedFilters((prev) => ({ ...prev, [id]: value }));
+  const getTs = (e: LogEntry) => {
+    const raw = e.dateTime;
+    return raw ? new Date(raw).getTime() : 0;
   };
 
-  const onSearch = (value: string) => {
-    setSearchText(value.trim());
+  const getAuthor = (e: LogEntry) => {
+    const a = e.author;
+    if (!a) return '';
+    if (typeof a === 'string') return a;
+    return a.displayName ?? '';
   };
 
-  const filterEntries = (e: LogEntry): boolean => SearchUtil.entries(e, appliedFilters, searchText);
+  const activeFilterCount = useMemo(() => countActive(queryState.values), [queryState.values]);
 
-  const sortIcon = () => {
-    const style = { transform: sortAsc ? 'rotate(180deg)' : 'rotate(0deg)' };
-    return isMobile ? <ArrowUpwardIcon sx={style} /> : <KeyboardArrowUpIcon sx={style} />;
-  };
+  const toId = (s: string) => s.toLowerCase().replace(/[\s_()/\-.:]+/g, '');
+
+  const visibleEntries = useMemo(() => {
+    const items = (logEntries ?? []).slice();
+    const v = queryState.values;
+
+    // memo helpers
+
+    const getTypeIds = (e: LogEntry): string[] => {
+      const t = e.type;
+      if (!t) return [];
+
+      const raw = (typeof t === 'string' && t) || '';
+      if (!raw) return [];
+
+      const id = toId(raw);
+      const ids: string[] = [];
+
+      if (id) {
+        ids.push(id);
+        if (TASK_TYPES.has(id)) ids.push('task');
+      }
+
+      return ids;
+    };
+
+    const matchesAttachmentFilter = (entry: LogEntry, selected: Set<string>): boolean => {
+      if (selected.size === 0) return true;
+
+      return Array.from(selected).some((type) => {
+        if (type === 'location') return !!entry.location;
+        if (type === 'file') return entry.attachments?.some((a) => a.type === 'File');
+        if (type === 'sketch') return entry.attachments?.some((a) => a.type === 'Sketch');
+        if (type === 'recording') return entry.attachments?.some((a) => a.type === 'Recording');
+        return false;
+      });
+    };
+
+    // Search terms
+    const searchTerm = ((v.search as string) ?? '').trim().toLowerCase();
+
+    // Attachment
+    const selectedAttachments = new Set<string>((v.attachment as string[]) ?? []);
+
+    // Author
+    const selectedAuthors = new Set<string>((v.author as string[]) ?? []);
+
+    // Types from Form/Task/Update
+    const selectedTypes = new Set<string>(
+      Object.entries(v)
+        .filter(([key, val]) => key === 'logType' && Array.isArray(val))
+        .flatMap(([, val]) => val as string[])
+        .concat(
+          Object.entries(v)
+            .filter(([key, val]) => key.startsWith('logType.') && Array.isArray(val))
+            .flatMap(([, val]) => val as string[])
+        )
+    );
+
+    // Date range
+    const customTimeRange = v.timeRange as { from?: string; to?: string } | undefined;
+    const preset = v.time as string | undefined;
+
+    const { from, to } = getFromAndToFromTimeSelection(preset, customTimeRange);
+
+    const filtered = items.filter((e) => {
+      // search terms
+      if (searchTerm && !e.content.text?.toLowerCase().includes(searchTerm)) return false;
+
+      // attachment
+      if (!matchesAttachmentFilter(e, selectedAttachments)) return false;
+
+      // author
+      if (
+        selectedAuthors.size > 0 &&
+        !selectedAuthors.has(getAuthor(e).toLowerCase().replace(/\s+/g, '-'))
+      ) {
+        return false;
+      }
+
+      // types
+      if (selectedTypes.size > 0) {
+        const types = getTypeIds(e);
+
+        const isFormMatch =
+          selectedTypes.has(`form::${e.details?.submittedFormTemplateId ?? ''}`) ?? false;
+        const hasAny = types.some((t) => selectedTypes.has(t));
+
+        if (!isFormMatch && !hasAny) return false;
+      }
+
+      // date range
+      const ts = getTs(e);
+      if (from != null && ts < from) return false;
+      if (to != null && ts > to) return false;
+
+      return true;
+    });
+
+    // sort
+    const sortKey = queryState.sort?.by ?? logSort[0].id;
+    filtered.sort((a, b) => {
+      switch (sortKey) {
+        case 'author_asc':
+        case 'author_desc': {
+          const aa = getAuthor(a).toLowerCase();
+          const bb = getAuthor(b).toLowerCase();
+          return sortKey === 'author_asc' ? aa.localeCompare(bb) : bb.localeCompare(aa);
+        }
+        case 'date_asc':
+        case 'date_desc':
+        default: {
+          const ta = getTs(a);
+          const tb = getTs(b);
+          return sortKey === 'date_asc' ? ta - tb : tb - ta;
+        }
+      }
+    });
+
+    return filtered;
+  }, [logEntries, queryState.sort?.by, queryState.values]);
+
+  // Button handler
+  const handleOpenFilters = () => setFiltersOpen(true);
 
   return (
     <PageWrapper>
-      <PageTitle
-        title={incident?.type ? Format.incident.type(incident?.type) : ''}
-        subtitle={incident?.name ?? ''}
-        stage={incident?.stage}
-      >
-        <Box display="flex" flexDirection="row" justifyContent="space-between">
-          {isMobile && !adding && (
-            <Button variant="text" onClick={onSort} endIcon={sortIcon()} color="secondary">
-              Sort
-            </Button>
-          )}
-          {!adding && (
-            <Button
-              type="button"
-              variant="contained"
-              size={isMobile ? 'medium' : 'large'}
-              startIcon={<AddCircleIcon />}
-              onClick={onAddEntryClick}
-            >
-              Add log entry
-            </Button>
-          )}
-        </Box>
-      </PageTitle>
-      {adding && (
-        <AddEntry
-          incident={incident}
-          entries={logEntries ?? []}
-          onCreateEntry={onAddEntry}
-          onCancel={onCancel}
-        />
-      )}
-      <Box display="flex" flexDirection="column" width="100%">
-        {logEntries !== undefined && logEntries.length > 0 ? (
-          <>
-            <Box
-              display="flex"
-              flexDirection="row"
-              justifyContent="space-between"
-              flexWrap="wrap"
-              width="100%"
-              component="form"
-              mb="1.6rem"
-              gap={1}
-              displayPrint="none"
-            >
-              <Box display="flex" flexDirection="row" flexGrow={1} gap={2}>
-                <TextField
-                  size={isMobile ? 'small' : 'medium'}
-                  fullWidth={isMobile}
-                  id="search-bar"
-                  variant="outlined"
-                  label="Search"
-                  placeholder="Search..."
-                  onChange={(e) => onSearch(e.target.value)}
-                  slotProps={{
-                    input: {
-                      endAdornment: (
-                        <InputAdornment position="end">
-                          <SearchIcon color="primary" />
-                        </InputAdornment>
-                      )
-                    }
-                  }}
-                  sx={{ minWidth: '30%' }}
-                />
-                {!isMobile ? (
-                  <Filter
-                    isMobile={isMobile}
-                    appliedFilters={appliedFilters}
-                    onChange={onFilterChange}
-                    filters={[
-                      {
-                        id: 'author',
-                        label: 'Author',
-                        hintText: 'Everyone',
-                        type: 'multiselect',
-                        options: filterAuthors
-                      },
-                      {
-                        id: 'category',
-                        label: 'Category',
-                        type: 'multiselect',
-                        options: filterCategories
-                      }
-                    ]}
-                  />
-                ) : (
-                  <>
-                    <Button
-                      variant="outlined"
-                      color="secondary"
-                      endIcon={<FilterAltIcon color={anchorEl ? 'primary' : 'secondary'} />}
-                      onClick={handleOpenFilters}
-                    >
-                      Filter
-                    </Button>
+      <PageTitle title={incident?.name ?? ''}>
+        <Box sx={{ mt: -2, width: '100%' }}>
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 1,
+              width: '100%',
+              px: 0.5
+            }}
+          >
+            <StageMini stage={incident?.stage ?? 'Monitoring'} size={12} />
 
-                    <Popover
-                      open={openFilters}
-                      anchorEl={anchorEl}
-                      onClose={() => setAnchorEl(null)}
-                      anchorOrigin={{
-                        vertical: 'bottom',
-                        horizontal: 'left'
-                      }}
-                      transformOrigin={{
-                        vertical: -10,
-                        horizontal: 'left'
-                      }}
-                      slotProps={{
-                        paper: {
-                          sx: {
-                            width: '100%',
-                            padding: '1rem',
-                            borderRadius: 0
-                          }
-                        }
-                      }}
-                    >
-                      <Box display="flex" flexDirection="column" gap={1} width="100%">
-                        <Filter
-                          isMobile={isMobile}
-                          appliedFilters={appliedFilters}
-                          onChange={onFilterChange}
-                          filters={[
-                            {
-                              id: 'author',
-                              label: 'Author',
-                              hintText: 'Everyone',
-                              type: 'multiselect',
-                              options: filterAuthors
-                            },
-                            {
-                              id: 'category',
-                              label: 'Category',
-                              hintText: 'Any',
-                              type: 'multiselect',
-                              options: filterCategories
-                            }
-                          ]}
-                        />
-                      </Box>
-                    </Popover>
-                  </>
-                )}
-              </Box>
-              {!isMobile && (
-                <Box display="flex" width="auto" alignItems="center">
-                  <Button
-                    fullWidth
-                    variant="outlined"
-                    onClick={onSort}
-                    color="secondary"
-                    endIcon={sortIcon()}
-                  >
-                    <Typography fontWeight="bold" color="text.primary">
-                      MOST RECENT AT
-                      <Typography fontWeight="bold" component="span" color="primary">
-                        {sortAsc ? ' BOTTOM' : ' TOP'}
-                      </Typography>
-                    </Typography>
-                  </Button>
-                </Box>
-              )}
+            <Box sx={{ flex: 1, minWidth: 0 }}>
+              <Typography
+                component="section"
+                variant="body2"
+                color="grey"
+                sx={{
+                  overflowX: 'auto',
+                  whiteSpace: 'nowrap',
+                  pr: 2,
+                  maskImage: 'linear-gradient(to right, black 80%, transparent 100%)',
+                  WebkitMaskImage: 'linear-gradient(to right, black 80%, transparent 100%)',
+                  scrollbarWidth: 'none',
+                  msOverflowStyle: 'none',
+                  '&::-webkit-scrollbar': {
+                    display: 'none'
+                  }
+                }}
+                aria-label="Incident type"
+              >
+                {incident?.type ? Format.incident.type(incident.type).toUpperCase() : ''}
+              </Typography>
             </Box>
-            {(logEntries ?? []).filter(filterEntries).length > 0 ? (
-              <EntryList
-                entries={(logEntries ?? []).filter(filterEntries)}
-                sortAsc={sortAsc}
-                onContentClick={onContentClick}
-                onMentionClick={onMentionClick}
-              />
-            ) : (
-              <Box p={2} bgcolor="background.default">
-                <Typography variant="h6">No results found.</Typography>
-                <Typography mt={1}>Try adjusting your filters to see more log entries.</Typography>
-              </Box>
-            )}
-          </>
-        ) : (
+
+            <IconButton aria-label="More options" onClick={optionsMenu.handleOpen}>
+              <MoreVertIcon />
+            </IconButton>
+            <Menu
+              anchorEl={optionsMenu.anchorEl}
+              open={optionsMenu.open}
+              onClose={optionsMenu.handleClose}
+              anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'right'
+              }}
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'right'
+              }}
+            >
+              <MenuItem onClick={handleOverview}>Incident Overview</MenuItem>
+            </Menu>
+          </Box>
+        </Box>
+
+        <Box
+          display="flex"
+          flexDirection="row"
+          alignItems="center"
+          gap={2}
+          flexWrap="wrap"
+          width="100%"
+          displayPrint="none"
+        >
+          <Button
+            type="button"
+            variant="contained"
+            size={isMobile ? 'medium' : 'large'}
+            startIcon={<AddCircleIcon />}
+            onClick={addMenu.handleOpen}
+            sx={{ flex: 1 }}
+          >
+            Add new
+          </Button>
+          <Button type="button" variant="contained" onClick={handleOpenFilters} sx={{ flex: 1 }}>
+          Sort & Filter{activeFilterCount > 0 ? ` (${activeFilterCount})` : ''}
+          </Button>
+        </Box>
+
+        <Menu
+          anchorEl={addMenu.anchorEl}
+          open={addMenu.open}
+          onClose={addMenu.handleClose}
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'left'
+          }}
+          transformOrigin={{
+            vertical: 'top',
+            horizontal: 'left'
+          }}
+          slotProps={{
+            paper: {
+              sx: {
+                minWidth: 200
+              }
+            }
+          }}
+        >
+          <MenuItem
+            onClick={() => {
+              addMenu.handleClose();
+              navigate(`/logbook/${incidentId}/createForm`);
+            }}
+          >
+            <Typography sx={{ fontWeight: 'bold' }}>FORM</Typography>
+          </MenuItem>
+          <Divider />
+          <MenuItem
+            onClick={() => {
+              addMenu.handleClose();
+              navigate(`/tasks/create/${incidentId}`);
+            }}
+          >
+            <Typography sx={{ fontWeight: 'bold' }}>TASK</Typography>
+          </MenuItem>
+          <Divider />
+          <MenuItem
+            onClick={() => {
+              addMenu.handleClose();
+              navigate(`/logbook/${incidentId}/createUpdate`);
+            }}
+          >
+            <Typography sx={{ fontWeight: 'bold' }}>UPDATE</Typography>
+          </MenuItem>
+        </Menu>
+      </PageTitle>
+      <Box display="flex" flexDirection="column" width="100%">
+        {(!logEntries || logEntries.length === 0) && (
           <Box p={2} bgcolor="background.default">
             <Typography variant="h6">No logs found.</Typography>
             <Typography mt={1}>There are currently no log entries.</Typography>
           </Box>
         )}
+
+        {logEntries && logEntries.length > 0 && visibleEntries.length === 0 && (
+          <Box p={2} bgcolor="background.default">
+            <Typography variant="h6">No results found.</Typography>
+            <Typography mt={1}>Try adjusting your filters.</Typography>
+          </Box>
+        )}
+
+        {logEntries && logEntries.length > 0 && visibleEntries.length > 0 && (
+          <EntryList
+            entries={visibleEntries}
+            onContentClick={onContentClick}
+            onMentionClick={onMentionClick}
+          />
+        )}
       </Box>
+
+      <SortAndFilter
+        open={filtersOpen}
+        onClose={() => setFiltersOpen(false)}
+        sort={logSort}
+        tree={logFilters}
+        initial={queryState}
+        onApply={(next) => {
+          setQueryState(next);
+          setFiltersOpen(false);
+        }}
+      />
     </PageWrapper>
   );
 };

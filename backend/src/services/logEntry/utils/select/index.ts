@@ -10,7 +10,6 @@ import { logEntries } from './logEntries';
 import { mentionedByLogEntryInLogContent } from './mentionedByLogEntry';
 import { mentionsLogEntryInLogContent } from './mentionsLogEntry';
 import { mentionsUserInLogContent } from './mentionsUser';
-import { tasks } from './tasks';
 
 export function selectAll(incidentId: string) {
   return [
@@ -20,7 +19,6 @@ export function selectAll(incidentId: string) {
     mentionsLogEntryInLogContent(incidentId),
     mentionsUserInLogContent(incidentId),
     attachments(incidentId),
-    tasks(incidentId),
     details(incidentId)
   ];
 }

@@ -1,0 +1,111 @@
+// SPDX-License-Identifier: Apache-2.0
+// © Crown Copyright 2025. This work has been developed by the National Digital Twin Programme
+// and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
+
+import { Box, Typography, Button } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+import { Task } from 'common/Task';
+import WidgetBase from './WidgetBase';
+import { useTasks } from '../../hooks/useTasks';
+import { useAuth } from '../../hooks';
+
+const TasksWidget = () => {
+  const { data: tasks, isLoading } = useTasks();
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
+  const currentUsername = user?.current?.username;
+
+  const toDoCount = tasks?.filter((t: Task) => t.status === 'ToDo' && (currentUsername && t.assignee.username === currentUsername)).length ?? 0;
+  const inProgressCount = tasks?.filter((t: Task) => t.status === 'InProgress' && (currentUsername && t.assignee.username === currentUsername)).length ?? 0;
+  const overDueCount = 0;
+
+  const onNavigateToDo = () => navigate('/tasks?mine=true&status=ToDo');
+  const onNavigateInProgress = () => navigate('/tasks?mine=true&status=InProgress');
+  const onNavigateTasksHeader = () => navigate('/tasks?mine=true');
+
+  if (isLoading) {
+    return (
+      <WidgetBase title="Your tasks">
+        <Typography>Loading tasks…</Typography>
+      </WidgetBase>
+    );
+  }
+
+  const renderCount = (count: number, onClick: () => void) => {
+    const isActive = count > 0;
+  
+    return (
+      <Box flex={1} textAlign="center">
+        {isActive ? (
+          <Button
+            onClick={onClick}
+            color="primary"
+            variant="text"
+            sx={{
+              fontSize: '1.5rem',
+              fontWeight: 500,
+              padding: 0,
+              minWidth: 0,
+              minHeight: 0,
+              lineHeight: 1.2,
+            }}
+          >
+            {count}
+          </Button>
+        ) : (
+          <Typography variant="h5">{count}</Typography>
+        )}
+      </Box>
+    );
+  };
+  
+  const renderLabel = (count: number, label: string, onClick: () => void) => {
+    const isActive = count > 0;
+  
+    return (
+      <Box flex={1} textAlign="center">
+        {isActive ? (
+          <Button
+            onClick={onClick}
+            color="primary"
+            variant="text"
+            sx={{ textTransform: 'none', padding: 0, minWidth: 0 }}
+            aria-label={`View ${label} tasks`}
+          >
+            <Typography variant="body2" color="primary">{label}</Typography>
+          </Button>
+        ) : (
+          <Typography variant="body2">{label}</Typography>
+        )}
+      </Box>
+    );
+  };
+
+  return (
+    <WidgetBase title="Your tasks" onAction={onNavigateTasksHeader} actionAriaLabel="Open Tasks" showArrow>
+      <Box display="flex" flexDirection="column" alignItems="stretch">
+        <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
+          {renderCount(toDoCount, onNavigateToDo)}
+          {renderCount(inProgressCount, onNavigateInProgress)}
+          <Box flex={1} textAlign="center" sx={{ color: 'lightgrey' }}>
+            {renderCount(overDueCount, () => { return false; })}
+          </Box>
+        </Box>
+
+        <Box display="flex" justifyContent="space-between" alignItems="flex-start">
+          {renderLabel(toDoCount, 'To do', onNavigateToDo)}
+          {renderLabel(inProgressCount, 'In progress', onNavigateInProgress)}
+          <Box flex={1} textAlign="center">
+            <Box>
+              <Typography variant="body2" color="lightgrey">Overdue</Typography>
+              <Typography variant="body2" color="lightgrey">(coming soon)</Typography>
+            </Box>
+          </Box>
+        </Box>
+      </Box>
+    </WidgetBase>
+  );
+};
+
+export default TasksWidget;

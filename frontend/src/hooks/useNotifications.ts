@@ -2,14 +2,48 @@
 // © Crown Copyright 2025. This work has been developed by the National Digital Twin Programme
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
-import { QueryClient, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { type Notification } from 'common/Notification';
 import { useCallback } from 'react';
 
-import { FetchError, get, put } from '../api';
+import { FetchError, get, post, put } from '../api';
+import { useNotificationContext } from './useNotificationContext';
+
+type PendingPredicate = (list: Notification[]) => boolean;
+
+const NOTIFICATIONS_KEY = ['notifications'] as const;
+
+const predicateHasBeenRead =
+  (id: string): PendingPredicate =>
+    (list) =>
+      list.some((n) => n.id === id && n.read === true);
+
+const predicateIsSeenById =
+  (id: string): PendingPredicate =>
+    (list) =>
+      list.find((n) => n.id === id)?.seen === true;
+
+const schedulePending = (
+  addPendingChange: (key: string, predicate: PendingPredicate) => void,
+  key: string,
+  predicate: PendingPredicate,
+  delay = 1000
+) => setTimeout(() => addPendingChange(key, predicate), delay);
+
+const optimisticRead = (prev: Notification[] | undefined, id: string) =>
+  prev ? prev.map((n) => (n.id === id ? { ...n, read: true, seen: true } : n)) : prev;
+
+const optimisticMarkAllSeen = (prev: Notification[] | undefined) =>
+  prev ? prev.map((n) => ({ ...n, seen: true })) : prev;
+
+const firstUnseenId = (list: Notification[] | undefined) =>
+  list?.find((n) => !n.seen)?.id;
+
 
 export function useNotifications() {
   const queryClient = useQueryClient();
+  const { isPolling } = useNotificationContext();
+
   const invalidate = useCallback(
     async () =>
       queryClient.invalidateQueries({
@@ -17,98 +51,80 @@ export function useNotifications() {
       }),
     [queryClient]
   );
+  
   const { data, isLoading, isError, error } = useQuery<Notification[], FetchError>({
     queryKey: ['notifications'],
-    queryFn: () => get('/notifications')
+    queryFn: () => get('/notifications'),
+    staleTime: isPolling ? Infinity : 30_000,
+    refetchOnMount: !isPolling,
+    refetchOnWindowFocus: !isPolling,
   });
 
   return { notifications: data, isLoading, isError, error, invalidate };
 }
 
-export async function pollForTotalNotifications(
-  totalCurrentNotifications: number,
-  attemptNumber: number,
-  invalidateNotifications: () => void,
-  resetNewNotifications: () => void
-) {
-  const notifications = await get<Notification[]>('/notifications');
-
-  if (attemptNumber <= 10) {
-    if (notifications.length > totalCurrentNotifications) {
-      invalidateNotifications();
-      resetNewNotifications();
-    } else {
-      setTimeout(
-        () =>
-          pollForTotalNotifications(
-            totalCurrentNotifications,
-            attemptNumber + 1,
-            invalidateNotifications,
-            resetNewNotifications
-          ),
-        10000
-      );
-    }
-  } else {
-    invalidateNotifications();
-    resetNewNotifications();
-  }
-}
-
-export async function pollForReadNotifications(
-  notificationId: string,
-  attemptNumber: number,
-  queryClient: QueryClient
-) {
-  const notifications = await get<Notification[]>('/notifications');
-
-  if (attemptNumber <= 10) {
-    if (
-      notifications.find((notification) => notification.id === notificationId && notification.read)
-    ) {
-      queryClient.invalidateQueries({
-        queryKey: ['notifications']
-      });
-    } else {
-      setTimeout(
-        () => pollForReadNotifications(notificationId, attemptNumber + 1, queryClient),
-        10000
-      );
-    }
-  } else {
-    queryClient.invalidateQueries({
-      queryKey: ['notifications']
-    });
-  }
-}
 
 export function useReadNotification() {
   const queryClient = useQueryClient();
-  const readNotification = useMutation<{ id: string }, Error, string>({
-    mutationFn: (id: string) => put(`/notifications/${id}`, {}),
-    onSuccess: async (data) =>
-      setTimeout(() => pollForReadNotifications(data.id, 1, queryClient), 1000),
-    onMutate: async (id: string) => {
-      await queryClient.cancelQueries({ queryKey: ['notifications'] });
-      const notifications = queryClient.getQueryData<Notification[]>(['notifications']);
+  const { addPendingChange } = useNotificationContext();
 
-      if (notifications) {
-        const otherNotifications: Notification[] = notifications!.filter(
-          (notification) => notification.id !== id
-        );
-        const notificationToBeUpdated: Notification | undefined = notifications!.find(
-          (notification) => notification.id === id
-        );
-
-        if (notificationToBeUpdated) {
-          const updatedNotifications: Notification[] = [
-            { ...notificationToBeUpdated, read: true },
-            ...otherNotifications
-          ];
-          queryClient.setQueryData<Notification[]>(['notifications'], updatedNotifications);
-        }
+  return useMutation<
+    { id: string },
+    Error,
+    string,
+    { previousNotifications?: Notification[] }
+  >({
+    mutationFn: (id) => put(`/notifications/${id}`, {}),
+    onSuccess: ({ id }) => {
+      schedulePending(addPendingChange, `read-${id}`, predicateHasBeenRead(id));
+    },
+    onError: (_v, _e, context) => {
+      if (context?.previousNotifications) {
+        queryClient.setQueryData(NOTIFICATIONS_KEY, context.previousNotifications);
       }
+    },
+    onMutate: async (id) => {
+      await queryClient.cancelQueries({ queryKey: NOTIFICATIONS_KEY });
+      const previous = queryClient.getQueryData<Notification[]>(NOTIFICATIONS_KEY);
+      const updated = optimisticRead(previous, id);
+      if (updated) queryClient.setQueryData(NOTIFICATIONS_KEY, updated);
+      return { previousNotifications: previous };
     }
   });
-  return readNotification;
+}
+
+export function useMarkAllAsSeen() {
+  const queryClient = useQueryClient();
+  const { addPendingChange } = useNotificationContext();
+
+  return useMutation<
+    { markedAsSeen: number },
+    Error,
+    void,
+    { previousNotifications?: Notification[]; firstUnseenId?: string }
+  >({
+    mutationFn: () => post('/notifications/actions/markSeen', {}),
+    onSuccess: (data, _vars, context) => {
+      if (context?.firstUnseenId && data.markedAsSeen > 0) {
+        schedulePending(
+          addPendingChange,
+          `seen-${context.firstUnseenId}`,
+          predicateIsSeenById(context.firstUnseenId)
+        );
+      }
+    },
+    onError: (_v, _e, context) => {
+      if (context?.previousNotifications) {
+        queryClient.setQueryData(NOTIFICATIONS_KEY, context.previousNotifications);
+      }
+    },
+    onMutate: async () => {
+      await queryClient.cancelQueries({ queryKey: NOTIFICATIONS_KEY });
+      const previous = queryClient.getQueryData<Notification[]>(NOTIFICATIONS_KEY);
+      const updated = optimisticMarkAllSeen(previous);
+      const firstId = firstUnseenId(previous);
+      if (updated) queryClient.setQueryData(NOTIFICATIONS_KEY, updated);
+      return { previousNotifications: previous, firstUnseenId: firstId };
+    }
+  });
 }

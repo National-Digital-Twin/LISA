@@ -18,7 +18,7 @@ wss.on('connection', async (ws: WebSocket, request: IncomingMessage) => {
 
   try {
     const username = request.headers['sec-websocket-protocol'].split(',')[1].trim();
-    user = new User(username, '', '');
+    user = new User(username, '');
   } catch (error) {
     ws.close();
     console.log(error);
@@ -62,11 +62,7 @@ wss.on('close', () => {
   broker.clear();
 });
 
-export async function handleUpgrade(
-  request: IncomingMessage,
-  socket: Duplex,
-  head: Buffer,
-) {
+export async function handleUpgrade(request: IncomingMessage, socket: Duplex, head: Buffer) {
   wss.handleUpgrade(request, socket, head, (ws) => {
     wss.emit('connection', ws, request);
   });

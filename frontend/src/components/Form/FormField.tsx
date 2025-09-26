@@ -19,9 +19,11 @@ import LabelField from '../LabelField';
 import LocationField from '../LocationField';
 import SelectField from '../SelectField';
 import FormHelpButton from './FormHelpButton';
+import { getFieldValue } from '../../utils/Form/getFieldValue';
 
 type Props = {
   field: Field;
+  entry?: Partial<LogEntry>;
   entries?: Array<Partial<LogEntry>>;
   error?: ValidationError;
   onChange: OnFieldChange;
@@ -38,6 +40,7 @@ const ARE_SELECTS: Array<FieldType> = ['Select', 'SelectMulti', 'SelectLogEntry'
 
 const FormField = ({
   field,
+  entry = undefined,
   entries = undefined,
   error = undefined,
   onChange,
@@ -50,7 +53,7 @@ const FormField = ({
   };
 
   const onTextChange = (evt: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const {value} = evt.target;
+    const { value } = evt.target;
     onChange(field.id, value);
   };
   const onSelectionChange = (id: string, value: FieldValueType) => {
@@ -100,7 +103,7 @@ const FormField = ({
           fullWidth
           variant="filled"
           id={field.id}
-          value={field.value}
+          value={getFieldValue(field, entry ?? {}) ?? field.value}
           onChange={onTextChange}
           error={Boolean(error)}
           helperText={error?.error}
@@ -113,7 +116,7 @@ const FormField = ({
           variant="filled"
           multiline
           id={field.id}
-          value={field.value}
+          value={getFieldValue(field, entry ?? {}) ?? field.value}
           onChange={onTextChange}
           error={Boolean(error)}
           helperText={error?.error}
@@ -125,7 +128,7 @@ const FormField = ({
           id={field.id}
           options={options ?? []}
           multi={field.type === 'SelectMulti'}
-          value={field.value}
+          value={getFieldValue(field, entry ?? {}) ?? field.value}
           placeholder="Select"
           onChange={onSelectionChange}
           error={error}

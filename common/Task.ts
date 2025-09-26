@@ -2,25 +2,44 @@
 // © Crown Copyright 2025. This work has been developed by the National Digital Twin Programme
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
-/* eslint-disable no-redeclare */
-import { Static, Record, String, Optional, Literal, Union } from 'runtypes';
+import { Static, Record, String, Optional, Literal, Union, Boolean, Array, Null } from 'runtypes';
 import { User } from './User';
+import { Location } from './Location';
+import { Attachment } from './Attachment';
+import { EntityContent } from './EntityContent';
 
-export const TaskStatus = Union(
-  Literal('ToDo'),
-  Literal('InProgress'),
-  Literal('Done')
-);
+export const TaskStatus = Union(Literal('ToDo'), Literal('InProgress'), Literal('Done'));
 
 export type TaskStatus = Static<typeof TaskStatus>;
 
-export const Task = Record({
-  include: Optional(String),
+export const CreateTask = Record({
   id: Optional(String),
-  name: Optional(String),
+  name: String,
   description: Optional(String),
-  assignee: Optional(User),
-  status: Optional(TaskStatus)
+  content: Optional(EntityContent),
+  incidentId: String,
+  assignee: User,
+  status: Optional(TaskStatus),
+  sequence: String,
+  location: Optional(Location),
+  attachments: Optional(Array(Attachment))
 });
 
+export const Task = Record({
+  id: String,
+  name: String,
+  description: Optional(String),
+  content: Optional(EntityContent),
+  incidentId: String,
+  author: User,
+  assignee: User,
+  status: TaskStatus,
+  sequence: String,
+  createdAt: String,
+  location: Union(Location, Null),
+  attachments: Array(Attachment),
+  offline: Optional(Boolean)
+});
+
+export type CreateTask = Static<typeof CreateTask>;
 export type Task = Static<typeof Task>;

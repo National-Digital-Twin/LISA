@@ -5,7 +5,7 @@
 import { Box } from '@mui/material';
 // Local imports
 import { type LogEntry } from 'common/LogEntry';
-// eslint-disable-next-line import/no-extraneous-dependencies
+ 
 import { LogEntryTypes } from 'common/LogEntryTypes';
 import bem from '../../../bem';
 import { FieldItem } from './FieldItem';

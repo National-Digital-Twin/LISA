@@ -14,7 +14,7 @@ import { IncidentAttachment } from 'common/IncidentAttachment';
 import { IncidentType, addIncidentSuffix, removeIncidentSuffix } from 'common/IncidentType';
 import { IncidentTypes } from 'common/IncidentTypes';
 import { LogEntryType } from 'common/LogEntryType';
-import { LogEntryAttachmentType } from 'common/LogEntryAttachment';
+import { AttachmentType } from 'common/Attachment';
 import { addStageSuffix, IncidentStage, removeStageSuffix } from 'common/IncidentStage';
 
 import * as ia from '../ia';
@@ -27,7 +27,6 @@ type Amendments = Record<string, string>;
 export async function create(req: Request, res: Response) {
   const incident = Incident.check(req.body);
 
-  incident.id = randomUUID();
   incident.reportedBy = {
     username: res.locals.user.username,
     displayName: res.locals.user.displayName
@@ -87,7 +86,6 @@ export async function changeStage(req: Request, res: Response) {
   const { id: incidentId, stage: stageStr, sequence: seqNumber } = req.body;
 
   const stage = IncidentStage.check(stageStr);
-
   const incidentIdNode = ns.data(incidentId);
 
   const notExistsFilter = new TriplePattern('?x', ns.ies.isEndOf, '?lastStateNodeId');
@@ -110,7 +108,7 @@ export async function changeStage(req: Request, res: Response) {
 
   if (results.length !== 1) {
     throw new ApplicationError(
-      `Query for latest stage of incident ${incidentId} returned multiple rows: ${results}`
+      `Query for latest stage of incident ${incidentId} returned ${results.length} rows instead of 1. Results: ${JSON.stringify(results, null, 2)}`
     );
   }
 
@@ -130,6 +128,32 @@ export async function changeStage(req: Request, res: Response) {
   const now = new Date();
   const incidentStateNode = ns.data(incidentState);
   const startDateNode = literalDate(now);
+
+  // no other open state exists for this incident (besides the one we're closing)
+  const preventConcurrentOpenStates = `
+    FILTER NOT EXISTS {
+      ${new TriplePattern('?otherState', ns.ies.isStateOf, incidentIdNode)}
+      FILTER(?otherState != <${ns.data(lastStateNodeId).value}>)
+      FILTER NOT EXISTS {${new TriplePattern('?x', ns.ies.isEndOf, '?otherState')}}
+    }
+  `;
+
+  // idempotency per incident + sequence
+  const preventDuplicateSequence =
+    seqNumber !== undefined && seqNumber !== null && `${seqNumber}` !== ''
+      ? `
+    FILTER NOT EXISTS {
+      ${new TriplePattern(incidentIdNode, ns.lisa.hasLogEntry, '?e')}
+      ${new TriplePattern('?e', ns.lisa.hasSequence, literalString(seqNumber))}
+    }
+  `
+      : '';
+
+  const whereClauses = [
+    `FILTER NOT EXISTS {${new TriplePattern('?x', ns.ies.isEndOf, ns.data(lastStateNodeId))}}`,
+    preventConcurrentOpenStates
+  ];
+  if (preventDuplicateSequence) whereClauses.push(preventDuplicateSequence);
 
   await ia.insert({
     triples: [
@@ -155,38 +179,57 @@ export async function changeStage(req: Request, res: Response) {
       [authorNode, ns.ies.hasName, literalString(res.locals.user.displayName)],
       [authorNode, ns.ies.isParticipantIn, entryIdNode]
     ],
-    where: [
-      `FILTER NOT EXISTS {${new TriplePattern('?x', ns.ies.isEndOf, ns.data(lastStateNodeId))}}`
-    ]
+    where: whereClauses
   });
 
-  res.json(results);
+  res.json({ id: incidentId, ...results[0] });
 }
 
 function getReferrer(row: ia.ResultRow, amendments?: Amendments): Referrer | undefined {
   if (!row.referrerName?.value) {
     return undefined;
   }
-  const referrer: Partial<Referrer> = {
+
+  const referrer = {
     name: amendments?.['referrer.name'] ?? row.referrerName?.value,
     organisation: amendments?.['referrer.organisation'] ?? row.referrerOrg?.value,
     telephone: amendments?.['referrer.telephone'] ?? row.referrerTel?.value,
     email: amendments?.['referrer.email'] ?? row.referrerEmail?.value
   };
-  const supportRequested =
-    amendments?.['referrer.supportRequested'] ?? row.referrerSupportRequested?.value;
+
+  const supportRequested = amendments?.['referrer.supportRequested'] ?? row.referrerSupportRequested?.value;
   if (supportRequested === 'Yes') {
-    referrer.supportRequested = 'Yes';
-    referrer.supportDescription =
-      amendments?.['referrer.supportDescription'] ?? row.referrerSupportDesc?.value;
+    return {
+      ...referrer,
+      supportRequested: 'Yes',
+      supportDescription: amendments?.['referrer.supportDescription'] ?? row.referrerSupportDesc?.value
+    };
   } else {
-    referrer.supportRequested = 'No';
+    return {
+      ...referrer,
+      supportRequested: 'No'
+    };
   }
-  return referrer as Referrer;
 }
 
 function getName(row: ia.ResultRow, amendments?: Amendments): string {
   return amendments?.name ?? row.name?.value;
+}
+
+function mapIncident(row: ia.ResultRow, amendmentsByIncident: Map<string, Amendments>): Incident {
+  return {
+    id: nodeValue(row.id.value),
+    type: removeIncidentSuffix(nodeValue(row.type.value)),
+    stage: removeStageSuffix(nodeValue(row.stage.value)),
+    startedAt: row.startedAt.value,
+    createdAt: row.createdAt?.value,
+    name: getName(row, amendmentsByIncident[nodeValue(row.id.value)]),
+    referrer: getReferrer(row, amendmentsByIncident[nodeValue(row.id.value)]),
+    reportedBy: {
+      username: row.reportedByName?.value ?? undefined,
+      displayName: row.reportedByName?.value ?? undefined
+    }
+  } satisfies Incident;
 }
 
 export async function get(_: Request, res: Response) {
@@ -219,7 +262,7 @@ export async function get(_: Request, res: Response) {
         ['?id', ns.rdf.type, '?type'],
         ['?isStateOf', ns.ies.isStateOf, '?id'],
         ['?isStateOf', ns.rdf.type, '?stage'],
-        ['?isStartOf', ns.ies.isStartOf, '?id'],
+        ['?isStartOf', ns.ies.isStartOf, '?isStateOf'],
         ['?isStartOf', ns.ies.inPeriod, '?startedAt'],
         sparql.optional([
           ['?id', ns.ies.hasName, '?name'],
@@ -252,24 +295,76 @@ export async function get(_: Request, res: Response) {
     return { ...map, [incidentId]: amends };
   }, new Map<string, Amendments>());
 
-  const incidents = results.map(
-    (row) =>
-      ({
-        id: nodeValue(row.id.value),
-        type: removeIncidentSuffix(nodeValue(row.type.value)),
-        stage: removeStageSuffix(nodeValue(row.stage.value)),
-        startedAt: row.startedAt.value,
-        createdAt: row.createdAt?.value,
-        name: getName(row, amendmentsByIncident[nodeValue(row.id.value)]),
-        referrer: getReferrer(row, amendmentsByIncident[nodeValue(row.id.value)]),
-        reportedBy: {
-          username: row.reportedByName?.value ?? undefined,
-          displayName: row.reportedByName?.value ?? undefined
-        }
-      }) satisfies Incident
-  );
+  const incidents = results.map((row) => mapIncident(row, amendmentsByIncident));
 
   res.json(incidents);
+}
+
+export async function getById(req: Request, res: Response) {
+  const { incidentId } = req.params;
+
+  if (!incidentId) {
+    return res.sendStatus(400);
+  }
+
+  const incidentIdNode = ns.data(incidentId);
+
+  const requests: Promise<ia.ResultRow[]>[] = [
+    ia.select({
+      clause: [
+        [incidentIdNode, ns.lisa.hasLogEntry, '?entryId'],
+        ['?entryId', ns.lisa.createdAt, '?createdAt'],
+        ['?entryId', ns.rdf.type, '?type'],
+        ['?entryId', ns.lisa.hasField, '?fieldId'],
+        ['?fieldId', ns.ies.hasName, '?fieldName'],
+        ['?fieldId', ns.ies.hasValue, '?fieldValue'],
+        `VALUES (?type) { (<${ns.lisa('SetIncidentInformation').value}>) }`
+      ],
+      orderBy: [['?createdAt', 'ASC']]
+    }),
+    ia.select({
+      clause: [
+        [incidentIdNode, ns.rdf.type, '?type'],
+        ['?isStateOf', ns.ies.isStateOf, incidentIdNode],
+        ['?isStateOf', ns.rdf.type, '?stage'],
+        ['?isStartOf', ns.ies.isStartOf, '?isStateOf'],
+        ['?isStartOf', ns.ies.inPeriod, '?startedAt'],
+        sparql.optional([
+          [incidentIdNode, ns.ies.hasName, '?name'],
+          ['?reportedBy', ns.ies.isParticipantIn, incidentIdNode],
+          ['?reportedBy', ns.ies.hasName, '?reportedByName']
+        ]),
+        sparql.optional([
+          [incidentIdNode, ns.lisa.hasReferrer, '?referrer'],
+          ['?referrer', ns.ies.hasName, '?referrerName'],
+          ['?referrer', ns.lisa.hasOrg, '?referrerOrg'],
+          ['?referrer', ns.lisa.hasTel, '?referrerTel'],
+          ['?referrer', ns.lisa.hasEmail, '?referrerEmail'],
+          ['?referrer', ns.lisa.hasSupportRequest, '?referrerSupportRequested'],
+          sparql.optional([['?referrer', ns.lisa.hasSupportRequestDesc, '?referrerSupportDesc']])
+        ]),
+        sparql.optional([[incidentIdNode, ns.lisa.createdAt, '?createdAt']]),
+        `FILTER NOT EXISTS {${new TriplePattern('?x', ns.ies.isEndOf, '?isStateOf')}}`
+      ],
+      orderBy: [['?startedAt', 'DESC']]
+    })
+  ];
+
+  const [amendments, results] = await Promise.all(requests);
+
+  if (results.length === 0) {
+    return res.sendStatus(404);
+  }
+
+  const amendmentsByIncident = amendments.reduce((map, row) => {
+    const amends = map[incidentId] ?? {};
+    amends[row.fieldName.value] = row.fieldValue.value;
+    return { ...map, [incidentId]: amends };
+  }, new Map<string, Amendments>());
+
+  return res.json(
+    mapIncident({ id: { type: 'string', value: incidentId }, ...results[0] }, amendmentsByIncident)
+  );
 }
 
 export async function getAttachments(req: Request, res: Response) {
@@ -301,7 +396,7 @@ export async function getAttachments(req: Request, res: Response) {
           },
           uploadedAt: row.createdAt.value,
           name: row.attachmentName.value,
-          type: row.attachmentType.value as LogEntryAttachmentType,
+          type: row.attachmentType.value as AttachmentType,
           key: row.attachmentKey.value,
           mimeType: row.attachmentMimeType.value,
           size: Number(row.attachmentSize.value),
@@ -312,4 +407,3 @@ export async function getAttachments(req: Request, res: Response) {
 
   res.json(attachments);
 }
-

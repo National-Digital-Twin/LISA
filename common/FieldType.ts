@@ -19,5 +19,4 @@ export const FieldType = Union(
   Literal('Label')
 );
 
-// eslint-disable-next-line no-redeclare
 export type FieldType = Static<typeof FieldType>;

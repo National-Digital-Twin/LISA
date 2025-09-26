@@ -3,11 +3,29 @@
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
 // Global imports
-import { format } from 'date-fns';
+import { format, formatDistanceToNow, isToday, parseISO } from 'date-fns';
 
-export function time(dateStr: string): string {
+export function time(dateStr: string | undefined): string {
   if (dateStr) {
     return format(dateStr, 'HH:mm');
   }
   return '';
+}
+
+export function relativeTime(dateStr: string | undefined): string {
+  if (!dateStr) {
+    return '';
+  }
+
+  try {
+    const date = parseISO(dateStr);
+
+    if (isToday(date)) {
+      return format(date, 'HH:mm');
+    }
+
+    return formatDistanceToNow(date, { addSuffix: true });
+  } catch {
+    return '';
+  }
 }

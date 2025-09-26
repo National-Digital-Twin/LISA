@@ -3,9 +3,9 @@
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
 // Global imports
-import { MouseEvent, ReactElement, useEffect, useMemo, useRef, useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { Box, Button, Divider, Grid2 as Grid, Paper, Popover, Typography } from '@mui/material';
+import { MouseEvent, ReactElement, useEffect, useMemo, useRef } from 'react';
+import { useLocation } from 'react-router-dom';
+import { Box, Divider, Grid2 as Grid, Paper, Typography } from '@mui/material';
 import PersonIcon from '@mui/icons-material/Person';
 
 // Local imports
@@ -14,7 +14,6 @@ import { type Mentionable } from 'common/Mentionable';
 import bem from '../../utils/bem';
 import Attachments from './Attachments';
 import Details from './Details';
-import Task from './Task';
 import EntryLocation from './EntryLocation';
 import Mentions from './Mentions';
 import Meta from './Meta';
@@ -38,12 +37,9 @@ const EntryItem = ({
   metaItems = undefined
 }: Props) => {
   const { isMobile, isBelowMd } = useResponsive();
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const openUser = Boolean(anchorEl);
   const { hash } = useLocation();
   const divRef = useRef<HTMLDivElement>(null);
   const { id, offline } = entry;
-  const prefix = entry.offline ? 'OFF-' : '#';
   const modifiers = useMemo(() => {
     const arr = [offline ? 'offline' : ''];
     if (hash === `#${id}`) {
@@ -68,33 +64,12 @@ const EntryItem = ({
       {isMobile && (
         <>
           <Box display="flex" alignItems="center" gap={1}>
-            <Button
-              variant="text"
-              sx={{ color: 'primary.main', fontSize: '0.875rem', textTransform:'none', minWidth: 'unset', '& .MuiButton-startIcon': {
-                marginRight: 0.5,
-                svg: {
-                  fontSize: '1rem',
-                  color: 'primary.main',
-                }
-              }  }}
-              onClick={(event) => setAnchorEl(event.currentTarget)}
-              startIcon={<PersonIcon />}
-            >
-              {Format.user(entry.author)}
-            </Button>
-            <Popover
-              open={openUser}
-              anchorEl={anchorEl}
-              onClose={() => setAnchorEl(null)}
-              anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
-              slotProps={{
-                paper: {
-                  sx: { padding: '1rem' }
-                }
-              }}
-            >
-              <Typography fontSize="1.15rem">{Format.user(entry.author)}</Typography>
-            </Popover>
+            <Box display="inline-flex" alignItems="center" gap={0.5} >
+              <PersonIcon sx={{ fontSize: '1rem', color: 'text.primary' }}  color="action"/>
+              <Typography variant="body2" sx={{ color: 'text.primary', fontSize: '0.875rem' }}>
+                {Format.user(entry.author)}
+              </Typography>
+            </Box>
             <Grid
               component="div"
               sx={{ display: 'flex', alignItems: 'center', marginLeft:'auto', pr:1.5 }}
@@ -102,21 +77,14 @@ const EntryItem = ({
               title={entry.offline ? 'Offline entry' : ''}
             >
               <Typography
-                component={Link}
-                to={`/logbook/${entry.incidentId}#${entry.id}`}
                 variant="body2"
                 sx={{
-                  color: 'primary.main',
+                  color: 'text.primary',
                   textDecoration: 'none',
-                  '&:visited': {
-                    color: 'primary.main',
-                  },
-                  '&:hover': {
-                    textDecoration: 'underline',
-                  }
+                  fontStyle: entry.offline ? 'italic' : 'normal',
                 }}
               >
-                {prefix}{entry.sequence}
+                {entry.offline ? 'Submitting' : `#${entry.sequence}`}
               </Typography>
             </Grid>
           </Box>
@@ -126,7 +94,6 @@ const EntryItem = ({
 
       <Box display="flex" flexDirection="column" gap={2} padding={2}>
         <Details entry={entry} onContentClick={onContentClick} />
-        <Task entry={entry} />
         <EntryLocation entry={entry} />
         {/* <Actions entry={entry} onAction={onAction} /> */}
         <Mentions entry={entry} entries={entries} onMentionClick={onMentionClick} />

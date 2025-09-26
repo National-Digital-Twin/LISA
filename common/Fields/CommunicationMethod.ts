@@ -18,7 +18,9 @@ export const CommunicationMethod: Field = {
   id: 'CommunicationMethod',
   label: 'Communicated by',
   type: 'Select',
-  options: CommunicationMethods
+  options: CommunicationMethods,
+  title: 'communicated by',
+  dependentFieldId: 'ContactDetails'
 };
 
 export function getCommunicationMethod(label?: string): Field {

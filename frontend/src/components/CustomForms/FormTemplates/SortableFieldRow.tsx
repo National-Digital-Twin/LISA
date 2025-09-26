@@ -152,7 +152,6 @@ const SortableFieldRow: React.FC<SortableFieldRowProps> = ({
           </Grid>
         )}
         <Grid>
-          {/* eslint-disable-next-line react/jsx-props-no-spreading */}
           <IconButton {...attributes} {...listeners}>
             <DragIndicatorIcon />
           </IconButton>

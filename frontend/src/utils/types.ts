@@ -7,14 +7,14 @@ import { ReactNode } from 'react';
 // Local imports
 import { type Field } from 'common/Field';
 import { type Incident } from 'common/Incident';
-import { type LocationType } from 'common/Location';
+import { type Coordinates, type LocationType } from 'common/Location';
 import { type LogEntryType } from 'common/LogEntryType';
 import { type MessagingTopicType } from 'common/Messaging';
 import { type User } from 'common/User';
 
 export type ContentType = { json: string; text: string };
 export type FieldValueType = string | Array<string> | File | ContentType | User | undefined;
-export type OptionType = { value: string; label: string };
+export type OptionType = { value: string; label: string; disabled?: boolean };
 export type FilterType = { author: Array<string>; category: Array<string> };
 export type SpanType = {
   getAttribute: (name: string) => unknown;
@@ -59,10 +59,7 @@ export type IncidentSection = {
 export type FullLocationType = {
   type: LocationType;
   description?: string;
-  coordinates?: {
-    latitude: number;
-    longitude: number;
-  };
+  coordinates?: Coordinates[];
 };
 
 export type LocationResult = {
