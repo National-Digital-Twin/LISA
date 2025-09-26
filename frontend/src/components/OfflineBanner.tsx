@@ -106,6 +106,8 @@ export function OfflineBanner() {
             <ListItem>Map search & precise location</ListItem>
             <ListItem>File downloads</ListItem>
             <ListItem>Changing an incident status</ListItem>
+            <ListItem>Changing a task status</ListItem>
+            <ListItem>Changing a task assignee</ListItem>
             <ListItem>Publishing new form templates</ListItem>
           </List>
           <Typography>All updates will sync automatically when you're back online.</Typography>

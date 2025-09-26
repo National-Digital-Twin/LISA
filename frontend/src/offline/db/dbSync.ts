@@ -9,11 +9,14 @@ import {
   deleteForm,
   getAllLogs,
   deleteLog,
+  getAllTasks,
+  deleteTask,
 } from './dbOperations';
 import { post } from '../../api';
 import { OfflineFormInstance } from '../types/OfflineForm';
 import { OfflineIncident } from '../types/OfflineIncident';
 import { OfflineLogEntry } from '../types/OfflineLogEntry';
+import { OfflineTask } from '../types/OfflineTask';
 import { logError } from '../../utils/logger';
 
 async function handleFormSync(form : OfflineFormInstance) {
@@ -42,7 +45,16 @@ async function handleLogSync(log : OfflineLogEntry) {
     logError(`handle log sync: ${log.id}`, err);
   }
 }
-  
+
+async function handleTaskSync(task : OfflineTask) {
+  try {
+    await post(`/incident/${task.incidentId}/tasks`, task);
+    await deleteTask(task.id);
+  } catch (err) {
+    logError(`handle task sync: ${task.id}`, err);
+  }
+}
+
 export async function syncAllOfflineEntities() {
   // Sync incidents
   const offlineIncidents = await getAllIncidents();
@@ -54,7 +66,7 @@ export async function syncAllOfflineEntities() {
       }),
     Promise.resolve()
     );
-  
+
   // Sync forms
   const offlineForms = await getAllForms();
   await offlineForms
@@ -64,7 +76,17 @@ export async function syncAllOfflineEntities() {
       }),
     Promise.resolve()
     );
-  
+
+  // Sync tasks
+  const offlineTasks = await getAllTasks();
+  await (offlineTasks || [])
+    .reduce((promise, task) =>
+      promise.then(async () => {
+        await handleTaskSync(task);
+      }),
+    Promise.resolve()
+    );
+
   // Sync logs
   const offlineLogs = await getAllLogs();
   await offlineLogs
@@ -75,4 +97,3 @@ export async function syncAllOfflineEntities() {
     Promise.resolve()
     );
 }
-  

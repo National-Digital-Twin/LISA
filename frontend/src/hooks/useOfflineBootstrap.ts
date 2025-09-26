@@ -4,6 +4,7 @@
 
 import { useUsers } from './useAuth';
 import { useFormTemplates } from './Forms/useFormTemplates';
+import { useIncidents } from './useIncidents';
 
 // Pre-warm users and forms cache to support offline mode
 export function useOfflineBootstrap() {
@@ -20,4 +21,6 @@ export function useOfflineBootstrap() {
     retry: false,
     refetchOnWindowFocus: false,
   });
+
+  useIncidents();
 }
