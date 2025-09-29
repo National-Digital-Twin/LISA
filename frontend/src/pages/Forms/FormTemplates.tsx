@@ -9,9 +9,11 @@ import { useFormTemplates } from '../../hooks/Forms/useFormTemplates';
 import Format from '../../utils/Format';
 import { PageTitle } from '../../components';
 import PageWrapper from '../../components/PageWrapper';
+import { useIsOnline } from '../../hooks/useIsOnline';
 
 const FormTemplates = () => {
   const navigate = useNavigate();
+  const isOnline = useIsOnline();
   const { forms } = useFormTemplates();
 
   const tableHeaders = ['Form name', 'Created by', 'Date'];
@@ -57,6 +59,7 @@ const FormTemplates = () => {
             startIcon={<AddCircleIcon />}
             variant="contained"
             onClick={handleAddForm}
+            disabled={!isOnline}
             sx={{
               flexBasis: { xs: '48%', md: 'auto' },
               flexGrow: { xs: 1, md: 0 }
