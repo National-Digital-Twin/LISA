@@ -31,6 +31,7 @@ import { generateFieldKey } from '../utils';
 import { Field } from './types';
 import { useCreateFormTemplate } from '../../../hooks/Forms/useFormTemplates';
 import { MAX_FORM_LABEL_LENGTH } from '../constants';
+import { useIsOnline } from '../../../hooks/useIsOnline';
 
 type Props = {
   onSchemaChange: (schema: JSONSchema7, uiSchema: UiSchema) => void;
@@ -53,16 +54,17 @@ const FormBuilder = ({ onSchemaChange }: Props) => {
 
   const { mutate: createForm } = useCreateFormTemplate();
   const navigate = useNavigate();
+  const isOnline = useIsOnline();
 
   const generateSchema = useCallback(() => {
     const requiredFields = fields
       .filter((f) => f.required)
       .map((f) => generateFieldKey(f));
-  
+
     const properties = Object.fromEntries(
       fields.map((f) => {
         let fieldType: JSONSchema7['type'];
-  
+
         if (f.type === 'select' || f.type === 'textarea') {
           fieldType = 'string';
         } else if (f.type === 'label') {
@@ -70,7 +72,7 @@ const FormBuilder = ({ onSchemaChange }: Props) => {
         } else {
           fieldType = f.type;
         }
-  
+
         return [
           generateFieldKey(f),
           {
@@ -81,7 +83,7 @@ const FormBuilder = ({ onSchemaChange }: Props) => {
         ];
       })
     );
-  
+
     return {
       title: formTitle,
       type: 'object',
@@ -89,13 +91,13 @@ const FormBuilder = ({ onSchemaChange }: Props) => {
       properties
     } as JSONSchema7;
   }, [fields, formTitle]);
-  
+
   const generateUiSchema = useCallback(() => {
     const uiSchema: UiSchema = {
       'ui:order': fields.map((f) => generateFieldKey(f)),
       'ui:submitButtonOptions': { norender: true }
     };
-  
+
     fields.forEach((f) => {
       const key = generateFieldKey(f);
       if (f.type === 'textarea') {
@@ -104,33 +106,33 @@ const FormBuilder = ({ onSchemaChange }: Props) => {
           'ui:options': { rows: 4 }
         };
       }
-  
+
       if (f.type === 'label') {
         uiSchema[key] = {
           'ui:field': 'label'
         };
       }
     });
-  
+
     return uiSchema;
   }, [fields]);
-  
-  
+
+
 
   useEffect(() => {
     const schema = generateSchema();
     const uiSchema = generateUiSchema();
-  
+
     onSchemaChange(schema, uiSchema);
   }, [fields, formTitle, onSchemaChange, generateSchema, generateUiSchema]);
 
   useEffect(() => {
     const errors: Record<string, string> = {};
     const labelCount: Record<string, number> = {};
-  
+
     fields.filter((f) => f.type !== 'label').forEach((field) => {
       const label = field.label.trim();
-  
+
       if (!label) {
         errors[field.id] = 'Label is required.';
       } else {
@@ -148,7 +150,7 @@ const FormBuilder = ({ onSchemaChange }: Props) => {
         errors[field.id] = `Label must be less than ${MAX_FORM_LABEL_LENGTH} characters`
       }
     });
-  
+
     // Mark duplicates
     Object.entries(labelCount).forEach(([label, count]) => {
       if (count > 1) {
@@ -159,9 +161,9 @@ const FormBuilder = ({ onSchemaChange }: Props) => {
           });
       }
     });
-  
+
     const formNameError = !formTitle.trim() ? 'Form Name is required.' : '';
-  
+
     setLabelErrors(errors);
     setTitleError(formNameError);
     setIsValid(Object.keys(errors).length === 0 && !formNameError);
@@ -172,7 +174,7 @@ const FormBuilder = ({ onSchemaChange }: Props) => {
     updated[index][key] = value;
     setFields(updated);
   };
-  
+
   const handleRemoveField = (index: number) => {
     const updated = [...fields];
     updated.splice(index, 1);
@@ -195,7 +197,7 @@ const FormBuilder = ({ onSchemaChange }: Props) => {
   const handleSave = () => {
     const schema = generateSchema();
     const uiSchema = generateUiSchema();
-    
+
     const formData = {
       schema,
       uiSchema
@@ -204,13 +206,13 @@ const FormBuilder = ({ onSchemaChange }: Props) => {
     createForm({ title: formTitle, formData });
     handleCancel();
   };
-  
+
 
   const sensors = useSensors(useSensor(PointerSensor));
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
-    
+
     if (active.id !== over?.id) {
       const oldIndex = fields.findIndex((f) => f.id === active.id);
       const newIndex = fields.findIndex((f) => f.id === over?.id);
@@ -275,7 +277,7 @@ const FormBuilder = ({ onSchemaChange }: Props) => {
             <Button variant="outlined" color="secondary" onClick={handleReset}>
             Reset
             </Button>
-            <Button variant="contained" onClick={handleSave} disabled={!isValid}>
+            <Button variant="contained" onClick={handleSave} disabled={!isValid || !isOnline}>
             Save
             </Button>
           </Box>
