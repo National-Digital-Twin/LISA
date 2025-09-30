@@ -4,11 +4,9 @@
 
 // Local imports
 import { type LogEntry } from 'common/LogEntry';
-import { type Incident } from 'common/Incident';
 import { QueryClient, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { FetchError, get, post } from '../api';
 import { addOptimisticLogEntry } from './useLogEntriesUpdates';
-import { applyFieldUpdatesToIncident } from '../utils/Incident/optimisticUpdates';
 import { mergeOfflineEntities } from '../utils';
 import { useIsOnline } from './useIsOnline';
 import { addLog } from '../offline/db/dbOperations';
@@ -19,6 +17,10 @@ export const getLogEntries = async (queryClient: QueryClient, incidentId: string
   const serverEntries = await get<LogEntry[]>(`/incident/${incidentId}/logEntries`);
   const cachedEntries = queryClient.getQueryData<LogEntry[]>([`incident/${incidentId}/logEntries`]);
   return mergeOfflineEntities(cachedEntries, serverEntries);
+};
+
+export const getCachedLogEntries = (queryClient: QueryClient, incidentId: string) => {
+  return queryClient.getQueryData<LogEntry[]>([`incident/${incidentId}/logEntries`]);
 };
 
 export const useLogEntries = (incidentId?: string) => {
@@ -59,7 +61,6 @@ export const useCreateLogEntry = (incidentId?: string, onSuccess?: () => void) =
     {
       previousEntries?: LogEntry[];
       updatedEntries?: LogEntry[];
-      previousIncidents?: Incident[];
     }
   >({
     mutationFn: async ({ logEntry, attachments }) => {
@@ -93,27 +94,7 @@ export const useCreateLogEntry = (incidentId?: string, onSuccess?: () => void) =
         }
       );
 
-      // If this is a SetIncidentInformation log entry, also update the incident cache
-      let previousIncidents: Incident[] | undefined;
-      if (logEntry.type === 'SetIncidentInformation') {
-        await queryClient.cancelQueries({ queryKey: ['incidents'] });
-        previousIncidents = queryClient.getQueryData<Incident[]>(['incidents']);
-
-        if (previousIncidents) {
-          const updatedIncidents = previousIncidents.map((incident) => {
-            if (incident.id === incidentId) {
-              const updatedIncident = applyFieldUpdatesToIncident(incident, logEntry.fields);
-              updatedIncident.offline = true;
-              return updatedIncident;
-            }
-            return incident;
-          });
-
-          queryClient.setQueryData<Incident[]>(['incidents'], updatedIncidents);
-        }
-      }
-
-      return { previousEntries, updatedEntries, previousIncidents };
+      return { previousEntries, updatedEntries };
     },
     onSuccess: () => {
       if (onSuccess) {
@@ -133,10 +114,6 @@ export const useCreateLogEntry = (incidentId?: string, onSuccess?: () => void) =
           [`incident/${incidentId}/logEntries`],
           context.updatedEntries
         );
-      }
-
-      if (context?.previousIncidents) {
-        queryClient.setQueryData<Incident[]>(['incidents'], context.previousIncidents);
       }
     },
     networkMode: 'always'
