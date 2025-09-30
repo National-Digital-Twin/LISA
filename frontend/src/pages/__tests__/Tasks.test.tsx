@@ -58,7 +58,7 @@ const mockTasks: Task[] = [
     status: 'ToDo',
     sequence: '1',
     createdAt: '2025-01-01T10:00:00Z',
-    location: null,
+    location: undefined,
     attachments: []
   },
   {
@@ -71,7 +71,7 @@ const mockTasks: Task[] = [
     status: 'InProgress',
     sequence: '2',
     createdAt: '2025-01-01T11:00:00Z',
-    location: null,
+    location: undefined,
     attachments: []
   },
   {
@@ -84,7 +84,7 @@ const mockTasks: Task[] = [
     status: 'Done',
     sequence: '3',
     createdAt: '2025-01-01T09:00:00Z',
-    location: null,
+    location: undefined,
     attachments: []
   }
 ];
