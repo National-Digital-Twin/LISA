@@ -27,12 +27,15 @@ import { useFormTemplates } from '../hooks/Forms/useFormTemplates';
 import { countActive, getFromAndToFromTimeSelection } from '../components/SortFilter/filter-utils';
 import StageMini from '../components/Stage/StageMini';
 import { useResponsive } from '../hooks/useResponsiveHook';
+import ChangePendingWarning from '../components/ChangePendingWarning';
+import { useIncidentsUpdates } from '../hooks/useIncidents';
 
 const Logbook = () => {
   const { incidentId } = useParams();
   const query = useIncidents();
+  const { startPolling: startIncidentsPolling, clearPolling: clearIncidentsPolling } = useIncidentsUpdates();
   const { logEntries } = useLogEntries(incidentId);
-  const { startPolling, clearPolling } = useLogEntriesUpdates(incidentId!);
+  const { startPolling: startLogEntriesPolling, clearPolling: clearLogEntriesPolling } = useLogEntriesUpdates(incidentId);
   const isOnline = useIsOnline();
   const { forms } = useFormTemplates();
   const { isMobile } = useResponsive();
@@ -70,15 +73,6 @@ const Logbook = () => {
   }, [allAuthors, forms]);
 
   useEffect(() => {
-    if (isOnline) startPolling();
-    else clearPolling();
-
-    return () => {
-      clearPolling();
-    };
-  }, [isOnline, startPolling, clearPolling]);
-
-  useEffect(() => {
     const taskId = searchParams.get('taskId');
     if (!taskId || usedTaskIdRef.current === taskId) return;
 
@@ -93,6 +87,22 @@ const Logbook = () => {
   }, [searchParams, logEntries, navigate]);
 
   const incident = query?.data?.find((inc) => inc.id === incidentId);
+  const hasOfflineLogEntries = useMemo(() => logEntries?.some((e) => e.offline), [logEntries]);
+
+  useEffect(() => {
+    if (isOnline && (incident?.offline || hasOfflineLogEntries)) {
+      startIncidentsPolling();
+      startLogEntriesPolling();
+    } else {
+      clearIncidentsPolling();
+      clearLogEntriesPolling();
+    }
+
+    return () => {
+      clearIncidentsPolling();
+      clearLogEntriesPolling();
+    };
+  }, [isOnline, startIncidentsPolling, clearIncidentsPolling, startLogEntriesPolling, clearLogEntriesPolling, incident, hasOfflineLogEntries]);
 
   const optionsMenu = useMenu();
   const addMenu = useMenu();
@@ -408,6 +418,7 @@ const Logbook = () => {
           </MenuItem>
         </Menu>
       </PageTitle>
+      <ChangePendingWarning hidden={!incident?.offline && !hasOfflineLogEntries} />
       <Box display="flex" flexDirection="column" width="100%">
         {(!logEntries || logEntries.length === 0) && (
           <Box p={2} bgcolor="background.default">

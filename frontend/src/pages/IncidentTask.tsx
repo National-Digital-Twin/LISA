@@ -11,7 +11,7 @@ import { User } from 'common/User';
 import { PageTitle } from '../components';
 import PageWrapper from '../components/PageWrapper';
 import { useAuth, useUsers, useTasksUpdates } from '../hooks';
-import { useTasks, useUpdateTaskStatus, useUpdateTaskAssignee  } from '../hooks/useTasks';
+import { useTasks, useUpdateTaskStatus, useUpdateTaskAssignee } from '../hooks/useTasks';
 import { useIsOnline } from '../hooks/useIsOnline';
 import { GridListItem } from '../components/GridListItem';
 import AssigneeSelector from '../components/InlineSelectors/AssigneeSelector';
@@ -22,8 +22,12 @@ import { logInfo } from '../utils/logger';
 import StatusMini from '../components/Tasks/StatusMini';
 import { LocationValue } from '../utils/Format/entry/fields/LocationValue';
 import AttachmentLink from '../components/AttachmentLink';
+import ChangePendingWarning from '../components/ChangePendingWarning';
 
-const TaskFallback = ({ header, message }: Readonly<{ header: React.ReactNode, message: string }>) => {
+const TaskFallback = ({
+  header,
+  message
+}: Readonly<{ header: React.ReactNode; message: string }>) => {
   return (
     <>
       {header}
@@ -46,6 +50,7 @@ const TaskContent = ({ header, task, users }: Readonly<TaskContentProps>) => {
   const { mutate: updateStatus } = useUpdateTaskStatus(task.incidentId);
   const { mutate: updateAssignee } = useUpdateTaskAssignee(task.incidentId);
   const { user } = useAuth();
+  const isOnline = useIsOnline();
 
   const onChangeAssignee = (newAssignee: User) => {
     updateAssignee(
@@ -76,10 +81,13 @@ const TaskContent = ({ header, task, users }: Readonly<TaskContentProps>) => {
     content = task.content.text;
   }
 
-  const contentEl: React.ReactElement | undefined =
-  content != null ? <>{content}</> : undefined;
+  const contentEl: React.ReactElement | undefined = content != null ? <>{content}</> : undefined;
 
-  const canUpdateTask = user.current?.username === task.assignee?.username && task.status != "Done";
+  const canUpdateTask =
+    isOnline &&
+    !task.offline &&
+    user.current?.username === task.assignee?.username &&
+    task.status != 'Done';
 
   return (
     <>
@@ -89,7 +97,7 @@ const TaskContent = ({ header, task, users }: Readonly<TaskContentProps>) => {
         sx={{
           display: 'flex',
           gap: 2,
-          flexWrap: 'wrap',
+          flexWrap: 'wrap'
         }}
       >
         <Grid container padding={3} gap={2}>
@@ -98,56 +106,65 @@ const TaskContent = ({ header, task, users }: Readonly<TaskContentProps>) => {
           ) : (
             <GridListItem title="Stage">
               <Box display="flex" alignItems="center" gap={1} flexWrap="nowrap">
-                <Box sx={{ display: 'inline-flex', alignItems: 'center', transform: 'translateY(-1px)' }}>
+                <Box
+                  sx={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    transform: 'translateY(-1px)'
+                  }}
+                >
                   <StatusMini status={task.status} />
                 </Box>
-                <Typography
-                  component="span"
-                  variant="body1"
-                  noWrap
-                  sx={{ lineHeight: 1, m: 0 }}
-                >
+                <Typography component="span" variant="body1" noWrap sx={{ lineHeight: 1, m: 0 }}>
                   {toStatusHumanReadable(task.status)}
                 </Typography>
               </Box>
             </GridListItem>
           )}
-          <GridListItem title="Task description">
-            {contentEl}
-          </GridListItem>
+          <GridListItem title="Task description">{contentEl}</GridListItem>
           <GridListItem title="Assigned by" text={task.author.displayName} />
           {canUpdateTask ? (
             <AssigneeSelector
               value={task.assignee}
-              availableValues={users
-                ?.filter((u) => u.displayName && u.username !== user.current?.username)
-                .sort((a, b) => a.displayName.localeCompare(b.displayName)) ?? []}
+              availableValues={
+                users
+                  ?.filter((u) => u.displayName && u.username !== user.current?.username)
+                  .sort((a, b) => a.displayName.localeCompare(b.displayName)) ?? []
+              }
               onChange={onChangeAssignee}
             />
           ) : (
             <GridListItem title="Assigned to" text={task.assignee.displayName} />
           )}
-          <GridListItem title="Date and time recorded" text={Format.dateAndTimeMobile(task.createdAt)} />
+          <GridListItem
+            title="Date and time recorded"
+            text={Format.dateAndTimeMobile(task.createdAt)}
+          />
 
-          <GridListItem title="Location" text={task.location ? undefined : "None"}>
-            { task.location ?
-              <LocationValue entity={task} />
-              : undefined
-            }
+          <GridListItem title="Location" text={task.location ? undefined : 'None'}>
+            {task.location ? <LocationValue entity={task} /> : undefined}
           </GridListItem>
 
-          <GridListItem title="Attachments" text={!task.attachments?.length ? "None" : undefined}>
+          <GridListItem title="Attachments" text={!task.attachments?.length ? 'None' : undefined}>
             {task.attachments?.length ? (
               <Box display="flex" flexDirection="column" gap={1}>
                 {task.attachments.map((attachment) => (
-                  <AttachmentLink key={attachment.key} attachment={attachment} isOnServer={!task.offline} />
+                  <AttachmentLink
+                    key={attachment.key}
+                    attachment={attachment}
+                    isOnServer={!task.offline}
+                  />
                 ))}
               </Box>
             ) : undefined}
           </GridListItem>
 
-          <Typography component={Link} to={`/logbook/${task.incidentId}?taskId=${task.id}`} variant="body1">
-              View log entry
+          <Typography
+            component={Link}
+            to={`/logbook/${task.incidentId}?taskId=${task.id}`}
+            variant="body1"
+          >
+            View log entry
           </Typography>
         </Grid>
       </Box>
@@ -198,21 +215,31 @@ const IncidentTask = () => {
         <PageTitle
           title={title}
           titleStart={
-            <IconButton aria-label="Back" onClick={() => { navigate(-1) }} >
+            <IconButton
+              aria-label="Back"
+              onClick={() => {
+                navigate(-1);
+              }}
+            >
               <ArrowBackIcon />
             </IconButton>
           }
         />
       </Box>
+      <ChangePendingWarning sx={{ marginTop: '1.3rem' }} hidden={!task?.offline} />
     </Box>
   );
 
   if (isLoading || !tasks) {
-    return <TaskFallback header={renderHeader('Loading task...', navigate)} message="Loading task..." />;
+    return (
+      <TaskFallback header={renderHeader('Loading task...', navigate)} message="Loading task..." />
+    );
   }
 
   if (!task) {
-    return <TaskFallback header={renderHeader('No task found', navigate)} message="Cannot find task." />;
+    return (
+      <TaskFallback header={renderHeader('No task found', navigate)} message="Cannot find task." />
+    );
   }
 
   return <TaskContent header={renderHeader(task.name, navigate)} task={task} users={users ?? []} />;

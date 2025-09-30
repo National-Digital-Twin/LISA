@@ -9,57 +9,107 @@ import { QueryClient, useMutation, useQuery, useQueryClient } from '@tanstack/re
 import { type Incident } from 'common/Incident';
 import { FetchError, get, post } from '../api';
 import { createSequenceNumber } from '../utils/Form/sequence';
+import { useIsOnline } from './useIsOnline';
+import { addIncident } from '../offline/db/dbOperations';
+import { v4 as uuidV4 } from 'uuid';
+import { useAuth } from './useAuth';
+import { useCallback, useRef } from 'react';
+import { applyFieldUpdatesToIncident } from '../utils/Incident/optimisticUpdates';
+import { mergeOfflineEntities } from '../utils';
+import { getCachedLogEntries } from './useLogEntries';
+import { LogEntry } from 'common/LogEntry';
 
-const TOTAL_RETRY_ATTEMPTS = 3;
+const POLLING_INTERVAL_SECONDS = 5;
+const POLLING_INTERVAL_MS = POLLING_INTERVAL_SECONDS * 1000;
 
-export const useIncidents = () =>
-  useQuery<Incident[], FetchError>({
+const getIncidents = async (queryClient: QueryClient, isOnline: boolean) => {
+  const cachedIncidents = queryClient.getQueryData<Incident[]>(['incidents']);
+  const serverIncidents = isOnline ? await get<Incident[]>('/incidents') : cachedIncidents ?? [];
+
+  const mergedIncidents = mergeOfflineEntities(cachedIncidents, serverIncidents);
+
+  // due to the way that special log entries are merged with an incident to
+  // update its properties, if we have any offline log entries we may need to
+  // reapply optimistic updates to the incident
+  const updatedIncidents = mergedIncidents.map((incident) => {
+    const logEntries = getCachedLogEntries(queryClient, incident.id);
+    if (!logEntries) {
+      return incident;
+    }
+
+    const pendingUpdates: LogEntry[] = [];
+    let hasOfflineEntries = false;
+    for (const logEntry of logEntries) {
+      if (!logEntry.offline) continue;
+
+      hasOfflineEntries = true;
+      if (logEntry.type === 'SetIncidentInformation') {
+        pendingUpdates.push(logEntry);
+      }
+    }
+    if (!hasOfflineEntries) {
+      return incident;
+    }
+
+    const updatedIncident = pendingUpdates
+      .toSorted((a, b) => a.dateTime.localeCompare(b.dateTime))
+      .reduce((acc, u) => applyFieldUpdatesToIncident(acc, u.fields), incident);
+
+    return { ...updatedIncident, offline: true };
+  });
+
+  return updatedIncidents;
+};
+
+export const useIncidents = () => {
+  const queryClient = useQueryClient();
+  const isOnline = useIsOnline();
+
+  return useQuery<Incident[], FetchError>({
     queryKey: ['incidents'],
-    queryFn: () => get('/incidents'),
+    queryFn: async () => {
+      return getIncidents(queryClient, isOnline);
+    },
     staleTime: 10_000,
     refetchOnMount: true,
     refetchOnWindowFocus: true,
     refetchOnReconnect: true,
+    networkMode: 'always'
   });
+};
 
-async function poll(
-  incidentId: string | undefined,
-  attemptNumber: number,
-  retryAttemptNumber: number,
-  queryClient: QueryClient
-) {
-  try {
-    const incidents = await get<Incident[]>('/incidents');
+export const useIncidentsUpdates = () => {
+  const queryClient = useQueryClient();
+  const isOnline = useIsOnline();
+  const pollingIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-    if (attemptNumber <= 10) {
-      if (incidents.find((incident) => incident.id === incidentId)) {
-        queryClient.invalidateQueries({ queryKey: ['incidents'] });
-      } else {
-        setTimeout(
-          () => poll(incidentId, attemptNumber + 1, retryAttemptNumber, queryClient),
-          10000
-        );
-      }
-    } else {
-      queryClient.invalidateQueries({ queryKey: ['incidents'] });
+  const syncIncidents = useCallback(async () => {
+    try {
+      const mergedIncidents = await getIncidents(queryClient, isOnline);
+      queryClient.setQueryData<Incident[]>(['incidents'], mergedIncidents);
+    } catch (error) {
+      console.error(`Error occurred: ${error}. Unable to poll for incident updates!`);
     }
-  } catch (error) {
-    const retryAttemptsLeft = TOTAL_RETRY_ATTEMPTS - retryAttemptNumber;
+  }, [queryClient]);
 
-    if (retryAttemptsLeft > 0) {
-      console.error(
-        `Error occured while polling for updates: ${error}. Retry attempts left: ${retryAttemptsLeft}`
-      );
-      setTimeout(
-        () => poll(incidentId, attemptNumber + 1, retryAttemptNumber + 1, queryClient),
-        5000
-      );
+  const startPolling = useCallback(() => {
+    pollingIntervalRef.current = setInterval(syncIncidents, POLLING_INTERVAL_MS);
+  }, [syncIncidents]);
+
+  const clearPolling = useCallback(() => {
+    if (pollingIntervalRef.current) {
+      clearInterval(pollingIntervalRef.current);
+      pollingIntervalRef.current = null;
     }
-  }
-}
+  }, []);
+
+  return { startPolling, clearPolling };
+};
 
 export const useCreateIncident = () => {
   const queryClient = useQueryClient();
+  const isOnline = useIsOnline();
+  const { user } = useAuth();
   const { mutate, isPending } = useMutation<
     Incident,
     Error,
@@ -69,14 +119,18 @@ export const useCreateIncident = () => {
       updatedIncidents?: Incident[];
     }
   >({
-    mutationFn: (incident) => post('/incident', incident),
-    onSuccess: async (data) => {
-      setTimeout(() => poll(data.id, 1, 1, queryClient), 1000);
+    mutationFn: async (incident) => {
+      incident.id ??= uuidV4();
+      if (isOnline) {
+        await post('/incident', incident);
+      } else {
+        await addIncident({ ...incident, offline: true });
+      }
+
+      return incident;
     },
-    onError: async (error, _variables, context) => {
-      // assumption: when the user is offline there will be no cause so we can use this to differentiate between
-      // a genuine error and one that happens due to the user being offline.
-      if (error.cause && context?.previousIncidents) {
+    onError: async (_error, _variables, context) => {
+      if (context?.previousIncidents) {
         queryClient.setQueryData<Incident[]>(['incidents'], context.previousIncidents);
       }
 
@@ -84,90 +138,33 @@ export const useCreateIncident = () => {
         queryClient.setQueryData<Incident[]>(['incidents'], context.updatedIncidents);
       }
     },
-    // optimistic update
     onMutate: async (newIncident) => {
       await queryClient.cancelQueries({ queryKey: ['incidents'] });
+
       const previousIncidents = queryClient.getQueryData<Incident[]>(['incidents']);
-      const newIncidentOffline = {
+      const optimisticIncident = {
         ...newIncident,
+        reportedBy: {
+          username: user.current?.username ?? 'Offline',
+          displayName: user.current?.displayName ?? 'Offline'
+        },
+        createdAt: new Date().toISOString(),
         offline: true
       };
       queryClient.setQueryData<Incident[]>(
         ['incidents'],
-        (oldData) => oldData?.concat(newIncidentOffline) || [newIncidentOffline]
+        (oldData) => oldData?.concat(optimisticIncident) || [optimisticIncident]
       );
-      const updatedIncidents = previousIncidents?.concat(newIncidentOffline) || [
-        newIncidentOffline
+      const updatedIncidents = previousIncidents?.concat(optimisticIncident) || [
+        optimisticIncident
       ];
       return { previousIncidents, updatedIncidents };
-    }
+    },
+    networkMode: 'always'
   });
 
   return { createIncident: mutate, isLoading: isPending };
 };
-
-export async function pollForIncidentUpdate(
-  incidentId: string | undefined,
-  attemptNumber: number,
-  retryAttemptNumber: number,
-  queryClient: QueryClient
-): Promise<void> {
-  if (!incidentId) {
-    throw new Error('Incident id undefined unable to poll for updates!');
-  }
-
-  if (attemptNumber <= 0) {
-    throw new Error('Attempt number is less than or equal to 0 unable to poll for updates!');
-  }
-
-  if (retryAttemptNumber <= 0) {
-    throw new Error('Retry attempt number is less than or equal to 0 unable to poll for updates!');
-  }
-
-  if (attemptNumber <= 10) {
-    const cachedIncidents: Incident[] | undefined = queryClient.getQueryData<Incident[]>([
-      'incidents'
-    ]);
-    const cachedIncident: Incident | undefined = cachedIncidents?.find(
-      (incident) => incident?.id === incidentId
-    );
-
-    try {
-      const incident: Incident | undefined = await get<Incident>(`/incident/${incidentId}`);
-
-      if (cachedIncident && incident) {
-        if (cachedIncident.stage === incident.stage) {
-          queryClient.invalidateQueries({ queryKey: ['incidents'] });
-        } else {
-          setTimeout(
-            () =>
-              pollForIncidentUpdate(incidentId, attemptNumber + 1, retryAttemptNumber, queryClient),
-            10000
-          );
-        }
-      }
-    } catch (error) {
-      const retryAttemptsLeft = TOTAL_RETRY_ATTEMPTS - retryAttemptNumber;
-      console.error(
-        `Error occured while polling for updates: ${error}. Retry attempts left: ${retryAttemptsLeft}`
-      );
-      if (retryAttemptsLeft > 0) {
-        setTimeout(
-          () =>
-            pollForIncidentUpdate(
-              incidentId,
-              attemptNumber + 1,
-              retryAttemptNumber + 1,
-              queryClient
-            ),
-          5000
-        );
-      }
-    }
-  } else {
-    queryClient.invalidateQueries({ queryKey: ['incidents'] });
-  }
-}
 
 export const useChangeIncidentStage = () => {
   const queryClient = useQueryClient();
@@ -179,9 +176,6 @@ export const useChangeIncidentStage = () => {
           stage: incident.stage,
           sequence: createSequenceNumber()
         }),
-      onSuccess: async (incident) => {
-        setTimeout(() => pollForIncidentUpdate(incident.id, 1, 1, queryClient), 1000);
-      },
       onError: (_error, _variables, context) => {
         if (context?.previousIncidents) {
           queryClient.setQueryData<Incident[]>(['incidents'], context.previousIncidents);
@@ -193,7 +187,7 @@ export const useChangeIncidentStage = () => {
         const previousIncidents = queryClient.getQueryData<Incident[]>(['incidents']);
         const updatedIncidents = previousIncidents
           ?.filter((p) => p.id !== incident.id)
-          ?.concat(incident)
+          ?.concat({ ...incident, offline: true })
           ?.sort((a, b) => b.startedAt.localeCompare(a.startedAt)) || [incident];
         queryClient.setQueryData<Incident[]>(['incidents'], updatedIncidents);
         return { previousIncidents };

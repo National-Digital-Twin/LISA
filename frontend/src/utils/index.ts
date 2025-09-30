@@ -14,11 +14,13 @@ import { Incident } from './Incident';
 import { MapUtils } from './Map';
 import { Search } from './Search';
 import Validate from './Validate';
+import { mergeOfflineEntities } from './mergeOffline';
 
 const Utils = {
   bem,
   debounce,
   deduplicate,
+  mergeOfflineEntities,
   sortLabel
 };
 
@@ -31,6 +33,7 @@ export {
   Format,
   Icons,
   Incident,
+  mergeOfflineEntities,
   MapUtils,
   Search,
   Utils,

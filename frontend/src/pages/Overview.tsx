@@ -10,7 +10,7 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 // Local imports
 import { type IncidentStage } from 'common/IncidentStage';
 import { PageTitle } from '../components';
-import { useChangeIncidentStage, useIncidents } from '../hooks/useIncidents';
+import { useChangeIncidentStage, useIncidents, useIncidentsUpdates } from '../hooks/useIncidents';
 import { Format } from '../utils';
 import { useAuth } from '../hooks';
 import PageWrapper from '../components/PageWrapper';
@@ -18,10 +18,15 @@ import { GridListItem } from '../components/GridListItem';
 import StageMini from '../components/Stage/StageMini';
 import StageSelector from '../components/InlineSelectors/StageSelector';
 import { isAdmin } from '../utils/userRoles';
+import { useIsOnline } from '../hooks/useIsOnline';
+import { useEffect } from 'react';
+import ChangePendingWarning from '../components/ChangePendingWarning';
 
 const Overview = () => {
   const { incidentId } = useParams();
   const query = useIncidents();
+  const { startPolling, clearPolling } = useIncidentsUpdates();
+  const isOnline = useIsOnline();
   const { user } = useAuth();
   const changeIncidentStage = useChangeIncidentStage();
   const navigate = useNavigate();
@@ -29,6 +34,20 @@ const Overview = () => {
   const isUserAdmin = isAdmin(user.current);
 
   const incident = query.data?.find((inc) => inc.id === incidentId);
+
+  useEffect(() => {
+    if (isOnline && incident?.offline) {
+      startPolling();
+    } else {
+      clearPolling();
+    }
+
+    return () => {
+      clearPolling();
+    };
+  }, [isOnline, startPolling, clearPolling, incident]);
+
+
   if (!incident) {
     return null;
   }
@@ -56,7 +75,7 @@ const Overview = () => {
               <ArrowBackIcon />
             </IconButton>
           }
-          titleEnd={isUserAdmin && 
+          titleEnd={isUserAdmin &&
             <Button
               type="button"
               variant="contained"
@@ -104,12 +123,14 @@ const Overview = () => {
           </Box>
         </PageTitle>
 
+        <ChangePendingWarning hidden={!incident?.offline} />
+
         <Box display="flex" flexDirection="column" gap={2}>
           <Typography variant="h6" fontWeight='bold' fontSize='1rem'>
             Summary
           </Typography>
           <Grid component="ul" container padding={3} spacing={4} bgcolor="background.default">
-            {isUserAdmin ? (
+            {isUserAdmin && isOnline ? (
               <StageSelector value={incident.stage} onChange={onChangeStage} />
             ) : (
               <GridListItem title="Stage">

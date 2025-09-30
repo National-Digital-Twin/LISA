@@ -5,7 +5,6 @@
 import { QueryClient, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { v4 as uuidV4 } from 'uuid';
 
-import { LogEntry } from 'common/LogEntry';
 import { FetchError, get, post } from '../../api';
 import { FormInstance } from '../../components/CustomForms/FormTemplates/types';
 import { CreateFormInstanceContext, CreateFormInstancePayload } from './types';
@@ -34,7 +33,7 @@ export async function poll(
 
 export const useCreateFormInstance = (incidentId: string, onSuccess: () => void) => {
   const queryClient = useQueryClient();
-  const { createLogEntry } = useCreateLogEntry(incidentId, onSuccess);
+  const { createLogEntry } = useCreateLogEntry(incidentId);
   const isOnline = useIsOnline();
 
   return useMutation<{ id: string }, Error, CreateFormInstancePayload, CreateFormInstanceContext>({
@@ -43,10 +42,9 @@ export const useCreateFormInstance = (incidentId: string, onSuccess: () => void)
 
       const id = uuidV4();
       const createdAt = new Date().toISOString();
+      const logEntry = createLogEntryFromSubmittedForm(uuidV4(), title, id, incidentId, createdAt);
 
       if (!isOnline) {
-        const logEntry = createLogEntryFromSubmittedForm(title, id, incidentId, createdAt);
-
         const offlineForm: OfflineFormInstance = {
           id,
           title,
@@ -54,15 +52,17 @@ export const useCreateFormInstance = (incidentId: string, onSuccess: () => void)
           formData,
           incidentId,
           createdAt,
-          authorName: 'Offline',
-          pendingLogEntry: { ...logEntry, id: uuidV4() }
+          authorName: 'Offline'
         };
 
         await addForm(offlineForm);
-        return { id };
+      } else {
+        await post<{ id: string }>(`/incident/${incidentId}/form`, { formTemplateId, formData, createdAt, id });
       }
 
-      return post(`/incident/${incidentId}/form`, { formTemplateId, formData, createdAt, id });
+      createLogEntry({ logEntry });
+
+      return { id };
     },
 
     onMutate: async ({ formTemplateId, formData, title }) => {
@@ -89,23 +89,14 @@ export const useCreateFormInstance = (incidentId: string, onSuccess: () => void)
       return { previousFormInstances };
     },
 
+    onSuccess: async () => {
+      onSuccess?.();
+    },
+
     onError: (_err, _vars, context) => {
       if (context?.previousFormInstances) {
         queryClient.setQueryData([`incident/${incidentId}/form`], context.previousFormInstances);
       }
-    },
-
-    onSuccess: async (response, variables) => {
-      const { title: formTitle } = variables;
-      const formId = response.id;
-
-      if (!incidentId || !formTitle || !formId) return;
-
-      const logEntry = {
-        ...createLogEntryFromSubmittedForm(uuidV4(), formTitle, formId, incidentId)
-      } as Omit<LogEntry, 'id' | 'author'>;
-
-      createLogEntry({ logEntry });
     },
 
     networkMode: 'always'
@@ -115,7 +106,7 @@ export const useCreateFormInstance = (incidentId: string, onSuccess: () => void)
 export const useFormInstances = (incidentId?: string) => {
   const { data, isLoading, isError, error } = useQuery<FormInstance[], FetchError>({
     queryKey: [`incident/${incidentId}/form`],
-    queryFn: () => get(`/incident/${incidentId}/form`)
+    queryFn: () => get(`/incident/${incidentId}/form`),
   });
 
   return { forms: data, isLoading, isError, error };

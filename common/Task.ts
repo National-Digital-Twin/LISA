@@ -2,7 +2,7 @@
 // © Crown Copyright 2025. This work has been developed by the National Digital Twin Programme
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
-import { Static, Record, String, Optional, Literal, Union, Boolean, Array, Null } from 'runtypes';
+import { Static, Record, String, Optional, Literal, Union, Boolean, Array } from 'runtypes';
 import { User } from './User';
 import { Location } from './Location';
 import { Attachment } from './Attachment';
@@ -36,7 +36,7 @@ export const Task = Record({
   status: TaskStatus,
   sequence: String,
   createdAt: String,
-  location: Union(Location, Null),
+  location: Optional(Location),
   attachments: Array(Attachment),
   offline: Optional(Boolean)
 });

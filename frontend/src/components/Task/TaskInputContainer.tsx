@@ -48,9 +48,9 @@ const fieldConfigs = {
   assignee: { heading: 'Assign to', required: true, supportedOffline: true },
   content: { heading: 'Add task description', required: true, supportedOffline: true },
   location: { heading: 'Add locations', required: false, supportedOffline: false },
-  attachments: { heading: 'Add attachments', required: false, supportedOffline: true },
-  recordings: { heading: 'Add voice recordings', required: false, supportedOffline: true },
-  sketch: { heading: 'Add sketch', required: false, supportedOffline: true }
+  attachments: { heading: 'Add attachments', required: false, supportedOffline: false },
+  recordings: { heading: 'Add voice recordings', required: false, supportedOffline: false },
+  sketch: { heading: 'Add sketch', required: false, supportedOffline: false }
 };
 
 export const TaskInputContainer = ({

@@ -58,12 +58,12 @@ export async function addForm(form: OfflineDB['forms']['value']) {
   const db = await dbPromise;
   await db.put('forms', {...form, expiresAt: getExpiry()});
 }
-  
+
 export async function getForm(id: string) {
   const db = await dbPromise;
   return db.get('forms', id);
 }
-  
+
 export async function getAllForms() {
   const db = await dbPromise;
   return db.getAll('forms');
@@ -72,4 +72,25 @@ export async function getAllForms() {
 export async function deleteForm(id: string) {
   const db = await dbPromise;
   await db.delete('forms', id);
+}
+
+// Tasks
+export async function addTask(task: OfflineDB['tasks']['value']) {
+  const db = await dbPromise;
+  await db.put('tasks', {...task, expiresAt: getExpiry()});
+}
+
+export async function getTasksByIncidentId(incidentId: string) {
+  const db = await dbPromise;
+  return db.getAllFromIndex('tasks', 'by-incidentId', incidentId);
+}
+
+export async function getAllTasks() {
+  const db = await dbPromise;
+  return db.getAll('tasks');
+}
+
+export async function deleteTask(id: string) {
+  const db = await dbPromise;
+  await db.delete('tasks', id);
 }
