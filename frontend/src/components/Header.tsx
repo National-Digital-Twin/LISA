@@ -9,6 +9,7 @@ import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
 import MenuIcon from '@mui/icons-material/Menu';
 import NotificationsNoneOutlinedIcon from '@mui/icons-material/NotificationsNoneOutlined';
 import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import {
   AppBar,
   Badge,
@@ -213,6 +214,17 @@ const Header = ({ onMenuClick }: HeaderProps) => {
               <SettingsOutlinedIcon sx={{ mr: 1, fontSize: '1.25rem' }} />
               <Typography variant="body2" color="secondary">
                 Settings
+              </Typography>
+            </MenuItem>
+            <MenuItem
+              component={Link}
+              to="/privacy"
+              onClick={handleLink}
+              sx={{ padding: '8px 12px' }}
+            >
+              <LockOutlinedIcon sx={{ mr: 1, fontSize: '1.25rem' }} />
+              <Typography variant="body2" color="secondary">
+                Privacy notice
               </Typography>
             </MenuItem>
             <Divider />

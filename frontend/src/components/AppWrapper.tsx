@@ -28,6 +28,7 @@ import AdminUserList from '../pages/AdminUserList';
 import AdminViewUser from '../pages/AdminViewUser';
 import AdminNewUser from '../pages/AdminNewUser';
 import CreateTask from '../pages/CreateTask';
+import PrivacyNotice from '../pages/PrivacyNotice';
 import { CreateEntry } from '../pages/CreateEntry';
 
 const AppWrapper = () => {
@@ -60,6 +61,7 @@ const AppWrapper = () => {
         { path: 'settings/users', element: <AdminUserList /> },
         { path: 'settings/user-profile', element: <AdminViewUser /> },
         { path: 'settings/users/new', element: <AdminNewUser /> },
+        { path: 'privacy', element: <PrivacyNotice /> },
         { path: '*', element: <Error404 /> }
       ]
     }
