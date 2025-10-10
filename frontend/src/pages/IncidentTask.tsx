@@ -22,6 +22,7 @@ import { logInfo } from '../utils/logger';
 import StatusMini from '../components/Tasks/StatusMini';
 import { LocationValue } from '../utils/Format/entry/fields/LocationValue';
 import AttachmentLink from '../components/AttachmentLink';
+import { isAdmin } from '../utils/userRoles'
 
 const TaskFallback = ({ header, message }: Readonly<{ header: React.ReactNode, message: string }>) => {
   return (
@@ -79,7 +80,16 @@ const TaskContent = ({ header, task, users }: Readonly<TaskContentProps>) => {
   const contentEl: React.ReactElement | undefined =
   content != null ? <>{content}</> : undefined;
 
-  const canUpdateTask = user.current?.username === task.assignee?.username && task.status != "Done";
+  const username = user.current?.username;
+  const isAdminUser = isAdmin(user.current);
+
+  const canUpdateTask =
+  task.status !== "Done" &&
+  (
+    task.author?.username === username ||
+    task.assignee?.username === username ||
+    !!isAdminUser
+  );
 
   return (
     <>

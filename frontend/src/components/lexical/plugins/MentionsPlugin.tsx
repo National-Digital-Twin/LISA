@@ -87,11 +87,34 @@ const lookupService = {
     searchString: string | null,
     callback: (results: Array<Mentionable>) => void
   ): void {
-    const match = (searchString ?? '').trim().toLowerCase();
-    const results = data.filter(
-      (m) => m.type === type && m.label.toLowerCase().includes(match)
-    );
-    callback(results);
+    const query = (searchString ?? '').trim().toLowerCase();
+
+    const pool = data.filter((m) => m.type === type);
+
+    if (!query) {
+      const allAZ = [...pool].sort((a, b) =>
+        a.label.localeCompare(b.label, undefined, { sensitivity: 'base' })
+      );
+      callback(allAZ);
+      return;
+    }
+
+    const starts: Mentionable[] = [];
+    const contains: Mentionable[] = [];
+
+    for (const candidate of pool) {
+      const name = candidate.label.toLowerCase();
+      if (name.startsWith(query)) {
+        starts.push(candidate);
+      } else if (name.includes(query)) {
+        contains.push(candidate);
+      }
+    }
+
+    starts.sort((a, b) => a.label.localeCompare(b.label, undefined, { sensitivity: 'base' }));
+    contains.sort((a, b) => a.label.localeCompare(b.label, undefined, { sensitivity: 'base' }));
+
+    callback([...starts, ...contains]);
   },
 };
 
