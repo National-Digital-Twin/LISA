@@ -78,7 +78,7 @@ const TaskContent = ({ header, task, users }: Readonly<TaskContentProps>) => {
   }
 
   const contentEl: React.ReactElement | undefined =
-  content != null ? <>{content}</> : undefined;
+  content == null ? undefined : <>{content}</>;
 
   const username = user.current?.username;
   const isAdminUser = isAdmin(user.current);
@@ -146,7 +146,7 @@ const TaskContent = ({ header, task, users }: Readonly<TaskContentProps>) => {
             }
           </GridListItem>
 
-          <GridListItem title="Attachments" text={!task.attachments?.length ? "None" : undefined}>
+          <GridListItem title="Attachments" text={task.attachments?.length ? undefined : "None"}>
             {task.attachments?.length ? (
               <Box display="flex" flexDirection="column" gap={1}>
                 {task.attachments.map((attachment) => (

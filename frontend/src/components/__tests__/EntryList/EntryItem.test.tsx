@@ -40,8 +40,8 @@ beforeAll(() => {
 
 beforeEach(() => {
   jest.useFakeTimers();
-  jest.spyOn(window, 'setTimeout');
-  jest.spyOn(window, 'clearTimeout');
+  jest.spyOn(globalThis, 'setTimeout');
+  jest.spyOn(globalThis, 'clearTimeout');
   (navigator.clipboard.writeText as jest.Mock).mockClear();
   postToastMock.mockClear();
   removeToastMock.mockClear();
@@ -107,7 +107,7 @@ test('long-press on mobile copies sequence, shows success toast, and auto-dismis
   expect(removeToastMock).toHaveBeenCalledWith('copied_123');
 
   fireEvent.touchEnd(button);
-  expect(window.clearTimeout).toHaveBeenCalled();
+  expect(globalThis.clearTimeout).toHaveBeenCalled();
 });
 
 test('offline entry: long-press does nothing (no copy, no toast)', async () => {

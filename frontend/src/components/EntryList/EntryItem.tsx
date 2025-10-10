@@ -5,7 +5,7 @@
 // Global imports
 import { MouseEvent, ReactElement, useContext, useEffect, useMemo, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
-import { Box, Divider, Grid2 as Grid, Paper, Typography } from '@mui/material';
+import { Box, ButtonBase, Divider, Grid2 as Grid, Paper, Typography } from '@mui/material';
 import PersonIcon from '@mui/icons-material/Person';
 
 // Local imports
@@ -64,43 +64,47 @@ const EntryItem = ({
     }
   }, [hash, id, disableScrollTo]);
 
-  const timerRef = useRef<number | null>(null);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  const onLongPress = async () => {
+    const text = entry?.sequence ?? '';
+    if (!text) return;
+  
+    try {
+      if (!navigator.clipboard?.writeText) throw new Error('clipboard unavailable');
+      await navigator.clipboard.writeText(text);
+  
+      const id = `copied_${text}`;
+      postToast({
+        id,
+        type: 'Success',
+        content: <>Copied <strong>{text}</strong> to clipboard</>,
+        isDismissable: true,
+      });
+  
+      globalThis.setTimeout(removeToast, FLASH_TOAST_MS, id);
+    } catch {
+      const id = `copyerror_${text}`;
+      postToast({
+        id,
+        type: 'Error',
+        content: <>Couldn’t copy <strong>{text}</strong>. Try again.</>,
+        isDismissable: true,
+      });
+    }
+  };
+  
   const startPress = () => {
     if (offline) return;
-    if (timerRef.current !== null) {
-      window.clearTimeout(timerRef.current);
+    if (timerRef.current) {
+      globalThis.clearTimeout(timerRef.current);
     }
-    timerRef.current = window.setTimeout(() => {
-      const text = entry?.sequence != null ? entry.sequence : '';
-      if (!text) return;
-  
-      navigator.clipboard?.writeText(text)
-        .then(() => {
-          const id = `copied_${text}`
-          postToast({
-            id,
-            type: 'Success',
-            content: <>Copied <strong>{text}</strong> to clipboard</>,
-            isDismissable: true,
-          });
-          window.setTimeout(() => removeToast(id), FLASH_TOAST_MS);
-        })
-        .catch(() => {
-          const id = `copyerror_${text}`;
-          postToast({
-            id,
-            type: 'Error',
-            content: <>Couldn’t copy <strong>{text}</strong>. Try again.</>,
-            isDismissable: true,
-          });
-        });
-    }, LONG_PRESS_MS);
+    timerRef.current = globalThis.setTimeout(onLongPress, LONG_PRESS_MS);
   };
-
+  
   const cancelPress = () => {
-    if (timerRef.current !== null) {
-      window.clearTimeout(timerRef.current);
+    if (timerRef.current) {
+      globalThis.clearTimeout(timerRef.current);
       timerRef.current = null;
     }
   };
@@ -126,24 +130,39 @@ const EntryItem = ({
               size={{ xs: 2, md: 3 }}
               title={entry.offline ? 'Offline entry' : ''}
             >
-              <Typography
-                variant="body2"
+              <ButtonBase
+                type="button"
+                disabled={entry.offline}
                 onTouchStart={startPress}
                 onTouchEnd={cancelPress}
                 onTouchMove={cancelPress}
                 onTouchCancel={cancelPress}
-                aria-label={entry.offline ? "Submitting" : `Copy #${entry.sequence}`}
-                role="button"
+                aria-label={entry.offline ? 'Submitting' : `Copy #${entry.sequence}`}
                 sx={{
-                  color: 'text.primary',
-                  textDecoration: 'none',
-                  fontStyle: entry.offline ? 'italic' : 'normal',
-                  cursor: entry.offline ? "default" : "copy",
-                  userSelect: "none",
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  backgroundColor: 'transparent',
+                  border: 0,
+                  padding: 0,
+                  margin: 0,
+                  cursor: entry.offline ? 'default' : 'copy',
+                  '&:disabled': { cursor: 'default' },
                 }}
+                disableRipple
+                disableTouchRipple
               >
-                {entry.offline ? 'Submitting' : `#${entry.sequence}`}
-              </Typography>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    color: 'text.primary',
+                    textDecoration: 'none',
+                    fontStyle: entry.offline ? 'italic' : 'normal',
+                    userSelect: 'none',
+                  }}
+                >
+                  {entry.offline ? 'Submitting' : `#${entry.sequence}`}
+                </Typography>
+              </ButtonBase>
             </Grid>
           </Box>
           <Divider />
