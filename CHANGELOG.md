@@ -15,7 +15,7 @@ This project follows **Semantic Versioning (SemVer)** ([semver.org](https://semv
 
  ---
 
- ## [0.95.0] - 2025-10-10
+ ## [0.94.5] - 2025-10-10
 
  ### Features
 
