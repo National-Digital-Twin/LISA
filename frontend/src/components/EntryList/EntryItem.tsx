@@ -3,9 +3,9 @@
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
 // Global imports
-import { MouseEvent, ReactElement, useEffect, useMemo, useRef } from 'react';
+import { MouseEvent, ReactElement, useContext, useEffect, useMemo, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
-import { Box, Divider, Grid2 as Grid, Paper, Typography } from '@mui/material';
+import { Box, ButtonBase, Divider, Grid2 as Grid, Paper, Typography } from '@mui/material';
 import PersonIcon from '@mui/icons-material/Person';
 
 // Local imports
@@ -19,6 +19,9 @@ import Mentions from './Mentions';
 import Meta from './Meta';
 import { Format } from '../../utils';
 import { useResponsive } from '../../hooks/useResponsiveHook';
+import { useToast } from '../../hooks';
+import { ToastContextType } from '../../utils/types';
+import { ToastContext } from '../../context/ToastContext';
 
 interface Props {
   entry: LogEntry;
@@ -36,7 +39,12 @@ const EntryItem = ({
   onMentionClick,
   metaItems = undefined
 }: Props) => {
+  const LONG_PRESS_MS = 550;
+  const FLASH_TOAST_MS = 1200;
+
   const { isMobile, isBelowMd } = useResponsive();
+  const postToast = useToast();
+  const { removeToast } = useContext(ToastContext) as ToastContextType;
   const { hash } = useLocation();
   const divRef = useRef<HTMLDivElement>(null);
   const { id, offline } = entry;
@@ -55,6 +63,52 @@ const EntryItem = ({
       divRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
   }, [hash, id, disableScrollTo]);
+
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const onLongPress = async () => {
+    const text = entry?.sequence ?? '';
+    if (!text) return;
+  
+    try {
+      if (!navigator.clipboard?.writeText) throw new Error('clipboard unavailable');
+      await navigator.clipboard.writeText(text);
+  
+      const id = `copied_${text}`;
+      postToast({
+        id,
+        type: 'Success',
+        content: <>Copied <strong>{text}</strong> to clipboard</>,
+        isDismissable: true,
+      });
+  
+      globalThis.setTimeout(removeToast, FLASH_TOAST_MS, id);
+    } catch {
+      const id = `copyerror_${text}`;
+      postToast({
+        id,
+        type: 'Error',
+        content: <>Couldn’t copy <strong>{text}</strong>. Try again.</>,
+        isDismissable: true,
+      });
+    }
+  };
+  
+  const startPress = () => {
+    if (offline) return;
+    if (timerRef.current) {
+      globalThis.clearTimeout(timerRef.current);
+    }
+    timerRef.current = globalThis.setTimeout(onLongPress, LONG_PRESS_MS);
+  };
+  
+  const cancelPress = () => {
+    if (timerRef.current) {
+      globalThis.clearTimeout(timerRef.current);
+      timerRef.current = null;
+    }
+  };
+  
 
   return (
     <Box component={Paper} square id={id} ref={divRef} className={classes()}>
@@ -76,16 +130,39 @@ const EntryItem = ({
               size={{ xs: 2, md: 3 }}
               title={entry.offline ? 'Offline entry' : ''}
             >
-              <Typography
-                variant="body2"
+              <ButtonBase
+                type="button"
+                disabled={entry.offline}
+                onTouchStart={startPress}
+                onTouchEnd={cancelPress}
+                onTouchMove={cancelPress}
+                onTouchCancel={cancelPress}
+                aria-label={entry.offline ? 'Submitting' : `Copy #${entry.sequence}`}
                 sx={{
-                  color: 'text.primary',
-                  textDecoration: 'none',
-                  fontStyle: entry.offline ? 'italic' : 'normal',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  backgroundColor: 'transparent',
+                  border: 0,
+                  padding: 0,
+                  margin: 0,
+                  cursor: entry.offline ? 'default' : 'copy',
+                  '&:disabled': { cursor: 'default' },
                 }}
+                disableRipple
+                disableTouchRipple
               >
-                {entry.offline ? 'Submitting' : `#${entry.sequence}`}
-              </Typography>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    color: 'text.primary',
+                    textDecoration: 'none',
+                    fontStyle: entry.offline ? 'italic' : 'normal',
+                    userSelect: 'none',
+                  }}
+                >
+                  {entry.offline ? 'Submitting' : `#${entry.sequence}`}
+                </Typography>
+              </ButtonBase>
             </Grid>
           </Box>
           <Divider />
