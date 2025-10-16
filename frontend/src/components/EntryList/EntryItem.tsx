@@ -76,15 +76,19 @@ const EntryItem = ({
         await navigator.clipboard.writeText(text);
       } else {
         const ta = document.createElement('textarea');
-        ta.value = text;
-        ta.setAttribute('readonly', '');
-        ta.style.position = 'fixed';
-        ta.style.top = '-10000px';
-        ta.style.left = '-10000px';
-        document.body.appendChild(ta);
-        ta.select();
-        document.execCommand('copy');
-        document.body.removeChild(ta);
+        try {
+          ta.value = text;
+          ta.setAttribute('readonly', '');
+          ta.style.position = 'fixed';
+          ta.style.top = '-10000px';
+          ta.style.left = '-10000px';
+          document.body.appendChild(ta);
+          ta.select();
+          //deprecated but necessary to work with iOS Safari as a fallback if clipboard.writeText does not succeed
+          document.execCommand('copy');
+        } finally {
+          ta.remove();
+        }
       }
 
       const id = `copied_${text}`;
