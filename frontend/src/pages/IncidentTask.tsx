@@ -91,6 +91,8 @@ const TaskContent = ({ header, task, users }: Readonly<TaskContentProps>) => {
     !!isAdminUser
   );
 
+  const excludeSelfFromAvailableAssignees = task?.assignee?.username === user.current?.username;
+
   return (
     <>
       {header}
@@ -130,7 +132,7 @@ const TaskContent = ({ header, task, users }: Readonly<TaskContentProps>) => {
             <AssigneeSelector
               value={task.assignee}
               availableValues={users
-                ?.filter((u) => u.displayName && u.username !== user.current?.username)
+                ?.filter((u) => !!u.displayName && (!excludeSelfFromAvailableAssignees || u.username !== user.current?.username))
                 .sort((a, b) => a.displayName.localeCompare(b.displayName)) ?? []}
               onChange={onChangeAssignee}
             />

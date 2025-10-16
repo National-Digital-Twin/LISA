@@ -65,15 +65,32 @@ const EntryItem = ({
   }, [hash, id, disableScrollTo]);
 
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const pressStartRef = useRef<number | null>(null);
+  const longPressTriggeredRef = useRef(false);
 
-  const onLongPress = async () => {
-    const text = entry?.sequence ?? '';
-    if (!text) return;
-  
+  const copyText = async (text: string) => {
     try {
-      if (!navigator.clipboard?.writeText) throw new Error('clipboard unavailable');
-      await navigator.clipboard.writeText(text);
-  
+      if (!text) return;
+
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(text);
+      } else {
+        const ta = document.createElement('textarea');
+        try {
+          ta.value = text;
+          ta.setAttribute('readonly', '');
+          ta.style.position = 'fixed';
+          ta.style.top = '-10000px';
+          ta.style.left = '-10000px';
+          document.body.appendChild(ta);
+          ta.select();
+          //deprecated but necessary to work with iOS Safari as a fallback if clipboard.writeText does not succeed
+          document.execCommand('copy');
+        } finally {
+          ta.remove();
+        }
+      }
+
       const id = `copied_${text}`;
       postToast({
         id,
@@ -93,22 +110,48 @@ const EntryItem = ({
       });
     }
   };
-  
-  const startPress = () => {
+
+  const onPressStart = (e: React.TouchEvent | React.PointerEvent) => {
     if (offline) return;
-    if (timerRef.current) {
-      globalThis.clearTimeout(timerRef.current);
-    }
-    timerRef.current = globalThis.setTimeout(onLongPress, LONG_PRESS_MS);
+    e.preventDefault?.();
+
+    pressStartRef.current = Date.now();
+    longPressTriggeredRef.current = false;
+
+    if (timerRef.current) clearTimeout(timerRef.current);
+    timerRef.current = globalThis.setTimeout(() => {
+      longPressTriggeredRef.current = true;
+      // Haptic feedback on device upon copy completion
+      if (navigator.vibrate) navigator.vibrate(10);
+    }, LONG_PRESS_MS);
   };
-  
-  const cancelPress = () => {
+
+  const onPressEnd = () => {
     if (timerRef.current) {
-      globalThis.clearTimeout(timerRef.current);
+      clearTimeout(timerRef.current);
       timerRef.current = null;
     }
+
+    const started = pressStartRef.current ?? 0;
+    const duration = Date.now() - started;
+    pressStartRef.current = null;
+
+    const isLong = longPressTriggeredRef.current || duration >= LONG_PRESS_MS;
+    longPressTriggeredRef.current = false;
+
+    if (isLong && !offline) {
+      copyText(entry?.sequence ?? '');
+    }
   };
-  
+
+  const cancelPress = () => {
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+      timerRef.current = null;
+    }
+    longPressTriggeredRef.current = false;
+    pressStartRef.current = null;
+  };
 
   return (
     <Box component={Paper} square id={id} ref={divRef} className={classes()}>
@@ -133,10 +176,11 @@ const EntryItem = ({
               <ButtonBase
                 type="button"
                 disabled={entry.offline}
-                onTouchStart={startPress}
-                onTouchEnd={cancelPress}
+                onTouchStart={onPressStart}
+                onTouchEnd={onPressEnd}
                 onTouchMove={cancelPress}
                 onTouchCancel={cancelPress}
+                onContextMenu={(e) => e.preventDefault()}
                 aria-label={entry.offline ? 'Submitting' : `Copy #${entry.sequence}`}
                 sx={{
                   display: 'inline-flex',
@@ -147,6 +191,9 @@ const EntryItem = ({
                   margin: 0,
                   cursor: entry.offline ? 'default' : 'copy',
                   '&:disabled': { cursor: 'default' },
+                  WebkitTapHighlightColor: 'transparent',
+                  WebkitTouchCallout: 'none',
+                  userSelect: 'none'
                 }}
                 disableRipple
                 disableTouchRipple

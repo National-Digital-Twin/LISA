@@ -88,10 +88,16 @@ test('long-press on mobile copies sequence, shows success toast, and auto-dismis
   renderWithProviders(<EntryItem {...defaultProps} />);
 
   const button = screen.getByRole('button', { name: 'Copy #123' });
+
   fireEvent.touchStart(button);
 
   await act(async () => {
     jest.advanceTimersByTime(560);
+  });
+
+  await act(async () => {
+    fireEvent.touchEnd(button);
+    await Promise.resolve();
   });
 
   expect(navigator.clipboard.writeText).toHaveBeenCalledWith('123');
@@ -106,9 +112,9 @@ test('long-press on mobile copies sequence, shows success toast, and auto-dismis
   });
   expect(removeToastMock).toHaveBeenCalledWith('copied_123');
 
-  fireEvent.touchEnd(button);
   expect(globalThis.clearTimeout).toHaveBeenCalled();
 });
+
 
 test('offline entry: long-press does nothing (no copy, no toast)', async () => {
   mockUseResponsive.mockReturnValue({ isMobile: true, isBelowMd: true });
