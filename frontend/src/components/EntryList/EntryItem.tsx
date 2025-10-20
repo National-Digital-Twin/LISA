@@ -39,7 +39,6 @@ const EntryItem = ({
   onMentionClick,
   metaItems = undefined
 }: Props) => {
-  const LONG_PRESS_MS = 550;
   const FLASH_TOAST_MS = 1200;
 
   const { isMobile, isBelowMd } = useResponsive();
@@ -64,33 +63,46 @@ const EntryItem = ({
     }
   }, [hash, id, disableScrollTo]);
 
-  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const pressStartRef = useRef<number | null>(null);
-  const longPressTriggeredRef = useRef(false);
-
   const copyText = async (text: string) => {
+    if (!text) return;
+
+    if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(text);
+      return;
+    }
+
+    const helper = document.createElement('div');
+    helper.textContent = text;
+    helper.setAttribute('contenteditable', 'true');
+    helper.setAttribute('aria-hidden', 'true');
+    helper.style.position = 'fixed';
+    helper.style.top = '0';
+    helper.style.left = '0';
+    helper.style.width = '1px';
+    helper.style.height = '1px';
+    helper.style.opacity = '0';
+    helper.style.pointerEvents = 'none';
+    document.body.appendChild(helper);
     try {
-      if (!text) return;
+      const range = document.createRange();
+      range.selectNodeContents(helper);
+      const sel = globalThis.getSelection();
+      sel?.removeAllRanges();
+      sel?.addRange(range);
+      //deprecated but necessary to work as a fallback if clipboard.writeText does not succeed
+      document.execCommand('copy');
+    } finally {
+      const sel = globalThis.getSelection();
+      sel?.removeAllRanges();
+      helper.remove();
+    }
+  };
 
-      if (navigator.clipboard?.writeText) {
-        await navigator.clipboard.writeText(text);
-      } else {
-        const ta = document.createElement('textarea');
-        try {
-          ta.value = text;
-          ta.setAttribute('readonly', '');
-          ta.style.position = 'fixed';
-          ta.style.top = '-10000px';
-          ta.style.left = '-10000px';
-          document.body.appendChild(ta);
-          ta.select();
-          //deprecated but necessary to work with iOS Safari as a fallback if clipboard.writeText does not succeed
-          document.execCommand('copy');
-        } finally {
-          ta.remove();
-        }
-      }
-
+  const handleCopyClick = async () => {
+    if (offline) return;
+    const text = entry?.sequence ?? '';
+    try {
+      await copyText(text);
       const id = `copied_${text}`;
       postToast({
         id,
@@ -98,59 +110,16 @@ const EntryItem = ({
         content: <>Copied <strong>{text}</strong> to clipboard</>,
         isDismissable: true,
       });
-  
       globalThis.setTimeout(removeToast, FLASH_TOAST_MS, id);
     } catch {
       const id = `copyerror_${text}`;
       postToast({
         id,
         type: 'Error',
-        content: <>Couldn’t copy <strong>{text}</strong>. Try again.</>,
+        content: <>Couldn't copy <strong>{text}</strong>. Try again.</>,
         isDismissable: true,
       });
     }
-  };
-
-  const onPressStart = (e: React.TouchEvent | React.PointerEvent) => {
-    if (offline) return;
-    e.preventDefault?.();
-
-    pressStartRef.current = Date.now();
-    longPressTriggeredRef.current = false;
-
-    if (timerRef.current) clearTimeout(timerRef.current);
-    timerRef.current = globalThis.setTimeout(() => {
-      longPressTriggeredRef.current = true;
-      // Haptic feedback on device upon copy completion
-      if (navigator.vibrate) navigator.vibrate(10);
-    }, LONG_PRESS_MS);
-  };
-
-  const onPressEnd = () => {
-    if (timerRef.current) {
-      clearTimeout(timerRef.current);
-      timerRef.current = null;
-    }
-
-    const started = pressStartRef.current ?? 0;
-    const duration = Date.now() - started;
-    pressStartRef.current = null;
-
-    const isLong = longPressTriggeredRef.current || duration >= LONG_PRESS_MS;
-    longPressTriggeredRef.current = false;
-
-    if (isLong && !offline) {
-      copyText(entry?.sequence ?? '');
-    }
-  };
-
-  const cancelPress = () => {
-    if (timerRef.current) {
-      clearTimeout(timerRef.current);
-      timerRef.current = null;
-    }
-    longPressTriggeredRef.current = false;
-    pressStartRef.current = null;
   };
 
   return (
@@ -176,10 +145,7 @@ const EntryItem = ({
               <ButtonBase
                 type="button"
                 disabled={entry.offline}
-                onTouchStart={onPressStart}
-                onTouchEnd={onPressEnd}
-                onTouchMove={cancelPress}
-                onTouchCancel={cancelPress}
+                onClick={handleCopyClick}
                 onContextMenu={(e) => e.preventDefault()}
                 aria-label={entry.offline ? 'Submitting' : `Copy #${entry.sequence}`}
                 sx={{
