@@ -86,13 +86,13 @@ const EntryItem = ({
     try {
       const range = document.createRange();
       range.selectNodeContents(helper);
-      const sel = window.getSelection();
+      const sel = globalThis.getSelection();
       sel?.removeAllRanges();
       sel?.addRange(range);
       //deprecated but necessary to work as a fallback if clipboard.writeText does not succeed
       document.execCommand('copy');
     } finally {
-      const sel = window.getSelection();
+      const sel = globalThis.getSelection();
       sel?.removeAllRanges();
       helper.remove();
     }
