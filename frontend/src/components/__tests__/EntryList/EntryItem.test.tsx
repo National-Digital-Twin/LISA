@@ -81,7 +81,7 @@ const defaultProps = {
   onMentionClick: jest.fn(),
 };
 
-test('long-press on mobile copies sequence, shows success toast, and auto-dismisses', async () => {
+test('click copies sequence, shows success toast, and auto-dismisses', async () => {
   mockHash = '';
   mockUseResponsive.mockReturnValue({ isMobile: true, isBelowMd: true });
 
@@ -89,14 +89,8 @@ test('long-press on mobile copies sequence, shows success toast, and auto-dismis
 
   const button = screen.getByRole('button', { name: 'Copy #123' });
 
-  fireEvent.touchStart(button);
-
   await act(async () => {
-    jest.advanceTimersByTime(560);
-  });
-
-  await act(async () => {
-    fireEvent.touchEnd(button);
+    fireEvent.click(button);
     await Promise.resolve();
   });
 
@@ -111,8 +105,6 @@ test('long-press on mobile copies sequence, shows success toast, and auto-dismis
     jest.advanceTimersByTime(1200);
   });
   expect(removeToastMock).toHaveBeenCalledWith('copied_123');
-
-  expect(globalThis.clearTimeout).toHaveBeenCalled();
 });
 
 
