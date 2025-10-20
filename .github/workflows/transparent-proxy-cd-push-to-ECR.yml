@@ -76,7 +76,7 @@ jobs:
                         -f ${{ inputs.app_name }}/Dockerfile ./${{ inputs.app_name }}
 
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@v5
         with:
           role-to-assume: arn:aws:iam::${{ inputs.aws_account_number }}:role/ecr-access-for-github
           aws-region: eu-west-2

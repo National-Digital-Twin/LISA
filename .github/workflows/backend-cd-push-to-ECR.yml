@@ -71,7 +71,7 @@ jobs:
           echo "Using provided version: $VERSION"
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: '24.x'
 
@@ -91,7 +91,7 @@ jobs:
                   -f ./Dockerfile.backend .
 
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@v5
         with:
           role-to-assume: arn:aws:iam::${{ inputs.aws_account_number }}:role/ecr-access-for-github
           aws-region: eu-west-2
