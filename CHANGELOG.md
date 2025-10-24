@@ -15,6 +15,19 @@ This project follows **Semantic Versioning (SemVer)** ([semver.org](https://semv
 
  ---
 
+ ## [0.94.6] - 2025-10-24
+
+ ### Features
+
+ - Tasks can be modified by administrators and the task creator, not just assignee
+ - Long tap on log entry sequence copies it to clipboard
+ - Tagging entities shows the entity that starts with the search string first, followed by an A-Z list of entities that contain the search string
+
+ ### Bugfixes
+
+ - Save button is disabled on entity creation screens when clicked once
+ - 2 min grace period added to avoid cases where this is a slight drift between client and server times, to prevent future date errors.
+
  ## [0.94.5] - 2025-10-10
 
  ### Features

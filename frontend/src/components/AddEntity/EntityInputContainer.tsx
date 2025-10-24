@@ -3,7 +3,7 @@
 // and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
 import { Box, Button, IconButton, Typography } from '@mui/material';
-import { ReactNode } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ImportContactsIcon from '@mui/icons-material/ImportContacts';
 import { EntityDivider } from './EntityDivider';
@@ -36,7 +36,25 @@ export const EntityInputContainer = ({
 }: Props) => {
   const entityInputItem = data[level];
 
+  const [hasSaved, setHasSaved] = useState(false);
+
+  useEffect(() => {
+    setHasSaved(false);
+  }, [level]);
+
   const handleBackClick = () => (level > 0 ? setLevel(level - 1) : onMainBackClick());
+
+  const handleCancel = () => {
+    setHasSaved(false);
+    onCancel();
+  };
+
+  const handleSubmitOnce = () => {
+    if (hasSaved) return;
+    setHasSaved(true);
+    onSubmit();
+  };
+
   return (
     <Box display="flex" flexDirection="column" minHeight="100%">
       <Box display="flex" marginBottom={1} alignItems="center" gap={1}>
@@ -71,13 +89,13 @@ export const EntityInputContainer = ({
         {entityInputItem.inputControls}
         {(entityInputItem?.showButtons ?? false) && (
           <Box display="flex" alignSelf="flex-end" gap={1} paddingY={2}>
-            <Button onClick={onCancel} variant="outlined">
+            <Button onClick={handleCancel} variant="outlined">
               Cancel
             </Button>
             <Button
-              onClick={onSubmit}
+              onClick={handleSubmitOnce}
               variant="contained"
-              disabled={disableSubmit}
+              disabled={disableSubmit || hasSaved}
               startIcon={<ImportContactsIcon />}
             >
               Save

@@ -55,29 +55,16 @@ const TRIGGER_TO_TYPE: Record<string, MentionableType> = {
   [TRIGGERS.TASK]: 'Task'
 };
 
-const PUNCTUATION = '\\.,\\+\\*\\?\\$\\@\\|{}\\(\\)\\^\\-\\[\\]\\\\/!%\'"~=<>_:;';
-const VALID_CHARS = `[^${PUNCTUATION}\\s]`;
-const VALID_JOINS = ['(?:', '\\.[ |$]|', ' |', '[', PUNCTUATION, ']|', ')'].join('');
+const PUNCTUATION = String.raw`\.,\+\*\?\$\@\|{}\(\)\^\-\[\]\\/!%'"~=<>_:;`;
+const VALID_CHARS = String.raw`[^${PUNCTUATION}\s]`;
+const VALID_JOINS = String.raw`(?:\.[ |$]| |[${PUNCTUATION}]|)`;
 
 const LENGTH_LIMIT = 75;
 const SUGGESTION_LIST_LENGTH_LIMIT = 5;
 
 function createTriggerRegex(trigger: string): RegExp {
-  return new RegExp(
-    [
-      '(^|\\s|\\()(',
-      '(',
-      trigger,
-      ')',
-      '((?:',
-      VALID_CHARS,
-      VALID_JOINS,
-      '){0,',
-      LENGTH_LIMIT,
-      '})',
-      ')$'
-    ].join('')
-  );
+  const pattern = String.raw`(^|\s|\()(${trigger}((?:${VALID_CHARS}${VALID_JOINS}){0,${LENGTH_LIMIT}}))$`;
+  return new RegExp(pattern);
 }
 
 const lookupService = {
@@ -87,11 +74,34 @@ const lookupService = {
     searchString: string | null,
     callback: (results: Array<Mentionable>) => void
   ): void {
-    const match = (searchString ?? '').trim().toLowerCase();
-    const results = data.filter(
-      (m) => m.type === type && m.label.toLowerCase().includes(match)
-    );
-    callback(results);
+    const query = (searchString ?? '').trim().toLowerCase();
+
+    const pool = data.filter((m) => m.type === type);
+
+    if (!query) {
+      const allAZ = [...pool].sort((a, b) =>
+        a.label.localeCompare(b.label, undefined, { sensitivity: 'base' })
+      );
+      callback(allAZ);
+      return;
+    }
+
+    const starts: Mentionable[] = [];
+    const contains: Mentionable[] = [];
+
+    for (const candidate of pool) {
+      const name = candidate.label.toLowerCase();
+      if (name.startsWith(query)) {
+        starts.push(candidate);
+      } else if (name.includes(query)) {
+        contains.push(candidate);
+      }
+    }
+
+    starts.sort((a, b) => a.label.localeCompare(b.label, undefined, { sensitivity: 'base' }));
+    contains.sort((a, b) => a.label.localeCompare(b.label, undefined, { sensitivity: 'base' }));
+
+    callback([...starts, ...contains]);
   },
 };
 
@@ -239,7 +249,7 @@ export default function MentionsPlugin({mentionables}: Readonly<MentionsPluginPr
   const [currentTrigger, setCurrentTrigger] = useState<string>(TRIGGERS.DEFAULT);
 
   const typeForLookup: MentionableType | null =
-    currentTrigger !== TRIGGERS.DEFAULT ? TRIGGER_TO_TYPE[currentTrigger] : null;
+    currentTrigger == TRIGGERS.DEFAULT ? null : TRIGGER_TO_TYPE[currentTrigger];
 
   const results = useMentionLookupService(
     mentionables,
@@ -291,10 +301,10 @@ export default function MentionsPlugin({mentionables}: Readonly<MentionsPluginPr
     [results, currentTrigger]
   );
 
-  const options = currentTrigger !== TRIGGERS.DEFAULT ? mentionOptions : defaultOptions;
+  const options = currentTrigger == TRIGGERS.DEFAULT ? defaultOptions : mentionOptions;
 
-  const handleQueryChange = useCallback((matchingString: string | null) => {
-    const q = matchingString ?? '';
+  const handleQueryChange = useCallback((matchingString: string | null = '') => {
+    const q = matchingString;
     setFilter(q);
     if (q === '@') {
       setCurrentTrigger(TRIGGERS.DEFAULT);
@@ -315,7 +325,9 @@ export default function MentionsPlugin({mentionables}: Readonly<MentionsPluginPr
           const text = focusNode.getTextContent();
           const focusOffset = sel.focus.offset;
           const atIndex = text.lastIndexOf('@', Math.max(0, focusOffset - 1));
-          if (atIndex !== -1) {
+          if (atIndex == -1) {
+            sel.insertText(replacement);
+          } else {
             focusNode.spliceText(atIndex, focusOffset, replacement);
             sel.setTextNodeRange(
               focusNode,
@@ -323,8 +335,6 @@ export default function MentionsPlugin({mentionables}: Readonly<MentionsPluginPr
               focusNode,
               atIndex + replacement.length
             );
-          } else {
-            sel.insertText(replacement);
           }
         } else {
           sel.insertText(replacement);
