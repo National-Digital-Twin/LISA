@@ -1,11 +1,17 @@
 proxy_cache_path /tmp/nginx_cache levels=1:2 keys_zone=tp_cache:100m max_size=200m inactive=10000s use_temp_path=off;
 
+resolver kube-dns.kube-system.svc.cluster.local valid=30s ipv6=off;
+# resolver 8.8.8.8 valid=30s;
+
+upstream os_api {
+    zone os_api 64k;
+    server api.os.uk:443 resolve;
+    keepalive 64;
+}
+
 server {
     listen 8080 default_server;
     listen [::]:8080 default_server;
-
-    resolver kube-dns.kube-system.svc.cluster.local valid=30s;
-    # resolver 8.8.8.8 valid=30s;
 
     # Proxy config
     proxy_cache_valid any 1d;
@@ -56,8 +62,8 @@ server {
         }
 
         proxy_ssl_server_name on;
-        proxy_ssl_name "api.os.uk";
-        proxy_pass https://api.os.uk/;
+        proxy_ssl_name api.os.uk;
+        proxy_pass https://os_api/;
 
         ## END UPSTREAM DEFINITIONS
 
