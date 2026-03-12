@@ -9,6 +9,8 @@ LISA (Local Incident Services Application) is a web-based crisis and incident ma
  
 This repository functions as the frontend and backend of LISA. It provides the necessary REST styled endpoints to serve and route data from the IA (Integration Architecture) to the frontend and provides the necessary UI components to allow users to add and view incidents and log entries.
 
+For guidance using LISA, refer to the **[user guides directory](docs/user-guide)**.
+
 ## Prerequisites  
 Before using this repository, ensure you have the following dependencies installed:  
 - **Required Tooling:** Docker, NodeJS (20+), NPM  
