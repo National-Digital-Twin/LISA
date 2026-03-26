@@ -15,7 +15,11 @@ This project follows **Semantic Versioning (SemVer)** ([semver.org](https://semv
 
  ---
 
- ## Unreleased
+ ## [0.94.7] - 2026-03-26
+
+ ### Features
+
+ - NDTP Styling Assets package moved from version 1.1.1 to 0.90.0 as part of public release of package
 
  ### Bugfixes
 
