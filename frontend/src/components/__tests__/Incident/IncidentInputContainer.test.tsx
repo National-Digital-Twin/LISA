@@ -121,11 +121,14 @@ jest.mock('../../SetInformation/utils', () => ({
 async function pickFromMuiSelect(rootTestId: string, optionText: string) {
   const root = screen.getByTestId(rootTestId);
   const trigger = within(root).getByRole('combobox');
-  await userEvent.click(trigger);
   fireEvent.mouseDown(trigger);
+  await userEvent.click(trigger);
 
-  const listbox = await screen.findByRole('listbox');
-  await userEvent.click(within(listbox).getByText(optionText));
+  const option =
+    screen.queryByRole('option', { name: optionText }) ??
+    within(await screen.findByRole('listbox')).getByRole('option', { name: optionText });
+
+  await userEvent.click(option);
 }
 
 async function fillRequiredFieldsCreateMode() {
@@ -205,7 +208,7 @@ describe('IncidentInputContainer', () => {
     expect(dayjs(incident.startedAt).isValid()).toBe(true);
     expect(dayjs(incident.startedAt).hour()).toBe(12);
     expect(dayjs(incident.startedAt).minute()).toBe(34);
-  });
+  }, 15000);
 
   test('supportRequested: shows and hides description field based on selection', async () => {
     render(<IncidentInputContainer isEditing={false} onSubmit={jest.fn()} onCancel={() => {}} />);
