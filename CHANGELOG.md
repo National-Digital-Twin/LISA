@@ -15,6 +15,16 @@ This project follows **Semantic Versioning (SemVer)** ([semver.org](https://semv
 
  ---
 
+ ## [0.94.7] - 2026-03-26
+
+ ### Features
+
+ - NDTP Styling Assets package moved from version 1.1.1 to 0.90.0 as part of public release of package
+
+ ### Bugfixes
+
+ - Transparent proxy amended so bad DNS resolution is not cached forever, now re-resolves every 30s upon a new request
+
  ## [0.94.6] - 2025-10-24
 
  ### Features

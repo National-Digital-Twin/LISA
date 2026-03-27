@@ -1,6 +1,9 @@
 FROM nginxinc/nginx-unprivileged:1.29-alpine3.22
 
-RUN ["rm", "/etc/nginx/conf.d/default.conf"]
+USER root
+RUN apk upgrade --no-cache \
+  && rm -f /etc/nginx/conf.d/default.conf
 
 COPY proxy.conf.template /etc/nginx/templates/proxy.conf.template
 COPY settings.conf.template /etc/nginx/templates/settings.conf.template
+USER 101
