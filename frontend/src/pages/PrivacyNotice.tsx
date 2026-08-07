@@ -171,9 +171,6 @@ export default function PrivacyNotice() {
               width: 300,
               height: "auto",
               objectFit: "contain",
-              ml: -5,
-              mt: -4,
-              mb: -4,
             }}
           />
         </Box>
