@@ -76,7 +76,7 @@ jobs:
           node-version: '24.x'
 
       - name: Install Dependencies
-        run: npm ci
+        run: npm ci --ignore-scripts
 
       - name: Build Frontend
         env:

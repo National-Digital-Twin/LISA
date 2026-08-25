@@ -35,7 +35,7 @@ jobs:
           node-version: '24.x'
 
       - name: Install Dependencies
-        run: npm ci
+        run: npm ci --ignore-scripts
 
       - name: Check for Outdated Dependencies
         run: npm audit
@@ -62,7 +62,7 @@ jobs:
           node-version: '24.x'
 
       - name: Install Dependencies
-        run: npm ci
+        run: npm ci --ignore-scripts
 
       - name: Run Linting
         run: npm run lint
@@ -89,7 +89,7 @@ jobs:
           node-version: '24.x'
 
       - name: Install Dependencies
-        run: npm ci
+        run: npm ci --ignore-scripts
 
       - name: Run Backend Unit Tests
         working-directory: backend
@@ -146,7 +146,7 @@ jobs:
           node-version: '24.x'
 
       - name: Install Dependencies
-        run: npm ci
+        run: npm ci --ignore-scripts
 
       - name: Build backend
         run: |
