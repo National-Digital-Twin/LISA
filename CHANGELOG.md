@@ -17,11 +17,10 @@ This project follows **Semantic Versioning (SemVer)** ([semver.org](https://semv
 
  ## [0.94.8] - 2026-08-13
 
- ### Changes
+ ### Changed
 
  - Update privacy notice
  - Updated GitHub Actions to latest versions.
- - Hardened `npm ci` steps in CI/CD workflows with `--ignore-scripts` to prevent lifecycle scripts from running during package installation.
 
  ## [0.94.7] - 2026-03-26
 
