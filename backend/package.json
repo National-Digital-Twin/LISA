@@ -16,7 +16,7 @@
   "license": "MIT",
   "dependencies": {
     "@aws-sdk/client-cognito-identity-provider": "3.1118.0",
-    "@aws-sdk/client-s3": "3.890.0",
+    "@aws-sdk/client-s3": "3.1118.0",
     "@eslint/eslintrc": "3.3.1",
     "@eslint/js": "9.35.0",
     "@rdfjs/data-model": "2.1.1",
