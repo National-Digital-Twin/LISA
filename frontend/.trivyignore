@@ -1,3 +1,6 @@
 # Going to accept the following vulnerabilities in the base debian image as we are not immediately vulnerable to these and a fix is eventually going to be pushed up to the main nginx container.
 # TODO: update nginx image when fix is published
+# No fix currently provided for CVE-2026-14456, vulnerability is to the QUIC server side of OpenSSL
+
 CVE-2025-4598
+CVE-2026-14456
