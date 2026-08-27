@@ -4,3 +4,9 @@
 
 CVE-2025-4598
 CVE-2026-14456
+
+# npm package updated to the latest version npm@12.0.2, unable to find fix
+CVE-2026-14257
+CVE-2026-69152
+CVE-2026-69192
+CVE-2026-73566
