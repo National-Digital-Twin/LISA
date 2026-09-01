@@ -11,21 +11,20 @@ on:
       - '.github/workflows/transparent-proxy-ci-pr.yml'
       - '.github/workflows/transparent-proxy-ci-pr-merge.yml'
   workflow_dispatch:
-permissions:
-  contents: read
-  packages: read
-  statuses: write # To report GitHub Actions status checks
-
 jobs:
   linting:
     name: Linting
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
+      statuses: write # To report GitHub Actions status checks
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Run Hadolint (Dockerfile Linter)
-        uses: hadolint/hadolint-action@v3.1.0
+        uses: hadolint/hadolint-action@2a66e89f53d0771bb131a7fa31f3136336094aa6 # v3.4.0
         with:
           dockerfile: transparent-proxy/Dockerfile
           verbose: true
@@ -35,14 +34,18 @@ jobs:
   security-scanning:
     name: Security Scanning
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
+      statuses: write # To report GitHub Actions status checks
     needs: linting
     timeout-minutes: 10
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@0.32.0
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
         with:
           scan-type: 'fs'
           scan-ref: transparent-proxy
@@ -54,13 +57,17 @@ jobs:
   docker-build-test-scan:
     name: Docker Build, Test & Scan
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
+      statuses: write # To report GitHub Actions status checks
     needs: security-scanning
     timeout-minutes: 20
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Build Docker Image
         working-directory: transparent-proxy
@@ -68,7 +75,7 @@ jobs:
           docker build -t lisa/transparent-proxy:latest .
 
       - name: Run Trivy Scan on Docker Image
-        uses: aquasecurity/trivy-action@0.32.0
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
         with:
           image-ref: 'lisa/transparent-proxy:latest'
           format: 'table'
