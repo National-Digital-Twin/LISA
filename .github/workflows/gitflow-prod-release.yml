@@ -87,7 +87,7 @@ jobs:
       # Log in to Amazon ECR (source account)
       - name: Login to Amazon ECR - Source Account
         id: login-ecr-source
-        uses: aws-actions/amazon-ecr-login@d539f0932e70871a027e9d5a9d8fc38589180a64 # v2.1.6
+        uses: aws-actions/amazon-ecr-login@03f1aad4c6c7ffd436567f42f9384779290529bd # v2.1.7
 
       # Pull all tags for the image from the source ECR
       - name: Pull All Tags for the Image
@@ -121,7 +121,7 @@ jobs:
       # Log in to Amazon ECR (destination account)
       - name: Login to Amazon ECR - Destination Account
         id: login-ecr-destination
-        uses: aws-actions/amazon-ecr-login@d539f0932e70871a027e9d5a9d8fc38589180a64 # v2.1.6
+        uses: aws-actions/amazon-ecr-login@03f1aad4c6c7ffd436567f42f9384779290529bd # v2.1.7
 
       # Tag and push all locally available tags to the destination ECR
       - name: Tag and Push All Tags to Destination ECR
