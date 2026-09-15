@@ -1,5 +1,10 @@
 # FROM nginx as runner
 FROM nginxinc/nginx-unprivileged:1.29-alpine3.22
 
+# Pull in patched Alpine packages in the base image layer.
+USER root
+RUN apk upgrade --no-cache
+
 # Copy the built files from the builder stage to the runner stage
 COPY frontend/dist /usr/share/nginx/html
+USER 101

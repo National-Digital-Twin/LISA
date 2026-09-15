@@ -1,4 +1,5 @@
-import path from 'path';
+import path from 'node:path';
+import { createRequire } from 'node:module';
 import react from '@vitejs/plugin-react';
 import basicSSL from '@vitejs/plugin-basic-ssl';
 import { defineConfig, loadEnv } from 'vite';
@@ -6,6 +7,10 @@ import { VitePWA } from 'vite-plugin-pwa';
 import svgr from 'vite-plugin-svgr';
 
 const sslEnabled = process.env.SSL_ENABLED === 'true';
+const require = createRequire(import.meta.url);
+const ndtpScssEntry = require.resolve('@national-digital-twin/ndtp-styling-assets/scss');
+const sharedStylesPath = path.dirname(ndtpScssEntry);
+const sharedAssetsPath = path.resolve(sharedStylesPath, '../assets');
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
@@ -71,15 +76,9 @@ export default defineConfig(({ mode }) => {
     },
     resolve: {
       alias: {
-        '@shared-assets': path.resolve(
-          process.cwd(),
-          '../node_modules/@national-digital-twin/ndtp-styling-assets/dist/assets'
-        ),
-        '@shared-styles': path.resolve(
-          process.cwd(),
-          '../node_modules/@national-digital-twin/ndtp-styling-assets/dist/scss'
-        ),
-        ndtp: path.resolve(__dirname, '../node_modules/@national-digital-twin/ndtp-styling-assets/dist/scss/main.scss'),
+        '@shared-assets': sharedAssetsPath,
+        '@shared-styles': sharedStylesPath,
+        ndtp: ndtpScssEntry,
         common: path.resolve(__dirname, '../common')
       }
     },
@@ -87,12 +86,7 @@ export default defineConfig(({ mode }) => {
       preprocessorOptions: {
         scss: {
           api: 'modern-compiler',
-          includePaths: [
-            path.resolve(
-              __dirname,
-              '../node_modules/@national-digital-twin/ndtp-styling-assets/dist/scss'
-            )
-          ]
+          includePaths: [sharedStylesPath]
         }
       }
     }

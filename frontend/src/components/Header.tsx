@@ -258,13 +258,18 @@ const Header = ({ onMenuClick }: HeaderProps) => {
           border={0}
         >
           <Typography variant="h5" component="h2">
-            Download L!SA user guide
+            Download the L!SA user guides
           </Typography>
-          <Typography variant="body1" color="textSecondary">
-            The user guide contains information on the different features and functionality of the
-            L!SA tool, as well as a troubleshooting guide. The troubleshooting guide is there to
-            help with any issues you might encounter when using the tool.
-          </Typography>
+          <Box display="flex" flexDirection="column" gap={1}>
+            <Typography variant="body1" color="textSecondary">
+              The pack is a single zip file containing guides to navigating L!SA, logging incidents and managing
+              tasks, and for administrators, managing incidents, users, and custom form templates.
+            </Typography>
+            <Typography variant="body2" color="textSecondary">
+              After downloading, unzip the file to access the PDF guides and any supporting documentation for
+              L!SA.
+            </Typography>
+          </Box>
           <Box
             display="flex"
             justifyContent="flex-end"
@@ -273,18 +278,21 @@ const Header = ({ onMenuClick }: HeaderProps) => {
             gap={1}
             mt={2}
           >
-            <Button variant="text" onClick={() => setOpenGuide(false)}>
+            <Button
+              variant="outlined"
+              onClick={() => setOpenGuide(false)}
+              sx={{ flex: 1, mr: 1, height: 44, borderRadius: 1 }}
+            >
               Cancel
             </Button>
             <Button
-              type="button"
+              component="a"
               variant="contained"
-              href="/documents/NDTP_L!SA User Guide.pdf"
-              download="/documents/NDTP_L!SA User Guide.pdf"
-              target="_blank"
-              rel="noopener noreferrer"
+              href="/downloads/LISA - Documentation and Guides.zip"
+              download="LISA - Documentation and Guides.zip"
+              sx={{ flex: 2, height: 44, borderRadius: 1 }}
             >
-              Download user guide
+              Download user guides
             </Button>
           </Box>
         </Box>
