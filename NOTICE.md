@@ -7,7 +7,7 @@
 This repository contains software developed as part of the  
 National Digital Twin Programme (NDTP), a UK Government initiative.  
 
-© Crown Copyright 2025. This work has been developed by the National Digital Twin Programme and is legally attributed to the 
+© Crown Copyright 2026. This work has been developed by the National Digital Twin Programme and is legally attributed to the 
 Department for Business and Trade (UK) as the governing entity.  
 
 ## License  
