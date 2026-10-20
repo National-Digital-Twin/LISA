@@ -8,14 +8,15 @@ import * as sparql from 'rdf-sparql-builder';
 // Local imports
 import { settings } from './settings';
 
-async function sendInsertQuery(insertQuery) {
+async function sendInsertQuery(insertQuery, accessToken?: string) {
   const url = new URL(settings.SCG_URL);
   url.pathname = 'knowledge/update';
 
   const insertResp = await fetch(url, {
     method: 'POST',
     headers: {
-      'Content-Type': 'application/sparql-update'
+      'Content-Type': 'application/sparql-update',
+      ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {})
     },
     body: insertQuery.toString()
   });
@@ -24,16 +25,16 @@ async function sendInsertQuery(insertQuery) {
   }
 }
 
-export async function insert({ triples, where }: { triples; where? }) {
+export async function insert({ triples, where, accessToken }: { triples; where?; accessToken?: string }) {
   let insertQuery = sparql.insert(triples);
   if (where) {
     insertQuery = insertQuery.where(where);
   }
-  await sendInsertQuery(insertQuery);
+  await sendInsertQuery(insertQuery, accessToken);
 }
 
-export async function insertData(triples) {
-  await sendInsertQuery(sparql.insertData(triples));
+export async function insertData(triples, accessToken?: string) {
+  await sendInsertQuery(sparql.insertData(triples), accessToken);
 }
 
 export type ResultRow = Record<
@@ -48,12 +49,14 @@ export async function select({
   clause,
   filters,
   orderBy,
-  selection = ['*']
+  selection = ['*'],
+  accessToken
 }: {
   clause;
   filters?;
   orderBy?;
   selection?;
+  accessToken?: string;
 }): Promise<ResultRow[]> {
   let selectQuery = sparql.select(selection).distinct().where(clause);
 
@@ -71,7 +74,8 @@ export async function select({
   const selectResp = await fetch(url, {
     method: 'POST',
     headers: {
-      'Content-Type': 'application/sparql-query'
+      'Content-Type': 'application/sparql-query',
+      ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {})
     },
     body: selectQuery.toString()
   });

@@ -22,12 +22,14 @@ export async function query(req: Request, res: Response) {
 
   const url = new URL(settings.SCG_URL);
   url.pathname = '/knowledge/sparql';
+  const accessToken = req.header('X-Auth-Request-Access-Token');
 
   try {
     const resp = await fetch(url.toString(), {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/sparql-query'
+        'Content-Type': 'application/sparql-query',
+        ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {})
       },
       body: select.toString()
     });

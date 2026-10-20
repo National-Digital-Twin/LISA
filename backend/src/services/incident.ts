@@ -25,6 +25,7 @@ import { getScanResultInternal } from './fileStorage';
 type Amendments = Record<string, string>;
 
 export async function create(req: Request, res: Response) {
+  const accessToken = req.header('X-Auth-Request-Access-Token');
   const incident = Incident.check(req.body);
 
   incident.reportedBy = {
@@ -77,12 +78,13 @@ export async function create(req: Request, res: Response) {
     [incidentStateNode, ns.ies.isStateOf, incidentIdNode],
     [ns.data(stateBoundingState), ns.ies.inPeriod, startDateNode],
     [ns.data(stateBoundingState), ns.ies.isStartOf, incidentStateNode]
-  ]);
+  ], accessToken);
 
   res.json({ id: incident.id }).end();
 }
 
 export async function changeStage(req: Request, res: Response) {
+  const accessToken = req.header('X-Auth-Request-Access-Token');
   const { id: incidentId, stage: stageStr, sequence: seqNumber } = req.body;
 
   const stage = IncidentStage.check(stageStr);
@@ -91,6 +93,7 @@ export async function changeStage(req: Request, res: Response) {
   const notExistsFilter = new TriplePattern('?x', ns.ies.isEndOf, '?lastStateNodeId');
 
   const results = await ia.select({
+    accessToken,
     selection: ['?stage', '?lastStateNodeId'],
     clause: [
       ['?lastStateNodeId', ns.ies.isStateOf, incidentIdNode],
@@ -156,6 +159,7 @@ export async function changeStage(req: Request, res: Response) {
   if (preventDuplicateSequence) whereClauses.push(preventDuplicateSequence);
 
   await ia.insert({
+    accessToken,
     triples: [
       // Closing the last state
       [lastStateBoundingStateNode, ns.ies.inPeriod, startDateNode],
@@ -232,7 +236,8 @@ function mapIncident(row: ia.ResultRow, amendmentsByIncident: Map<string, Amendm
   } satisfies Incident;
 }
 
-export async function get(_: Request, res: Response) {
+export async function get(req: Request, res: Response) {
+  const accessToken = req.header('X-Auth-Request-Access-Token');
   const typeFilters = Object.keys(IncidentTypes).map(
     (value: string) => `<${ns.lisa(addIncidentSuffix(value as IncidentType)).value}>`
   );
@@ -241,6 +246,7 @@ export async function get(_: Request, res: Response) {
 
   requests.push(
     ia.select({
+      accessToken,
       clause: [
         ['?id', ns.lisa.hasLogEntry, '?entryId'],
         ['?entryId', ns.lisa.createdAt, '?createdAt'],
@@ -258,6 +264,7 @@ export async function get(_: Request, res: Response) {
 
   requests.push(
     ia.select({
+      accessToken,
       clause: [
         ['?id', ns.rdf.type, '?type'],
         ['?isStateOf', ns.ies.isStateOf, '?id'],
@@ -302,6 +309,7 @@ export async function get(_: Request, res: Response) {
 
 export async function getById(req: Request, res: Response) {
   const { incidentId } = req.params;
+  const accessToken = req.header('X-Auth-Request-Access-Token');
 
   if (!incidentId) {
     return res.sendStatus(400);
@@ -311,6 +319,7 @@ export async function getById(req: Request, res: Response) {
 
   const requests: Promise<ia.ResultRow[]>[] = [
     ia.select({
+      accessToken,
       clause: [
         [incidentIdNode, ns.lisa.hasLogEntry, '?entryId'],
         ['?entryId', ns.lisa.createdAt, '?createdAt'],
@@ -323,6 +332,7 @@ export async function getById(req: Request, res: Response) {
       orderBy: [['?createdAt', 'ASC']]
     }),
     ia.select({
+      accessToken,
       clause: [
         [incidentIdNode, ns.rdf.type, '?type'],
         ['?isStateOf', ns.ies.isStateOf, incidentIdNode],
@@ -369,8 +379,10 @@ export async function getById(req: Request, res: Response) {
 
 export async function getAttachments(req: Request, res: Response) {
   const { incidentId } = req.params;
+  const accessToken = req.header('X-Auth-Request-Access-Token');
 
   const results = await ia.select({
+    accessToken,
     clause: [
       [ns.data(incidentId), ns.lisa.hasLogEntry, '?id'],
       ['?id', ns.lisa.createdAt, '?createdAt'],

@@ -13,6 +13,7 @@ import { addLocationTriples } from '../common/location';
 
 export async function create(req: Request, res: Response) {
   const { incidentId } = req.params;
+  const accessToken = req.header('X-Auth-Request-Access-Token');
   if (!incidentId) {
     res.status(400).end();
     return;
@@ -72,14 +73,14 @@ export async function create(req: Request, res: Response) {
     ...locationTriples
   ];
 
-  await ia.insertData(triples);
+  await ia.insertData(triples, accessToken);
 
   createNotification({
     recipient: task.assignee.username,
     type: 'TaskAssignedNotification',
     incidentId: task.incidentId,
     taskId
-  });
+  }, accessToken);
 
   // TODO: create a log entry for this to notify of task creation like the status update one
   // await createTaskCreationLogEntry(incidentId, taskId, task, res.locals.user);

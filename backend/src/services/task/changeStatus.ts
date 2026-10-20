@@ -25,6 +25,7 @@ function removePrefix(uri: string): string {
 
 export async function changeStatus(req: Request, res: Response) {
   const { taskId } = req.params;
+  const accessToken = req.header('X-Auth-Request-Access-Token');
   const { status: rawStatus } = req.body;
 
   const status = TaskStatus.check(rawStatus);
@@ -41,6 +42,7 @@ export async function changeStatus(req: Request, res: Response) {
 
   // Find current active status (i.e., without isEndOf)
   const results = await ia.select({
+    accessToken,
     selection: ['?currentStatus', '?statusType'],
     clause: [
       ['?currentStatus', ns.ies.isStateOf, taskIdNode],
@@ -85,7 +87,7 @@ export async function changeStatus(req: Request, res: Response) {
     }
   }
 
-  await ia.insertData(triples);
+  await ia.insertData(triples, accessToken);
 
   res.status(200).json({ message: 'Status changed successfully' });
 }

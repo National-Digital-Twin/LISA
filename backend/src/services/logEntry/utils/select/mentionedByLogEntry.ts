@@ -6,8 +6,9 @@
 import { select } from '../../../../ia';
 import { ns } from '../../../../rdfutil';
 
-export function mentionedByLogEntryInLogContent(incidentId: string) {
+export function mentionedByLogEntryInLogContent(incidentId: string, accessToken?: string) {
   return select({
+    accessToken,
     clause: [
       [ns.data(incidentId), ns.lisa.hasLogEntry, '?entryId'],
       ['?entryId', ns.lisa.isMentionedBy, '?mentionedByLogEntry']

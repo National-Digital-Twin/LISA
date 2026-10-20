@@ -10,6 +10,7 @@ import * as ia from '../ia';
 
 export async function create(req: Request, res: Response) {
   try {
+    const accessToken = req.header('X-Auth-Request-Access-Token');
     const { formData, title } = req.body;
     const formId = randomUUID();
     const formNode = ns.data(formId);
@@ -31,7 +32,7 @@ export async function create(req: Request, res: Response) {
 
       // Form JSON structure
       [formNode, ns.lisa.hasData, jsonLiteral]
-    ]);
+    ], accessToken);
 
     res.status(200).json({ id: formId });
   } catch (error) {
@@ -42,7 +43,9 @@ export async function create(req: Request, res: Response) {
 
 export async function get(req: Request, res: Response) {
   try {
+    const accessToken = req.header('X-Auth-Request-Access-Token');
     const results = await ia.select({
+      accessToken,
       clause: [
         ['?formId', ns.rdf.type, ns.lisa.Form],
         ['?formId', ns.ies.hasName, '?title'],

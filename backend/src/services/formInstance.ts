@@ -9,6 +9,7 @@ import * as ia from '../ia';
 
 export async function create(req: Request, res: Response) {
   try {
+    const accessToken = req.header('X-Auth-Request-Access-Token');
     const { formData, formTemplateId, createdAt, id } = req.body;
     const { incidentId } = req.params;
 
@@ -34,7 +35,7 @@ export async function create(req: Request, res: Response) {
 
       // Form JSON structure
       [formNode, ns.lisa.hasData, jsonLiteral]
-    ]);
+    ], accessToken);
 
     res.status(200).json({ id: formId });
   } catch (error) {
@@ -45,9 +46,11 @@ export async function create(req: Request, res: Response) {
 
 export async function get(req: Request, res: Response) {
   try {
+    const accessToken = req.header('X-Auth-Request-Access-Token');
     const { incidentId } = req.params;
 
     const results = await ia.select({
+      accessToken,
       clause: [
         [ns.data(incidentId), ns.lisa.hasForm, '?formId'],
         ['?formId', ns.rdf.type, '?formTemplateId'],

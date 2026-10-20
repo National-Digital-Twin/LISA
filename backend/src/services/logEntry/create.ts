@@ -20,6 +20,7 @@ import { addLocationTriples } from '../common/location';
 
 export async function create(req: Request, res: Response) {
   const { incidentId } = req.params;
+  const accessToken = req.header('X-Auth-Request-Access-Token');
 
   if (!incidentId) {
     res.status(400).end();
@@ -75,7 +76,7 @@ export async function create(req: Request, res: Response) {
     triples.push(...addLocationTriples(entry.location, entryIdNode));
   }
 
-  await ia.insertData(triples);
+  await ia.insertData(triples, accessToken);
 
   userLogMentions.forEach((mention) => {
     createNotification({
@@ -83,7 +84,7 @@ export async function create(req: Request, res: Response) {
       type: 'UserMentionNotification',
       entryId: entry.id,
       incidentId: entry.incidentId
-    });
+    }, accessToken);
   });
 
   PubSubManager.getInstance().publish('NewLogEntries', entry.incidentId, res.locals.user.username);

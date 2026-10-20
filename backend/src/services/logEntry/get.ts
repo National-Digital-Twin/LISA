@@ -21,6 +21,7 @@ type TempEntryData = Omit<LogEntryType, 'location'> & {
 
 export async function get(req: Request, res: Response) {
   const { incidentId } = req.params;
+  const accessToken = req.header('X-Auth-Request-Access-Token');
 
   if (!incidentId) {
     res.status(400).end();
@@ -35,7 +36,7 @@ export async function get(req: Request, res: Response) {
     mentionsUsersResults,
     attachmentResults,
     detailResults
-  ] = await Promise.all(select(incidentId));
+  ] = await Promise.all(select(incidentId, accessToken));
 
   const fieldResultsByEntry = fields.parse(fieldResults);
   const mentionsLogEntriesByEntry = mentions.parse.logEntry(mentionsResults, false);
