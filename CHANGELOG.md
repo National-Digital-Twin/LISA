@@ -14,6 +14,9 @@ This project follows **Semantic Versioning (SemVer)** ([semver.org](https://semv
  - **Build metadata** – If needed, use `+build` (e.g., `2.1.0+20250314`).
 
  ---
+ ## [0.94.9]
+
+ - Add access token to any requests to a SAG
 
  ## [0.94.8] - 2026-08-13
 
