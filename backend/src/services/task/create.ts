@@ -80,7 +80,9 @@ export async function create(req: Request, res: Response) {
     type: 'TaskAssignedNotification',
     incidentId: task.incidentId,
     taskId
-  }, accessToken);
+  }, accessToken).catch((error) => {
+    console.error('Failed to create task assignment notification:', error);
+  });
 
   // TODO: create a log entry for this to notify of task creation like the status update one
   // await createTaskCreationLogEntry(incidentId, taskId, task, res.locals.user);

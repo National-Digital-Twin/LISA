@@ -80,7 +80,9 @@ export async function changeAssignee(req: Request, res: Response) {
     type: 'TaskAssignedNotification',
     incidentId: nodeValue(results[0].incidentId.value),
     taskId
-  }, accessToken);
+  }, accessToken).catch((error) => {
+    console.error('Failed to create task reassignment notification:', error);
+  });
 
   res.status(200).json({ message: 'Assignee changed successfully' });
 }

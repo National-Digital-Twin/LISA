@@ -84,7 +84,9 @@ export async function create(req: Request, res: Response) {
       type: 'UserMentionNotification',
       entryId: entry.id,
       incidentId: entry.incidentId
-    }, accessToken);
+    }, accessToken).catch((error) => {
+      console.error('Failed to create user mention notification:', error);
+    });
   });
 
   PubSubManager.getInstance().publish('NewLogEntries', entry.incidentId, res.locals.user.username);
