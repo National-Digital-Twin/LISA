@@ -7,6 +7,7 @@ import { randomUUID } from 'crypto';
 import * as sparql from 'rdf-sparql-builder';
 import { literalDate, literalString, nodeValue, ns } from '../rdfutil';
 import * as ia from '../ia';
+import { formContentTriples } from './common/formContent';
 
 export async function create(req: Request, res: Response) {
   try {
@@ -15,23 +16,14 @@ export async function create(req: Request, res: Response) {
     const formId = randomUUID();
     const formNode = ns.data(formId);
 
-    const authorNode = ns.data(res.locals.user.username);
     const now = new Date();
-
-    const jsonLiteral = literalString(JSON.stringify(formData));
 
     await ia.insertData([
       [formNode, ns.rdf.type, ns.lisa.Form],
       [formNode, ns.ies.hasName, literalString(title)],
       [formNode, ns.lisa.createdAt, literalDate(now)],
 
-      // Form Author details
-      [authorNode, ns.rdf.type, ns.ies.Creator],
-      [authorNode, ns.ies.hasName, literalString(res.locals.user.displayName)],
-      [authorNode, ns.ies.isParticipantIn, formNode],
-
-      // Form JSON structure
-      [formNode, ns.lisa.hasData, jsonLiteral]
+      ...formContentTriples(formNode, res.locals.user, formData)
     ], accessToken);
 
     res.status(200).json({ id: formId });

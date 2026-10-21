@@ -4,8 +4,9 @@
 
 import { Request, Response } from 'express';
 import { randomUUID } from 'crypto';
-import { literalDate, literalString, nodeValue, ns } from '../rdfutil';
+import { literalDate, nodeValue, ns } from '../rdfutil';
 import * as ia from '../ia';
+import { formContentTriples } from './common/formContent';
 
 export async function create(req: Request, res: Response) {
   try {
@@ -17,24 +18,14 @@ export async function create(req: Request, res: Response) {
     const formNode = ns.data(formId);
     const formTemplateNode = ns.data(formTemplateId);
 
-    const authorNode = ns.data(res.locals.user.username);
-
     const incidentIdNode = ns.data(incidentId);
-
-    const jsonLiteral = literalString(JSON.stringify(formData));
 
     await ia.insertData([
       [formNode, ns.rdf.type, formTemplateNode],
       [formNode, ns.lisa.createdAt, literalDate(new Date(createdAt))],
       [incidentIdNode, ns.lisa.hasForm, formNode],
 
-      // Form Author details
-      [authorNode, ns.rdf.type, ns.ies.Creator],
-      [authorNode, ns.ies.hasName, literalString(res.locals.user.displayName)],
-      [authorNode, ns.ies.isParticipantIn, formNode],
-
-      // Form JSON structure
-      [formNode, ns.lisa.hasData, jsonLiteral]
+      ...formContentTriples(formNode, res.locals.user, formData)
     ], accessToken);
 
     res.status(200).json({ id: formId });
