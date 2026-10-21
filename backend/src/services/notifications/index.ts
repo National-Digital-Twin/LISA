@@ -14,7 +14,7 @@ import { literalDate, nodeValue, ns } from '../../rdfutil';
 import { NotificationInput } from './types';
 import { getCreateData, getFetchOptionals, getTypesList, parseNotification } from './utils';
 
-export async function create(input: NotificationInput) {
+export async function create(input: NotificationInput, accessToken?: string) {
   const id = randomUUID();
   const idNode = ns.data(id);
   const additionalData = getCreateData(idNode, input);
@@ -24,16 +24,18 @@ export async function create(input: NotificationInput) {
     [idNode, ns.lisa.hasRecipient, ns.data(input.recipient)],
     [idNode, ns.lisa.createdAt, literalDate(new Date())],
     ...additionalData
-  ]);
+  ], accessToken);
   PubSubManager.getInstance().publish('NewNotification', input.recipient);
 }
 
 export async function markRead(req: Request, res: Response) {
+  const accessToken = req.header('X-Auth-Request-Access-Token');
   const { id } = req.params;
   const { username } = res.locals.user;
   const idNode = ns.data(id);
 
   const results = await ia.select({
+    accessToken,
     clause: [
       ['?id', ns.rdf.type, '?type'],
       ['?id', ns.lisa.hasRecipient, '?recipient'],
@@ -47,15 +49,17 @@ export async function markRead(req: Request, res: Response) {
   });
 
   if (results.length === 1 && !results[0].read?.value) {
-    await ia.insertData([[idNode, ns.lisa.readAt, literalDate(new Date())]]);
+    await ia.insertData([[idNode, ns.lisa.readAt, literalDate(new Date())]], accessToken);
   }
 
   res.json({ id });
 }
 
-export async function markAllAsSeen(_: Request, res: Response) {
+export async function markAllAsSeen(req: Request, res: Response) {
+  const accessToken = req.header('X-Auth-Request-Access-Token');
   const { username } = res.locals.user;
   const results = await ia.select({
+    accessToken,
     clause: [
       ['?id', ns.rdf.type, '?type'],
       ['?id', ns.lisa.hasRecipient, '?recipient'],
@@ -71,17 +75,19 @@ export async function markAllAsSeen(_: Request, res: Response) {
     const now = new Date();
     await ia.insertData(results.map(result =>
       [ns.data(nodeValue(result.id.value)), ns.lisa.seenAt, literalDate(now)]
-    ));
+    ), accessToken);
   }
 
   res.json({ markedAsSeen: results.length });
 }
 
-export async function get(_: Request, res: Response) {
+export async function get(req: Request, res: Response) {
+  const accessToken = req.header('X-Auth-Request-Access-Token');
   const { username } = res.locals.user;
   const optionals = getFetchOptionals();
 
   const results = await ia.select({
+    accessToken,
     clause: [
       ['?id', ns.rdf.type, '?type'],
       ['?id', ns.lisa.hasRecipient, '?recipient'],

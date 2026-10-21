@@ -72,13 +72,14 @@ async function mapResultsToTasks(
 
 export async function getForIncidentId(req: Request, res: Response) {
   const { incidentId } = req.params;
+  const accessToken = req.header('X-Auth-Request-Access-Token');
   if (!incidentId) {
     res.status(400).end();
     return;
   }
 
   try {
-    const [taskResults, attachmentResults] = await Promise.all(selectAll(incidentId));
+    const [taskResults, attachmentResults] = await Promise.all(selectAll(incidentId, accessToken));
     const tasksArray = await mapResultsToTasks(taskResults, attachmentResults);
     res.json(tasksArray);
   } catch (error) {
@@ -87,9 +88,10 @@ export async function getForIncidentId(req: Request, res: Response) {
   }
 }
 
-export async function get(_req: Request, res: Response) {
+export async function get(req: Request, res: Response) {
+  const accessToken = req.header('X-Auth-Request-Access-Token');
   try {
-    const [taskResults, attachmentResults] = await Promise.all(selectAll());
+    const [taskResults, attachmentResults] = await Promise.all(selectAll(undefined, accessToken));
     const tasksArray = await mapResultsToTasks(taskResults, attachmentResults);
     res.json(tasksArray);
   } catch (error) {

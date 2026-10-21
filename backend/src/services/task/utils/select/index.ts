@@ -5,9 +5,9 @@
 import { attachments } from './attachments';
 import { tasks } from './tasks';
 
-export function selectAll(incidentId?: string) {
+export function selectAll(incidentId?: string, accessToken?: string) {
   return [
-    tasks(incidentId),
-    attachments(incidentId)
+    tasks(incidentId, accessToken),
+    attachments(incidentId, accessToken)
   ];
 }

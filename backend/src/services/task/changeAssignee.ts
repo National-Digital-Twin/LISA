@@ -12,6 +12,7 @@ import * as ia from '../../ia';
 
 export async function changeAssignee(req: Request, res: Response) {
   const { taskId } = req.params;
+  const accessToken = req.header('X-Auth-Request-Access-Token');
   const { assignee } = req.body;
 
   if (!assignee?.username || !assignee?.displayName) {
@@ -28,6 +29,7 @@ export async function changeAssignee(req: Request, res: Response) {
   const notExistsFilter = new TriplePattern('?x', ns.ies.isEndOf, '?currentAssignee');
 
   const results = await ia.select({
+    accessToken,
     selection: ['?currentAssignee', '?user', '?assigneeName', '?incidentId'],
     clause: [
       ['?currentAssignee', ns.rdf.type, ns.lisa.assignee],
@@ -71,13 +73,15 @@ export async function changeAssignee(req: Request, res: Response) {
     [newBoundingNode, ns.ies.isStartOf, newAssigneeStateNode]
   );
 
-  await ia.insertData(triples);
+  await ia.insertData(triples, accessToken);
 
   createNotification({
     recipient: username,
     type: 'TaskAssignedNotification',
     incidentId: nodeValue(results[0].incidentId.value),
     taskId
+  }, accessToken).catch((error) => {
+    console.error('Failed to create task reassignment notification:', error);
   });
 
   res.status(200).json({ message: 'Assignee changed successfully' });

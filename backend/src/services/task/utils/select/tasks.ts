@@ -9,7 +9,7 @@ import { TaskStatus } from 'common/Task';
 import { select } from '../../../../ia';
 import { ns } from '../../../../rdfutil';
 
-export function tasks(incidentId?: string) {
+export function tasks(incidentId?: string, accessToken?: string) {
   const statusNotExistsFilter = new TriplePattern('?x', ns.ies.isEndOf, '?statusNode');
   const assigneeNotExistsFilter = new TriplePattern('?x', ns.ies.isEndOf, '?assigneeNode');
 
@@ -23,6 +23,7 @@ export function tasks(incidentId?: string) {
   ];
 
   return select({
+    accessToken,
     clause: [
       ...incidentClauses,
       ['?incidentId', ns.ies.hasName, '?incidentName'],
@@ -75,5 +76,4 @@ export function tasks(incidentId?: string) {
     ]
   });
 }
-
 

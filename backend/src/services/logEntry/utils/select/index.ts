@@ -11,14 +11,14 @@ import { mentionedByLogEntryInLogContent } from './mentionedByLogEntry';
 import { mentionsLogEntryInLogContent } from './mentionsLogEntry';
 import { mentionsUserInLogContent } from './mentionsUser';
 
-export function selectAll(incidentId: string) {
+export function selectAll(incidentId: string, accessToken?: string) {
   return [
-    logEntries(incidentId),
-    fields(incidentId),
-    mentionedByLogEntryInLogContent(incidentId),
-    mentionsLogEntryInLogContent(incidentId),
-    mentionsUserInLogContent(incidentId),
-    attachments(incidentId),
-    details(incidentId)
+    logEntries(incidentId, accessToken),
+    fields(incidentId, accessToken),
+    mentionedByLogEntryInLogContent(incidentId, accessToken),
+    mentionsLogEntryInLogContent(incidentId, accessToken),
+    mentionsUserInLogContent(incidentId, accessToken),
+    attachments(incidentId, accessToken),
+    details(incidentId, accessToken)
   ];
 }

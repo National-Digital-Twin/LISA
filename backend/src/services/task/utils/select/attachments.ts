@@ -5,8 +5,9 @@
 import { select } from '../../../../ia';
 import { ns } from '../../../../rdfutil';
 
-export function attachments(incidentId?: string) {
+export function attachments(incidentId?: string, accessToken?: string) {
   return select({
+    accessToken,
     clause: [
       ...(incidentId ? [[ns.data(incidentId), ns.lisa.hasTask, '?taskId']] : []),
       ['?taskId', ns.lisa.hasAttachment, '?attachmentId'],

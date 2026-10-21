@@ -9,8 +9,9 @@ import { optional } from 'rdf-sparql-builder';
 import { select } from '../../../../ia';
 import { ns } from '../../../../rdfutil';
 
-export function fields(incidentId: string) {
+export function fields(incidentId: string, accessToken?: string) {
   return select({
+    accessToken,
     clause: [
       [ns.data(incidentId), ns.lisa.hasLogEntry, '?entryId'],
       ['?entryId', ns.lisa.hasField, '?fieldId'],
