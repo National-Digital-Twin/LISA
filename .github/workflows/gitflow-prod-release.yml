@@ -1,5 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
-# © Crown Copyright 2026. This work has been developed by the National Digital Twin Programme and is legally attributed to the UK's Department for Business, Innovation, Science and Trade (BIST) as the governing entity.
+# © Crown Copyright 2026. This work has been developed by the National Digital Twin Programme
+# and is legally attributed to the Department for Business and Trade (UK) as the governing entity.
 
 name: Prod Release on Merge to Main
 
@@ -12,14 +13,13 @@ env:
   SOURCE_AWS_ACCOUNT_ID: "${{ vars.STAGING_AWS_ACCOUNT_ID }}"
   DESTINATION_AWS_ACCOUNT_ID: "${{ vars.PROD_AWS_ACCOUNT_ID }}"
 
-permissions:
-  contents: read
-  id-token: write
-  pull-requests: read
-
 jobs:
   determine-tag:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+      pull-requests: read
     outputs:
       tag: ${{ steps.extract-tag.outputs.tag }} # Define the output for the job
     steps:
@@ -44,7 +44,7 @@ jobs:
         id: extract-tag # Add an ID to this step
         run: |
           # Try to extract the tag from the commit message
-          TAG=$(echo "${{ github.event.head_commit.message }}" | grep -o 'release/[0-9]\+\.[0-9]\+\.[0-9]\+' | cut -d'/' -f2)
+          TAG=$(printf '%s\n' "$HEAD_COMMIT_MESSAGE" | grep -o 'release/[0-9]\+\.[0-9]\+\.[0-9]\+' | cut -d'/' -f2)
 
           # If the tag is not found in the commit message, extract it from the source branch name
           if [ -z "$TAG" ]; then
@@ -63,6 +63,7 @@ jobs:
           echo "tag=$TAG" >> $GITHUB_OUTPUT
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          HEAD_COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
 
       - name: Debug - Print Determined Tag
         run: |
@@ -71,6 +72,10 @@ jobs:
   copy-docker-image:
     needs: determine-tag
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+      pull-requests: read
     strategy:
       matrix:
         repo_name:
@@ -78,7 +83,7 @@ jobs:
     steps:
       # Set up AWS credentials for the source account
       - name: Set up AWS Credentials for Source Account
-        uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd # v6.3.0
+        uses: aws-actions/configure-aws-credentials@cbe3b392738ccf3f987d68400dafcf4b0624a56c # v6.2.4
         with:
           role-to-assume: arn:aws:iam::${{ env.SOURCE_AWS_ACCOUNT_ID }}:role/ecr-access-for-github
           aws-region: eu-west-2
@@ -112,7 +117,7 @@ jobs:
 
       # Set up AWS credentials for the destination account
       - name: Set up AWS Credentials for Destination Account
-        uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd # v6.3.0
+        uses: aws-actions/configure-aws-credentials@cbe3b392738ccf3f987d68400dafcf4b0624a56c # v6.2.4
         with:
           role-to-assume: arn:aws:iam::${{ env.DESTINATION_AWS_ACCOUNT_ID }}:role/ecr-access-for-github
           aws-region: eu-west-2
